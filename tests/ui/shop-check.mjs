@@ -42,7 +42,7 @@ try{
   const unchanged=await page.evaluate(()=>localStorage.getItem('card-cascade.current'));await dragTo(page,'[data-offer-id=visible_1] .shop-card','outside',false,false,true);assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),unchanged);await dragTo(page,'[data-offer-id=visible_1] .shop-card','buy',true,true);assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),unchanged);
   await dragTo(page,'[data-offer-id=visible_1] .shop-card','buy',width<1000);await page.locator('[data-kind=owned][data-offer-id=visible_1]').waitFor();assert.equal((await saved(page)).money,96n);assert.equal((await saved(page)).revision,before.revision+1);
   await page.locator('.money-pop.scarlet').waitFor();assert.equal(await page.locator('.money-pop.scarlet').innerText(),'−$4');await page.waitForFunction(()=>!document.getElementById('shop_reroll').disabled);
-  const encoded=await page.evaluate(()=>localStorage.getItem('card-cascade.current'));await page.reload();await enterRun(page);await page.locator('#shop_screen').waitFor();assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),encoded);assert.equal(await page.locator('[data-kind=owned]').count(),1);
+  const encoded=await page.evaluate(()=>localStorage.getItem('card-cascade.current'));await page.reload();await enterRun(page);await page.locator('#shop_screen').waitFor();await page.locator('#shop_screen').evaluate(el=>Promise.allSettled(el.getAnimations().map(a=>a.finished)));assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),encoded);assert.equal(await page.locator('[data-kind=owned]').count(),1);
   // Tooltip appears in the pointerdown handler, without a hold or release.
   const card=await page.locator('[data-kind=owned] .shop-card').boundingBox();
   await page.evaluate(()=>{document.addEventListener('pointerdown',()=>globalThis.tipAtPress=!!document.getElementById('shop_tooltip'),{once:true});});
@@ -50,7 +50,14 @@ try{
   assert.equal(await page.evaluate(()=>globalThis.tipAtPress),true,'Tooltip exists during the pointerdown event');
   assert.equal(await page.locator('#shop_tooltip').count(),1,'Pointerdown opens tooltip immediately');
   await page.mouse.up();assert.match(await page.locator('#shop_tooltip').innerText(),/\+4 к множителю/);
-  await page.locator('.shop-main-tray').click({force:true});assert.equal(await page.locator('#shop_tooltip').count(),0);
+  // The tray centre is covered by the remaining card. Tap its empty lower-left corner.
+  const tray=await page.locator('.shop-main-tray').boundingBox(),trayScale=tray.width/457,empty={x:tray.x+20*trayScale,y:tray.y+175*trayScale};
+  assert.equal(await page.evaluate(({x,y})=>!!document.elementFromPoint(x,y)?.closest('.shop-choice,.shop-tooltip'),empty),false,'Dismissal gesture must hit empty space');
+  await page.mouse.click(empty.x,empty.y);assert.equal(await page.locator('#shop_tooltip').count(),0,'Tap on empty shop space dismisses tooltip');
+  await page.locator('[data-kind=owned] .shop-card').tap();assert.equal(await page.locator('#shop_tooltip').count(),1);
+  const stage=await page.locator('#stage').boundingBox(),blank={x:stage.x+1380*stage.width/1536,y:stage.y+210*stage.width/1536};
+  assert.equal(await page.evaluate(({x,y})=>!!document.elementFromPoint(x,y)?.closest('.shop-choice,.shop-tooltip'),blank),false,'Global dismissal gesture must hit empty space');
+  await page.mouse.click(blank.x,blank.y);assert.equal(await page.locator('#shop_tooltip').count(),0,'Tap on empty field dismisses tooltip');
   await page.locator('[data-kind=owned] .shop-card').tap();await page.locator('[data-kind=owned] .shop-buy').click();await page.locator('.money-pop.gold').waitFor();assert.equal((await saved(page)).money,98n);await page.waitForFunction(()=>!document.getElementById('shop_reroll').disabled);
   const preRoll=await saved(page);await page.evaluate(()=>globalThis.testShopBody=document.getElementById('shop_screen'));await page.locator('#shop_reroll').click();await page.waitForFunction(()=>!document.getElementById('shop_reroll').disabled);const afterRoll=await saved(page);assert.equal(afterRoll.money,93n);assert.equal(afterRoll.revision,preRoll.revision+1);assert.deepEqual(afterRoll.shop.vouchers,preRoll.shop.vouchers);assert.deepEqual(afterRoll.shop.boosters,preRoll.shop.boosters);assert.notDeepEqual(afterRoll.shop.main,preRoll.shop.main);assert.ok(await page.evaluate(()=>testShopBody===document.getElementById('shop_screen')));assert.equal(await page.locator('#shop_reroll').innerText(),'Переброс\n$6');
   await page.screenshot({path:'artifacts/shop-'+width+'x'+height+'.png'});assert.deepEqual(errors,[]);await page.close();console.log('shop buy/sell/reroll/touch/reload '+width+'x'+height);
