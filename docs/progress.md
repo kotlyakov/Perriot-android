@@ -84,3 +84,9 @@ Actions 37769833942 и 37769840756 успешны на исходном комм
 APK 0.4.6, code 19, подписан прежним сертификатом. SHA256: 7d46e38a240bea0a830fe4fa399c53d31a0f0b2b48933758c98cfb0e39914e64. CRC, выравнивание, подпись и совпадение всех 36 ресурсов проверены. Проверка на физическом Android-устройстве впереди. Подробный отчёт: docs/qa/actions046.md.
 
 Следующая задача: полная генерация магазина с условиями профиля, эффекты товаров, интерфейс покупки/продажи/обновления, паки и ваучеры; затем следующие блайнды. Не возвращаться к реализации уже проверенного меню и не сокращать пул до четырёх поддержанных джокеров. Статические риски отмены анимаций и проверки типа referenceRng записаны в docs/qa/integration046-review.md; фактических регрессий в проверенном объёме не найдено.
+
+## Shop producer checkpoint — 08.10.2026
+
+Preserved 0.4.6 branch verified at73aefc0. Added own factual complete catalogue and pure conditional APK shop producer. Six original fixture cases match inventory, prices, editions, keyed streams and native RNG state. Independent review reproduced catalogue/fixtures and checked sparse Tarot rejection pools. Final root local test run155/155. Public inputs revalidate; overflow/invalid category probes reject. Actions verification pending.
+
+Current scope: producer foundation only; NOT yet called by runtime app/run or save codec. No new playable shop/APK claimed. UI geometry is measured in docs/ui/shop-apk-layout.md. Lifecycle source facts in docs/apk-findings/next-blind-lifecycle.md. Next: exact startup boss/voucher/tags and persistent actual selection context; cashout shop integration; complete effect handlers and UI, then next blinds. One agent hit service usage limit; its saved code was reviewed and root resumed verification, without losing files.
