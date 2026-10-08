@@ -23,7 +23,7 @@ async function blindGeometry(page){
 try{
  for(const [width,height] of [[1536,688],[915,412],[568,320],[360,800]]){
   const page=await browser.newPage({viewport:{width,height},hasTouch:true}),errors=[];page.on('pageerror',e=>errors.push(e.message));
-  await page.goto(process.env.PREVIEW_URL);await page.evaluate(s=>localStorage.setItem('card-cascade.current',s),serializeState(createRun('BLINDUI',{runId:'blind-ui',money:4n,referenceRng:true,referenceShop:true})));await page.reload();await enterRun(page);await page.locator('#blind_selection').waitFor();await blindGeometry(page);
+  await page.goto(process.env.PREVIEW_URL);await page.evaluate(s=>localStorage.setItem('card-cascade.current',s),serializeState(createRun('BLINDUI',{runId:'blind-ui',money:4n,referenceRng:true,referenceShop:true})));await page.reload();await page.locator('#start_new').click();await page.locator('#setup_continue_tab').click();await page.locator('#blind_selection').waitFor();await blindGeometry(page);
   await install(page,fixture());
   assert.equal(await page.locator('[data-kind=main]').count(),2);assert.equal(await page.locator('[data-kind=voucher]').count(),1);assert.equal(await page.locator('[data-kind=booster]').count(),2);
   assert.equal(await page.locator('#post_round').count(),0);assert.equal(await page.locator('#shop_reroll').innerText(),'Переброс\n$5');
