@@ -1,5 +1,8 @@
 import {SUPPORTED_JOKERS} from '../content/jokers.js';
 import {canAfford} from './shop-pricing.js';
+import {validateApkRng} from './apk-rng.js';
+import {rerollApkShop} from './apk-shop.js';
+import {currentApkShopContext} from './apk-shop-state.js';
 
 const amount=x=>typeof x==='bigint' && x>=0n;
 const count=x=>Number.isSafeInteger(x) && x>=0;
@@ -71,24 +74,30 @@ export function applyShopAction(state,action,{refill,nextRound}={}) {
   if(action.type==='REROLL_SHOP') {
     const cost=getRerollCost(state.shop);
     if(!canAfford(state.money,cost,floor))return reject('INSUFFICIENT_FUNDS','Insufficient available money');
-    if(typeof refill!=='function' || !state.rng?.shop)return reject('REFILL_UNAVAILABLE','No verified refill producer');
+    const native=!!state.apkShop;
+    if(!native&&(typeof refill!=='function' || !state.rng?.shop))return reject('REFILL_UNAVAILABLE','No verified refill producer');
     let produced;
     try {
-      produced=refill({rng:structuredClone(state.rng.shop),offers:structuredClone(state.shop.main)});
-      if(!produced || !validMain(produced.main) || !produced.rng || produced.rng.algorithm!==state.rng.shop.algorithm ||
+      produced=native?rerollApkShop(state.rng.apk,currentApkShopContext(state),{previousMain:state.shop.main,instancePrefix:'reroll_'+(state.revision+1)}):
+        refill({rng:structuredClone(state.rng.shop),offers:structuredClone(state.shop.main)});
+      if(!produced || !validMain(produced.main) || !produced.rng)return reject('INVALID_REFILL','Invalid refill output');
+      if(native)validateApkRng(produced.rng);
+      else if(produced.rng.algorithm!==state.rng.shop.algorithm ||
         !Number.isInteger(produced.rng.state) || produced.rng.state<0 || produced.rng.state>=2**32)
         return reject('INVALID_REFILL','Invalid refill output');
       const proposed={...state.shop,main:produced.main};
       if(!validShop(proposed) || produced.main.some(o=>state.jokers.some(j=>j.id===o.id)))return reject('INVALID_REFILL','Duplicate refill instance ID');
     }catch{return reject('INVALID_REFILL','Refill producer failed');}
     const next=structuredClone(state);next.shop.main=structuredClone(produced.main);
-    next.rng.shop=structuredClone(produced.rng);next.money-=cost;
+    next.rng[native?'apk':'shop']=structuredClone(produced.rng);next.money-=cost;
+    if(native)next.apkShop.context=currentApkShopContext(next);
     if(next.shop.freeRerolls>0)next.shop.freeRerolls--;
     else next.shop.rerollIncrease++;
     return finish(next,[{type:'shop_rerolled',cost,offerIds:next.shop.main.map(o=>o.id),nextCost:getRerollCost(next.shop)},
       {type:'money_changed',before:state.money,after:next.money,delta:-cost}]);
   }
   if(action.type==='LEAVE_SHOP') {
+    if(state.apkShop)return reject('NEXT_BLIND_UNAVAILABLE','Reference next-blind lifecycle is not implemented');
     if(!nextRound || typeof nextRound.blindId!=='string' || !amount(nextRound.target) || nextRound.target===0n ||
       !count(nextRound.ante) || nextRound.ante===0 || nextRound.score!==0n || !count(nextRound.handsRemaining) ||
       !count(nextRound.discardsRemaining) || !count(nextRound.handSize))return reject('NEXT_BLIND_UNAVAILABLE','Next blind configuration must be supplied');

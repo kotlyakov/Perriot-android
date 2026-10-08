@@ -10,7 +10,7 @@
 
 **Spec:** `docs/design.md`; пользовательские требования из `../project_sources/01-AGENTS-2.md`; визуальные решения из `docs/art/art-bible.md`, `docs/ui/reference-normal.md`, `docs/ui/reference-ouija.md`.
 
-Дата: 08.10.2026. Редакция: 23. Это основной рабочий роадмап нового проекта.
+Дата: 08.10.2026. Редакция: 24. Это основной рабочий роадмап нового проекта.
 
 ## Как используем этот файл
 
@@ -414,3 +414,8 @@ APK 0.4.6, code 19: SHA256 `7d46e38a240bea0a830fe4fa399c53d31a0f0b2b48933758c98c
 Важные результаты исследования: ваучер хранится с начала партии; cashout перемешивает `cashout+ante`; следующий блайнд использует продолжающийся `nr+ante`; после босса ante меняется до следующего магазина. Источник: `docs/apk-findings/next-blind-lifecycle.md`. Сейчас покупка поддерживает четыре базовых джокера; остальные эффекты, паки и ваучеры ещё открыты. Полный пул нельзя сокращать до реализованных обработчиков.
 
 Контрольная точка генератора: исходный коммит `2ae77f8811eaac10074e8ac8eeb130936a882aa6`, Actions `37774584780` и `37774590241` SUCCESS. 155/155 core, десять наборов браузерных проверок, fresh Android compile и CI-проверка APK пройдены. Подробности: `docs/qa/actions-shop-generator.md`. Генератор пока не подключён к игре: полнота ассортимента не означает полноты эффектов или готового магазина. Новая пользовательская APK-сборка для этого внутреннего блока не передавалась. Следующий пункт — интеграция состояния/сохранения и обработчиков товаров, затем интерфейс и блайнды.
+
+
+## Shop run/save checkpoint — 08.10.2026
+
+Task 2: new-run voucher selection before shuffle; persisted original shop context/RNG, played hands, cashout inventory and native reroll. Legacy saves keep previous behavior. Local core:169 passed. Native invalid inventory/category saves reject; unavailable next-blind transition rejects atomically. Added browser cashout/inventory/reload/write-failure coverage at four sizes. Actions verification pending. Full startup bosses/tags, native purchases/effects, shop UI and next blinds remain open; no complete game or new playable shop claimed.

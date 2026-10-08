@@ -5,11 +5,14 @@ import { scoreHand } from './score.js';
 import { HANDS } from '../content/hands.js';
 import {createApkRng} from './apk-rng.js';
 import {shuffleApkDeck} from './apk-deck.js';
-import {applyShopAction} from './shop.js';
+import {applyShopAction,createShop} from './shop.js';
+import {createApkShopContext,chooseApkVoucher,generateApkShop} from './apk-shop.js';
+import {APK_HAND_NAMES,currentApkShopContext} from './apk-shop-state.js';
 
-export function createRun(seed, {runId,deckId='red',money,referenceRng=false}={}) {
+export function createRun(seed, {runId,deckId='red',money,referenceRng=false,referenceShop=false,reducedMotion=false}={}) {
   if (typeof seed!=='string' || !seed || seed.length>1000) throw new TypeError('Invalid seed');
   if (typeof runId!=='string' || !runId || runId.length>120 || !['red','blue'].includes(deckId) || typeof money!=='bigint') throw new TypeError('Invalid run options');
+  if(typeof referenceRng!=='boolean'||typeof referenceShop!=='boolean'||typeof reducedMotion!=='boolean'||referenceShop&&!referenceRng)throw new TypeError('Invalid reference shop options');
   const cards = {};
   for (const suit of ['clubs','diamonds','hearts','spades']) {
     for (let rank=2;rank<=14;rank++) {
@@ -25,7 +28,12 @@ export function createRun(seed, {runId,deckId='red',money,referenceRng=false}={}
     round:{blindId:'small',ante:1,target:300n,score:0n,handsRemaining:deckId==='blue'?5:4,discardsRemaining:deckId==='red'?4:3,handSize:8},
     lastScore:null,sortMode:'rank',
   };
-  if(referenceRng){const shuffled=shuffleApkDeck(cards,createApkRng(seed),'shuffle');state.drawPile=shuffled.cardIds;state.rng.apk=shuffled.rng;}
+  if(referenceRng){
+    let rng=createApkRng(seed);
+    if(referenceShop){const context=createApkShopContext({reducedMotion}),voucher=chooseApkVoucher(rng,context);rng=voucher.rng;
+      state.apkShop={version:1,voucherId:voucher.voucherId,firstShopBuffoon:false,context};}
+    const shuffled=shuffleApkDeck(cards,rng,'shuffle');state.drawPile=shuffled.cardIds;state.rng.apk=shuffled.rng;
+  }
   return state;
 }
 
@@ -47,6 +55,18 @@ export function dispatch(state, action, shopOptions={}) {
     let quote;try{quote=getCashout(state);}catch{return reject('INVALID_STATE','Invalid cashout state');}
     const next=structuredClone(state);next.money+=quote.total;next.phase='shop';next.revision++;
     next.drawPile=Object.keys(next.cards);next.hand=[];next.discardPile=[];next.lastScore=null;
+    if(next.apkShop){
+      try{
+        const shuffled=shuffleApkDeck(Object.values(next.cards),next.rng.apk,'cashout'+next.round.ante);
+        next.drawPile=shuffled.cardIds;next.rng.apk=shuffled.rng;
+        const context=currentApkShopContext(next);
+        const generated=generateApkShop(next.rng.apk,context,{voucherId:next.apkShop.voucherId,
+          firstShopBuffoon:next.apkShop.firstShopBuffoon,instancePrefix:'shop_'+next.revision});
+        next.shop=createShop({offers:generated.offers});next.rng.apk=generated.rng;
+        next.apkShop.firstShopBuffoon=generated.firstShopBuffoon;
+        next.apkShop.context=currentApkShopContext(next);
+      }catch{return reject('UNSUPPORTED_SHOP_STATE','Shop generation inputs are unsupported');}
+    }
     return {state:next,events:[{type:'cash_out',...quote},{type:'shop_entered'}],error:null};
   }
   if (action.type==='START_BLIND') {
@@ -90,6 +110,7 @@ export function dispatch(state, action, shopOptions={}) {
   if (score) {
     next.round.handsRemaining--;next.round.score+=score.score;next.lastScore=score;
     if (!next.discoveredHands.includes(score.handId)) next.discoveredHands.push(score.handId);
+    if(next.apkShop){const name=APK_HAND_NAMES[score.handId];next.apkShop.context.playedHands[name]=(next.apkShop.context.playedHands[name]??0)+1;}
     events.push({type:'hand_played',cardIds:[...playedIds]},...structuredClone(score.trace));
     if (next.round.score>=next.round.target) { next.phase='round_won';events.push({type:'round_won',score:next.round.score}); }
     else if (next.round.handsRemaining===0) { next.phase='game_over';events.push({type:'round_lost',score:next.round.score}); }
