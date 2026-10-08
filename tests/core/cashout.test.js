@@ -43,7 +43,7 @@ test('cash out rejects other phases and malformed won state without mutation',as
  for(const phase of ['blind_selection','playing','game_over','shop']) {
   const s=won();s.phase=phase;const before=structuredClone(s),r=cashout(s);assert.equal(r.error.code,'INVALID_PHASE');assert.strictEqual(r.state,s);assert.deepEqual(r.events,[]);assert.deepEqual(s,before);assert.throws(()=>getCashout(s));
  }
- for(const mutate of [s=>s.round.blindId='big',s=>s.round.handsRemaining=-1,s=>s.round.handsRemaining=1.5,s=>s.money=4,s=>s.round.score=0n]) {
+ for(const mutate of [s=>s.round.blindId='boss',s=>s.round.handsRemaining=-1,s=>s.round.handsRemaining=1.5,s=>s.money=4,s=>s.round.score=0n]) {
   const s=won();mutate(s);const before=structuredClone(s),r=cashout(s);assert.equal(r.error.code,'INVALID_STATE');assert.strictEqual(r.state,s);assert.deepEqual(r.events,[]);assert.deepEqual(s,before);assert.throws(()=>getCashout(s));
  }
 });

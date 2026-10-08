@@ -1,4 +1,4 @@
-import {SUPPORTED_JOKERS} from '../content/jokers.js';
+import {SUPPORTED_JOKERS,supportsJoker} from '../content/jokers.js';
 import {canAfford} from './shop-pricing.js';
 import {validateApkRng} from './apk-rng.js';
 import {rerollApkShop} from './apk-shop.js';
@@ -49,15 +49,17 @@ export function applyShopAction(state,action,{refill,nextRound}={}) {
   if(action.type==='BUY_SHOP_CARD') {
     const offer=state.shop.main.find(o=>o.id===action.offerId);
     if(!offer)return reject('OFFER_NOT_FOUND','Shop offer is no longer available');
-    if(!SUPPORTED_JOKERS.includes(offer.entityId) || offer.edition && offer.edition!=='base' ||
-      offer.rental || offer.perishable || offer.debuffed || (state.inflation??0n)!==0n)
+    if(!supportsJoker(offer) || (state.inflation??0n)!==0n)
       return reject('UNSUPPORTED_CONTENT','Purchase effect is not implemented');
+    if(state.apkShop&&(offer.originalKey!==offer.entityId||offer.set!=='Joker'))return reject('INVALID_STATE','Invalid native Joker identity');
+    if(state.cards&&Object.hasOwn(state.cards,offer.id))return reject('INVALID_STATE','Instance ID collides with a playing card');
     if(state.jokers.some(j=>j.id===offer.id))return reject('INVALID_STATE','Instance ID already owned');
     if(!hasJokerSpace(state,offer))return reject('NO_SPACE','Joker area is full');
     if(!canAfford(state.money,offer.cost,floor))return reject('INSUFFICIENT_FUNDS','Insufficient available money');
     const next=structuredClone(state);
     next.shop.main=next.shop.main.filter(o=>o.id!==offer.id);
     next.jokers.push(structuredClone(offer));next.money-=offer.cost;
+    if(next.apkShop)next.apkShop.context=currentApkShopContext(next);
     return finish(next,[{type:'shop_card_bought',offerId:offer.id,jokerId:offer.id,cost:offer.cost},
       {type:'money_changed',before:state.money,after:next.money,delta:-offer.cost}]);
   }
@@ -68,6 +70,7 @@ export function applyShopAction(state,action,{refill,nextRound}={}) {
     if(!amount(joker.sellCost))return reject('INVALID_STATE','Missing stored sell value');
     if(!SUPPORTED_JOKERS.includes(joker.entityId))return reject('UNSUPPORTED_CONTENT','Selling effect is not implemented');
     const next=structuredClone(state);next.jokers=next.jokers.filter(j=>j.id!==joker.id);next.money+=joker.sellCost;
+    if(next.apkShop)next.apkShop.context=currentApkShopContext(next);
     return finish(next,[{type:'joker_sold',jokerId:joker.id,sellCost:joker.sellCost},
       {type:'money_changed',before:state.money,after:next.money,delta:joker.sellCost}]);
   }
@@ -97,7 +100,13 @@ export function applyShopAction(state,action,{refill,nextRound}={}) {
       {type:'money_changed',before:state.money,after:next.money,delta:-cost}]);
   }
   if(action.type==='LEAVE_SHOP') {
-    if(state.apkShop)return reject('NEXT_BLIND_UNAVAILABLE','Reference next-blind lifecycle is not implemented');
+    if(state.apkShop){
+      if(nextRound||state.round.blindId!=='small'||state.round.ante!==1)return reject('NEXT_BLIND_UNAVAILABLE','Next boss lifecycle is not implemented');
+      const next=structuredClone(state);next.phase='blind_selection';next.shop=null;
+      next.round={...next.round,blindId:'big',target:450n,score:0n,handsRemaining:next.deckId==='blue'?5:4,discardsRemaining:next.deckId==='red'?4:3};
+      next.hand=[];next.discardPile=[];next.apkShop.context=currentApkShopContext(next);
+      return finish(next,[{type:'shop_left',nextBlindId:'big'}]);
+    }
     if(!nextRound || typeof nextRound.blindId!=='string' || !amount(nextRound.target) || nextRound.target===0n ||
       !count(nextRound.ante) || nextRound.ante===0 || nextRound.score!==0n || !count(nextRound.handsRemaining) ||
       !count(nextRound.discardsRemaining) || !count(nextRound.handSize))return reject('NEXT_BLIND_UNAVAILABLE','Next blind configuration must be supplied');

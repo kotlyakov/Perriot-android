@@ -31,7 +31,7 @@ export function createRun(seed, {runId,deckId='red',money,referenceRng=false,ref
   if(referenceRng){
     let rng=createApkRng(seed);
     if(referenceShop){const context=createApkShopContext({reducedMotion}),voucher=chooseApkVoucher(rng,context);rng=voucher.rng;
-      state.apkShop={version:1,voucherId:voucher.voucherId,firstShopBuffoon:false,context};}
+      state.roundNumber=1;state.apkShop={version:1,voucherId:voucher.voucherId,firstShopBuffoon:false,context};}
     const shuffled=shuffleApkDeck(cards,rng,'shuffle');state.drawPile=shuffled.cardIds;state.rng.apk=shuffled.rng;
   }
   return state;
@@ -78,6 +78,7 @@ export function dispatch(state, action, shopOptions={}) {
       const draw=randomInt(next.rng.deck,i+1);next.rng.deck=draw.rng;
       [next.drawPile[i],next.drawPile[draw.value]]=[next.drawPile[draw.value],next.drawPile[i]];
     }
+    if(next.apkShop&&next.round.blindId==='big')next.roundNumber=2;
     next.phase='playing';next.revision++;
     events.push({type:'round_started',blindId:next.round.blindId,target:next.round.target});
     drawToLimit(next,events);

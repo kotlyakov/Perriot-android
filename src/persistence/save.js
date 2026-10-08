@@ -1,6 +1,6 @@
 import { apkPseudoHash, validateApkRng } from '../core/apk-rng.js';
 import { HANDS } from '../content/hands.js';
-import { SUPPORTED_JOKERS } from '../content/jokers.js';
+import { SUPPORTED_JOKERS,supportsJoker } from '../content/jokers.js';
 import { evaluateHand } from '../core/hands.js';
 import { randomInt } from '../core/rng.js';
 import { scoreHand } from '../core/score.js';
@@ -23,7 +23,7 @@ function optionalObject(value,required,optional=[]) {
 function decodeOffer(value,ids,owned=false) {
   optionalObject(value,owned?['id','entityId']:['id','entityId','cost','sellCost'],['cost','sellCost','edition','eternal','rental','perishable','debuffed','originalKey','set','frontKey','toDoPokerHand']);
   id(value.id);id(value.entityId);requireValue(!ids.has(value.id));ids.add(value.id);
-  if(owned)requireValue(SUPPORTED_JOKERS.includes(value.entityId));
+  if(owned)requireValue(supportsJoker(value));
   for(const key of ['cost','sellCost'])if(Object.hasOwn(value,key))value[key]=decimal(value[key]);
   if(Object.hasOwn(value,'edition'))requireValue(['base','foil','holographic','polychrome','negative'].includes(value.edition));
   for(const key of ['eternal','rental','perishable','debuffed'])if(Object.hasOwn(value,key))requireValue(typeof value[key]==='boolean');
@@ -90,13 +90,14 @@ function encodeScore(score) {
 }
 function decodeScore(value,state) {
   if(value===null)return null;
-  object(value,['handId','isRoyal','scoringCardIds','chips','mult','score','trace']);
+  optionalObject(value,['handId','isRoyal','scoringCardIds','chips','mult','score','trace'],['playedCardIds']);
+  if(value.playedCardIds)requireValue(Array.isArray(value.playedCardIds)&&value.playedCardIds.length>=1&&value.playedCardIds.length<=5&&new Set(value.playedCardIds).size===value.playedCardIds.length&&value.playedCardIds.every(id=>Object.hasOwn(state.cards,id))); 
   requireValue(Object.hasOwn(HANDS,value.handId) && typeof value.isRoyal==='boolean');
   requireValue(!value.isRoyal || value.handId==='straight_flush');
   requireValue(Array.isArray(value.scoringCardIds) && value.scoringCardIds.length>=1 && value.scoringCardIds.length<=5);
   requireValue(new Set(value.scoringCardIds).size===value.scoringCardIds.length && value.scoringCardIds.every(key=>Object.hasOwn(state.cards,key)));
   const chips=decimal(value.chips),mult=decimal(value.mult),score=decimal(value.score);
-  requireValue(score===chips*mult && Array.isArray(value.trace) && value.trace.length>=3 && value.trace.length<=100);
+  requireValue(score===chips*mult && Array.isArray(value.trace) && value.trace.length>=3 && value.trace.length<=10000);
   let previous={chips:0n,mult:0n};
   const trace=value.trace.map((event,i)=>{
     if(i===value.trace.length-1) {
@@ -106,23 +107,24 @@ function decodeScore(value,state) {
       requireValue(total.chips===chips && total.mult===mult && total.score===score && previous.chips===chips && previous.mult===mult);
       return total;
     }
-    object(event,['type','phase','sourceId','operation','before','after']);
+    optionalObject(event,['type','phase','sourceId','operation','before','after'],['effectSourceId']);
+    if(event.effectSourceId)requireValue(state.jokers.some(j=>j.id===event.effectSourceId));
     const before=pair(event.before),after=pair(event.after);
     requireValue(event.type==='score_step' && before.chips===previous.chips && before.mult===previous.mult);
     if(i===0) requireValue(event.phase==='base' && event.operation==='base' && event.sourceId===`hand:${value.handId}`);
     else {
-      requireValue(['add_chips','add_mult'].includes(event.operation));
+      requireValue(['add_chips','add_mult','multiply_mult'].includes(event.operation));
       requireValue(event.operation==='add_chips' ? after.chips>=before.chips && after.mult===before.mult : after.mult>=before.mult && after.chips===before.chips);
-      requireValue(event.phase==='scored_card' ? value.scoringCardIds.includes(event.sourceId) : event.phase==='independent' && state.jokers.some(j=>j.id===event.sourceId));
+      requireValue(event.phase==='scored_card' ? value.scoringCardIds.includes(event.sourceId) : ['independent','edition'].includes(event.phase) && state.jokers.some(j=>j.id===event.sourceId));
     }
     previous=after;return {...event,before,after};
   });
-  const expected=scoreHand(state,value.scoringCardIds.map(key=>state.cards[key]));
+  const expected=scoreHand(state,(value.playedCardIds??value.scoringCardIds).map(key=>state.cards[key]));
   requireValue(expected.handId===value.handId && expected.isRoyal===value.isRoyal && expected.chips===chips && expected.mult===mult && expected.score===score);
   requireValue(expected.scoringCardIds.length===value.scoringCardIds.length && expected.scoringCardIds.every((key,i)=>key===value.scoringCardIds[i]));
   requireValue(expected.trace.length===trace.length && expected.trace.every((event,i)=>{
     const actual=trace[i];
-    return event.phase===actual.phase && (event.type==='score_total' || event.sourceId===actual.sourceId && event.operation===actual.operation && event.before.chips===actual.before.chips && event.before.mult===actual.before.mult && event.after.chips===actual.after.chips && event.after.mult===actual.after.mult);
+    return event.phase===actual.phase && (event.type==='score_total' || event.sourceId===actual.sourceId && event.effectSourceId===actual.effectSourceId && event.operation===actual.operation && event.before.chips===actual.before.chips && event.before.mult===actual.before.mult && event.after.chips===actual.after.chips && event.after.mult===actual.after.mult);
   }));
   return {...value,chips,mult,score,trace};
 }
@@ -131,7 +133,7 @@ function decode(payload) {
   const state=payload.state;
   const sortMode=state.sortMode;
   if(Object.hasOwn(state,'sortMode'))requireValue(['rank','suit'].includes(sortMode));
-  optionalObject(state,['schemaVersion','runId','seed','revision','phase','deckId','cards','hand','drawPile','discardPile','jokers','handLevels','discoveredHands','rng','money','round','lastScore'],['shop','bankruptAt','jokerSlots','apkShop','sortMode']);
+  optionalObject(state,['schemaVersion','runId','seed','revision','phase','deckId','cards','hand','drawPile','discardPile','jokers','handLevels','discoveredHands','rng','money','round','lastScore'],['shop','bankruptAt','jokerSlots','apkShop','sortMode','roundNumber']);
   requireValue(state.schemaVersion===1 && PHASES.includes(state.phase) && ['red','blue'].includes(state.deckId));
   requireValue(typeof state.runId==='string' && state.runId.length>=1 && state.runId.length<=120);
   requireValue(typeof state.seed==='string' && state.seed.length>=1 && state.seed.length<=1000);integer(state.revision);
@@ -154,7 +156,8 @@ function decode(payload) {
   if(Object.hasOwn(state.rng,'apk'))decodeApkRng(state.rng.apk,state.seed);
   state.money=decimal(state.money,true);
   object(state.round,['blindId','ante','target','score','handsRemaining','discardsRemaining','handSize']);
-  const round=state.round;requireValue(round.blindId==='small');integer(round.ante,1,8);integer(round.handsRemaining,0,state.deckId==='blue'?5:4);integer(round.discardsRemaining,0,state.deckId==='red'?4:3);integer(round.handSize,1,10000);
+  if(Object.hasOwn(state,'roundNumber'))integer(state.roundNumber,1,2);
+  const round=state.round;requireValue(['small','big'].includes(round.blindId));integer(round.ante,1,8);integer(round.handsRemaining,0,state.deckId==='blue'?5:4);integer(round.discardsRemaining,0,state.deckId==='red'?4:3);integer(round.handSize,1,10000);
   round.target=decimal(round.target);round.score=decimal(round.score);requireValue(round.target>0n);
   if(Object.hasOwn(state,'apkShop'))decodeApkShop(state.apkShop,state);
   if(state.phase==='round_won')requireValue(round.score>=round.target);

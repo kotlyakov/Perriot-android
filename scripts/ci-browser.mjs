@@ -8,7 +8,7 @@ const modulePath=require.resolve(process.env.PLAYWRIGHT_MODULE??(process.env.COD
 const {chromium}=require(modulePath);
 // Older checks use this variable as a module directory, not a runtime API.
 const env={...process.env,PLAYWRIGHT_MODULE:modulePath,CODEX_PRIMARY_RUNTIME_NODE_MODULES:dirname(dirname(modulePath)),CHROMIUM_PATH:process.env.CHROMIUM_PATH||chromium.executablePath()};
-const suites=['start-screen','browser','score-flow','card-visual','mobile-layout','deck-reference','typography','hand-gap','cashout-flow','cashout-review045','shop-state'];
+const suites=['start-screen','browser','score-flow','card-visual','mobile-layout','deck-reference','typography','hand-gap','cashout-flow','cashout-review045','shop-state','shop'];
 for(const suite of suites){
   console.log('UI suite: '+suite);
   const result=spawnSync(process.execPath,['scripts/check-ui.mjs'],{cwd:fileURLToPath(new URL('../',import.meta.url)),env:{...env,UI_CHECK_SCRIPT:'tests/ui/'+suite+'-check.mjs'},stdio:'inherit'});

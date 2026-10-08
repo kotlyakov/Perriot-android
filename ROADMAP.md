@@ -10,7 +10,7 @@
 
 **Spec:** `docs/design.md`; пользовательские требования из `../project_sources/01-AGENTS-2.md`; визуальные решения из `docs/art/art-bible.md`, `docs/ui/reference-normal.md`, `docs/ui/reference-ouija.md`.
 
-Дата: 08.10.2026. Редакция: 24. Это основной рабочий роадмап нового проекта.
+Дата: 08.10.2026. Редакция: 25. Это основной рабочий роадмап нового проекта.
 
 ## Как используем этот файл
 
@@ -419,3 +419,8 @@ APK 0.4.6, code 19: SHA256 `7d46e38a240bea0a830fe4fa399c53d31a0f0b2b48933758c98c
 ## Shop run/save checkpoint — 08.10.2026
 
 Task 2: new-run voucher selection before shuffle; persisted original shop context/RNG, played hands, cashout inventory and native reroll. Legacy saves keep previous behavior. Local core:169 passed. Native invalid inventory/category saves reject; unavailable next-blind transition rejects atomically. Added browser cashout/inventory/reload/write-failure coverage at four sizes. Actions37777930878 and37777937355 SUCCESS onb20c1fafd0377337c6ee037ea5d6198261b49ae2:169 core tests,11 browser suites,fresh Android compile,APK signature/alignment checks. Full startup bosses/tags, native purchases/effects, shop UI and next blinds remain open; no complete game or new playable shop claimed.
+
+
+## 0.4.7 магазин — промежуточный блок, 08.10.2026
+
+Подключены оригинальные32 статических эффекта джокеров, integer foil/holographic/negative, покупка/продажа/reroll и экран магазина по измеренному референсу с собственной процедурной графикой. Полный пул генерации не сокращён; неподдержанные эффекты остаются недоступны. Малый→магазин→большой(450/$4)→магазин; исходные продолжающиеся nr/cashout потоки сохраняются.198 core tests pass; новый browser shop suite и Android Actions pending. Полный Task3 ещё открыт:118джокеров, состояние динамических эффектов, повторы/дробные издания, расходники/паки/ваучеры. Task4 boss/progression остаётся открыт. Подробности docs/progress.md и docs/apk-findings/joker-scoring-slice.md.

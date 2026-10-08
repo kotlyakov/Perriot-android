@@ -5,7 +5,7 @@ const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 export async function animateScore(events){const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
  for(const event of events){if(event.type!=='score_step')continue;
    showNumbers(event.after.chips,event.after.mult,true);
-   const card=document.querySelector(`.played-card[data-card-id="${event.sourceId}"]`);
+   const card=document.querySelector(`.played-card[data-card-id="${event.sourceId}"]`)??document.querySelector(`#shop_owned [data-offer-id="${event.sourceId}"]`);
    if(card && event.operation!=='base'){
      const d=scoreDelta(event),pop=document.createElement('span');pop.className='score-pop '+d.kind+(d.multiply?' multiply':'');pop.textContent=d.text;pop.dataset.sourceId=event.sourceId;pop.dataset.operation=event.operation;
      Object.assign(pop.style,{left:parseFloat(card.style.left)+57.5+'px',top:parseFloat(card.style.top)-27+'px'});document.getElementById('stage').append(pop);

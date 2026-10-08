@@ -3,10 +3,10 @@ const root=new URL('../',import.meta.url),sources={};
 async function scan(dir) {for(const e of await readdir(new URL(dir,root),{withFileTypes:true})){const p=dir+e.name;if(e.isDirectory())await scan(p+'/');else if(e.name.endsWith('.js'))sources['/'+p]=await readFile(new URL(p,root),'utf8');}}
 await scan('src/');
 let html=await readFile(new URL('web/index.html',root),'utf8');
-let css=(await Promise.all(['styles','start-screen','blind-select'].map(name=>readFile(new URL('web/'+name+'.css',root),'utf8')))).join('\n');
+let css=(await Promise.all(['styles','start-screen','blind-select','shop-screen'].map(name=>readFile(new URL('web/'+name+'.css',root),'utf8')))).join('\n');
 css=css.replaceAll('/web/fonts/Rubik.ttf','data:font/ttf;base64,'+(await readFile(new URL('web/fonts/Rubik.ttf',root))).toString('base64'));
 html=html.replace('<link rel="stylesheet" href="/web/styles.css">',()=>'<style>'+css+'</style>');
-html=html.replace('<link rel="stylesheet" href="/web/start-screen.css">','').replace('<link rel="stylesheet" href="/web/blind-select.css">','');
+html=html.replace('<link rel="stylesheet" href="/web/start-screen.css">','').replace('<link rel="stylesheet" href="/web/blind-select.css">','').replace('<link rel="stylesheet" href="/web/shop-screen.css">','');
 const safe=JSON.stringify(sources).replaceAll('<','\\u003c');
 const loader=`<script type="module">
 const sources=${safe},urls=new Map();

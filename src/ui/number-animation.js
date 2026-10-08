@@ -24,3 +24,13 @@ export function animateCounters(before,after){
    pop.animate([{opacity:1,translate:'0 0'},{opacity:1,translate:'0 -15px',offset:.6},{opacity:0,translate:'0 -27px'}],{duration:700,easing:'ease-out'}).finished.then(()=>pop.remove());
  }
 }
+export function animateMoney(before,after){
+ const delta=after-before;if(!delta)return Promise.resolve();
+ const node=document.getElementById('money_value');
+ const motion=animateNumber(node,after,{animate:true,from:before,duration:380,format:n=>'$'+n});
+ if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
+  const pop=document.createElement('span');pop.className='score-pop money-pop '+(delta>0n?'gold':'scarlet');pop.textContent=(delta>0n?'+':'−')+'$'+(delta>0n?delta:-delta);pop.style.fontWeight='800';pop.style.left='347px';pop.style.top='506px';document.getElementById('stage').append(pop);
+  pop.animate([{opacity:1,translate:'0 0'},{opacity:1,translate:'0 -15px',offset:.6},{opacity:0,translate:'0 -28px'}],{duration:680,easing:'ease-out'}).finished.then(()=>pop.remove());
+ }
+ return motion;
+}
