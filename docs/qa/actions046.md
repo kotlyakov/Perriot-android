@@ -1,9 +1,36 @@
-# Проверенная сборка046 —08.10.2026
+# Проверенная сборка 0.4.6 — 08.10.2026
 
-Sourcecommit b51dda97332efc270ccb7185cbb7e14d4d22bdc8. Actions37769833942 и37769840756 SUCCESS. Firstc8aeff startupgeometrytest измерялentryanimation: RED. ИсправленоожиданиемactualAnimation.finished, неослаблениемграниц; следующийпрогонGREEN. RootPNGвыявилкраснуюрубашкуBlue: исправленоцветомпоdeckIdиcomputedstyleassert.
+Исходный коммит: `b51dda97332efc270ccb7185cbb7e14d4d22bdc8`. Actions `37769833942` и `37769840756` завершились успешно.
 
-Логи37769833942/job113286588017:138tests/138pass/0fail;10UI suites(start-screen,browser,score-flow,card-visual,mobile-layout,deck-reference,typography,hand-gap,cashout-flow,cashout-review045). Начальныеэкранов4viewport(1536×688,915×412,568×320,390×844), touch/reducedmotion,blue/seed/continue/confirm; portableHTML offline/reload. FreshGradle BUILD SUCCESSFUL2m7s. RootполучилCIAPK artifact11547376123, checksum/buildcommitverified. СобственныйCLIстабильнопереподписалтолькоподпись; apksignerv2/v3PASS certificateSHA5ff24a25ecf6b43e6ae02ee44c2568fcffd335f9a2c9222dd1892168e8d40d8e. Zipalign-P16/CRC/36assetsbyteequalityPASSпослеподписи. aaptПьеро/package ru.cardcascade.game.preview/code19/version0.4.6-preview/API26target36.
+## Проверки
 
-UserAPK1105733bytes SHA2567d46e38a240bea0a830fe4fa399c53d31a0f0b2b48933758c98cfb0e39914e64. ИсходныйAPK/Lua/art/signingkeyнепопаливигровыеassets. Deviceinstallation/runtimeнепроверены.
+- 138 тестов ядра: 138 успешны, ошибок нет.
+- Десять наборов UI: start-screen, browser, score-flow, card-visual, mobile-layout, deck-reference, typography, hand-gap, cashout-flow, cashout-review045.
+- Начальные экраны: 1536×688, 915×412, 568×320, 390×844; сенсорное управление, уменьшение движения, выбор колоды, сид, продолжение, подтверждение замены партии.
+- Автономный HTML: запуск без сети и продолжение после перезагрузки.
+- Свежая Gradle-компиляция: BUILD SUCCESSFUL за 2 минуты 7 секунд.
+- Итоговые скриншоты просмотрены ведущим.
 
-Scope: собственноеядро+оформление, исходныйAPKисследовательскийэталон. Главноеменю/RedBlue/8charseed/continue/Smallblindselection. Big/Boss/Skip/Collectiondisabledexplicit; shopUI045placeholder. Exact156RNGvalues/3deckfixtures/6conditionalshoporaclecases неозначаютполнойигровойparity.
+Первый прогон измерял геометрию окна во время его выезда. Проверка исправлена ожиданием Animation.finished; границы не ослаблялись. Визуальная проверка выявила красную рубашку после выбора синей колоды. Цвет теперь зависит от deckId и проверяется через computed style.
+
+## APK
+
+Артефакт исходной сборки: `11547376123`, job `113286588017`. Проверены его контрольная сумма и исходный коммит. APK переподписан официальным apksigner прежним preview-сертификатом; игровые ресурсы не изменялись.
+
+| Проверка | Результат |
+| --- | --- |
+| Версия / code | 0.4.6-preview / 19 |
+| Название / пакет | Пьеро / ru.cardcascade.game.preview |
+| Минимальный / целевой API | 26 / 36 |
+| Подпись | v2 и v3, проверены |
+| Сертификат SHA256 | 5ff24a25ecf6b43e6ae02ee44c2568fcffd335f9a2c9222dd1892168e8d40d8e |
+| CRC / zipalign -P 16 | Успешны |
+| Игровые ресурсы | Все 36 совпадают с проверенными исходниками байт в байт |
+| Размер APK | 1 105 733 байта |
+| SHA256 APK | 7d46e38a240bea0a830fe4fa399c53d31a0f0b2b48933758c98cfb0e39914e64 |
+
+Исходный APK, его Lua-код, изображения и приватный ключ подписи не включены в игровые ресурсы. Установка и работа на физическом устройстве не проверены.
+
+## Границы результата
+
+Это собственная реализация с оригинальным APK как исследовательским эталоном. Доступны меню, красная/синяя колода, сид, продолжение и малый блайнд. Большой блайнд, босс, пропуск и коллекция явно отключены. Магазин пока остаётся промежуточной сценой 0.4.5. Численные эталоны RNG, колоды и условного магазина не доказывают полноту всех механик.
