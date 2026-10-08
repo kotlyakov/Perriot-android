@@ -1,0 +1,54 @@
+name: Android APK CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - 'gradle/**'
+      - 'gradlew'
+      - 'gradlew.bat'
+      - 'build.gradle*'
+      - 'settings.gradle*'
+      - 'gradle.properties'
+      - '.github/workflows/android.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - name: Install Android build tools
+        run: sdkmanager "build-tools;35.0.0"
+      - name: Build debug APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f gradlew || { echo "Missing Gradle wrapper: add Android project source before running"; exit 1; }
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleDebug
+      - name: Verify APK signature and alignment
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          apks=(app/build/outputs/apk/debug/*.apk)
+          test "${#apks[@]}" -gt 0
+          for apk in "${apks[@]}"; do
+            "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$apk"
+            "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -v 4 "$apk"
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pierrot-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
