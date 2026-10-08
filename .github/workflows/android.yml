@@ -23,15 +23,14 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.10.2'
-      - name: Import approved Pierrot 0.4.5 web sources
+      - name: Check game sources
         shell: bash
         run: |
           set -euo pipefail
-          test -s baseline/pierrot-0.4.5-source.zip || { echo "Upload the approved source ZIP to baseline/pierrot-0.4.5-source.zip"; exit 1; }
-          mkdir -p app/src/main/assets
-          unzip -q baseline/pierrot-0.4.5-source.zip -d app/src/main/assets
           test -s app/src/main/assets/web/index.html
           test -s app/src/main/assets/src/ui/app.js
+      - name: Test JavaScript game core
+        run: node --test tests/*.test.mjs
       - name: Build debug APK
         run: gradle --no-daemon :app:assembleDebug
       - name: Verify APK
