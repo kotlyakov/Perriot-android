@@ -19,3 +19,6 @@ Do not claim an installable APK exists until GitHub Actions succeeds, `apksigner
 
 ## Next integration
 Transfer original AGENTS/ROADMAP documents without silently modifying their contents, import approved working source, then validate the baseline before feature work.
+
+## Source import policy
+Import extracted first-party source files individually under `app/src/main/assets/web/` and `app/src/main/assets/src/`; do not commit ZIP archives. CI must build directly from tracked source files.
