@@ -36,7 +36,7 @@ function artwork(offer,kind){
 }
 function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
  const wrap=rect(node('div','shop-choice'),x,y,w,h);wrap.dataset.offerId=offer.id;wrap.dataset.kind=kind;
- const details=describeShopItem(offer),card=node('button','shop-card shop-'+kind);card.type='button';card.setAttribute('aria-label',details.name);card.setAttribute('aria-pressed',String(selected?.id===offer.id));card.append(artwork(offer,kind),node('span','shop-card-name',details.name));
+ const details=describeShopItem(offer),card=node('button','shop-card shop-'+(kind==='owned'?'owned-card':kind));card.type='button';card.setAttribute('aria-label',details.name);card.setAttribute('aria-pressed',String(selected?.id===offer.id));card.append(artwork(offer,kind),node('span','shop-card-name',details.name));
  if(offer.edition&&offer.edition!=='base')card.dataset.edition=offer.edition;
  if(kind!=='owned'&&kind!=='consumable'){const plaque=node('div','shop-price');plaque.append(money(offer.cost));wrap.append(plaque);}
  wrap.append(card);
