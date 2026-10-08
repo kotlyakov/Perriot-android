@@ -8,6 +8,8 @@ test('fractions normalize sign and reduce', () => {
   assert.deepEqual(add(fraction(1n, 2n), fraction(1n, 3n)), { n: 5n, d: 6n });
   assert.deepEqual(multiply(fraction(2n, 3n), fraction(3n, 4n)), { n: 1n, d: 2n });
   assert.equal(floor(fraction(-7n, 3n)), -3n);
+  assert.deepEqual(fraction(0n, 3n), { n: 0n, d: 1n });
+  assert.deepEqual(fraction(0n, -3n), { n: 0n, d: 1n });
   assert.throws(() => fraction(1n, 0n), RangeError);
 });
 
