@@ -3,7 +3,7 @@ import {getRerollCost,hasJokerSpace} from '../core/shop.js';
 import {canAfford} from '../core/shop-pricing.js';
 import {SUPPORTED_JOKERS} from '../content/jokers.js';
 
-let view=null,selected=null,tip=null,holdTimer,held=false,lastMain=null,entryMotion;
+let view=null,selected=null,tip=null,holdTimer,held=false,lastMain=null,entryMotion,stageTipListener=false;
 const reduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
 const node=(tag,className,text)=>{const n=document.createElement(tag);if(className)n.className=className;if(text!==undefined)n.textContent=text;return n;};
 export function shopMoneyFontSize(value,width,max=27){return Math.min(max,width/(String(value).length+1)/.66);}
@@ -83,6 +83,7 @@ export function prepareShopChange(type){
  };
 }
 function renderOwned(state,busy,callbacks){
+ if(!stageTipListener){document.getElementById('stage').addEventListener('pointerdown',e=>{if(!e.target.closest('.shop-choice,.shop-tooltip'))dismissTip();});stageTipListener=true;}
  let owned=document.getElementById('shop_owned');if(!owned){owned=node('div','shop-owned');owned.id='shop_owned';document.getElementById('stage').append(owned);}owned.replaceChildren();
  const jokers=state.jokers,step=jokers.length<=3?220:Math.min(130,560/Math.max(1,jokers.length-1)),jokerStart=744-52-step*(jokers.length-1)/2;
  jokers.forEach((o,i)=>owned.append(choice(o,'owned',i,state,busy,callbacks,jokerStart+i*step,23,104,143)));
