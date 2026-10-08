@@ -90,7 +90,7 @@ document.getElementById('play_hand').onclick=()=>perform('PLAY_HAND',[...selecte
 document.getElementById('discard').onclick=()=>perform('DISCARD',[...selected]);
 function sort(mode){if(busy || state?.phase!=='playing')return;perform('SET_SORT',undefined,mode);}
 document.getElementById('sort_rank').onclick=()=>sort('rank');document.getElementById('sort_suit').onclick=()=>sort('suit');
-function showSettings(){openDialog('Настройки','<p>Пьеро · промежуточная сборка 0.4.7</p><p>Малый и большой блайнды, магазин, покупка и продажа джокеров. В этой предварительной версии доступны 32 эффекта джокеров; остальные товары, паки, ваучеры и боссы ещё недоступны. Продолжение сохраняется после каждого действия.</p>',[['Продолжить',closeDialog],['Новый забег',()=>confirmNew()],['Главное меню',showMenu]]);}
+function showSettings(){openDialog('Настройки','<p>Пьеро · промежуточная сборка 0.4.9</p><p>Малый и большой блайнды, магазин, покупка и продажа джокеров. В этой предварительной версии доступны 32 эффекта джокеров; остальные товары, наборы, ваучеры и боссы ещё недоступны. Продолжение сохраняется после каждого действия.</p>',[['Продолжить',closeDialog],['Новый забег',()=>confirmNew()],['Главное меню',showMenu]]);}
 document.getElementById('options').onclick=showSettings;
 document.getElementById('run_info').onclick=()=>{
  if(!state)return;const table=document.createElement('table');
