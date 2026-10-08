@@ -1,0 +1,7 @@
+{
+  "name": "pierrot-game-core",
+  "private": true,
+  "version": "0.4.5",
+  "type": "module",
+  "scripts": { "test": "node --test tests/*.test.mjs" }
+}
