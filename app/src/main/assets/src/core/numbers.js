@@ -5,6 +5,7 @@ export function fraction(n, d = 1n) {
   let a = n < 0n ? -n : n;
   let b = d;
   while (b !== 0n) [a, b] = [b, a % b];
+  if (a === 0n) return { n: 0n, d: 1n };
   return { n: n / a, d: d / a };
 }
 
