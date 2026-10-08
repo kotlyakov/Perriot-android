@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ru">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#143d39"><title>Пьеро — игровой прототип</title><link rel="stylesheet" href="/web/styles.css"></head>
+<body><main id="stage" aria-label="Карточный стол">
+  <div id="hud" class="fixed"></div>
+  <section id="blind_panel" class="panel fixed" aria-label="Блайнд"></section>
+  <div id="blind_title" class="fixed title">Малый блайнд</div>
+  <div id="blind_token" class="fixed token"><span>SMALL<br>BLIND</span></div>
+  <div id="blind_target" class="fixed target"><small>Минимум очков</small><strong><i class="chip-icon"></i> <span id="target_value">300</span></strong><small>Награда: <b class="gold">$$$</b></small></div>
+  <div id="round_score" class="fixed panel score-line"><span>Раунд<br>очки</span><strong><i class="chip-icon"></i> <span id="round_score_value">0</span></strong></div>
+  <div id="calculation_panel" class="fixed panel"><div id="hand_name"></div><small id="hand_level"></small></div>
+  <div id="chips" class="fixed score-box blue"><span id="chips_value">0</span></div><span id="times">×</span><div id="mult" class="fixed score-box red"><span id="mult_value">0</span></div>
+  <button id="run_info" class="fixed red">Партия</button><button id="options" class="fixed orange">Настройки</button>
+  <div id="hands" class="fixed counter panel"><span>Руки</span><strong id="hands_value" class="cyan">4</strong></div><div id="discards" class="fixed counter panel"><span>Сбросы</span><strong id="discards_value" class="scarlet">4</strong></div>
+  <div id="money" class="fixed panel"><strong id="money_value" class="gold">$4</strong></div>
+  <div id="ante" class="fixed counter panel"><span>Анте</span><strong class="amber">1<small>/8</small></strong></div><div id="round" class="fixed counter panel"><span>Раунд</span><strong class="amber">1</strong></div>
+  <div id="joker_region_inferred" class="fixed" aria-label="Места джокеров"></div><span id="joker_count" class="fixed slot-count">0/5</span>
+  <div id="consumable_region_inferred" class="fixed" aria-label="Места расходников"></div><span id="consumable_count" class="fixed slot-count">0/2</span>
+  <section id="hand" aria-label="Карты в руке"></section><span id="hand_count" class="fixed slot-count">8/8</span>
+  <button id="play_hand" class="fixed blue" disabled>Играть руку</button>
+  <div id="sort_panel" class="fixed sort-panel"></div><span id="sort_label" class="fixed">Сортировать руку</span>
+  <button id="sort_rank" class="fixed orange">Достоинство</button><button id="sort_suit" class="fixed orange">Масть</button>
+  <button id="discard" class="fixed red" disabled>Сброс</button>
+  <button id="deck" class="fixed deck-back" aria-label="Посмотреть колоду"><span class="deck-seal"><svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 0Q19 13 32 16Q19 19 16 32Q13 19 0 16Q13 13 16 0Z"/></svg></span></button><span id="deck_count" class="fixed slot-count">44/52</span>
+</main>
+<dialog id="dialog"><h1 id="dialog-title"></h1><div id="dialog-body"></div><div id="dialog-actions"></div></dialog>
+<div id="notice" role="status" aria-live="polite"></div>
+<script type="module" src="/src/ui/app.js"></script></body></html>

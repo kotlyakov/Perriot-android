@@ -1,0 +1,80 @@
+@font-face{font-family:"Rubik";src:url("/web/fonts/Rubik.ttf") format("truetype");font-weight:300 900;font-style:normal;font-display:swap}
+:root{color-scheme:dark;font-family:"Rubik",sans-serif;font-weight:400;color:#f6f2df;background:#102421;font-synthesis:none}
+*{box-sizing:border-box}html,body{width:100%;height:100%;overflow:hidden}body{margin:0;overflow:hidden;touch-action:none;overscroll-behavior:none;user-select:none}
+button{font:inherit;font-weight:800;color:inherit;border:0;cursor:pointer;touch-action:none;-webkit-tap-highlight-color:transparent;box-shadow:0 5px 0 #112522,0 7px 0 #071c18;border-radius:9px;text-shadow:1px 2px #0005}
+button:active:not(:disabled){filter:brightness(1.16)}button:focus-visible{outline:3px solid #fff;outline-offset:2px}button:disabled{background:#484c49!important;color:#b2b4aa;cursor:default;filter:saturate(.35);opacity:.8}
+#stage{position:absolute;width:1536px;height:688px;transform-origin:top left;overflow:hidden;background-color:#225449;background-image:repeating-radial-gradient(ellipse at 72% 36%,transparent 0 28px,#afc1a40a 30px 31px,transparent 32px 58px),radial-gradient(ellipse at 22% 72%,#46664b55,transparent 65%),repeating-linear-gradient(0deg,#ffffff02 0 1px,transparent 1px 4px)}
+#stage:after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 100px #001e1844;z-index:0}
+.fixed{position:absolute;z-index:1}#hud{border-left:3px solid #0787b3;border-right:3px solid #0787b3;background:#263336c2}
+.panel{background:#12292ad9;border:4px solid #0e2425;border-radius:11px;box-shadow:0 4px #102626}
+.title{background:#087bad;border:4px solid #096287;border-radius:11px;font-size:28px;text-align:center;font-weight:900;line-height:36px;white-space:nowrap;text-shadow:2px 3px #062e42}
+.token{border-radius:50%;background:repeating-conic-gradient(#395997 0 10deg,#294579 10deg 20deg);border:5px double #6984ac;box-shadow:3px 5px #102332;display:grid;place-items:center;text-align:center;font-size:18px;font-weight:900;line-height:18px;transform:rotate(-4deg)}
+.target{border-radius:9px;background:#101f20;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;box-shadow:0 3px #071c1b}.target small{font-size:13px;font-weight:bold}.target strong{font-size:31px;color:#fc5348;line-height:33px;white-space:nowrap}
+.chip-icon{display:inline-block;width:25px;height:25px;border:5px dashed #ddede1;border-radius:50%;background:#b8ccc9;vertical-align:middle;box-shadow:inset 0 0 0 2px #8aa9a7}
+.score-line{display:flex;align-items:center;justify-content:space-around}.score-line>span{font-size:20px;line-height:19px;font-weight:bold}.score-line strong{font-size:36px;max-width:185px;white-space:nowrap}
+.score-box{display:flex;align-items:center;justify-content:flex-end;padding-right:8px;border-radius:12px;font-size:43px;font-weight:900;box-shadow:0 5px #001c28;overflow:hidden;white-space:nowrap}.blue{background:#039fea}.red{background:#f24b3d}.orange{background:#f59b05}.cyan{color:#04a9eb}.scarlet{color:#ff5347}.gold{color:#f6c35d}.amber{color:#ffac05}
+#times{position:absolute;display:grid;place-items:center;padding-bottom:3px;line-height:1;font-size:46px;font-weight:bold;color:#ff5247;z-index:1}#calculation_panel{text-align:center;padding:13px 7px}#hand_name{font-size:24px;font-weight:900;line-height:28px}#hand_level{font-size:15px}#run_info{font-size:20px;line-height:21px}#options{font-size:13px}
+.counter{text-align:center;border-width:4px;line-height:21px}.counter>span{font-size:16px;font-weight:bold}.counter strong{display:block;font-size:36px;line-height:34px}.counter strong small{font-size:17px;color:#fff}
+#money{display:grid;place-items:center;font-size:39px}#money strong{max-width:150px;overflow:hidden}#joker_region_inferred,#consumable_region_inferred{background:#122b261e;border-radius:10px;pointer-events:none}.slot-count{font-size:14px;font-weight:900;white-space:nowrap;line-height:15px;text-align:center}#hand_count{width:60px!important;left:783px!important}
+#sort_panel{border:5px solid #d9e1d8;border-radius:14px;background:#143d39;box-shadow:0 3px #728c7b}#sort_label{font-size:17px;font-weight:bold;white-space:nowrap;text-align:center}#sort_rank,#sort_suit{font-size:13px}#play_hand,#discard{font-size:21px}
+.playing-card{position:absolute;width:115px;height:144px;z-index:3;border:2px solid #c9c5b5;border-radius:7px;background:#f0e5c8;box-shadow:0 6px 0 #0c251ba6;transform-origin:50% 85%;padding:0;transition:top .12s,filter .12s;overflow:hidden;color:#143d39;text-shadow:none}
+.playing-card.selected{border-color:#e8bb66;box-shadow:0 6px #0c251ba6,0 0 0 2px #dcb260}.playing-card.dragging{z-index:50!important;transition:none;opacity:.95}.playing-card .corner{position:absolute;top:4px;left:5px;font-size:17px;line-height:16px;font-weight:900;display:flex;flex-direction:column;align-items:center}.playing-card .bottom{top:auto;left:auto;bottom:4px;right:5px;transform:rotate(180deg)}.playing-card .face{position:absolute;left:26px;right:18px;top:10px;bottom:10px;width:71px;height:124px}
+.deck-back{border:5px solid #f0e5c8;border-radius:7px;background:#ca3d2a;box-shadow:-4px 4px #b6bbad,-8px 8px #768779,-12px 12px #1a382d;color:#f0e5c8;overflow:hidden;background-image:repeating-linear-gradient(45deg,transparent 0 7px,#f0e5c850 7px 8px,transparent 8px 14px),repeating-linear-gradient(-45deg,transparent 0 7px,#f0e5c850 7px 8px,transparent 8px 14px)}.deck-back:before{content:"";position:absolute;inset:8px;border:3px double #f0e5c8;border-radius:38%}.deck-seal{position:absolute;left:19px;right:19px;top:34px;padding:10px 0;border:3px double #f0e5c8;background:#b83325;border-radius:50%;font-size:38px}
+dialog{width:min(620px,90vw);max-height:88dvh;overflow:auto;background:#173d37;border:5px solid #d7c49a;border-radius:16px;color:#f0e5c8;padding:22px;box-shadow:0 15px 55px #0008;touch-action:pan-y}dialog::backdrop{background:#031713a8}dialog h1{font-size:23px;margin:0 0 16px}dialog p{font-size:15px;line-height:1.5}dialog button{font-size:16px;padding:13px 20px;background:#ed9e16;margin:8px 6px 0 0}dialog table{width:100%;border-collapse:collapse;font-size:14px}dialog td{padding:4px 6px;border-bottom:1px solid #ffffff15}dialog .deck-list{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;font-size:12px}dialog .deck-list span{padding:5px;background:#f0e5c8;color:#143d39;border-radius:3px}
+#notice{position:fixed;top:max(8px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);border-radius:8px;background:#102d29ee;padding:8px 12px;max-width:90vw;text-align:center;font-size:14px;pointer-events:none;z-index:100}#notice:empty{display:none}@media(prefers-reduced-motion:reduce){.playing-card{transition:none}}
+
+/* Input lock must not recolor the cards, including the final hand. */
+.playing-card:disabled{background:#f0e5c8!important;color:inherit;filter:none;opacity:1;cursor:default}
+.playing-card .corner span{width:16px;height:16px;display:block}.playing-card .corner svg{width:100%;height:100%;display:block}
+.playing-card .pip-art{position:absolute;left:28px;top:14px;width:72px;height:114px;overflow:visible}
+.playing-card .face{left:28px;top:14px;width:64px;height:112px;right:auto;bottom:auto}
+#deck_count{left:1194px!important;top:656px!important;width:141px!important;height:19px!important;line-height:19px;font-size:18px}
+.played-card{pointer-events:none;z-index:60!important;transition:none!important}
+
+#chips_value,#mult_value,#round_score_value,#times,.score-pop{font-family:inherit;font-variant-numeric:tabular-nums}
+#chips_value,#mult_value{position:relative;z-index:3;font-weight:700}#round_score_value{font-size:33px}
+.playing-card .pip-art{left:50%;transform:translateX(-50%)}.playing-card .face{left:50%;transform:translateX(-50%)}
+.dealing{visibility:hidden}.score-pop{position:absolute;pointer-events:none;z-index:75;font-size:25px;font-weight:400;text-shadow:1px 2px #0d2424;white-space:nowrap;transform:translateX(-50%)}
+.score-pop.chips{color:#09aeff}.score-pop.mult{color:#ff5549}.score-pop.multiply{font-weight:800}
+#score_flame{position:absolute;left:0;top:0;width:100%;height:68px;pointer-events:none;opacity:.68;z-index:0}#hand_name,#hand_level{position:relative;z-index:2}
+
+
+.sort-active{outline:2px solid #ffe69e;outline-offset:-4px}
+/* Deck reference1000029731: logical canvas1536x709, modal1090x650. */
+dialog.deck-dialog{position:fixed;left:50%;top:50%;margin:0;width:1090px;height:650px;max-width:none;max-height:none;padding:0;overflow:hidden;transform:translate(-50%,-50%) scale(var(--deck-scale,1));transform-origin:center;border:5px solid #becbca;border-radius:21px;background:#345052;box-shadow:0 8px #677c79,0 12px #172f32;touch-action:none}
+dialog.deck-dialog::backdrop{background:#223a37a6;backdrop-filter:blur(2px)}.deck-dialog #dialog-title{display:none}.deck-view{position:relative;width:1080px;height:576px}.deck-tabs{position:absolute;top:23px;left:394px;display:flex;gap:9px}.deck-dialog .deck-tabs button{position:relative;width:143px;height:47px;background:#f14b42;margin:0;padding:0;font-size:26px}.deck-tabs button[aria-selected=true]:before{content:"";position:absolute;left:60px;top:-26px;border-left:9px solid transparent;border-right:9px solid transparent;border-top:18px solid #f14b42;filter:drop-shadow(0 3px #19312e)}
+.deck-stats{position:absolute;left:24px;top:90px;width:250px;height:419px;border:6px solid #142e30;border-radius:16px;background:#203c3e;overflow:hidden}.deck-info{position:absolute;left:2px;top:0;width:172px;height:137px;border-radius:10px;background:#345052;text-align:center}.deck-info strong{font-size:28px;display:block;line-height:38px;white-space:nowrap}.deck-info p{margin:0 8px;background:#f6f1df;color:#182f31;border-radius:8px;padding:14px 0;font-size:24px;line-height:26px;height:84px}.deck-info em{color:#f14b42;font-style:normal}.deck-base{position:absolute;left:0;top:141px;width:174px;height:266px;border:5px solid #52696a;border-radius:15px;text-align:center}.deck-base>strong{color:#f14b42;font-size:23px;line-height:30px}.deck-categories{display:flex;justify-content:space-evenly}.deck-categories div,.deck-suits div{display:flex;flex-direction:column;align-items:center;gap:2px}.deck-categories span,.deck-suits span{width:34px;height:36px;background:#abbcbc;border-radius:10px;color:#344e52;font-size:33px;line-height:36px}.deck-categories b,.deck-suits b{font-size:24px;line-height:27px}.deck-suits{display:grid;grid-template-columns:50px 50px;justify-content:center;gap:12px 0;margin-top:14px}.deck-ranks{position:absolute;left:179px;top:0;width:59px;display:flex;flex-direction:column;gap:2px}.deck-ranks div{height:29px;display:flex;justify-content:space-between;align-items:center}.deck-ranks span{background:#3d565a;color:#abbcbc;border-radius:50%;width:27px;height:25px;line-height:25px;text-align:center;font-size:22px}.deck-ranks b{font-size:25px;width:23px;text-align:center}
+.deck-grid{position:absolute;left:287px;top:90px;width:770px;height:420px;border:6px solid #132d2f;border-radius:14px;background:#223a3c;display:flex;flex-direction:column;gap:0;overflow:hidden;padding:0}.deck-row{position:relative;height:100px;flex-shrink:0;width:760px}.deck-card{position:absolute;width:79px;height:100px;transform-origin:50% 85%;border-radius:4px}.deck-card .card-scale{left:0;top:0;width:115px;height:144px;transform:scale(.687);transform-origin:top left;box-shadow:0 4px #152d3180}.deck-card.used{filter:grayscale(.7) brightness(.6);opacity:.52}.deck-dialog #dialog-actions{position:absolute;left:9px;right:9px;bottom:12px}.deck-dialog #dialog-actions button{width:100%;height:46px;margin:0;padding:0;background:#f5a000;font-size:27px;box-shadow:0 5px #927124}
+.deck-dialog{top:calc(50% - 15px * var(--deck-scale,1))!important}.deck-info strong{font-size:21px}.deck-info p{font-size:20px;line-height:23px;padding:18px 0}.deck-base>strong{font-size:20px}
+
+/* Approved Rubik hierarchy: one family for every screen and score. */
+button{font-weight:700}.title{font-weight:800;font-size:26px}.token{font-weight:700;font-size:15px}.playing-card .corner{font-weight:700}#hand_name{font-weight:750;font-size:21px}#hand_level{font-weight:400}.deck-info strong{font-weight:750;font-size:19px}.deck-base>strong{font-weight:700;font-size:18px}.deck-tabs button{font-weight:650;font-size:20px!important}.deck-info p{font-weight:500;font-size:18px;padding:17px 0;line-height:23px}.deck-ranks span{font-size:18px}.deck-ranks b{font-size:22px}.deck-categories b,.deck-suits b{font-size:21px}.deck-dialog #dialog-actions button{font-weight:700;font-size:24px}#run_info{font-size:16px;font-weight:700;line-height:20px}#options{font-size:12px;font-weight:650}#sort_label{font-size:16px;font-weight:600}#sort_rank,#sort_suit{font-size:12px;font-weight:650}#play_hand,#discard{font-size:19px;font-weight:700}.counter>span{font-size:14px;font-weight:600}.score-line>span{font-size:18px;font-weight:600}#chips_value,#mult_value,#round_score_value{font-weight:650}.score-pop{font-weight:400}.score-pop.multiply{font-weight:800}
+#sort_label{font-size:14px;line-height:17px}
+.deck-categories svg,.deck-suits svg{width:28px;height:28px;display:block;margin:4px auto}.deck-seal svg{display:block;width:38px;height:38px;margin:auto}
+/* User-approved HUD alignment: numbers face the multiplication sign. */
+#chips{justify-content:flex-end;padding-left:0;padding-right:8px}#mult{justify-content:flex-start;padding-left:8px;padding-right:0}#run_info,#options{font-size:14px;font-weight:700;line-height:20px}
+
+#hand .playing-card{transition:left .16s ease-out,top .16s ease-out,transform .16s ease-out}
+#hand .playing-card.dragging{transition:none;transform:rotate(0deg)!important;opacity:1;box-shadow:0 15px 8px #0c251b80}
+.card-tip{position:absolute;width:180px;z-index:90;pointer-events:none;border:3px solid #c9c5b5;border-radius:9px;background:#263e3e;padding:5px;box-shadow:0 5px #0c251ba6;text-align:center;color:#263e3e;font-size:19px;line-height:24px}
+.card-tip strong,.card-tip p{display:block;background:#f4efdf;border-radius:5px;padding:5px;margin:0}.card-tip p{margin-top:4px}.card-tip p span{color:#09aeff}
+@media(prefers-reduced-motion:reduce){#hand .playing-card{transition:none}}
+
+/* Explicit centering avoids default button padding squeezing Russian labels. */
+#run_info,#options,#play_hand,#discard,#sort_rank,#sort_suit{display:flex;align-items:center;justify-content:center;text-align:center;padding:0}
+#run_info,#options{font-size:13px;line-height:20px}
+#sort_rank,#sort_suit{font-size:11.5px;line-height:18px}
+.counter-pop{font-weight:800;font-size:29px}
+#score_flame{opacity:1}
+#hand_name,#hand_level{background:#12292a;border-radius:4px}
+#hand_name{width:max-content;max-width:100%;margin:auto}
+
+[hidden]{display:none!important}
+#post_round{left:515px;top:214px;width:594px;height:474px;padding:0;z-index:7;background:#173132}
+#cashout{position:absolute;left:94px;top:15px;width:398px;height:56px;font-size:23px}
+.payout-blind{position:absolute;left:16px;right:18px;top:99px;height:82px;display:flex;align-items:center;gap:20px;border-bottom:3px dotted #b5c7bd;padding-bottom:14px}
+.payout-blind .token{width:61px;height:62px;flex-shrink:0;font-size:11px;line-height:13px;white-space:pre-line}
+.payout-target{display:flex;flex-direction:column;font-size:16px;text-align:center}.payout-target strong{font-size:34px}
+.payout-blind>.gold{margin-left:auto;font-size:30px}
+.payout-row{position:absolute;left:16px;right:18px;top:191px;display:flex;align-items:center;gap:16px;font-size:19px}.payout-row>strong:first-child{width:62px;text-align:center;font-size:37px;color:#04a9eb}.payout-row>.gold{margin-left:auto;font-size:27px}.payout-interest{top:280px}.payout-interest>strong:first-child{color:#f6c35d}
+#shop_entry{padding:22px;text-align:center}#shop_entry h2{font-size:30px;font-weight:750}#shop_entry p{font-size:21px;line-height:1.5}.shop-scope{color:#bdcec5;margin-top:55px}

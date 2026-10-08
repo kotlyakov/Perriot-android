@@ -1,0 +1,6 @@
+// Conventional pip arrangements; coordinates stay inside the central artwork box.
+const rows=(ys)=>ys.flatMap(y=>[[20,y],[52,y]]);
+export const PIP_LAYOUTS={1:[[36,57]],2:[[36,12],[36,102]],3:[[36,12],[36,57],[36,102]],4:rows([12,102]),5:[...rows([12,102]),[36,57]],6:rows([12,57,102]),7:[...rows([12,57,102]),[36,34.5]],8:[...rows([12,57,102]),[36,34.5],[36,79.5]],9:[...rows([12,42,72,102]),[36,57]],10:[...rows([12,42,72,102]),[36,27],[36,87]]};
+const paths={hearts:'M0 8C-18-3-12-15 0-6C12-15 18-3 0 8Z',diamonds:'M0-11L8 0L0 11L-8 0Z',spades:'M0-11C-3-6-13 0-8 5C-5 8-2 6-1 4L-3 10H3L1 4C2 6 5 8 8 5C13 0 3-6 0-11Z',clubs:'M0-11C-7-11-8-3-3-1C-12-5-14 5-7 7C-4 8-1 5-1 3L-3 10H3L1 3C1 5 4 8 7 7C14 5 12-5 3-1C8-3 7-11 0-11Z'};
+export function suitSvg(suit){return `<svg viewBox="-14 -14 28 28" aria-hidden="true"><path fill="currentColor" d="${paths[suit]}"/></svg>`;}
+export function pipArtwork(card){const n=card.rank===14?1:card.rank;return `<svg class="pip-art" viewBox="0 0 72 114" aria-hidden="true">${PIP_LAYOUTS[n].map(([x,y])=>`<g class="pip" data-x="${x}" data-y="${y}" transform="translate(${x} ${y}) rotate(${y>57?180:0}) scale(${n===1?1.8:.82})"><path fill="currentColor" d="${paths[card.suit]}"/></g>`).join('')}</svg>`;}
