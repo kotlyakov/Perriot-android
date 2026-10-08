@@ -33,4 +33,4 @@ This establishes conditional producer/run/save integration only. Full startup gl
 
 ## Integrator follow-up
 
-Both findings reproduced by two committed regression tests before fixes. Native shop saves now require inventory, mandatory catalogue metadata and correct areas. Native next-blind transition rejects atomically until Task4 implements it. Root full suite:169 passed,0 failed. Browser and Android Actions verification pending.
+Both findings reproduced by two committed regression tests before fixes. Native shop saves now require inventory, mandatory catalogue metadata and correct areas. Native next-blind transition rejects atomically until Task4 implements it. Root full suite:169 passed,0 failed. Browser and Android Actions37777930878 and37777937355 SUCCESS onb20c1fafd0377337c6ee037ea5d6198261b49ae2:169 core tests,11 browser suites,fresh Android compile,APK signature/alignment checks.
