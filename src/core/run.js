@@ -3,8 +3,11 @@ import {getCashout} from './cashout.js';
 import { createRng, randomInt } from './rng.js';
 import { scoreHand } from './score.js';
 import { HANDS } from '../content/hands.js';
+import {createApkRng} from './apk-rng.js';
+import {shuffleApkDeck} from './apk-deck.js';
+import {applyShopAction} from './shop.js';
 
-export function createRun(seed, {runId,deckId='red',money}={}) {
+export function createRun(seed, {runId,deckId='red',money,referenceRng=false}={}) {
   if (typeof seed!=='string' || !seed || seed.length>1000) throw new TypeError('Invalid seed');
   if (typeof runId!=='string' || !runId || runId.length>120 || !['red','blue'].includes(deckId) || typeof money!=='bigint') throw new TypeError('Invalid run options');
   const cards = {};
@@ -13,7 +16,7 @@ export function createRun(seed, {runId,deckId='red',money}={}) {
       const id=`card_${suit}_${rank}`;cards[id]={id,rank,suit};
     }
   }
-  return {
+  const state={
     schemaVersion:1,runId,seed,revision:0,phase:'blind_selection',deckId,cards,
     hand:[],drawPile:Object.keys(cards),discardPile:[],jokers:[],
     handLevels:Object.fromEntries(Object.keys(HANDS).map(id=>[id,1])),
@@ -22,20 +25,23 @@ export function createRun(seed, {runId,deckId='red',money}={}) {
     round:{blindId:'small',ante:1,target:300n,score:0n,handsRemaining:deckId==='blue'?5:4,discardsRemaining:deckId==='red'?4:3,handSize:8},
     lastScore:null,sortMode:'rank',
   };
+  if(referenceRng){const shuffled=shuffleApkDeck(cards,createApkRng(seed),'shuffle');state.drawPile=shuffled.cardIds;state.rng.apk=shuffled.rng;}
+  return state;
 }
 
 function drawToLimit(state, events) {
   const count=Math.min(Math.max(0,state.round.handSize-state.hand.length),state.drawPile.length);
-  const ids=state.drawPile.splice(0,count);
+  const ids=state.rng.apk?Array.from({length:count},()=>state.drawPile.pop()):state.drawPile.splice(0,count);
   state.hand.push(...ids);sortHand(state);
   if (ids.length) events.push({type:'cards_drawn',cardIds:[...ids]});
 }
 
-export function dispatch(state, action) {
+export function dispatch(state, action, shopOptions={}) {
   const reject=(code,message)=>({state,events:[],error:{code,message}});
   if (!action || typeof action.type!=='string' || !Number.isSafeInteger(action.expectedRevision)) return reject('INVALID_ACTION','Malformed action');
   if (action.expectedRevision!==state.revision) return reject('STALE_ACTION','State revision has changed');
   if (!Number.isSafeInteger(state.revision) || state.revision<0 || state.revision===Number.MAX_SAFE_INTEGER) return reject('INVALID_STATE','Invalid revision');
+  if(['BUY_SHOP_CARD','SELL_JOKER','REROLL_SHOP','LEAVE_SHOP'].includes(action.type))return applyShopAction(state,action,shopOptions);
   if(action.type==='CASH_OUT') {
     if(state.phase!=='round_won')return reject('INVALID_PHASE','Round has not been won');
     let quote;try{quote=getCashout(state);}catch{return reject('INVALID_STATE','Invalid cashout state');}
@@ -46,7 +52,9 @@ export function dispatch(state, action) {
   if (action.type==='START_BLIND') {
     if (state.phase!=='blind_selection') return reject('INVALID_PHASE','Not selecting a blind');
     const next=structuredClone(state);const events=[];
-    for(let i=next.drawPile.length-1;i>0;i--) {
+    if(next.rng.apk){
+      const shuffled=shuffleApkDeck(next.drawPile.map(id=>next.cards[id]),next.rng.apk,'nr'+next.round.ante);next.drawPile=shuffled.cardIds;next.rng.apk=shuffled.rng;
+    }else for(let i=next.drawPile.length-1;i>0;i--) {
       const draw=randomInt(next.rng.deck,i+1);next.rng.deck=draw.rng;
       [next.drawPile[i],next.drawPile[draw.value]]=[next.drawPile[draw.value],next.drawPile[i]];
     }

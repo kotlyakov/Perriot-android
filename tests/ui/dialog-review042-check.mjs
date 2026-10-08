@@ -1,3 +1,4 @@
+import {enterRun} from './enter-run.mjs';
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 const {chromium}=createRequire(import.meta.url)(process.env.PLAYWRIGHT_MODULE??(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES?process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright':'playwright'));
@@ -6,7 +7,7 @@ try {
  const failures=[];
  for(const [width,height] of [[1536,688],[915,412],[568,320],[412,915]]) {
   const context=await browser.newContext({viewport:{width,height},isMobile:width<1000,hasTouch:width<1000}),page=await context.newPage(),errors=[];
-  page.on('pageerror',e=>errors.push(e.message));await page.goto(process.env.PREVIEW_URL);await page.locator('#hand .playing-card').first().waitFor();
+  page.on('pageerror',e=>errors.push(e.message));await page.goto(process.env.PREVIEW_URL);await enterRun(page);await page.locator('#hand .playing-card').first().waitFor();
   const reports=[];
   for(const menu of ['deck','settings','run','confirmation']) {
    const entry=await page.evaluate(menu=>{

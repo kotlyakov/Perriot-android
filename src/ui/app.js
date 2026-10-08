@@ -1,3 +1,5 @@
+import {renderStartScreen,removeStartScreen} from './start-screen.js';
+import {renderBlindSelect} from './blind-select.js';
 import {renderPostRound,roundDeckView} from './post-round.js';
 import {animateNumber,animateCounters} from './number-animation.js';
 import {DECKS} from '../content/decks.js';
@@ -36,11 +38,12 @@ function openDialog(title,body,actions=[['Закрыть',closeDialog]]) {
   dialogMotion=dialog.animate([{translate:`0 ${distance}px`},{translate:'0 0'}],{duration:360,easing:'cubic-bezier(.16,1,.3,1)'});
  }
 }
-function render(hand=state?.hand,scoringPreview=null){if(state){renderField(!busy?roundDeckView({...state,hand}):{...state,hand},selected,busy,toggle,reorder,scoringPreview);renderPostRound(state,busy,()=>perform('CASH_OUT'));}}
+function render(hand=state?.hand,scoringPreview=null){if(state){renderField(!busy?roundDeckView({...state,hand}):{...state,hand},selected,busy,toggle,reorder,scoringPreview);renderPostRound(state,busy,()=>perform('CASH_OUT'));renderBlindSelect(state,busy,()=>perform('START_BLIND'));for(const id of ['blind_panel','blind_title','blind_token','blind_target','hand','hand_count','play_hand','discard','sort_panel','sort_label','sort_rank','sort_suit'])document.getElementById(id).hidden=state.phase==='blind_selection'||(!busy&&['round_won','shop'].includes(state.phase));}}
 function toggle(id){if(busy || state?.phase!=='playing')return;dismissCardTip();if(selected.has(id))selected.delete(id);else if(selected.size<5)selected.add(id);else {notice('Можно выбрать до 5 карт');return;}render();}
 async function reorder(id,to){const movement=prepareHandMovement();const ids=[...state.hand],from=ids.indexOf(id);ids.splice(from,1);ids.splice(to,0,id);if(to===from){render();await movement();return;}await perform('REORDER_HAND',ids);await movement();}
-function newState(){const seed=crypto.randomUUID();const fresh=createRun(seed,{runId:crypto.randomUUID(),money:4n});return dispatch(fresh,{type:'START_BLIND',expectedRevision:0}).state;}
-function startFresh(){try{const next=newState();repository.reset(next);state=next;selected.clear();closeDialog();render();}catch{storageError();}}
+function newState({deckId='red',seed}={}){return createRun(seed??crypto.randomUUID().replaceAll('-','').slice(0,8).toUpperCase(),{runId:crypto.randomUUID(),deckId,money:4n,referenceRng:true});}
+function startFresh(options){try{const next=newState(options);repository.reset(next);state=next;selected.clear();closeDialog();removeStartScreen();render();}catch{storageError();}}
+function showMenu(){if(busy)return;closeDialog();renderStartScreen({hasSave:!!state,onContinue:()=>{removeStartScreen();render();},onNew:options=>{if(state)confirmNew(options);else startFresh(options);},onSettings:showSettings});}
 function storageError(){openDialog('Не удалось сохранить','<p>Действие не применено. Проверьте свободное место и доступ к сохранению.</p>');}
 async function perform(type,ids,mode) {
  if(busy || !state)return;if(type!=='REORDER_HAND')dismissCardTip();busy=true;
@@ -77,14 +80,15 @@ async function perform(type,ids,mode) {
    await Promise.all([expand(),arrive()]);
  }
  busy=false;render();
- if(state.phase==='game_over')openDialog('Партия окончена',`<p>Набрано ${state.round.score} из ${state.round.target} очков.</p><p>Это промежуточный прототип одного блайнда. Магазин и следующие блайнды — следующий этап разработки.</p>`,[['Новый забег',confirmNew],['Закрыть',closeDialog]]);
+ if(state.phase==='game_over')openDialog('Партия окончена',`<p>Набрано ${state.round.score} из ${state.round.target} очков.</p><p>Это промежуточный прототип одного блайнда. Магазин и следующие блайнды — следующий этап разработки.</p>`,[['Новый забег',()=>confirmNew()],['Закрыть',closeDialog]]);
 }
-function confirmNew(){openDialog('Новый забег','<p>Начать заново? Текущий забег останется в резервной записи.</p>',[['Начать',startFresh],['Отмена',closeDialog]]);}
+function confirmNew(options){openDialog('Новый забег','<p>Начать заново? Текущий забег останется в резервной записи.</p>',[['Начать',()=>startFresh(options)],['Отмена',closeDialog]]);}
 document.getElementById('play_hand').onclick=()=>perform('PLAY_HAND',[...selected]);
 document.getElementById('discard').onclick=()=>perform('DISCARD',[...selected]);
 function sort(mode){if(busy || state?.phase!=='playing')return;perform('SET_SORT',undefined,mode);}
 document.getElementById('sort_rank').onclick=()=>sort('rank');document.getElementById('sort_suit').onclick=()=>sort('suit');
-document.getElementById('options').onclick=()=>openDialog('Настройки','<p>Пьеро · прототип 0.4.5</p><p>Малый блайнд, награда и вход в магазин. Покупки и следующие блайнды ещё в разработке. Продолжение сохраняется после каждого действия. Рисунки предварительные.</p>',[['Продолжить',closeDialog],['Новый забег',confirmNew]]);
+function showSettings(){openDialog('Настройки','<p>Пьеро · промежуточная сборка 0.4.6</p><p>Главное меню, выбор красной или синей колоды и малый блайнд. Полный магазин и следующие блайнды ещё в разработке. Продолжение сохраняется после каждого действия.</p>',[['Продолжить',closeDialog],['Новый забег',()=>confirmNew()],['Главное меню',showMenu]]);}
+document.getElementById('options').onclick=showSettings;
 document.getElementById('run_info').onclick=()=>{
  if(!state)return;const table=document.createElement('table');
  for(const id of state.discoveredHands){const row=table.insertRow();row.insertCell().textContent=HAND_NAMES[id];row.insertCell().textContent='Ур. '+state.handLevels[id];}
@@ -95,8 +99,8 @@ document.getElementById('deck').onclick=()=>{
 };
 globalThis.cardGamePause=()=>{}; // Actions are persisted before animation; no pending I/O on pause.
 const loaded=repository.load();
-if(loaded.status==='current'){state=loaded.state;render();}
-else if(loaded.status==='empty')startFresh();
+if(loaded.status==='current'){state=loaded.state;render();showMenu();}
+else if(loaded.status==='empty')showMenu();
 else if(loaded.status==='recovery') {
  dialog.addEventListener('cancel',e=>e.preventDefault(),{once:true});
  openDialog('Восстановить забег?','<p>Основная запись повреждена. Есть проверенная резервная копия. Восстановить её?</p>',[['Восстановить',()=>{try{state=repository.restoreBackup();closeDialog();render();}catch{storageError();}},'restore-backup']]);

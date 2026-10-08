@@ -1,3 +1,4 @@
+import {enterRun} from './enter-run.mjs';
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
@@ -6,7 +7,7 @@ const browser=await chromium.launch({headless:true,executablePath:process.env.CH
 try {
  for(const [width,height,dpr] of [[915,412,3.5],[568,320,2],[360,800,3],[1280,720,1],[1024,600,2],[412,915,3.5],[2400,1080,1]]) {
  const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:dpr,isMobile:true,hasTouch:true});const page=await context.newPage();
- await page.goto(process.env.PREVIEW_URL);await page.locator('#hand .playing-card').first().waitFor();
+ await page.goto(process.env.PREVIEW_URL);await enterRun(page);await page.locator('#hand .playing-card').first().waitFor();
  const result=await page.evaluate(()=>({inner:[innerWidth,innerHeight],client:[document.documentElement.clientWidth,document.documentElement.clientHeight],visual:[visualViewport.width,visualViewport.height],stage:(()=>{const r=document.querySelector('#stage').getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,right:r.right,bottom:r.bottom};})()}));
  assert.ok(Math.abs(result.stage.x-(width-result.stage.width)/2)<1 && Math.abs(result.stage.y-(height-result.stage.height)/2)<1,'Mobile stage not centered');
  assert.ok(Math.abs(result.stage.width/1536-result.stage.height/688)<.001,'Distorted aspect');

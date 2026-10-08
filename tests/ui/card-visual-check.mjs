@@ -1,3 +1,4 @@
+import {enterRun} from './enter-run.mjs';
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {mkdir} from 'node:fs/promises';
@@ -16,9 +17,9 @@ try {
  for(const [width,height,dpr,mobile] of [[1536,688,1,false],[915,412,3.5,true]]) {
   const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:dpr,isMobile:mobile,hasTouch:mobile});
   const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
-  await page.goto(process.env.PREVIEW_URL);await page.locator('#hand .playing-card').first().waitFor();
+  await page.goto(process.env.PREVIEW_URL);await enterRun(page);await page.locator('#hand .playing-card').first().waitFor();
   await page.evaluate(text=>localStorage.setItem('card-cascade.current',text),serializeState(fixture()));
-  await page.reload();await page.locator('#hand .playing-card').first().waitFor();
+  await page.reload();await enterRun(page);await page.locator('#hand .playing-card').first().waitFor();
   const font=await page.evaluate(async()=>{await document.fonts.load('20px "Rubik"','Пьеро Достоинство Сброс');await document.fonts.ready;return {loaded:[...document.fonts].some(f=>f.family==='Rubik'&&f.status==='loaded'),used:getComputedStyle(document.getElementById('sort_rank')).fontFamily};});
   assert.ok(font.loaded&&font.used.includes('Rubik'),'Cyrillic UI font not loaded/applied');
   const artwork=await page.evaluate(async()=>{
@@ -56,12 +57,12 @@ try {
   console.log(JSON.stringify({viewport:[width,height],dpr,artworkCards:artwork.length,font,deckGap,flight:true,cleanup:true,oneCost:true,visualOrder,expected}));
   if(JSON.stringify(visualOrder)!==JSON.stringify(expected))orderFailures.push({viewport:[width,height],visualOrder,expected});
   const finalHand=fixture();finalHand.phase='game_over';finalHand.round.handsRemaining=0;
-  await page.evaluate(text=>localStorage.setItem('card-cascade.current',text),serializeState(finalHand));await page.reload();await page.locator('#hand .playing-card').first().waitFor();
+  await page.evaluate(text=>localStorage.setItem('card-cascade.current',text),serializeState(finalHand));await page.reload();await enterRun(page);await page.locator('#hand .playing-card').first().waitFor();
   assert.ok(await page.locator('#hand .playing-card').evaluateAll(ns=>ns.every(n=>n.disabled&&getComputedStyle(n).backgroundColor==='rgb(240, 229, 200)'&&getComputedStyle(n).filter==='none'&&getComputedStyle(n).opacity==='1')),'Final hand became gray');
   await context.close();
  }
  const portableContext=await browser.newContext({offline:true});const portable=await portableContext.newPage();
- await portable.goto(new URL('../../artifacts/field-preview.html',import.meta.url).href);await portable.locator('#hand .playing-card').first().waitFor();
+ await portable.goto(new URL('../../artifacts/field-preview.html',import.meta.url).href);await enterRun(portable);await portable.locator('#hand .playing-card').first().waitFor();
  assert.ok(await portable.evaluate(async()=>{await document.fonts.load('20px "Rubik"','Пьеро Достоинство');return [...document.fonts].some(f=>f.family==='Rubik'&&f.status==='loaded');}),'Embedded Cyrillic font did not load offline');await portableContext.close();
  assert.deepEqual(orderFailures,[],'Played visual order differs from scoring hand order');
  console.log('Card visual checks passed');

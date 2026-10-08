@@ -1,3 +1,4 @@
+import {enterRun} from './enter-run.mjs';
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 const {chromium}=createRequire(import.meta.url)(process.env.PLAYWRIGHT_MODULE??(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES?process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright':'playwright'));
@@ -5,7 +6,7 @@ const browser=await chromium.launch({headless:true,executablePath:process.env.CH
 try {
  for(const reduced of [true,false]) {
   const context=await browser.newContext({viewport:{width:1536,height:688},reducedMotion:reduced?'reduce':'no-preference'}),page=await context.newPage();
-  await page.goto(process.env.PREVIEW_URL);await page.locator('#hand .playing-card').first().waitFor();
+  await page.goto(process.env.PREVIEW_URL);await enterRun(page);await page.locator('#hand .playing-card').first().waitFor();
   for(const [name,score] of [['small','344'],['large','390035690']]) {
    const result=await page.evaluate(async score=>{
     const {showFlame}=await import('/src/ui/flame.js');showFlame(BigInt(score),300n);await new Promise(r=>setTimeout(r,80));

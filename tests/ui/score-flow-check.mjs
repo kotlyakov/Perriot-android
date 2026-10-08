@@ -1,3 +1,4 @@
+import {enterRun} from './enter-run.mjs';
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {mkdir} from 'node:fs/promises';
@@ -11,8 +12,8 @@ try {
  await mkdir('artifacts',{recursive:true});
  for(const [width,height,mobile] of [[1536,688,false],[915,412,true]]){
  const context=await browser.newContext({viewport:{width,height},isMobile:mobile,hasTouch:mobile,deviceScaleFactor:mobile?3.5:1}),page=await context.newPage(),errors=[];
- page.on('pageerror',e=>errors.push(e.message));await page.goto(process.env.PREVIEW_URL);await page.locator('#hand .playing-card').first().waitFor();
- const load=async s=>{await page.evaluate(text=>localStorage.setItem('card-cascade.current',text),serializeState(s));await page.reload();await page.locator('#hand .playing-card').first().waitFor();};
+ page.on('pageerror',e=>errors.push(e.message));await page.goto(process.env.PREVIEW_URL);await enterRun(page);await page.locator('#hand .playing-card').first().waitFor();
+ const load=async s=>{await page.evaluate(text=>localStorage.setItem('card-cascade.current',text),serializeState(s));await page.reload();await enterRun(page);await page.locator('#hand .playing-card').first().waitFor();};
  const saved=async()=>deserializeState(await page.evaluate(()=>localStorage.getItem('card-cascade.current')));
  const click=async selector=>mobile?await page.locator(selector).first().tap():await page.locator(selector).first().click();
  await load(fixture());
@@ -36,7 +37,7 @@ try {
    await page.waitForFunction(()=>[...document.querySelectorAll('#hand .playing-card')].some(n=>n.getAnimations().length>0));
    await page.waitForFunction(()=>!document.querySelector('#sort_rank').disabled);
    assert.equal(await page.locator('.played-card,.dealing').count(),0);assert.deepEqual((await saved()).hand,committed.hand);
-   await page.reload();await page.locator('#hand .playing-card').first().waitFor();assert.deepEqual((await saved()).hand,committed.hand);assert.equal((await saved()).sortMode,mode);
+   await page.reload();await enterRun(page);await page.locator('#hand .playing-card').first().waitFor();assert.deepEqual((await saved()).hand,committed.hand);assert.equal((await saved()).sortMode,mode);
  }
  // Actual deck excludes deleted cards, marks availability, and draws SVG images.
  const deckState=await saved();await click('#deck');await page.locator('.deck-card').first().waitFor();

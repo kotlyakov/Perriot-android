@@ -1,3 +1,4 @@
+import { apkPseudoHash, validateApkRng } from '../core/apk-rng.js';
 import { HANDS } from '../content/hands.js';
 import { SUPPORTED_JOKERS } from '../content/jokers.js';
 import { evaluateHand } from '../core/hands.js';
@@ -10,6 +11,44 @@ function requireValue(condition) { if (!condition) throw new TypeError('Invalid 
 function object(value,keys) {
   requireValue(value!==null && typeof value==='object' && !Array.isArray(value));
   requireValue(Object.keys(value).length===keys.length && keys.every(key=>Object.hasOwn(value,key)));
+}
+function optionalObject(value,required,optional=[]) {
+  requireValue(value!==null && typeof value==='object' && !Array.isArray(value));
+  requireValue(required.every(key=>Object.hasOwn(value,key)) && Object.keys(value).every(key=>required.includes(key) || optional.includes(key)));
+}
+function decodeOffer(value,ids,owned=false) {
+  optionalObject(value,owned?['id','entityId']:['id','entityId','cost','sellCost'],['cost','sellCost','edition','eternal','rental','perishable','debuffed']);
+  id(value.id);id(value.entityId);requireValue(!ids.has(value.id));ids.add(value.id);
+  if(owned)requireValue(SUPPORTED_JOKERS.includes(value.entityId));
+  for(const key of ['cost','sellCost'])if(Object.hasOwn(value,key))value[key]=decimal(value[key]);
+  if(Object.hasOwn(value,'edition'))requireValue(['base','foil','holographic','polychrome','negative'].includes(value.edition));
+  for(const key of ['eternal','rental','perishable','debuffed'])if(Object.hasOwn(value,key))requireValue(typeof value[key]==='boolean');
+}
+function decodeShop(shop,ids) {
+  if(shop===null)return;
+  object(shop,['main','vouchers','boosters','rerollBase','rerollIncrease','freeRerolls']);
+  for(const area of ['main','vouchers','boosters']) {
+    requireValue(Array.isArray(shop[area]) && shop[area].length<=10000);
+    for(const offer of shop[area])decodeOffer(offer,ids);
+  }
+  shop.rerollBase=decimal(shop.rerollBase);shop.rerollIncrease=decimal(shop.rerollIncrease);integer(shop.freeRerolls,0,10000);
+}
+function decodeApkRng(rng,seed) {
+  object(rng,['algorithm','seed','hashedSeed','streams','mathState']);
+  validateApkRng(rng);
+  requireValue(rng.algorithm==='apk-luajit223-v1' && rng.seed===seed && rng.hashedSeed===apkPseudoHash(seed));
+  requireValue(Array.isArray(rng.mathState) && rng.mathState.length===4 && rng.mathState.every(word=>typeof word==='string' && /^[0-9a-f]{16}$/.test(word)));
+  requireValue(rng.streams!==null && typeof rng.streams==='object' && !Array.isArray(rng.streams));
+  requireValue(Object.keys(rng.streams).length<=10000);
+  for(const [key,value] of Object.entries(rng.streams)) {
+    requireValue(key.length<=1000);
+    requireValue(typeof value==='number' && Number.isFinite(value) && value>=0 && value<=1 && Number(value.toFixed(13))===value);
+  }
+}
+function encodeOffer(offer) {
+  const encoded={...offer};
+  for(const key of ['cost','sellCost'])if(Object.hasOwn(offer,key)) {requireValue(typeof offer[key]==='bigint');encoded[key]=offer[key].toString();}
+  return encoded;
 }
 function integer(value,min=0,max=Number.MAX_SAFE_INTEGER) { requireValue(Number.isSafeInteger(value) && value>=min && value<=max); }
 function id(value) { requireValue(typeof value==='string' && value.length>0 && value.length<=120 && !['__proto__','prototype','constructor'].includes(value)); }
@@ -67,7 +106,7 @@ function decode(payload) {
   const state=payload.state;
   const sortMode=state.sortMode;
   if(Object.hasOwn(state,'sortMode')){requireValue(['rank','suit'].includes(sortMode));delete state.sortMode;}
-  object(state,['schemaVersion','runId','seed','revision','phase','deckId','cards','hand','drawPile','discardPile','jokers','handLevels','discoveredHands','rng','money','round','lastScore']);
+  optionalObject(state,['schemaVersion','runId','seed','revision','phase','deckId','cards','hand','drawPile','discardPile','jokers','handLevels','discoveredHands','rng','money','round','lastScore'],['shop','bankruptAt','jokerSlots']);
   requireValue(state.schemaVersion===1 && PHASES.includes(state.phase) && ['red','blue'].includes(state.deckId));
   requireValue(typeof state.runId==='string' && state.runId.length>=1 && state.runId.length<=120);
   requireValue(typeof state.seed==='string' && state.seed.length>=1 && state.seed.length<=1000);integer(state.revision);
@@ -76,15 +115,18 @@ function decode(payload) {
   for(const key of cardIds) { id(key);object(state.cards[key],['id','rank','suit']);requireValue(state.cards[key].id===key);evaluateHand([state.cards[key]]); }
   const partitions=[state.hand,state.drawPile,state.discardPile];requireValue(partitions.every(Array.isArray));
   const all=partitions.flat();requireValue(all.length===cardIds.length && new Set(all).size===all.length && all.every(key=>Object.hasOwn(state.cards,key)));
-  requireValue(Array.isArray(state.jokers) && state.jokers.length<=5);
+  if(Object.hasOwn(state,'jokerSlots'))integer(state.jokerSlots,0,10000);
+  if(Object.hasOwn(state,'bankruptAt'))state.bankruptAt=decimal(state.bankruptAt,true);
+  requireValue(Array.isArray(state.jokers) && state.jokers.length<=10000);
+  requireValue(state.jokers.length<=(state.jokerSlots??5)+state.jokers.filter(j=>j.edition==='negative').length);
   const jokerIds=new Set(cardIds);
-  for(const joker of state.jokers) {
-    object(joker,['id','entityId']);id(joker.id);requireValue(!jokerIds.has(joker.id) && SUPPORTED_JOKERS.includes(joker.entityId));jokerIds.add(joker.id);
-  }
+  for(const joker of state.jokers)decodeOffer(joker,jokerIds,true);
+  if(Object.hasOwn(state,'shop'))decodeShop(state.shop,jokerIds);
   object(state.handLevels,Object.keys(HANDS));for(const level of Object.values(state.handLevels))integer(level,1);
   requireValue(Array.isArray(state.discoveredHands) && new Set(state.discoveredHands).size===state.discoveredHands.length && state.discoveredHands.every(key=>Object.hasOwn(HANDS,key)));
-  object(state.rng,['deck','effects']);
-  for(const rng of Object.values(state.rng)) { object(rng,['algorithm','state']);randomInt(rng,1); }
+  optionalObject(state.rng,['deck','effects'],['shop','apk']);
+  for(const key of ['deck','effects','shop'])if(Object.hasOwn(state.rng,key)) {const rng=state.rng[key];object(rng,['algorithm','state']);randomInt(rng,1);}
+  if(Object.hasOwn(state.rng,'apk'))decodeApkRng(state.rng.apk,state.seed);
   state.money=decimal(state.money,true);
   object(state.round,['blindId','ante','target','score','handsRemaining','discardsRemaining','handSize']);
   const round=state.round;requireValue(round.blindId==='small');integer(round.ante,1,8);integer(round.handsRemaining,0,state.deckId==='blue'?5:4);integer(round.discardsRemaining,0,state.deckId==='red'?4:3);integer(round.handSize,1,10000);
@@ -102,6 +144,12 @@ function decode(payload) {
 export function serializeState(state) {
   requireValue(typeof state.money==='bigint' && typeof state.round.target==='bigint' && typeof state.round.score==='bigint');
   const payload={format:'card-cascade-save',version:1,state:{...state,money:state.money.toString(),round:{...state.round,target:state.round.target.toString(),score:state.round.score.toString()},lastScore:encodeScore(state.lastScore)}};
+  if(Object.hasOwn(state,'bankruptAt')) {requireValue(typeof state.bankruptAt==='bigint');payload.state.bankruptAt=state.bankruptAt.toString();}
+  if(state.jokers.some(j=>Object.hasOwn(j,'cost') || Object.hasOwn(j,'sellCost')))payload.state.jokers=state.jokers.map(encodeOffer);
+  if(Object.hasOwn(state,'shop') && state.shop!==null) {
+    requireValue(typeof state.shop.rerollBase==='bigint' && typeof state.shop.rerollIncrease==='bigint');
+    payload.state.shop={...state.shop,main:state.shop.main.map(encodeOffer),vouchers:state.shop.vouchers.map(encodeOffer),boosters:state.shop.boosters.map(encodeOffer),rerollBase:state.shop.rerollBase.toString(),rerollIncrease:state.shop.rerollIncrease.toString()};
+  }
   const text=JSON.stringify(payload);
   deserializeState(text); // Validate the exact bytes that will be stored.
   return text;

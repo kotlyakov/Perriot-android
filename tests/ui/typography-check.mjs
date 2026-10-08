@@ -1,10 +1,11 @@
+import {enterRun} from './enter-run.mjs';
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 const {chromium}=createRequire(import.meta.url)(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');
 const b=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_PATH});
 try{
  for(const [width,height] of [[1536,688],[915,412],[568,320],[360,800],[2400,1080]]){
- const p=await b.newPage({viewport:{width,height}});await p.goto(process.env.PREVIEW_URL);await p.evaluate(()=>document.fonts.ready);await p.locator('#hand .playing-card').first().waitFor();
+ const p=await b.newPage({viewport:{width,height}});await p.goto(process.env.PREVIEW_URL);await enterRun(p);await p.evaluate(()=>document.fonts.ready);await p.locator('#hand .playing-card').first().waitFor();
  const family=async()=>p.locator('body,button,strong,small,.corner,#hand_name,#hand_level,#notice').evaluateAll(ns=>ns.filter(n=>n.getBoundingClientRect().width>0).map(n=>getComputedStyle(n).fontFamily));
  assert.ok((await family()).every(f=>f.includes('Rubik')&&!f.includes('Pixel')&&!f.includes('Numbers')),'Mixed/pixel font remains');
  assert.equal(await p.evaluate(()=>document.fonts.check('700 24px Rubik')),true);

@@ -1,9 +1,10 @@
+import {enterRun} from './enter-run.mjs';
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 const {chromium}=createRequire(import.meta.url)(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');
 const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH});
 try{for(const touch of [false,true]){
- const ctx=await browser.newContext({viewport:{width:915,height:412},hasTouch:touch,isMobile:touch}),p=await ctx.newPage();await p.goto(process.env.PREVIEW_URL);await p.locator('#hand .playing-card').first().waitFor();
+ const ctx=await browser.newContext({viewport:{width:915,height:412},hasTouch:touch,isMobile:touch}),p=await ctx.newPage();await p.goto(process.env.PREVIEW_URL);await enterRun(p);await p.locator('#hand .playing-card').first().waitFor();
  const c=p.locator('#hand .playing-card').first();const id=await c.getAttribute('data-card-id');if(touch)await c.tap();else await c.click();
  assert.equal(await p.locator('#hand .selected').count(),1,'Single pointer tap toggles exactly once');assert.equal(await p.locator(`#hand [data-card-id=${id}]`).getAttribute('aria-pressed'),'true');
  const before=await p.evaluate(()=>localStorage.getItem('card-cascade.current')),selected=await p.locator('#hand .selected').evaluateAll(ns=>ns.map(n=>n.dataset.cardId));

@@ -1,3 +1,4 @@
+import {enterRun} from './enter-run.mjs';
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 const {chromium}=createRequire(import.meta.url)(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');
@@ -5,7 +6,7 @@ const browser=await chromium.launch({headless:true,executablePath:process.env.CH
 try{
  for(const [width,height] of [[1536,709],[915,412],[568,320],[360,800]]){
   const context=await browser.newContext({viewport:{width,height}}),page=await context.newPage();
-  await page.goto(process.env.PREVIEW_URL);await page.locator('#hand .playing-card').first().waitFor();
+  await page.goto(process.env.PREVIEW_URL);await enterRun(page);await page.locator('#hand .playing-card').first().waitFor();
   for(const selector of ['#deck','#options','#run_info']){
    await page.locator(selector).click();
    const motion=await page.locator('#dialog').evaluate(d=>{const a=d.getAnimations()[0];if(!a)return null;a.pause();a.currentTime=0;const first=d.getBoundingClientRect().top;a.currentTime=a.effect.getTiming().duration;const last=d.getBoundingClientRect().top;return {first,last,duration:a.effect.getTiming().duration};});

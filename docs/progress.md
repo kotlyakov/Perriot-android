@@ -71,3 +71,7 @@ Rubik variable300–900 заменяет всеTiny5/Numbers. Одна family н
 Shop research checkpoint:266 catalogue metadata entries extracted and validated for uniqueIDs and required name/cost/order; own source-location CSV. RNG call order mapped (Illusion eager poll, unkeyed first Buffoon). Exact original RNG runtime not yet validated; counter32 replay must not be used to claim original seeded parity.
 
 Повторный CI37763832665/f6d06ec SUCCESS:109core,9browser,freshnativecompile,CIalignment/signature. Обновлённый пользовательский APK SHA2569d1efc8e0bb8a244b73a5af9b15b41e2edb48537ad35105a31535d45c60a99d3,29assets/signature/CRC/alignment PASS. См.docs/qa/actions-2026-10-08.md.
+
+
+## Работа0.4.6 —08.10.2026
+Проверены независимые156RNGvalues и3полныеdeckfixtures исходногоAPK. Собственные apk-rng/apk-deck подключены к новымпартиям; legacyCounter32 сохранён для старыхсохранений. Новаяпартия теперь начинаетсяс выбора, не савтоматическойраздачи. Менюна старте не записываетданные; continueнеadvanceRNG; замена требуетconfirm. Shopоперации иsavecodec готовы какоснова, UIstoreпокаplaceholder045. Локальные138тестовуспешны. CI/browser/nativeещёвпереди; локальныйChromiumbroken,loopостановлен. Не заявлять полнойигрой/Androiddeviceparity.

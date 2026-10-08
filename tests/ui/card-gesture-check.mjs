@@ -1,3 +1,4 @@
+import {enterRun} from './enter-run.mjs';
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {createRun} from '../../src/core/run.js';
@@ -7,10 +8,10 @@ const browser=await chromium.launch({headless:true,executablePath:process.env.CH
 try{
 for(const [width,height,touch,reduced] of [[1536,688,false,false],[915,412,true,false],[568,320,true,true]]){
  const context=await browser.newContext({viewport:{width,height},hasTouch:touch,isMobile:touch,reducedMotion:reduced?'reduce':'no-preference'}),page=await context.newPage(),errors=[];
- page.on('pageerror',e=>errors.push(e.message));await page.goto(process.env.PREVIEW_URL);
+ page.on('pageerror',e=>errors.push(e.message));await page.goto(process.env.PREVIEW_URL);await enterRun(page);
  const s=createRun('gesture',{runId:'gesture',money:4n});s.phase='playing';s.revision=1;s.round.target=10000n;
  s.hand=['card_spades_12','card_hearts_12','card_clubs_11','card_hearts_10','card_spades_8','card_hearts_5','card_clubs_3','card_diamonds_2'];s.drawPile=Object.keys(s.cards).filter(id=>!s.hand.includes(id));
- await page.evaluate(v=>localStorage.setItem('card-cascade.current',v),serializeState(s));await page.reload();await page.locator('#hand .playing-card').first().waitFor();
+ await page.evaluate(v=>localStorage.setItem('card-cascade.current',v),serializeState(s));await page.reload();await enterRun(page);await page.locator('#hand .playing-card').first().waitFor();
  const saved=async()=>deserializeState(await page.evaluate(()=>localStorage.getItem('card-cascade.current')));
  const client=touch?await context.newCDPSession(page):null;
  const input=async(type,x,y)=>touch?client.send('Input.dispatchTouchEvent',{type:({down:'touchStart',move:'touchMove',up:'touchEnd',cancel:'touchCancel'})[type],touchPoints:['up','cancel'].includes(type)?[]:[{x,y,id:1}]}):type==='down'?page.mouse.move(x,y).then(()=>page.mouse.down()):type==='move'?page.mouse.move(x,y):page.mouse.up();
@@ -21,7 +22,7 @@ for(const [width,height,touch,reduced] of [[1536,688,false,false],[915,412,true,
  assert.notEqual(await neighbor.evaluate(n=>n.style.left),oldLeft,'Neighbors reserve insertion slot while holding');assert.equal((await saved()).revision,s.revision,'Drag preview must not commit');
  if(!touch)await page.screenshot({path:'artifacts/card-drag-preview.png'});
  await input('up',x+width*.38,y-30);await page.waitForFunction(()=>!document.querySelector('.dragging')&&!document.querySelector('.card-tip'));const moved=await saved();assert.equal(moved.hand.at(-1),id);assert.equal(moved.revision,s.revision+1);
- await page.reload();await page.locator('#hand .playing-card').first().waitFor();assert.deepEqual(await page.locator('#hand .playing-card').evaluateAll(ns=>ns.map(n=>n.dataset.cardId)),moved.hand);
+ await page.reload();await enterRun(page);await page.locator('#hand .playing-card').first().waitFor();assert.deepEqual(await page.locator('#hand .playing-card').evaluateAll(ns=>ns.map(n=>n.dataset.cardId)),moved.hand);
  if(touch){
    const c=page.locator('#hand .playing-card').first(),r=await c.boundingBox(),cx=r.x+8,cy=r.y+r.height*.5,prior=await saved();
    const positions=await page.locator('#hand .playing-card').evaluateAll(ns=>ns.map(n=>[n.style.left,n.style.top,n.style.transform]));

@@ -1,9 +1,10 @@
+import {enterRun} from './enter-run.mjs';
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 const {chromium}=createRequire(import.meta.url)(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');
 const browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_PATH});
 try{for(const [width,height,reduced] of [[1536,688,false],[915,412,false],[568,320,true],[360,800,false]]){
- const context=await browser.newContext({viewport:{width,height},isMobile:width<1000,hasTouch:width<1000,reducedMotion:reduced?'reduce':'no-preference'}),page=await context.newPage();await page.goto(process.env.PREVIEW_URL);await page.locator('#hand .playing-card').first().waitFor();await page.evaluate(()=>document.fonts.ready);
+ const context=await browser.newContext({viewport:{width,height},isMobile:width<1000,hasTouch:width<1000,reducedMotion:reduced?'reduce':'no-preference'}),page=await context.newPage();await page.goto(process.env.PREVIEW_URL);await enterRun(page);await page.locator('#hand .playing-card').first().waitFor();await page.evaluate(()=>document.fonts.ready);
  const geometry=await page.evaluate(()=>{const box=id=>document.getElementById(id).getBoundingClientRect();const a=box('play_hand'),b=box('discard'),c=box('sort_rank'),d=box('sort_suit');const n=document.getElementById('options'),r=box('options'),range=document.createRange();range.selectNodeContents(n);const t=range.getBoundingClientRect();return {equal:Math.abs(a.width-b.width)<.1&&a.height===b.height&&Math.abs(c.width-d.width)<.1&&c.height===d.height,center:Math.abs((t.left+t.right-r.left-r.right)/2),fit:t.left>=r.left&&t.right<=r.right};});assert.ok(geometry.equal);assert.ok(geometry.fit);assert.ok(geometry.center<.6);
  const numbers=await page.evaluate(async()=>{const {animateNumber,animateCounters}=await import('/src/ui/number-animation.js');const {displayInteger}=await import('/src/ui/field.js');const node=document.getElementById('chips_value'),samples=[];let active=true;const collect=()=>{if(!active)return;samples.push(node.textContent);requestAnimationFrame(collect);};requestAnimationFrame(collect);await animateNumber(node,300n,{animate:true,from:0n,duration:300});active=false;
    await animateNumber(node,10n**500n,{animate:true,from:0n,duration:60,format:displayInteger});const huge=node.title;

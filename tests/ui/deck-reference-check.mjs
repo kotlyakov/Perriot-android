@@ -1,3 +1,4 @@
+import {enterRun} from './enter-run.mjs';
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {mkdir} from 'node:fs/promises';
@@ -9,10 +10,10 @@ try{
  await mkdir('artifacts',{recursive:true});
  for(const [width,height] of [[1536,709],[915,412],[568,320],[360,800],[1024,600],[2400,1080]]){
  const context=await browser.newContext({viewport:{width,height},hasTouch:true}),page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
- await page.goto(process.env.PREVIEW_URL??'http://127.0.0.1:4173');await page.locator('#hand .playing-card').first().waitFor();
+ await page.goto(process.env.PREVIEW_URL??'http://127.0.0.1:4173');await enterRun(page);await page.locator('#hand .playing-card').first().waitFor();
  const state=createRun('deck-reference',{runId:'deck-reference',money:4n,deckId:width===1536?'red':'blue'});state.phase='playing';state.revision=1;
  delete state.cards.card_clubs_2;state.hand=['card_spades_13','card_spades_12','card_spades_11','card_hearts_14','card_clubs_13','card_clubs_11','card_diamonds_2','card_hearts_3'];state.discardPile=[];state.drawPile=Object.keys(state.cards).filter(id=>!state.hand.includes(id));
- await page.evaluate(s=>localStorage.setItem('card-cascade.current',s),serializeState(state));await page.reload();await page.locator('#deck').click();
+ await page.evaluate(s=>localStorage.setItem('card-cascade.current',s),serializeState(state));await page.reload();await enterRun(page);await page.locator('#deck').click();
  await page.waitForFunction(()=>document.fonts.status==='loaded');
  assert.equal(await page.locator('.deck-info strong').textContent(),state.deckId==='red'?'Красная колода':'Синяя колода');assert.equal(await page.locator('[role=tab]').count(),2);assert.equal(await page.locator('.deck-card').count(),51);assert.equal(await page.locator('.deck-row').count(),4);assert.equal(await page.locator('.deck-card.used').count(),8);
  assert.equal((await page.locator('.deck-categories b').allTextContents()).join(','),'3,7,33');

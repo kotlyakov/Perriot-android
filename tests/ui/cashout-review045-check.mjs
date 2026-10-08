@@ -1,3 +1,4 @@
+import {enterRun} from './enter-run.mjs';
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {createRun} from '../../src/core/run.js';
@@ -12,12 +13,12 @@ function playing(){
 }
 async function saved(page){return deserializeState(await page.evaluate(()=>localStorage.getItem('card-cascade.current')));}
 async function settle(page){await page.locator('#post_round').evaluate(el=>Promise.all(el.getAnimations().map(a=>a.finished.catch(()=>{}))));}
-async function start(page){await page.goto(process.env.PREVIEW_URL);await page.evaluate(text=>{localStorage.clear();localStorage.setItem('card-cascade.current',text);},serializeState(playing()));await page.reload();await page.locator('#hand .playing-card').first().waitFor();}
+async function start(page){await page.goto(process.env.PREVIEW_URL);await enterRun(page);await page.evaluate(text=>{localStorage.clear();localStorage.setItem('card-cascade.current',text);},serializeState(playing()));await page.reload();await enterRun(page);await page.locator('#hand .playing-card').first().waitFor();}
 async function win(page,interrupted=false){
  for(const rank of [10,11,12,13,14])await page.locator(`#hand [data-card-id="card_hearts_${rank}"]`).click();
  await page.evaluate(()=>{document.getElementById('play_hand').click();document.getElementById('play_hand').click();});
  const committed=await saved(page);assert.equal(committed.phase,'round_won');assert.equal(committed.money,24n);assert.equal(committed.revision,2);assert.equal(committed.round.score,1208n);assert.equal(committed.round.handsRemaining,3);
- if(interrupted){assert.equal(await page.locator('#cashout').count(),0);await page.reload();}
+ if(interrupted){assert.equal(await page.locator('#cashout').count(),0);await page.reload();await enterRun(page);}
  await page.locator('#cashout').waitFor();await settle(page);
  assert.equal(await page.locator('#money_value').textContent(),'$24');assert.match(await page.locator('#cashout').textContent(),/\$10$/);
  assert.equal(await page.locator('.payout-interest .gold').textContent(),'$4');
@@ -31,9 +32,9 @@ async function payout(page){
  await page.evaluate(()=>{const b=document.getElementById('cashout');b.click();b.click();b.click();});await page.locator('#shop_entry').waitFor();await settle(page);
  const after=await saved(page);assert.equal(after.phase,'shop');assert.equal(after.money,34n);assert.equal(after.revision,before.revision+1);assert.deepEqual(after.rng,before.rng);assert.deepEqual(after.cards,before.cards);assert.equal(after.lastScore,null);assert.equal(after.hand.length,0);assert.equal(after.discardPile.length,0);assert.equal(after.drawPile.length,52);
  assert.match(await page.locator('.shop-scope').textContent(),/Промежуточная сборка/);assert.equal(await page.locator('#deck_count').textContent(),'52/52');
- await page.reload();await page.locator('#shop_entry').waitFor();assert.equal(await page.locator('#money_value').textContent(),'$34');assert.equal(await page.locator('#cashout').count(),0);assert.deepEqual(await saved(page),after);
+ await page.reload();await enterRun(page);await page.locator('#shop_entry').waitFor();assert.equal(await page.locator('#money_value').textContent(),'$34');assert.equal(await page.locator('#cashout').count(),0);assert.deepEqual(await saved(page),after);
 }
-async function newRun(page){await page.locator('#options').click();await page.locator('#dialog-actions button').filter({hasText:'Новый забег'}).click();await page.locator('#dialog-actions button').filter({hasText:/^Начать$/}).click();await page.locator('#hand .playing-card').first().waitFor();assert.equal((await saved(page)).phase,'playing');assert.equal(await page.locator('#post_round').count(),0);assert.equal(await page.locator('#play_hand').isVisible(),true);assert.equal(await page.locator('#money_value').textContent(),'$4');}
+async function newRun(page){await page.locator('#options').click();await page.locator('#dialog-actions button').filter({hasText:'Новый забег'}).click();await page.locator('#dialog-actions button').filter({hasText:/^Начать$/}).click();await enterRun(page);await page.locator('#hand .playing-card').first().waitFor();assert.equal((await saved(page)).phase,'playing');assert.equal(await page.locator('#post_round').count(),0);assert.equal(await page.locator('#play_hand').isVisible(),true);assert.equal(await page.locator('#money_value').textContent(),'$4');}
 try{
  for(const [width,height,reducedMotion] of [[1536,688,'no-preference'],[915,412,'no-preference'],[568,320,'reduce'],[360,800,'reduce']]){
   const page=await browser.newPage({viewport:{width,height},reducedMotion}),errors=[];page.on('pageerror',e=>errors.push(e.message));await start(page);await win(page);
@@ -43,7 +44,7 @@ try{
   if(width===1536)await page.screenshot({path:process.env.QA_SCREENSHOT??'/workspace/scratch/669d7c37bc9d/cashout045-review.png'});
   const pending=await saved(page);assert.equal(pending.drawPile.length,44);assert.equal(pending.hand.length,3);assert.equal(pending.discardPile.length,5);
   await page.locator('#deck').click();await page.locator('.deck-card').first().waitFor();assert.equal(await page.locator('.deck-card').count(),52);assert.equal(await page.locator('.deck-card.used').count(),0);assert.deepEqual(await saved(page),pending);await page.locator('#dialog-actions button').first().click();
-  await page.reload();await page.locator('#cashout').waitFor();assert.deepEqual(await saved(page),pending);await payout(page);await settle(page);
+  await page.reload();await enterRun(page);await page.locator('#cashout').waitFor();assert.deepEqual(await saved(page),pending);await payout(page);await settle(page);
   const shopBox=await page.locator('#post_round').boundingBox();assert.ok(shopBox.x>=0&&shopBox.y>=0&&shopBox.x+shopBox.width<=width+1&&shopBox.y+shopBox.height<=height+1);
   await newRun(page);assert.deepEqual(errors,[]);await page.close();console.log(`review045 actual win/pending reload/payout/reload/newrun/layout ${width}x${height} ${reducedMotion}`);
  }
