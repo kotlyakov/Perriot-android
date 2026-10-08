@@ -1,0 +1,298 @@
+requirement_id,kind,source,implementation,test,status,notes
+RULE-HAND-001,rule,docs/rules/poker-hands.md,src/core/hands.js,tests/core/hands.test.js,tested_base_subset,Base only; recognition modifiers excluded
+RULE-HAND-002,rule,docs/rules/poker-hands.md,src/core/hands.js,tests/core/hands.test.js,tested_base_subset,Base only; recognition modifiers excluded
+RULE-HAND-003,rule,docs/rules/poker-hands.md,src/core/hands.js,tests/core/hands.test.js,tested_base_subset,Base only; recognition modifiers excluded
+RULE-HAND-004,rule,docs/rules/poker-hands.md,src/core/score.js;src/content/hands.js;src/content/jokers.js,tests/core/score.test.js,tested_base_subset,Integer Base branch; no held/retrigger/copying/modifier scoring
+RULE-HAND-005,rule,docs/rules/poker-hands.md,,,not_implemented,See source document readiness and gaps
+RULE-HAND-006,rule,docs/rules/poker-hands.md,src/core/hands.js,tests/core/hands.test.js,tested_base_subset,Base only; recognition modifiers excluded
+RULE-LEVEL-001,rule,docs/rules/poker-hands.md,,,not_implemented,See source document readiness and gaps
+RULE-LEVEL-002,rule,docs/rules/poker-hands.md,,,not_implemented,See source document readiness and gaps
+RULE-RANK-001,rule,docs/rules/poker-hands.md,src/core/score.js;src/content/hands.js;src/content/jokers.js,tests/core/score.test.js,tested_base_subset,Integer Base branch; no held/retrigger/copying/modifier scoring
+RULE-SCORE-001,rule,docs/rules/poker-hands.md,src/core/score.js;src/content/hands.js;src/content/jokers.js,tests/core/score.test.js,tested_base_subset,Integer Base branch; no held/retrigger/copying/modifier scoring
+RULE-ANTE-001,rule,docs/rules/run-and-economy.md,,,not_implemented,See source document readiness and gaps
+RULE-BLIND-001,rule,docs/rules/run-and-economy.md,,,not_implemented,See source document readiness and gaps
+RULE-BLIND-002,rule,docs/rules/run-and-economy.md,,,not_implemented,See source document readiness and gaps
+RULE-BLIND-003,rule,docs/rules/run-and-economy.md,,,not_implemented,See source document readiness and gaps
+RULE-BLIND-004,rule,docs/rules/run-and-economy.md,src/core/run.js,tests/core/run.test.js,tested_base_subset,One Small round; discard cap/cost has corroborated candidate source; lifecycle/payout incomplete
+RULE-INTEREST-001,rule,docs/rules/run-and-economy.md,,,not_implemented,See source document readiness and gaps
+RULE-PAYOUT-001,rule,docs/rules/run-and-economy.md,,,not_implemented,See source document readiness and gaps
+RULE-PRICE-001,rule,docs/rules/run-and-economy.md,,,not_implemented,See source document readiness and gaps
+RULE-PRICE-002,rule,docs/rules/run-and-economy.md,,,not_implemented,See source document readiness and gaps
+RULE-RUN-001,rule,docs/rules/run-and-economy.md,src/core/run.js,tests/core/run.test.js,tested_base_subset,One Small round; discard cap/cost has corroborated candidate source; lifecycle/payout incomplete
+RULE-RUN-002,rule,docs/rules/run-and-economy.md,src/core/run.js,tests/core/run.test.js,tested_base_subset,One Small round; discard cap/cost has corroborated candidate source; lifecycle/payout incomplete
+RULE-RUN-003,rule,docs/rules/run-and-economy.md,src/core/run.js,tests/core/run.test.js,tested_base_subset,One Small round; discard cap/cost has corroborated candidate source; lifecycle/payout incomplete
+RULE-RUN-004,rule,docs/rules/run-and-economy.md,,,not_implemented,See source document readiness and gaps
+RULE-SHOP-001,rule,docs/rules/run-and-economy.md,,,not_implemented,See source document readiness and gaps
+RULE-SHOP-002,rule,docs/rules/run-and-economy.md,,,not_implemented,See source document readiness and gaps
+RULE-SHOP-003,rule,docs/rules/run-and-economy.md,,,not_implemented,See source document readiness and gaps
+RULE-SHOP-004,rule,docs/rules/run-and-economy.md,,,not_implemented,See source document readiness and gaps
+RULE-JOKER-001,rule,docs/rules/scoring-sequence.md,src/core/score.js;src/content/hands.js;src/content/jokers.js,tests/core/score.test.js,tested_base_subset,Integer Base branch; no held/retrigger/copying/modifier scoring
+RULE-JOKER-002,rule,docs/rules/scoring-sequence.md,src/core/score.js;src/content/hands.js;src/content/jokers.js,tests/core/score.test.js,tested_base_subset,Integer Base branch; no held/retrigger/copying/modifier scoring
+RULE-JOKER-003,rule,docs/rules/scoring-sequence.md,src/core/score.js;src/content/hands.js;src/content/jokers.js,tests/core/score.test.js,tested_base_subset,Integer Base branch; no held/retrigger/copying/modifier scoring
+RULE-JOKER-004,rule,docs/rules/scoring-sequence.md,src/core/score.js;src/content/hands.js;src/content/jokers.js,tests/core/score.test.js,tested_base_subset,Integer Base branch; no held/retrigger/copying/modifier scoring
+RULE-ORDER-001,rule,docs/rules/scoring-sequence.md,,,not_implemented,See source document readiness and gaps
+RULE-ORDER-002,rule,docs/rules/scoring-sequence.md,,,not_implemented,See source document readiness and gaps
+RULE-ORDER-003,rule,docs/rules/scoring-sequence.md,,,not_implemented,See source document readiness and gaps
+RULE-ORDER-004,rule,docs/rules/scoring-sequence.md,,,not_implemented,See source document readiness and gaps
+joker_arrowhead,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_banner,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_blue_joker,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_bull,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_castle,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_clever_joker,entity,https://balatrogame.fandom.com/wiki/Clever_Joker,src/content/jokers.js;src/core/score.js,tests/core/score.test.js,tested_base_subset,"Base scoring effect only, creation/pools/stickers/copying not complete"
+joker_crafty_joker,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_devious_joker,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_hiker,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_ice_cream,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_odd_todd,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_runner,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_scary_face,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_sly_joker,entity,https://balatrogame.fandom.com/wiki/Sly_Joker,src/content/jokers.js;src/core/score.js,tests/core/score.test.js,tested_base_subset,"Base scoring effect only, creation/pools/stickers/copying not complete"
+joker_square_joker,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_stone_joker,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_stuntman,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_wee_joker,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_wily_joker,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_abstract_joker,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_bootstraps,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_ceremonial_dagger,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_crazy_joker,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_droll_joker,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_erosion,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_even_steven,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_fibonacci,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_flash_card,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_fortune_teller,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_gluttonous_joker,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_greedy_joker,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_green_joker,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_gros_michel,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_half_joker,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_joker,entity,https://balatrogame.fandom.com/wiki/Joker,src/content/jokers.js;src/core/score.js,tests/core/score.test.js,tested_base_subset,"Base scoring effect only, creation/pools/stickers/copying not complete"
+joker_jolly_joker,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_lusty_joker,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_mad_joker,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_misprint,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_mystic_summit,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_onyx_agate,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_popcorn,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_raised_fist,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_red_card,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_ride_the_bus,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_shoot_the_moon,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_smiley_face,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_spare_trousers,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_supernova,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_swashbuckler,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_wrathful_joker,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_zany_joker,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_acrobat,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_ancient_joker,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_baron,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_baseball_card,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_blackboard,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_bloodstone,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_campfire,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_canio,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_card_sharp,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_cavendish,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_constellation,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_driver_s_license,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_flower_pot,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_glass_joker,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_hit_the_road,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_hologram,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_joker_stencil,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_loyalty_card,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_lucky_cat,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_madness,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_obelisk,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_photograph,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_ramen,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_seeing_double,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_steel_joker,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_the_duo,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_the_family,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_the_idol,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_the_order,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_the_tribe,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_the_trio,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_throwback,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_triboulet,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_vampire,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_yorick,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_scholar,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_walkie_talkie,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_business_card,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_cloud_9,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_credit_card,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_delayed_gratification,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_egg,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_faceless_joker,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_gift_card,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_golden_joker,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_golden_ticket,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_mail_in_rebate,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_matador,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_midas_mask,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_reserved_parking,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_rocket,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_rough_gem,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_satellite,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_to_do_list,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_to_the_moon,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_trading_card,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_8_ball,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_astronomer,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_blueprint,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_brainstorm,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_burglar,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_burnt_joker,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_cartomancer,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_certificate,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_chaos_the_clown,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_chicot,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_diet_cola,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_dna,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_drunkard,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_dusk,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_four_fingers,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_hack,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_hallucination,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_hanging_chad,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_invisible_joker,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_juggler,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_luchador,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_marble_joker,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_merry_andy,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_mime,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_mr_bones,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_oops_all_6s,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_pareidolia,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_perkeo,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_riff_raff,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_s_ance,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_seltzer,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_shortcut,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_showman,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_sixth_sense,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_smeared_joker,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_sock_and_buskin,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_space_joker,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_splash,entity,https://balatrogame.fandom.com/wiki/Splash,src/content/jokers.js;src/core/score.js,tests/core/score.test.js,tested_base_subset,"Base scoring effect only, creation/pools/stickers/copying not complete"
+joker_superposition,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_troubadour,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_turtle_bean,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+joker_vagabond,entity,https://balatrogame.fandom.com/wiki/Bootstraps,,,not_implemented,identity_verified_parameters_pending
+planet_pluto,entity,https://balatrogame.fandom.com/wiki/Planet_Cards,,,not_implemented,ready_baseline
+planet_mercury,entity,https://balatrogame.fandom.com/wiki/Planet_Cards,,,not_implemented,ready_baseline
+planet_uranus,entity,https://balatrogame.fandom.com/wiki/Planet_Cards,,,not_implemented,ready_baseline
+planet_venus,entity,https://balatrogame.fandom.com/wiki/Planet_Cards,,,not_implemented,ready_baseline
+planet_saturn,entity,https://balatrogame.fandom.com/wiki/Planet_Cards,,,not_implemented,ready_baseline
+planet_jupiter,entity,https://balatrogame.fandom.com/wiki/Planet_Cards,,,not_implemented,ready_baseline
+planet_earth,entity,https://balatrogame.fandom.com/wiki/Planet_Cards,,,not_implemented,ready_baseline
+planet_mars,entity,https://balatrogame.fandom.com/wiki/Planet_Cards,,,not_implemented,ready_baseline
+planet_neptune,entity,https://balatrogame.fandom.com/wiki/Planet_Cards,,,not_implemented,ready_baseline
+planet_planet_x,entity,https://balatrogame.fandom.com/wiki/Planet_Cards,,,not_implemented,ready_baseline
+planet_ceres,entity,https://balatrogame.fandom.com/wiki/Planet_Cards,,,not_implemented,ready_baseline
+planet_eris,entity,https://balatrogame.fandom.com/wiki/Planet_Cards,,,not_implemented,ready_baseline
+tarot_the_fool,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
+tarot_the_magician,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
+tarot_the_high_priestess,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
+tarot_the_empress,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
+tarot_the_emperor,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
+tarot_the_hierophant,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
+tarot_the_lovers,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
+tarot_the_chariot,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
+tarot_justice,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
+tarot_the_hermit,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
+tarot_the_wheel_of_fortune,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
+tarot_strength,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
+tarot_the_hanged_man,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
+tarot_death,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
+tarot_temperance,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
+tarot_the_devil,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
+tarot_the_tower,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
+tarot_the_star,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
+tarot_the_moon,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
+tarot_the_sun,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
+tarot_judgement,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
+tarot_the_world,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
+enhancement_bonus_card,entity,https://balatrogame.fandom.com/wiki/Card_Modifiers,,,not_implemented,identity_verified_parameters_pending
+enhancement_mult_card,entity,https://balatrogame.fandom.com/wiki/Card_Modifiers,,,not_implemented,identity_verified_parameters_pending
+enhancement_wild_card,entity,https://balatrogame.fandom.com/wiki/Card_Modifiers,,,not_implemented,identity_verified_parameters_pending
+enhancement_glass_card,entity,https://balatrogame.fandom.com/wiki/Card_Modifiers,,,not_implemented,identity_verified_parameters_pending
+enhancement_steel_card,entity,https://balatrogame.fandom.com/wiki/Card_Modifiers,,,not_implemented,identity_verified_parameters_pending
+enhancement_stone_card,entity,https://balatrogame.fandom.com/wiki/Card_Modifiers,,,not_implemented,identity_verified_parameters_pending
+enhancement_gold_card,entity,https://balatrogame.fandom.com/wiki/Card_Modifiers,,,not_implemented,identity_verified_parameters_pending
+enhancement_lucky_card,entity,https://balatrogame.fandom.com/wiki/Card_Modifiers,,,not_implemented,identity_verified_parameters_pending
+seal_gold_seal,entity,https://balatrogame.fandom.com/wiki/Card_Modifiers,,,not_implemented,identity_verified_parameters_pending
+seal_red_seal,entity,https://balatrogame.fandom.com/wiki/Card_Modifiers,,,not_implemented,identity_verified_parameters_pending
+seal_blue_seal,entity,https://balatrogame.fandom.com/wiki/Card_Modifiers,,,not_implemented,identity_verified_parameters_pending
+seal_purple_seal,entity,https://balatrogame.fandom.com/wiki/Card_Modifiers,,,not_implemented,identity_verified_parameters_pending
+edition_base,entity,https://balatrogame.fandom.com/wiki/Card_Modifiers,,,not_implemented,identity_verified_parameters_pending
+edition_foil,entity,https://balatrogame.fandom.com/wiki/Card_Modifiers,,,not_implemented,identity_verified_parameters_pending
+edition_holographic,entity,https://balatrogame.fandom.com/wiki/Card_Modifiers,,,not_implemented,identity_verified_parameters_pending
+edition_polychrome,entity,https://balatrogame.fandom.com/wiki/Card_Modifiers,,,not_implemented,identity_verified_parameters_pending
+edition_negative,entity,https://balatrogame.fandom.com/wiki/Card_Modifiers,,,not_implemented,identity_verified_parameters_pending
+pack_rule_standard_normal,entity,https://balatrogame.fandom.com/wiki/Booster_Packs,,,not_implemented,mechanical_parameters_verified_visual_variants_pending
+pack_rule_standard_jumbo,entity,https://balatrogame.fandom.com/wiki/Booster_Packs,,,not_implemented,mechanical_parameters_verified_visual_variants_pending
+pack_rule_standard_mega,entity,https://balatrogame.fandom.com/wiki/Booster_Packs,,,not_implemented,mechanical_parameters_verified_visual_variants_pending
+pack_rule_arcana_normal,entity,https://balatrogame.fandom.com/wiki/Booster_Packs,,,not_implemented,mechanical_parameters_verified_visual_variants_pending
+pack_rule_arcana_jumbo,entity,https://balatrogame.fandom.com/wiki/Booster_Packs,,,not_implemented,mechanical_parameters_verified_visual_variants_pending
+pack_rule_arcana_mega,entity,https://balatrogame.fandom.com/wiki/Booster_Packs,,,not_implemented,mechanical_parameters_verified_visual_variants_pending
+pack_rule_celestial_normal,entity,https://balatrogame.fandom.com/wiki/Booster_Packs,,,not_implemented,mechanical_parameters_verified_visual_variants_pending
+pack_rule_celestial_jumbo,entity,https://balatrogame.fandom.com/wiki/Booster_Packs,,,not_implemented,mechanical_parameters_verified_visual_variants_pending
+pack_rule_celestial_mega,entity,https://balatrogame.fandom.com/wiki/Booster_Packs,,,not_implemented,mechanical_parameters_verified_visual_variants_pending
+pack_rule_buffoon_normal,entity,https://balatrogame.fandom.com/wiki/Booster_Packs,,,not_implemented,mechanical_parameters_verified_visual_variants_pending
+pack_rule_buffoon_jumbo,entity,https://balatrogame.fandom.com/wiki/Booster_Packs,,,not_implemented,mechanical_parameters_verified_visual_variants_pending
+pack_rule_buffoon_mega,entity,https://balatrogame.fandom.com/wiki/Booster_Packs,,,not_implemented,mechanical_parameters_verified_visual_variants_pending
+pack_rule_spectral_normal,entity,https://balatrogame.fandom.com/wiki/Booster_Packs,,,not_implemented,mechanical_parameters_verified_visual_variants_pending
+pack_rule_spectral_jumbo,entity,https://balatrogame.fandom.com/wiki/Booster_Packs,,,not_implemented,mechanical_parameters_verified_visual_variants_pending
+pack_rule_spectral_mega,entity,https://balatrogame.fandom.com/wiki/Booster_Packs,,,not_implemented,mechanical_parameters_verified_visual_variants_pending
+deck_red_deck,entity,https://balatrogame.fandom.com/wiki/Red_Deck,,,not_implemented,partial_parameters_verified
+deck_blue_deck,entity,https://balatrogame.fandom.com/wiki/Blue_Deck,,,not_implemented,partial_parameters_verified
+blind_small_blind,entity,https://balatrogame.fandom.com/wiki/Blinds_and_Antes,,,not_implemented,partial_parameters_verified
+blind_big_blind,entity,https://balatrogame.fandom.com/wiki/Blinds_and_Antes,,,not_implemented,partial_parameters_verified
+blind_the_hook,entity,https://balatrogame.fandom.com/wiki/Blinds_and_Antes,,,not_implemented,partial_parameters_verified
+blind_the_ox,entity,https://balatrogame.fandom.com/wiki/Blinds_and_Antes,,,not_implemented,partial_parameters_verified
+UI-SHOP-DEFAULT,screen,../project_sources/02-Screenshot_2026-09-08-11-00-40-32_aea5bf60a1cfb2c5b2453e07eee2145b.jpg,,,not_implemented,Полный снимок состояния
+UI-LANGUAGE-BETA,screen,../project_sources/03-Screenshot_2026-09-08-10-53-58-58_aea5bf60a1cfb2c5b2453e07eee2145b.jpg,,,not_implemented,Версия видна: 1.0.1o-FULL [M]
+UI-CASHOUT,screen,../project_sources/04-Screenshot_2026-09-08-10-58-01-68_aea5bf60a1cfb2c5b2453e07eee2145b.jpg,,,not_implemented,Нижняя часть чека выходит до нижнего края снимка
+UI-MAIN-MENU,screen,../project_sources/05-Screenshot_2026-09-08-10-54-09-13_aea5bf60a1cfb2c5b2453e07eee2145b.jpg,,,not_implemented,Версия видна: 1.0.1o-FULL [M]
+UI-SHOP-PACK-ACTION,screen,../project_sources/06-Screenshot_20260911_092250_Balatro-1-.jpg,,,not_implemented,Нельзя объявлять это hover или drag без проверки
+UI-GAMEPLAY-IDLE,screen,../project_sources/07-Screenshot_2026-09-08-10-57-21-62_aea5bf60a1cfb2c5b2453e07eee2145b.jpg,,,not_implemented,Полный снимок состояния
+UI-TUTORIAL-SHOP,screen,../project_sources/08-Screenshot_2026-09-08-10-58-12-40_aea5bf60a1cfb2c5b2453e07eee2145b.jpg,,,not_implemented,Подсказка обучения отличается от карточного tooltip
+UI-PACK-CELESTIAL-SELECTED,screen,../project_sources/09-Screenshot_20260911_092431-1-.jpg,,,not_implemented,Снимок использует иной русский текст КАССА/Текущий счёт/Детали партии; не смешивать строки автоматически
+UI-GAMEPLAY-SCORING,screen,../project_sources/10-Screenshot_2026-09-08-10-57-33-83_aea5bf60a1cfb2c5b2453e07eee2145b.jpg,,,not_implemented,Статическая фаза анимации
+UI-TUTORIAL-INTRO,screen,../project_sources/11-Screenshot_2026-09-08-10-55-16-04_aea5bf60a1cfb2c5b2453e07eee2145b.jpg,,,not_implemented,Основной референс blind selection закрыт overlay; служебные строки не переносить без проверки
+UI-PACK-STANDARD,screen,../project_sources/12-Screenshot_2026-09-08-11-01-00-04_aea5bf60a1cfb2c5b2453e07eee2145b.jpg,,,not_implemented,Красный фон и частицы; кнопка добавления карты в этом кадре не видна
+UI-TUTORIAL-BIG-BLIND,screen,../project_sources/13-Screenshot_2026-09-08-10-59-01-35_aea5bf60a1cfb2c5b2453e07eee2145b.jpg,,,not_implemented,Overlay мешает полной сверке blind selection
+UI-NEW-RUN,screen,,,,not_implemented,В предоставленных 12 скриншотах отсутствует или недостаточно покрыто
+UI-CHALLENGES,screen,,,,not_implemented,В предоставленных 12 скриншотах отсутствует или недостаточно покрыто
+UI-COLLECTION,screen,,,,not_implemented,В предоставленных 12 скриншотах отсутствует или недостаточно покрыто
+UI-COLLECTION-STATES,screen,,,,not_implemented,В предоставленных 12 скриншотах отсутствует или недостаточно покрыто
+UI-OPTIONS,screen,,,,not_implemented,В предоставленных 12 скриншотах отсутствует или недостаточно покрыто
+UI-PROFILE,screen,,,,not_implemented,В предоставленных 12 скриншотах отсутствует или недостаточно покрыто
+UI-RUN-DETAILS,screen,,,,not_implemented,В предоставленных 12 скриншотах отсутствует или недостаточно покрыто
+UI-BLIND-CLEAN,screen,,,,not_implemented,В предоставленных 12 скриншотах отсутствует или недостаточно покрыто
+UI-CARD-TOOLTIPS,screen,,,,not_implemented,В предоставленных 12 скриншотах отсутствует или недостаточно покрыто
+UI-PACK-ARCANA,screen,,,,not_implemented,В предоставленных 12 скриншотах отсутствует или недостаточно покрыто
+UI-PACK-SPECTRAL,screen,,,,not_implemented,В предоставленных 12 скриншотах отсутствует или недостаточно покрыто
+UI-PACK-BUFFOON,screen,,,,not_implemented,В предоставленных 12 скриншотах отсутствует или недостаточно покрыто
+UI-END-RUN,screen,,,,not_implemented,В предоставленных 12 скриншотах отсутствует или недостаточно покрыто
+UI-SAVE-RESUME,screen,,,,not_implemented,В предоставленных 12 скриншотах отсутствует или недостаточно покрыто
+UI-SPECIAL-STATES,screen,,,,not_implemented,В предоставленных 12 скриншотах отсутствует или недостаточно покрыто
+UI-ANIMATIONS,screen,,,,not_implemented,В предоставленных 12 скриншотах отсутствует или недостаточно покрыто
+UI-NORMAL-ANDROID19,screen,../upload/01-1000029713.jpg,,,not_implemented,Сортировка восстановлена решением пользователя; Играть руку и Сброс disabled; измерено вручную
+UI-OUIJA-ANDROID19,screen,../upload/01-1000029722.jpg,,,not_implemented,Подсказка справа; рука 8/7; нижние действия не видны только в этом состоянии
+RULE-LIFE-001,rule,docs/rules/run-lifecycle.md,,,not_implemented,See confirmed_profile vs candidate status; no guessed payout
+RULE-LIFE-002,rule,docs/rules/run-lifecycle.md,,,not_implemented,See confirmed_profile vs candidate status; no guessed payout
+RULE-LIFE-003,rule,docs/rules/run-lifecycle.md,,,not_implemented,See confirmed_profile vs candidate status; no guessed payout
+RULE-LIFE-004,rule,docs/rules/run-lifecycle.md,,,not_implemented,See confirmed_profile vs candidate status; no guessed payout
+RULE-LIFE-005,rule,docs/rules/run-lifecycle.md,,,not_implemented,See confirmed_profile vs candidate status; no guessed payout
+RULE-LIFE-006,rule,docs/rules/run-lifecycle.md,,,not_implemented,See confirmed_profile vs candidate status; no guessed payout
+RULE-LIFE-007,rule,docs/rules/run-lifecycle.md,,,not_implemented,See confirmed_profile vs candidate status; no guessed payout
+RULE-LIFE-008,rule,docs/rules/run-lifecycle.md,,,not_implemented,See confirmed_profile vs candidate status; no guessed payout
+RULE-LIFE-009,rule,docs/rules/run-lifecycle.md,,,not_implemented,See confirmed_profile vs candidate status; no guessed payout
+RULE-LIFE-010,rule,docs/rules/run-lifecycle.md,,,not_implemented,See confirmed_profile vs candidate status; no guessed payout

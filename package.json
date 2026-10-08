@@ -1,0 +1,22 @@
+{
+  "name": "pierrot-android",
+  "version": "0.4.4",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/core/*.test.js",
+    "preview": "node scripts/preview.mjs",
+    "test:ui": "node scripts/check-ui.mjs",
+    "test:flow": "UI_CHECK_SCRIPT=tests/ui/score-flow-check.mjs node scripts/check-ui.mjs",
+    "test:cards": "UI_CHECK_SCRIPT=tests/ui/card-visual-check.mjs node scripts/check-ui.mjs",
+    "test:mobile": "UI_CHECK_SCRIPT=tests/ui/mobile-layout-check.mjs node scripts/check-ui.mjs",
+    "android:assets": "node scripts/prepare-android.mjs",
+    "preview:export": "node scripts/export-preview.mjs",
+    "test:deck": "UI_CHECK_SCRIPT=tests/ui/deck-reference-check.mjs node scripts/check-ui.mjs",
+    "test:font": "UI_CHECK_SCRIPT=tests/ui/typography-check.mjs node scripts/check-ui.mjs",
+    "test:hand": "UI_CHECK_SCRIPT=tests/ui/hand-gap-check.mjs node scripts/check-ui.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

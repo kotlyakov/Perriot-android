@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "stage": "intermediate-procedural-art",
+  "style": "B / Печатная мастерская",
+  "assets": [
+    {"id":"playing-cards-base","source":"src/ui/field.js","origin":"Original procedural pips and geometric court portraits, created for this project","status":"intermediate"},
+    {"id":"field-background","source":"web/styles.css","origin":"Original CSS print rings and pine-green grain","status":"intermediate"},
+    {"id":"red-deck-back","source":"web/styles.css","origin":"Original diagonal print and star seal","status":"intermediate"}
+  ],
+  "originalScreenshotsIncluded": false,
+  "audio": "not implemented"
+}
