@@ -18,14 +18,19 @@
 - [x] Создать дерево из сохранённого045ZIP, сохранить в legacy/v0.4.5-working; проверитьref/core100.
 
 ## Task2 APKline
-- [ ] Перенести APK_REFERENCE_SPEC/APK_TRACEABILITY и независимо сверенные docs/apk-findings.
-- [ ] Создать apk-reference отcheckpoint, проверитьremoteSHA/tree.
+- [x] Перенести APK_REFERENCE_SPEC/APK_TRACEABILITY и независимо сверенные docs/apk-findings.
+- [x] Создать apk-reference отcheckpoint, проверитьremoteSHA/tree.
 
 ## Task3 CI
-- [ ] Проверить workflow/launcher независимымQA.
-- [ ] ОпубликоватьизолированныйPR, дождатьсяbuild/node/UIchecks.
-- [ ] Приошибке изучитьjoblogs, исправитьпричину и повторить.
-- [ ] Скачатьartifact и проверитьофициальнойподписью/CRC/assetcontent; privatekeyнепубликовать.
+- [x] Проверить workflow/launcher независимымQA.
+- [x] ОпубликоватьизолированныйPR, дождатьсяbuild/node/UIchecks.
+- [x] Приошибке изучитьjoblogs, исправитьпричину и повторить.
+- [x] Скачатьartifact и проверитьофициальнойподписью/CRC/assetcontent; privatekeyнепубликовать.
 
 ## Task4 следующаяреализация
 Полныймагазин реализуетсяпослеcatalog/lifecycle/RNGtrace; не заменятьслучайныйпул сокращённымвыдуманным. Каждаямеханика имеетAPKsymbol→spec→test→implementation.
+
+## Ledger08.10.2026
+Task1/2/3 complete: исходники045 сохранены; изолированная APKветка; Actions37762538941 success; стабильная подпись и28assetbytecheck/CRC/alignment.
+Task4 in progress: pricequotationimplemented,9newtestsRED(missingmodule)→GREEN; npmtest109/109.
+Ruling: gameUI/canonicalshopstate не меняются доcatalog/RNG/lifecycletrace; pure price module подготовлен отдельно, без выдуманного ассортимента.

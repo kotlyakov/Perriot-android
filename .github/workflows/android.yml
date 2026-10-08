@@ -91,6 +91,7 @@ jobs:
             cp "$source_apk" "$apk"
             "$signer" verify --verbose --print-certs "$apk" > artifacts/ci-apk/signature.txt
           fi
+          "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -P 16 -v 4 "$apk" > artifacts/ci-apk/alignment.txt
           sha256sum "$apk" > artifacts/ci-apk/SHA256SUMS
           printf 'commit=%s\nrun=%s\nsignature=%s\n' "$GITHUB_SHA" "$GITHUB_RUN_ID" "$label" > artifacts/ci-apk/build.txt
           printf 'label=%s\n' "$label" >> "$GITHUB_OUTPUT"
@@ -103,6 +104,7 @@ jobs:
             artifacts/ci-apk/*.apk
             artifacts/ci-apk/SHA256SUMS
             artifacts/ci-apk/signature.txt
+            artifacts/ci-apk/alignment.txt
             artifacts/ci-apk/build.txt
           if-no-files-found: error
           retention-days: 30

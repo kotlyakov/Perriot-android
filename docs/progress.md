@@ -63,3 +63,7 @@ Rubik variable300–900 заменяет всеTiny5/Numbers. Одна family н
 ПиксельныйQA043 нашёл остаточныеbrightrootpixels короткихwisps. Финально общийsource-atop gradienty45→58 соединяет всёнарисованноепламя с точнымcolorbox, сохраняетalpha/silhouette и×gap; APKперепакованпослеfix.
 
 044: ×layout275/362/33/57, gridcentre+3pxbottompaddingдляоптическойсерединыRubik. Root4viewportsrectdx/dy0; pixelinkcentre291.5/390, центрпромежутка291.5/390.5 (растр0.5px).
+
+## Передача08.10.2026
+Пункты1–3 завершены. Сохранены045 и044, отдельная apk-reference. Actions37762538941 успешен:100core,9browser,freshnativecompile. Доставленный APK68113e6be5984a0979536b22dbde8bc281eaba86840eeaf29814dcfb643966be подписан прежним certificate5ff24a25ecf6b43e6ae02ee44c2568fcffd335f9a2c9222dd1892168e8d40d8e, CRC/alignment/28assets verified.
+Пункт4.1: quoteShopCard/canAfford по Card:set_cost;109tests locallyPASS. Это подготовка экономики, ещё не магазин в UI. Следующий: catalogue+RNG/lifecycletrace, далее transaction state/UI. Полныйклон/runtimeparity не заявлены.
