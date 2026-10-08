@@ -38,3 +38,6 @@
 [Магазин и экономика](apk-findings/shop-economy.md) независимо сверяют соседние документы `neighbor-artifacts/Balatro/APK_REFERENCE_SPEC.md` и `APK_TRACEABILITY.md`; повторный полный каталог не создавался. Их shop выводы совпали с прочитанными путями. Новый материал — координаты, coupon sell ordering, точная граница cashout и независимые будущие TDD-кейсы.
 
 Очередь: экспорт каталогов с исходными entity keys и verified parameters; full pool eligibility/unlocks; RNG call-order; Booster selection/return; event-queue edge cases; runtime exact APK. Не считать 49 читаемых Lua доказательством полноты воспроизведения игры.
+
+## Shop metadata08.10.2026
+`docs/apk-shop-catalog.csv`:266unique entries directly from assets/game.lua,150Joker/32Voucher/32Booster/22Tarot/12Planet/18Spectral. Own scalar metadata only; no original Lua or images. Effects, unlock conditions and RNG parity remain pending. `shop-economy.md` records generation keys and draw order.

@@ -67,3 +67,7 @@ Rubik variable300–900 заменяет всеTiny5/Numbers. Одна family н
 ## Передача08.10.2026
 Пункты1–3 завершены. Сохранены045 и044, отдельная apk-reference. Actions37762538941 успешен:100core,9browser,freshnativecompile. Доставленный APK68113e6be5984a0979536b22dbde8bc281eaba86840eeaf29814dcfb643966be подписан прежним certificate5ff24a25ecf6b43e6ae02ee44c2568fcffd335f9a2c9222dd1892168e8d40d8e, CRC/alignment/28assets verified.
 Пункт4.1: quoteShopCard/canAfford по Card:set_cost;109tests locallyPASS. Это подготовка экономики, ещё не магазин в UI. Следующий: catalogue+RNG/lifecycletrace, далее transaction state/UI. Полныйклон/runtimeparity не заявлены.
+
+Shop research checkpoint:266 catalogue metadata entries extracted and validated for uniqueIDs and required name/cost/order; own source-location CSV. RNG call order mapped (Illusion eager poll, unkeyed first Buffoon). Exact original RNG runtime not yet validated; counter32 replay must not be used to claim original seeded parity.
+
+Повторный CI37763832665/f6d06ec SUCCESS:109core,9browser,freshnativecompile,CIalignment/signature. Обновлённый пользовательский APK SHA2569d1efc8e0bb8a244b73a5af9b15b41e2edb48537ad35105a31535d45c60a99d3,29assets/signature/CRC/alignment PASS. См.docs/qa/actions-2026-10-08.md.
