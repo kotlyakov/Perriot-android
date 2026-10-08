@@ -78,3 +78,5 @@ button{font-weight:700}.title{font-weight:800;font-size:26px}.token{font-weight:
 .payout-blind>.gold{margin-left:auto;font-size:30px}
 .payout-row{position:absolute;left:16px;right:18px;top:191px;display:flex;align-items:center;gap:16px;font-size:19px}.payout-row>strong:first-child{width:62px;text-align:center;font-size:37px;color:#04a9eb}.payout-row>.gold{margin-left:auto;font-size:27px}.payout-interest{top:280px}.payout-interest>strong:first-child{color:#f6c35d}
 #shop_entry{padding:22px;text-align:center}#shop_entry h2{font-size:30px;font-weight:750}#shop_entry p{font-size:21px;line-height:1.5}.shop-scope{color:#bdcec5;margin-top:55px}
+
+.deck-back[data-deck=blue]{background-color:#087bad}.deck-back[data-deck=blue] .deck-seal{background:#06668f}

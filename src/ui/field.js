@@ -24,6 +24,7 @@ export function showNumbers(chips,mult,animate=false){
 
 export function dismissCardTip(){document.querySelector('.card-tip')?.remove();}
 export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=null) {
+ document.getElementById('deck').dataset.deck=state.deckId;
  text('target_value',state.round.target);animateNumber(document.getElementById('round_score_value'),state.round.score,{format:displayInteger});animateNumber(document.getElementById('hands_value'),state.round.handsRemaining);animateNumber(document.getElementById('discards_value'),state.round.discardsRemaining);text('money_value','$'+state.money);
  text('hand_count',state.hand.length+'/'+state.round.handSize);text('deck_count',state.drawPile.length+'/'+Object.keys(state.cards).length);text('joker_count',state.jokers.length+'/5');
  const played=state.hand.filter(id=>selected.has(id)).map(id=>state.cards[id]);

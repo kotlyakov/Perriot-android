@@ -43,7 +43,8 @@ async function startup(page,width,height,touch){
  await settleStartup(page,'#blind_selection');
  if(width===1536)await page.screenshot({path:'artifacts/blind-selection046.png'});
  const pending=deserializeState(await saved(page));
- assert.equal(pending.phase,'blind_selection');assert.equal(pending.deckId,'blue');assert.equal(pending.seed,'MENU1234');
+ assert.equal(pending.phase,'blind_selection');assert.equal(pending.deckId,'blue');
+ assert.equal(await page.locator('#deck').evaluate(n=>getComputedStyle(n).backgroundColor),'rgb(8, 123, 173)','Blue deck back must follow chosen deck');assert.equal(pending.seed,'MENU1234');
  assert.equal(Object.keys(pending.cards).length,52);assert.equal(pending.hand.length,0);assert.equal(pending.round.handsRemaining,5);assert.equal(pending.round.discardsRemaining,3);
  await page.reload();await page.locator('#start_new').waitFor();await click(page.locator('#start_new'));await page.locator('#setup_continue_tab').waitFor();assert.equal(await page.locator('#setup_continue_tab').isEnabled(),true);
  const before=await saved(page);await click(page.locator('#setup_continue_tab'));await page.locator('#select_small').waitFor();
