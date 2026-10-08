@@ -110,3 +110,10 @@ Second UI finding: long press now passed; reroll button stayed enabled with old 
 ## Передача 0.4.7 — 08.10.2026
 
 Actions37786436604/37786439701 SUCCESS на78fad1d728e68dda3b07c4b0ebe74cfe62ad59f2:198core,12UI suites,freshnativecompile. Реальные long-press/reroll регрессии исправлены и прошли. Root визуально просмотрел магазин на1536×688 и360×800 и видимость купленного джокера в большом блайнде. Stable APK0.4.7/code20 SHA25665f1458e38462116a610c7bb339326b21b7b1f383cdf5a12573942ba6ffdc9e5,42offlineassets/55payloadentries/CRC/alignment/signature verified. APK сохранён для скачивания. Device check pending. Полнота Task3/Task4 не заявлена;32/150 эффектов и обычный Small→Big подтверждены. Подробный отчёт docs/qa/actions047.md.
+
+
+## Проверенные правки интерфейса 0.4.8 — 08.10.2026
+
+Панели блайндов имеют одинаковые размеры; статусы21px; кнопка пропуска внутри границ. Нижние кнопки покупки удалены: покупка перетаскиванием в верхнюю зелёную область с ценой; цены над товарами и продажа купленного джокера сохранены. Отмена, отпускание вне зоны, недостаток денег/слотов и неподдержанный эффект не списывают деньги. Экономика и схема сохранения не меняются.
+
+Actions37812813108 SUCCESS на f90446d94d921fe7a26afb71c24168fcf15ba34e (merge checkout99680e16e9e4202c606824bec678c2198abc3c85):198core/12browser/freshGradle. Перетаскивание мышью и реальными touch-событиями, отмена, ошибки записи, продолжение и геометрия на четырёх размерах проверены. Снимки shop-buy-zone, blind-selection046 и shop-568x320 просмотрены. APK0.4.8/code21:42offlineassets byteequal;55non-signature entries unchanged after signing;CRC/signature/16KB alignment PASS;certificate прежний. SHA256713e6bdd43d150188fbac4806e074142667612cc3cab5455031e8df3be1597c8. APK сохранён для скачивания. Физический Androidruntime не проверен; оставшийся контент полного переноса игры не меняется. Подробности docs/qa/actions048.md.
