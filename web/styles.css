@@ -62,7 +62,10 @@ button{font-weight:700}.title{font-weight:800;font-size:26px}.token{font-weight:
 
 /* Explicit centering avoids default button padding squeezing Russian labels. */
 #run_info,#options,#play_hand,#discard,#sort_rank,#sort_suit{display:flex;align-items:center;justify-content:center;text-align:center;padding:0}
-#run_info,#options{font-size:13px;line-height:20px}
+#run_info{font-size:22px;line-height:26px}
+#options{font-size:20px;line-height:24px;flex-direction:column;gap:5px}
+#options::before{content:"⚙";font-size:30px;line-height:30px}
+#blind_token span{font-size:11px;line-height:13px;white-space:pre-line}
 #sort_rank,#sort_suit{font-size:11.5px;line-height:18px}
 .counter-pop{font-weight:800;font-size:29px}
 #score_flame{opacity:1}

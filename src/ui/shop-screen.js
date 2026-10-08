@@ -3,13 +3,13 @@ import {getRerollCost,hasJokerSpace} from '../core/shop.js';
 import {canAfford} from '../core/shop-pricing.js';
 import {SUPPORTED_JOKERS} from '../content/jokers.js';
 
-let view=null,selected=null,tip=null,holdTimer,held=false,lastMain=null,entryMotion,stageTipListener=false,cancelDrag;
+let view=null,selected=null,tip=null,held=false,lastMain=null,entryMotion,stageTipListener=false,cancelDrag,cancelReturn;
 const reduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
 const node=(tag,className,text)=>{const n=document.createElement(tag);if(className)n.className=className;if(text!==undefined)n.textContent=text;return n;};
 export function shopMoneyFontSize(value,width,max=27){return Math.min(max,width/(String(value).length+1)/.66);}
 function money(value,width=56,max=27){const n=node('span','shop-money','$'+value);n.style.fontSize=shopMoneyFontSize(value,width,max)+'px';return n;}
 function rect(n,x,y,w,h){Object.assign(n.style,{left:x+'px',top:y+'px',width:w+'px',height:h+'px'});return n;}
-function dismissTip(){clearTimeout(holdTimer);tip?.remove();tip=null;}
+function dismissTip(){tip?.remove();tip=null;}
 function clearSelection(){selected=null;dismissTip();view?.querySelectorAll('.shop-choice').forEach(n=>{n.classList.remove('is-selected');n.querySelector('.shop-card')?.setAttribute('aria-pressed','false');});document.getElementById('shop_owned')?.querySelectorAll('.shop-choice').forEach(n=>{n.classList.remove('is-selected');n.querySelector('.shop-card')?.setAttribute('aria-pressed','false');});view?.querySelectorAll('.shop-buy').forEach(n=>n.remove());document.getElementById('shop_owned')?.querySelectorAll('.shop-buy').forEach(n=>n.remove());}
 function showTip(offer,card){
  dismissTip();const details=describeShopItem(offer);tip=node('aside','shop-tooltip');tip.setAttribute('role','tooltip');tip.id='shop_tooltip';
@@ -48,17 +48,32 @@ function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
   button.disabled=busy;button.classList.toggle('shop-unavailable',!supported);button.title=supported?'Продать':'Доступен только просмотр';
   button.onclick=e=>{e.stopPropagation();dismissTip();if(!supported){callbacks.onNotice?.('Эта карта пока доступна только для просмотра.');return;}callbacks.onAction?.('SELL_JOKER',{jokerId:offer.id});};wrap.append(button);
  }
- card.onclick=()=>{if(held){held=false;return;}if(!busy)select();};
+ card.onclick=()=>{if(held){held=false;return;}if(!busy){if(kind==='owned')select();showTip(offer,card);}};
  card.onpointerdown=e=>{
-  if(busy||card.disabled||e.button!==0)return;cancelDrag?.();held=false;clearTimeout(holdTimer);
+  if(busy||card.disabled||e.button!==0)return;cancelDrag?.();cancelReturn?.();held=false;showTip(offer,card);
   const purchasable=state.phase==='shop'&&kind!=='owned'&&kind!=='consumable';
   const startX=e.clientX,startY=e.clientY,scale=document.getElementById('stage').getBoundingClientRect().width/1536;let dragged=false,zone,ghost;
-  holdTimer=setTimeout(()=>{held=true;showTip(offer,card);},350);card.setPointerCapture?.(e.pointerId);
-  function cleanup(){
-   clearTimeout(holdTimer);zone?.remove();ghost?.remove();wrap.style.opacity='';
+  card.setPointerCapture?.(e.pointerId);
+  function cleanup(animateHome=false){
+   zone?.remove();
+   const returning=ghost;ghost=null;
+   if(animateHome&&returning&&!reduced()){
+    let finished=false,motion;
+    const finish=()=>{if(finished)return;finished=true;motion?.cancel();returning.remove();wrap.style.opacity='';if(cancelReturn===finish)cancelReturn=null;};
+    cancelReturn=finish;
+    motion=returning.animate([
+     {translate:returning.style.translate,offset:0,easing:'cubic-bezier(.2,.7,.3,1)'},
+     {translate:'0 0',offset:.68},
+     {translate:'0 -4px',offset:.77},
+     {translate:'0 2px',offset:.86},
+     {translate:'0 -1px',offset:.93},
+     {translate:'0 0',offset:1}
+    ],{duration:440,fill:'forwards',easing:'linear'});
+    motion.finished.then(finish,finish);
+   }else{returning?.remove();wrap.style.opacity='';}
    card.removeEventListener('pointermove',move);card.removeEventListener('pointerup',end);card.removeEventListener('pointercancel',cancel);card.removeEventListener('lostpointercapture',cancel);card.removeEventListener('keydown',escape);cancelDrag=null;if(card.hasPointerCapture?.(e.pointerId))card.releasePointerCapture(e.pointerId);
   }
-  function cancel(){held=dragged||held;cleanup();dismissTip();}
+  function cancel(){held=dragged||held;cleanup(dragged);dismissTip();}
   function escape(ev){if(ev.key==='Escape'){ev.preventDefault();cancel();}}
   function move(ev){
    if(ev.pointerId!==e.pointerId||!purchasable)return;
@@ -75,7 +90,7 @@ function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
   }
   function end(ev){
    if(ev.pointerId!==e.pointerId)return;
-   const bounds=zone?.getBoundingClientRect(),drop=dragged&&bounds&&ev.clientX>=bounds.left&&ev.clientX<=bounds.right&&ev.clientY>=bounds.top&&ev.clientY<=bounds.bottom,available=zone?.dataset.available==='true';cleanup();
+   const bounds=zone?.getBoundingClientRect(),drop=dragged&&bounds&&ev.clientX>=bounds.left&&ev.clientX<=bounds.right&&ev.clientY>=bounds.top&&ev.clientY<=bounds.bottom,available=zone?.dataset.available==='true';cleanup(dragged&&!(drop&&available));
    if(drop){if(available)callbacks.onAction?.('BUY_SHOP_CARD',{offerId:offer.id});else callbacks.onNotice?.('Покупка недоступна: проверьте эффект карты, деньги и свободные места.');}
   }
   cancelDrag=cancel;card.addEventListener('pointermove',move);card.addEventListener('pointerup',end);card.addEventListener('pointercancel',cancel);card.addEventListener('lostpointercapture',cancel);card.addEventListener('keydown',escape);
@@ -99,7 +114,7 @@ function ensureView(){
 // Capture after persistence succeeds; await the returned exit before rendering
 // the new state. The enclosing shop and voucher/booster trays stay in place.
 export function prepareShopChange(type){
- cancelDrag?.();
+ cancelDrag?.();cancelReturn?.();
  // Lock the displayed controls while the accepted action animates, before
  // replacing inventory. Persistence has already succeeded at this point.
  if(view){view.querySelectorAll('button').forEach(b=>b.disabled=true);document.getElementById('shop_owned')?.querySelectorAll('button').forEach(b=>b.disabled=true);}
@@ -121,7 +136,7 @@ function renderOwned(state,busy,callbacks){
  document.getElementById('consumable_count').textContent=(state.consumables?.length??0)+'/'+(state.consumableSlots??2);
 }
 export function renderShop(state,busy,{onAction,onNotice}={}){
- cancelDrag?.();
+ cancelDrag?.();cancelReturn?.();
  if(state.phase!=='shop'){
   dismissTip();entryMotion?.cancel();view?.controller?.abort();view?.remove();document.getElementById('shop_sign')?.remove();view=null;selected=null;lastMain=null;renderOwned(state,busy,{onAction,onNotice});return;
  }

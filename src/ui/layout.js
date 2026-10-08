@@ -2,7 +2,7 @@
 export const LAYOUT={
  hud:[150,0,292,688],blind_panel:[157,30,274,202],blind_title:[165,30,266,45],blind_token:[174,117,81,84],blind_target:[260,114,161,85],
  round_score:[157,236,274,56],calculation_panel:[157,295,274,135],chips:[164,362,111,57],times:[275,362,33,57],mult:[308,362,111,57],
- run_info:[165,446,85,96],options:[165,552,85,98],hands:[266,445,76,61],discards:[351,445,78,61],money:[266,518,162,62],ante:[268,592,78,63],round:[355,592,75,63],
+ run_info:[157,446,106,96],options:[157,552,106,98],hands:[266,445,76,61],discards:[351,445,78,61],money:[266,518,162,62],ante:[268,592,78,63],round:[355,592,75,63],
  joker_region_inferred:[469,20,681,146],joker_count:[475,172,28,14],consumable_region_inferred:[1210,20,212,146],consumable_count:[1293,172,28,14],
  hand_count:[798,542,31,15],play_hand:[551,564,163,85],sort_panel:[719,562,211,89],sort_label:[745,571,160,17],sort_rank:[733,590,89,42],sort_suit:[829,590,89,42],discard:[935,564,163,85],deck:[1208,491,113,148],deck_count:[1265,644,44,13],
 };

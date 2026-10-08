@@ -15,7 +15,7 @@ export function renderStartScreen({hasSave=false,onContinue,onNew,onSettings}){
  const newButton=button('start_new','Играть','blue',()=>showSetup());
  const collection=button('start_collection','Коллекция','start-green',()=>{});collection.disabled=true;collection.setAttribute('aria-label','Коллекция — ещё не реализована');
  bar.append(newButton,button('start_settings','Настройки','orange',()=>onSettings?.()),collection);screen.append(bar);
- const profile=element('div','start-profile');profile.setAttribute('aria-label','Текущий профиль P1');profile.append(element('span','','Профиль'),element('strong','','P1'));screen.append(profile);
+ const profile=element('div','start-profile');profile.setAttribute('aria-label','Текущий профиль П1');profile.append(element('span','','Профиль'),element('strong','','П1'));screen.append(profile);
  const language=button('start_language','Русский','start-language',()=>{});language.disabled=true;language.setAttribute('aria-label','Текущий язык: Русский. Выбор других языков ещё не реализован');screen.append(language);
  document.getElementById('stage').append(screen);enter(screen);newButton.focus({preventScroll:true});
 
