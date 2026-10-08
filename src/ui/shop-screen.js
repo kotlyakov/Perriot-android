@@ -74,6 +74,9 @@ function ensureView(){
 // Capture after persistence succeeds; await the returned exit before rendering
 // the new state. The enclosing shop and voucher/booster trays stay in place.
 export function prepareShopChange(type){
+ // Lock the displayed controls while the accepted action animates, before
+ // replacing inventory. Persistence has already succeeded at this point.
+ if(view){view.querySelectorAll('button').forEach(b=>b.disabled=true);document.getElementById('shop_owned')?.querySelectorAll('button').forEach(b=>b.disabled=true);}
  const outgoing=type==='REROLL_SHOP'?[...(view?.querySelectorAll('[data-kind=main]')??[])]:[];
  return async()=>{
   if(!outgoing.length)return;
