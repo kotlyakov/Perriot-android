@@ -300,5 +300,5 @@ RULE-APK-RNG-001,rule,docs/apk-findings/rng-runtime.md,src/core/apk-rng.js,tests
 RULE-APK-DEAL-001,rule,docs/apk-findings/deck-generation.md,src/core/apk-deck.js;src/core/run.js,tests/core/apk-deck.test.js;tests/core/apk-run.test.js,tested_plain_deck,3seeds wholecanonical52/start/nr1/firsthand/refill; no modifiedduplicates
 RULE-SHOP-TXN-001,rule,docs/rules/shop-transactions.md,src/core/shop.js,tests/core/shop.test.js,tested_base_subset,Transactionsfoundationonly; fullgeneration/effects/UIopen
 RULE-SAVE-APK-SHOP-001,rule,docs/qa/save-shop-rng.md,src/persistence/save.js,tests/core/save-shop-rng.test.js,tested_optional_codec,Legacy045compatible; optionalimmutableRNG/prices/offers
-UI-START-APK-001,ui,docs/qa/start-screen-notes.md,src/ui/start-screen.js;src/ui/app.js;web/start-screen.css,tests/ui/start-screen-check.mjs,awaiting_remote_ui,Initialmenu/new/continue/redblue/seed8; collectiondisabled
-UI-BLIND-APK-001,ui,docs/qa/blind-selection-notes.md,src/ui/blind-select.js;web/blind-select.css,tests/ui/start-screen-check.mjs,awaiting_remote_ui,Smallselectonly; Big/Boss/Skip disabledexplicitly
+UI-START-APK-001,ui,docs/qa/start-screen-notes.md,src/ui/start-screen.js;src/ui/app.js;web/start-screen.css,tests/ui/start-screen-check.mjs,tested_scoped_ui,Initialmenu/new/continue/redblue/seed8; collectiondisabled
+UI-BLIND-APK-001,ui,docs/qa/blind-selection-notes.md,src/ui/blind-select.js;web/blind-select.css,tests/ui/start-screen-check.mjs,tested_scoped_ui,Smallselectonly; Big/Boss/Skip disabledexplicitly

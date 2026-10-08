@@ -75,3 +75,7 @@ Shop research checkpoint:266 catalogue metadata entries extracted and validated 
 
 ## Работа0.4.6 —08.10.2026
 Проверены независимые156RNGvalues и3полныеdeckfixtures исходногоAPK. Собственные apk-rng/apk-deck подключены к новымпартиям; legacyCounter32 сохранён для старыхсохранений. Новаяпартия теперь начинаетсяс выбора, не савтоматическойраздачи. Менюна старте не записываетданные; continueнеadvanceRNG; замена требуетconfirm. Shopоперации иsavecodec готовы какоснова, UIstoreпокаplaceholder045. Локальные138тестовуспешны. CI/browser/nativeещёвпереди; локальныйChromiumbroken,loopостановлен. Не заявлять полнойигрой/Androiddeviceparity.
+
+
+046 контрольныйрезультат: Actions37769833942 и37769840756 SUCCESS наb51dda97332efc270ccb7185cbb7e14d4d22bdc8.138core/10browser/nativefreshcompile; startup1536×688,915×412,568×320,390×844иofflineHTML. Синяярубашкаисправлена; rootвизуальнаяпроверкафинальногоPNG. StableAPK046/code19 SHA7d46e38a240bea0a830fe4fa399c53d31a0f0b2b48933758c98cfb0e39914e64,36assets/CRC/apksigner/zipalignPASS. SaveduserAPKlibfile_9d8e7838fd448191acbc0253f7dbb734,version0, /Balatro/pierrot-0.4.6-preview(1).apk. ФизическийAndroidнепроверен; полныйпункт4остаетсяоткрытым.
+Shoporacle6cases independentlyreproducedstrictlyequal; fullcatalogconditionaladapter, notfullAPK. Nextfullshopgenerationandprofile/effects/UI, notnewmenuagain. Критическихоткрытыхрегрессийв046необнаружено; статическиеanimationcancel/APIboolrisksдокументированы integration046-review.md.

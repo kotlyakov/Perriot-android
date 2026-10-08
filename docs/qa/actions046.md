@@ -1,0 +1,9 @@
+# Проверенная сборка046 —08.10.2026
+
+Sourcecommit b51dda97332efc270ccb7185cbb7e14d4d22bdc8. Actions37769833942 и37769840756 SUCCESS. Firstc8aeff startupgeometrytest измерялentryanimation: RED. ИсправленоожиданиемactualAnimation.finished, неослаблениемграниц; следующийпрогонGREEN. RootPNGвыявилкраснуюрубашкуBlue: исправленоцветомпоdeckIdиcomputedstyleassert.
+
+Логи37769833942/job113286588017:138tests/138pass/0fail;10UI suites(start-screen,browser,score-flow,card-visual,mobile-layout,deck-reference,typography,hand-gap,cashout-flow,cashout-review045). Начальныеэкранов4viewport(1536×688,915×412,568×320,390×844), touch/reducedmotion,blue/seed/continue/confirm; portableHTML offline/reload. FreshGradle BUILD SUCCESSFUL2m7s. RootполучилCIAPK artifact11547376123, checksum/buildcommitverified. СобственныйCLIстабильнопереподписалтолькоподпись; apksignerv2/v3PASS certificateSHA5ff24a25ecf6b43e6ae02ee44c2568fcffd335f9a2c9222dd1892168e8d40d8e. Zipalign-P16/CRC/36assetsbyteequalityPASSпослеподписи. aaptПьеро/package ru.cardcascade.game.preview/code19/version0.4.6-preview/API26target36.
+
+UserAPK1105733bytes SHA2567d46e38a240bea0a830fe4fa399c53d31a0f0b2b48933758c98cfb0e39914e64. ИсходныйAPK/Lua/art/signingkeyнепопаливигровыеassets. Deviceinstallation/runtimeнепроверены.
+
+Scope: собственноеядро+оформление, исходныйAPKисследовательскийэталон. Главноеменю/RedBlue/8charseed/continue/Smallblindselection. Big/Boss/Skip/Collectiondisabledexplicit; shopUI045placeholder. Exact156RNGvalues/3deckfixtures/6conditionalshoporaclecases неозначаютполнойигровойparity.
