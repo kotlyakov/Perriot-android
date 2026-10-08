@@ -19,7 +19,7 @@ An official source archive at that pinned commit was downloaded and built native
 
 Original `pseudohash` processes UTF-8 bytes backwards with IEEE-754 doubles and positive modulo 1. It does not process JavaScript UTF-16 characters. A keyed poll initially hashes key+run seed, advances a mutable key using the specified affine fractional transformation, normalizes via Lua `string.format("%.13f")`, and averages with run hashed seed. This normalized number seeds LuaJIT every poll. `pseudoseed('seed')` instead consumes current global RNG state. The prediction branch calculates without mutating saved key state.
 
-JS compatibility must preserve decimal formatting/rounding and unsigned 64-bit wrapping, not truncate a fractional seed to an integer. The existing counter32 generator is not an equivalent algorithm.
+The pinned LuaJIT formatter uses half-up for the verified positive fixed-13 half-way cases, not C printf nearest/even: 1/16384 formats as 0.0000610351563 and 5/16384 as 0.0003051757813. JS compatibility must preserve this decimal formatting/rounding and unsigned 64-bit wrapping, not truncate a fractional seed to an integer. The existing counter32 generator is not an equivalent algorithm.
 
 ## Own oracle tooling and fixtures
 

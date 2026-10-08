@@ -296,3 +296,9 @@ RULE-LIFE-007,rule,docs/rules/run-lifecycle.md,,,not_implemented,See confirmed_p
 RULE-LIFE-008,rule,docs/rules/run-lifecycle.md,,,not_implemented,See confirmed_profile vs candidate status; no guessed payout
 RULE-LIFE-009,rule,docs/rules/run-lifecycle.md,,,not_implemented,See confirmed_profile vs candidate status; no guessed payout
 RULE-LIFE-010,rule,docs/rules/run-lifecycle.md,,,not_implemented,See confirmed_profile vs candidate status; no guessed payout
+RULE-APK-RNG-001,rule,docs/apk-findings/rng-runtime.md,src/core/apk-rng.js,tests/core/apk-rng.test.js,tested_scoped,156strictnativevalues; pinnedLuaJIT; fullshoptraceconditional
+RULE-APK-DEAL-001,rule,docs/apk-findings/deck-generation.md,src/core/apk-deck.js;src/core/run.js,tests/core/apk-deck.test.js;tests/core/apk-run.test.js,tested_plain_deck,3seeds wholecanonical52/start/nr1/firsthand/refill; no modifiedduplicates
+RULE-SHOP-TXN-001,rule,docs/rules/shop-transactions.md,src/core/shop.js,tests/core/shop.test.js,tested_base_subset,Transactionsfoundationonly; fullgeneration/effects/UIopen
+RULE-SAVE-APK-SHOP-001,rule,docs/qa/save-shop-rng.md,src/persistence/save.js,tests/core/save-shop-rng.test.js,tested_optional_codec,Legacy045compatible; optionalimmutableRNG/prices/offers
+UI-START-APK-001,ui,docs/qa/start-screen-notes.md,src/ui/start-screen.js;src/ui/app.js;web/start-screen.css,tests/ui/start-screen-check.mjs,awaiting_remote_ui,Initialmenu/new/continue/redblue/seed8; collectiondisabled
+UI-BLIND-APK-001,ui,docs/qa/blind-selection-notes.md,src/ui/blind-select.js;web/blind-select.css,tests/ui/start-screen-check.mjs,awaiting_remote_ui,Smallselectonly; Big/Boss/Skip disabledexplicitly
