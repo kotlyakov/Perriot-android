@@ -4,7 +4,14 @@ import {deserializeState} from '../../src/persistence/save.js';
 const {chromium}=createRequire(import.meta.url)(process.env.PLAYWRIGHT_MODULE??(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES?process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright':'playwright'));
 const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH}:{})});
 const saved=page=>page.evaluate(()=>localStorage.getItem('card-cascade.current'));
+async function settleStartup(page,selector='#start_screen'){
+ // CI caught geometry being sampled during the legitimate bottom-entry animation.
+ await page.locator(selector).evaluate(async screen=>{
+  await Promise.allSettled(screen.getAnimations({subtree:true}).map(animation=>animation.finished));
+ });
+}
 async function inside(page,selector,width,height){
+ await settleStartup(page);
  const boxes=await page.locator(selector).evaluateAll(nodes=>nodes.map(node=>{const b=node.getBoundingClientRect();return [b.x,b.y,b.right,b.bottom];}));
  assert.ok(boxes.length,'Missing startup controls '+selector);
  for(const [x,y,right,bottom] of boxes)assert.ok(x>=-1&&y>=-1&&right<=width+1&&bottom<=height+1,`Startup control escapes ${width}x${height}: ${[x,y,right,bottom]}`);
@@ -12,6 +19,7 @@ async function inside(page,selector,width,height){
 async function startup(page,width,height,touch){
  const click=locator=>touch?locator.tap():locator.click();
  await page.locator('#start_new').waitFor();
+ await settleStartup(page);
  assert.equal(await saved(page),null,'Opening the app must not create a run');
  if(await page.evaluate(()=>matchMedia('(prefers-reduced-motion: reduce)').matches))assert.equal(await page.locator('#start_screen').evaluate(n=>n.getAnimations().length),0);
  assert.equal(await page.locator('#start_new').textContent(),'Играть');
@@ -21,6 +29,7 @@ async function startup(page,width,height,touch){
  await click(page.locator('#start_settings'));await page.locator('dialog[open]').waitFor();
  assert.equal(await saved(page),null);await page.locator('#dialog-actions button').first().click();
  await click(page.locator('#start_new'));await page.locator('#setup_play').waitFor();
+ await settleStartup(page);
  assert.equal(await saved(page),null,'Opening setup must not create a run');
  if(await page.evaluate(()=>matchMedia('(prefers-reduced-motion: reduce)').matches))assert.equal(await page.locator('.start-setup').evaluate(n=>n.getAnimations().length),0);
  await inside(page,'#setup_play,#setup_back,#setup_seed,#setup_deck_red,#setup_deck_blue',width,height);
@@ -31,6 +40,7 @@ async function startup(page,width,height,touch){
  assert.equal(await saved(page),null,'Selecting a deck or seed must not create a run');
  if(width===1536)await page.screenshot({path:'artifacts/run-setup046.png'});
  await click(page.locator('#setup_play'));await page.locator('#select_small').waitFor();
+ await settleStartup(page,'#blind_selection');
  if(width===1536)await page.screenshot({path:'artifacts/blind-selection046.png'});
  const pending=deserializeState(await saved(page));
  assert.equal(pending.phase,'blind_selection');assert.equal(pending.deckId,'blue');assert.equal(pending.seed,'MENU1234');
