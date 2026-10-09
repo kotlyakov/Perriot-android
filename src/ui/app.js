@@ -54,7 +54,7 @@ async function perform(type,ids,mode,fields={}) {
  const previousRound=state.round,previousScore=state.round.score,previousMoney=state.money;
  const leaveShop=prepareShopChange(type);await leaveShop();
  const ordered=state.hand.filter(id=>(ids??[]).includes(id));
- const outgoing=['PLAY_HAND','DISCARD'].includes(type)?preparePlayedCards(ordered,type==='DISCARD'):null;
+ const outgoing=['PLAY_HAND','DISCARD'].includes(type)?preparePlayedCards(ordered,type==='DISCARD',state.cards):null;
  const forced=result.events.find(e=>e.type==='cards_forced_discarded')?.cardIds??[];
  const forceDiscard=forced.length?preparePlayedCards(forced,true):null;
  const remaining=state.hand.filter(id=>!ordered.includes(id)&&!forced.includes(id));
@@ -85,14 +85,14 @@ async function perform(type,ids,mode,fields={}) {
    await Promise.all([expand(),arrive()]);
  }
  await moneyMotion;busy=false;render();
- if(state.phase==='game_over')openDialog('Партия окончена',`<p>Набрано ${state.round.score} из ${state.round.target} очков.</p><p>В этой версии доступны первый анте с восемью боссами, магазин и 32 вида джокеров. Малый и большой блайнды второго анте доступны; его босс и остальные механики ещё в разработке.</p>`,[['Новый забег',()=>confirmNew()],['Закрыть',closeDialog]]);
+ if(state.phase==='game_over')openDialog('Партия окончена',`<p>Набрано ${state.round.score} из ${state.round.target} очков.</p><p>Предварительная версия: обычные боссы и переходы анте, магазин и 32 вида джокеров. Финальные боссы, остальные товары и часть наград ещё в разработке.</p>`,[['Новый забег',()=>confirmNew()],['Закрыть',closeDialog]]);
 }
 function confirmNew(options){openDialog('Новый забег','<p>Начать заново? Текущий забег останется в резервной записи.</p>',[['Начать',()=>startFresh(options)],['Отмена',closeDialog]]);}
 document.getElementById('play_hand').onclick=()=>perform('PLAY_HAND',[...selected]);
 document.getElementById('discard').onclick=()=>perform('DISCARD',[...selected]);
 function sort(mode){if(busy || state?.phase!=='playing')return;perform('SET_SORT',undefined,mode);}
 document.getElementById('sort_rank').onclick=()=>sort('rank');document.getElementById('sort_suit').onclick=()=>sort('suit');
-function showSettings(){openDialog('Настройки','<p>Пьеро · промежуточная сборка 0.4.10</p><p>Малый и большой блайнды, магазин, покупка и продажа джокеров. В этой предварительной версии доступны 32 эффекта джокеров; восемь боссов первого анте. Доступны малый и большой блайнды второго анте. Его босс, последующие анте, остальные товары, наборы и ваучеры ещё недоступны. Продолжение сохраняется после каждого действия.</p>',[['Продолжить',closeDialog],['Новый забег',()=>confirmNew()],['Главное меню',showMenu]]);}
+function showSettings(){openDialog('Настройки','<p>Пьеро · промежуточная сборка 0.4.11</p><p>Переходы анте и обычные боссы, скрытые карты, магазин и 32 эффекта джокеров. «Буйвол» доступен при сохранённой однозначной любимой комбинации. Финальные боссы, остальные товары, наборы и ваучеры ещё недоступны. Продолжение сохраняется после каждого действия.</p>',[['Продолжить',closeDialog],['Новый забег',()=>confirmNew()],['Главное меню',showMenu]]);}
 document.getElementById('options').onclick=showSettings;
 document.getElementById('run_info').onclick=()=>{
  if(!state)return;const table=document.createElement('table');
@@ -110,5 +110,6 @@ else if(loaded.status==='recovery') {
  dialog.addEventListener('cancel',e=>e.preventDefault(),{once:true});
  openDialog('Восстановить забег?','<p>Основная запись повреждена. Есть проверенная резервная копия. Восстановить её?</p>',[['Восстановить',()=>{try{state=repository.restoreBackup();closeDialog();render();}catch{storageError();}},'restore-backup']]);
 } else openDialog('Сохранение недоступно','<p>Не удалось прочитать исправную запись. Файлы сохранены без изменений. Автоматический новый забег не начат.</p>');
+
 
 

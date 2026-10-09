@@ -1,6 +1,6 @@
 import {APK_TAGS_BY_ID} from '../content/apk-tags.js';
 import {APK_HAND_NAMES} from './apk-shop-state.js';
-import {canEnterFirstAnteBoss} from './boss-effects.js';
+import {canEnterBoss,bossTarget} from './boss-effects.js';
 import {chooseApkBoss} from './apk-blinds.js';
 import {blindBase} from './blind-progression.js';
 
@@ -23,7 +23,7 @@ export function getSkipAvailability(state,blindId=state.round?.blindId){
  if(state.phase!=='blind_selection'||!['small','big'].includes(blindId)||blindId!==state.round?.blindId)return blocked('Пропуск доступен только для текущего малого или большого блайнда.',tagId);
  if(!state.apkShop||!state.rng?.apk||!APK_TAGS_BY_ID[tagId])return blocked('Нет сохранённой награды для этого блайнда.',tagId);
  if(!validStats(state.runStats))return blocked('В этом сохранении нет точных счётчиков забега. Пропуск доступен в новом забеге.',tagId);
- if(blindId==='big'&&!canEnterFirstAnteBoss(state))return blocked('Эффект следующего босса ещё не реализован.',tagId);
+ if(blindId==='big'&&!canEnterBoss(state))return blocked('Эффект следующего босса или его точное состояние ещё недоступны.',tagId);
  if(!immediate.has(tagId)){
   const reason=reasons[tagId]??(['tag_standard','tag_charm','tag_meteor','tag_buffoon','tag_ethereal'].includes(tagId)?'Открытие и выбор карт бесплатного набора ещё не реализованы.':'Награда для джокера следующего магазина ещё не реализована.');
   return blocked(reason,tagId);
@@ -36,7 +36,7 @@ export function getSkipAvailability(state,blindId=state.round?.blindId){
  if(tagId==='tag_boss'){
   try{
    const selected=chooseApkBoss(state.rng.apk,{ante:state.round.ante,bossesUsed:state.apkBlinds.bossesUsed});
-   if(!canEnterFirstAnteBoss({...state,apkBlinds:{...state.apkBlinds,bossId:selected.bossId}}))return blocked('Эффект выпавшего при замене босса ещё не реализован.',tagId);
+   if(!canEnterBoss({...state,apkBlinds:{...state.apkBlinds,bossId:selected.bossId}}))return blocked('Эффект выпавшего при замене босса ещё не реализован.',tagId);
   }catch{return blocked('Недоступны точные данные для замены босса.',tagId);}
  }
  return {available:true,reason:null,tagId};
@@ -63,8 +63,9 @@ export function applySkipBlind(state,action){
  next.money+=delta;
  if(delta)events.push({type:'money_changed',before:state.money,after:next.money,delta});
  const blindId=skipped==='small'?'big':'boss';
- next.round={...next.round,blindId,target:blindBase(next.round.ante)*(blindId==='boss'?4n:3n)/2n,score:0n,handsRemaining:next.deckId==='blue'?5:4,discardsRemaining:next.deckId==='red'?4:3};
+ next.round={...next.round,blindId,target:blindId==='boss'?bossTarget(next):blindBase(next.round.ante)*3n/2n,score:0n,handsRemaining:next.deckId==='blue'?5:4,discardsRemaining:next.deckId==='red'?4:3};
  next.lastScore=null;next.revision++;
  events.unshift({type:'blind_skipped',blindId:skipped,nextBlindId:blindId,tagId});
  return {state:next,events,error:null};
 }
+

@@ -1,7 +1,12 @@
-export function preparePlayedCards(ids,discard=false) {
+import {cardMarkup,SUITS} from './field.js';
+export function preparePlayedCards(ids,discard=false,revealedCards={}) {
  const stage=document.getElementById('stage');
  const cards=ids.map(id=>stage.querySelector(`.playing-card[data-card-id="${id}"]`)).filter(Boolean).map(card=>{
-   const clone=card.cloneNode(true);clone.classList.add('played-card');clone.classList.remove('selected');clone.disabled=false;clone.tabIndex=-1;clone.setAttribute('aria-hidden','true');return clone;
+   const clone=card.cloneNode(true);clone.classList.add('played-card');clone.classList.remove('selected');
+   if(!discard&&clone.classList.contains('hidden-card')&&revealedCards[card.dataset.cardId]){
+     const revealed=revealedCards[card.dataset.cardId];clone.classList.remove('hidden-card','deck-back');delete clone.dataset.deck;clone.innerHTML=cardMarkup(revealed);clone.style.color=SUITS[revealed.suit][1];
+   }
+   clone.disabled=false;clone.tabIndex=-1;clone.setAttribute('aria-hidden','true');return clone;
  });
  return async function show() {
    const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -39,3 +44,4 @@ export function prepareHandMovement(){
    return Promise.all([...document.querySelectorAll('#hand .playing-card')].filter(c=>from.has(c.dataset.cardId)).map(c=>c.animate([from.get(c.dataset.cardId),{left:c.style.left,top:c.style.top,transform:c.style.transform}],{duration:240,easing:'cubic-bezier(.2,.7,.25,1)'}).finished));
  };
 }
+

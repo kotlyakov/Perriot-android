@@ -38,6 +38,10 @@ try{for(const [width,height] of [[1536,688],[915,412],[360,800]]){
  assert.equal(await page.locator('#round strong').innerText(),'5');assert.equal(await page.locator('#target_value').innerText(),'1200');
  const big=deserializeState(await page.evaluate(()=>localStorage.getItem('card-cascade.current')));big.phase='round_won';big.round.score=1200n;
  await page.evaluate(s=>localStorage.setItem('card-cascade.current',s),serializeState(big));await page.reload();await enterRun(page);
- await page.locator('#cashout').click();await page.locator('#shop_next_round').waitFor();assert.equal(await page.locator('#shop_next_round').isDisabled(),true);
- assert.deepEqual(errors,[]);await page.close();console.log('ante two transition / targets / reload / rounds / boss gate '+width+'x'+height);
+ await page.locator('#cashout').click();await page.locator('#shop_next_round').waitFor();assert.equal(await page.locator('#shop_next_round').isEnabled(),true);
+ await page.locator('#shop_next_round').click();await page.locator('#select_boss').click();await page.locator('#hand .playing-card').first().waitFor();
+ assert.equal(await page.locator('#round strong').innerText(),'6');
+ const boss=deserializeState(await page.evaluate(()=>localStorage.getItem('card-cascade.current')));assert.equal(boss.round.blindId,'boss');assert.equal(boss.round.ante,2);
+ assert.deepEqual(errors,[]);await page.close();console.log('ante two transition / targets / reload / rounds / playable boss '+width+'x'+height);
 }}finally{await browser.close();}
+
