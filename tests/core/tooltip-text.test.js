@@ -21,7 +21,7 @@ test('tooltip formatter preserves literal markup, money, probabilities and non-e
  const format=await formatter();
  const text='<img src=x> 1 из 4; $20; +3 места. −5 фишек; +31 очко; ×1.5 Mult.';
  assert.deepEqual(format(text).filter(t=>t.kind),[
-  {text:'−5',kind:'chips'},{text:'+31',kind:'chips'},{text:'×1.5',kind:'mult'}
+  {text:'$20',kind:'money'},{text:'−5',kind:'chips'},{text:'+31',kind:'chips'},{text:'×1.5',kind:'mult'}
  ]);
  assert.equal(format(text).map(t=>t.text).join(''),text);
 });
@@ -52,4 +52,9 @@ test('held Joker descriptions refer to remaining cards in hand without enabling 
   assert.match(item.description,description);
   assert.equal(item.canBuy,false);
  }
+});
+
+test('money rewards use their own gold effect colour',async()=>{
+ const format=await formatter();
+ assert.deepEqual(format('Награда $25; потратить −$5.').filter(t=>t.kind),[{text:'$25',kind:'money'},{text:'−$5',kind:'money'}]);
 });
