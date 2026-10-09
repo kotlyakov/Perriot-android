@@ -1,4 +1,6 @@
+import {applySkipBlind} from './skip-blind.js';
 import {canEnterFirstAnteBoss,chooseHookDiscards} from './boss-effects.js';
+import {applyInventoryAction} from './inventory.js';
 import {chooseNextAnteBlinds} from './blind-progression.js';
 import {chooseApkBoss} from './apk-blinds.js';
 import {createApkTagContext,chooseApkTag,chooseApkOrbitalHand} from './apk-tags.js';
@@ -40,7 +42,7 @@ export function createRun(seed, {runId,deckId='red',money,referenceRng=false,ref
       const tagContext=createApkTagContext(),small=chooseApkTag(rng,tagContext),big=chooseApkTag(small.rng,tagContext);rng=big.rng;
       state.apkBlinds={version:1,ante:1,bossId:boss.bossId,bossesUsed:boss.bossesUsed,
         tags:{small:small.tagId,big:big.tagId},orbitalHands:{},tagContext,playedCardIds:[]};
-      state.roundNumber=1;state.apkShop={version:1,voucherId:voucher.voucherId,firstShopBuffoon:false,context};
+      state.runStats={handsPlayed:0,unusedDiscards:0,skips:0};state.roundNumber=1;state.apkShop={version:1,voucherId:voucher.voucherId,firstShopBuffoon:false,context};
     }
     const shuffled=shuffleApkDeck(cards,rng,'shuffle');state.drawPile=shuffled.cardIds;state.rng.apk=shuffled.rng;
     // The initial blind screen fixes all three orbital hands after the deck shuffle.
@@ -64,6 +66,8 @@ export function dispatch(state, action, shopOptions={}) {
   if (!action || typeof action.type!=='string' || !Number.isSafeInteger(action.expectedRevision)) return reject('INVALID_ACTION','Malformed action');
   if (action.expectedRevision!==state.revision) return reject('STALE_ACTION','State revision has changed');
   if (!Number.isSafeInteger(state.revision) || state.revision<0 || state.revision===Number.MAX_SAFE_INTEGER) return reject('INVALID_STATE','Invalid revision');
+  if(['REORDER_JOKERS','REORDER_CONSUMABLES','SELL_OWNED_CARD'].includes(action.type))return applyInventoryAction(state,action);
+  if(action.type==='SKIP_BLIND')return applySkipBlind(state,action);
   if(['BUY_SHOP_CARD','SELL_JOKER','REROLL_SHOP','LEAVE_SHOP'].includes(action.type))return applyShopAction(state,action,shopOptions);
   if(action.type==='CASH_OUT') {
     if(state.phase!=='round_won')return reject('INVALID_PHASE','Round has not been won');
@@ -133,6 +137,7 @@ export function dispatch(state, action, shopOptions={}) {
     try { score=scoreHand(state,playedIds.map(id=>state.cards[id])); }
     catch (error) { return reject('UNSUPPORTED_CONTENT',error.message); }
   }
+  if(state.runStats && action.type==='PLAY_HAND' && (state.runStats.handsPlayed>=Number.MAX_SAFE_INTEGER || state.runStats.unusedDiscards>Number.MAX_SAFE_INTEGER-state.round.discardsRemaining))return reject('INVALID_STATE','Run counters exhausted');
   const next=structuredClone(state);const events=[];
   next.hand=next.hand.filter(id=>!selected.has(id));next.discardPile.push(...playedIds);
   if(score&&next.bossState?.id==='bl_hook'){
@@ -143,11 +148,12 @@ export function dispatch(state, action, shopOptions={}) {
   }
   if (score) {
     if(next.apkBlinds?.playedCardIds)for(const id of playedIds)if(!next.apkBlinds.playedCardIds.includes(id))next.apkBlinds.playedCardIds.push(id);
+    if(next.runStats)next.runStats.handsPlayed++;
     next.round.handsRemaining--;next.round.score+=score.score;next.lastScore=score;
     if (!next.discoveredHands.includes(score.handId)) next.discoveredHands.push(score.handId);
     if(next.apkShop){const name=APK_HAND_NAMES[score.handId];next.apkShop.context.playedHands[name]=(next.apkShop.context.playedHands[name]??0)+1;}
     events.push({type:'hand_played',cardIds:[...playedIds]},...structuredClone(score.trace));
-    if (next.round.score>=next.round.target) { next.phase='round_won';events.push({type:'round_won',score:next.round.score}); }
+    if (next.round.score>=next.round.target) { if(next.runStats)next.runStats.unusedDiscards+=next.round.discardsRemaining;next.phase='round_won';events.push({type:'round_won',score:next.round.score}); }
     else if (next.round.handsRemaining===0) { next.phase='game_over';events.push({type:'round_lost',score:next.round.score}); }
   } else {
     next.round.discardsRemaining--;events.push({type:'cards_discarded',cardIds:[...playedIds]});

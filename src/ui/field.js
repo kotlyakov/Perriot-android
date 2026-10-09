@@ -4,6 +4,8 @@ import {animateNumber} from './number-animation.js';
 import {showFlame} from './flame.js';
 import {pipArtwork,suitSvg} from './card-art.js';
 import {scoreHand} from '../core/score.js';
+import {appendTooltipContents} from './tooltip-text.js';
+import {describeCardModifiers} from '../content/card-modifier-display.js';
 export const HAND_NAMES={high_card:'Старшая карта',pair:'Пара',two_pair:'Две пары',three_of_a_kind:'Тройка',straight:'Стрит',flush:'Флеш',full_house:'Фулл-хаус',four_of_a_kind:'Каре',straight_flush:'Стрит-флеш',five_of_a_kind:'Пятёрка',flush_house:'Флеш-хаус',flush_five:'Флеш-пятёрка'};
 export const SUITS={spades:['♠','#283c53'],hearts:['♥','#bb3034'],clubs:['♣','#143d39'],diamonds:['♦','#ca502a']};
 export function rankLabel(rank){return ({11:'J',12:'Q',13:'K',14:'A'})[rank]??String(rank);}
@@ -63,7 +65,9 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
      if(b.disabled || e.button!==0)return;e.preventDefault();b.setPointerCapture(e.pointerId);
      document.querySelector('.card-tip')?.remove();
      const tip=document.createElement('div');tip.className='card-tip';tip.setAttribute('role','tooltip');
-     tip.innerHTML=`<strong>${rankLabel(card.rank)} <span style="color:${SUITS[card.suit][1]}">${({clubs:'треф',diamonds:'бубен',hearts:'червей',spades:'пик'})[card.suit]}</span></strong><p><span>+${debuffed?0:card.rank===14?11:Math.min(card.rank,10)}</span> очков</p>${debuffed?'<p>Не даёт фишек и не запускает эффекты джокеров за эту карту.</p>':''}`;
+     const title=document.createDocumentFragment(),suit=document.createElement('span');
+     title.append(document.createTextNode(rankLabel(card.rank)+' '));suit.style.color=SUITS[card.suit][1];suit.textContent=({clubs:'треф',diamonds:'бубен',hearts:'червей',spades:'пик'})[card.suit];title.append(suit);
+     appendTooltipContents(tip,title,[`+${debuffed?0:card.rank===14?11:Math.min(card.rank,10)} очков`,...describeCardModifiers(card),...(debuffed?['Не даёт фишек и не запускает эффекты джокеров за эту карту.']:[])]);
      tip.dataset.cardId=id;
      const placeTip=()=>{tip.style.left=Math.max(8,Math.min(1348,parseFloat(b.style.left)-32))+'px';tip.style.top=Math.max(8,parseFloat(b.style.top)-100)+'px';};placeTip();
      const x=e.clientX,y=e.clientY,scale=document.getElementById('stage').getBoundingClientRect().width/1536;let dragged=false,to=i,held=false;
@@ -87,4 +91,5 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
    if(id===focusedCard)b.focus({preventScroll:true});
  });
 }
+
 

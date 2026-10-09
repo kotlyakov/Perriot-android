@@ -1,3 +1,4 @@
+import {supportsConsumable} from '../core/inventory.js';
 import {canEnterFirstAnteBoss} from '../core/boss-effects.js';
 import {APK_BOSSES,APK_BLINDS_BY_ID} from '../content/apk-blinds.js';
 import {createApkTagContext,getApkTagPool} from '../core/apk-tags.js';
@@ -23,10 +24,10 @@ function optionalObject(value,required,optional=[]) {
   requireValue(value!==null && typeof value==='object' && !Array.isArray(value));
   requireValue(required.every(key=>Object.hasOwn(value,key)) && Object.keys(value).every(key=>required.includes(key) || optional.includes(key)));
 }
-function decodeOffer(value,ids,owned=false) {
+function decodeOffer(value,ids,owned=false,consumable=false) {
   optionalObject(value,owned?['id','entityId']:['id','entityId','cost','sellCost'],['cost','sellCost','edition','eternal','rental','perishable','debuffed','originalKey','set','frontKey','toDoPokerHand']);
   id(value.id);id(value.entityId);requireValue(!ids.has(value.id));ids.add(value.id);
-  if(owned)requireValue(supportsJoker(value));
+  if(owned)requireValue(consumable?supportsConsumable(value):supportsJoker(value));
   for(const key of ['cost','sellCost'])if(Object.hasOwn(value,key))value[key]=decimal(value[key]);
   if(Object.hasOwn(value,'edition'))requireValue(['base','foil','holographic','polychrome','negative'].includes(value.edition));
   for(const key of ['eternal','rental','perishable','debuffed'])if(Object.hasOwn(value,key))requireValue(typeof value[key]==='boolean');
@@ -162,7 +163,7 @@ function decode(payload) {
   const state=payload.state;
   const sortMode=state.sortMode;
   if(Object.hasOwn(state,'sortMode'))requireValue(['rank','suit'].includes(sortMode));
-  optionalObject(state,['schemaVersion','runId','seed','revision','phase','deckId','cards','hand','drawPile','discardPile','jokers','handLevels','discoveredHands','rng','money','round','lastScore'],['shop','bankruptAt','jokerSlots','apkShop','sortMode','roundNumber','apkBlinds','bossState','nextAnteBlinds']);
+  optionalObject(state,['schemaVersion','runId','seed','revision','phase','deckId','cards','hand','drawPile','discardPile','jokers','handLevels','discoveredHands','rng','money','round','lastScore'],['shop','bankruptAt','jokerSlots','apkShop','sortMode','roundNumber','apkBlinds','bossState','nextAnteBlinds','runStats','consumables','consumableSlots']);
   requireValue(state.schemaVersion===1 && PHASES.includes(state.phase) && ['red','blue'].includes(state.deckId));
   requireValue(typeof state.runId==='string' && state.runId.length>=1 && state.runId.length<=120);
   requireValue(typeof state.seed==='string' && state.seed.length>=1 && state.seed.length<=1000);integer(state.revision);
@@ -171,12 +172,18 @@ function decode(payload) {
   for(const key of cardIds) { id(key);object(state.cards[key],['id','rank','suit']);requireValue(state.cards[key].id===key);evaluateHand([state.cards[key]]); }
   const partitions=[state.hand,state.drawPile,state.discardPile];requireValue(partitions.every(Array.isArray));
   const all=partitions.flat();requireValue(all.length===cardIds.length && new Set(all).size===all.length && all.every(key=>Object.hasOwn(state.cards,key)));
+  if(Object.hasOwn(state,'runStats')){object(state.runStats,['handsPlayed','unusedDiscards','skips']);for(const count of Object.values(state.runStats))integer(count);}
   if(Object.hasOwn(state,'jokerSlots'))integer(state.jokerSlots,0,10000);
   if(Object.hasOwn(state,'bankruptAt'))state.bankruptAt=decimal(state.bankruptAt,true);
   requireValue(Array.isArray(state.jokers) && state.jokers.length<=10000);
   requireValue(state.jokers.length<=(state.jokerSlots??5)+state.jokers.filter(j=>j.edition==='negative').length);
   const jokerIds=new Set(cardIds);
   for(const joker of state.jokers)decodeOffer(joker,jokerIds,true);
+  if(Object.hasOwn(state,'consumableSlots'))integer(state.consumableSlots,0,10000);
+  if(Object.hasOwn(state,'consumables')){
+    requireValue(Array.isArray(state.consumables)&&state.consumables.length<=(state.consumableSlots??2)+state.consumables.filter(c=>c.edition==='negative').length);
+    for(const card of state.consumables)decodeOffer(card,jokerIds,true,true);
+  }
   if(Object.hasOwn(state,'shop'))decodeShop(state.shop,jokerIds);
   object(state.handLevels,Object.keys(HANDS));for(const level of Object.values(state.handLevels))integer(level,1);
   requireValue(Array.isArray(state.discoveredHands) && new Set(state.discoveredHands).size===state.discoveredHands.length && state.discoveredHands.every(key=>Object.hasOwn(HANDS,key)));
@@ -213,6 +220,7 @@ export function serializeState(state) {
   requireValue(typeof state.money==='bigint' && typeof state.round.target==='bigint' && typeof state.round.score==='bigint');
   const payload={format:'card-cascade-save',version:1,state:{...state,money:state.money.toString(),round:{...state.round,target:state.round.target.toString(),score:state.round.score.toString()},lastScore:encodeScore(state.lastScore)}};
   if(Object.hasOwn(state,'bankruptAt')) {requireValue(typeof state.bankruptAt==='bigint');payload.state.bankruptAt=state.bankruptAt.toString();}
+  if(state.consumables)payload.state.consumables=state.consumables.map(encodeOffer);
   if(state.jokers.some(j=>Object.hasOwn(j,'cost') || Object.hasOwn(j,'sellCost')))payload.state.jokers=state.jokers.map(encodeOffer);
   if(Object.hasOwn(state,'shop') && state.shop!==null) {
     requireValue(typeof state.shop.rerollBase==='bigint' && typeof state.shop.rerollIncrease==='bigint');
