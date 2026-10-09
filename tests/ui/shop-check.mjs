@@ -58,7 +58,7 @@ try{
   const stage=await page.locator('#stage').boundingBox(),blank={x:stage.x+1380*stage.width/1536,y:stage.y+210*stage.width/1536};
   assert.equal(await page.evaluate(({x,y})=>!!document.elementFromPoint(x,y)?.closest('.shop-choice,.shop-tooltip'),blank),false,'Global dismissal gesture must hit empty space');
   await page.mouse.click(blank.x,blank.y);assert.equal(await page.locator('#shop_tooltip').count(),0,'Tap on empty field dismisses tooltip');
-  await page.locator('[data-kind=owned] .shop-card').tap();await page.locator('[data-kind=owned] .shop-buy').click();await page.locator('.money-pop.gold').waitFor();assert.equal((await saved(page)).money,98n);await page.waitForFunction(()=>!document.getElementById('shop_reroll').disabled);
+  const sellCard=await page.locator('[data-kind=owned] .shop-card').boundingBox(),sellStage=await page.locator('#stage').boundingBox();await page.mouse.move(sellCard.x+sellCard.width/2,sellCard.y+sellCard.height/2);await page.mouse.down();await page.mouse.move(sellStage.x+1450*sellStage.width/1536,sellStage.y+300*sellStage.width/1536,{steps:8});await page.mouse.up();await page.locator('.money-pop.gold').waitFor();assert.equal((await saved(page)).money,98n);await page.waitForFunction(()=>!document.getElementById('shop_reroll').disabled);
   const preRoll=await saved(page);await page.evaluate(()=>globalThis.testShopBody=document.getElementById('shop_screen'));await page.locator('#shop_reroll').click();await page.waitForFunction(()=>!document.getElementById('shop_reroll').disabled);const afterRoll=await saved(page);assert.equal(afterRoll.money,93n);assert.equal(afterRoll.revision,preRoll.revision+1);assert.deepEqual(afterRoll.shop.vouchers,preRoll.shop.vouchers);assert.deepEqual(afterRoll.shop.boosters,preRoll.shop.boosters);assert.notDeepEqual(afterRoll.shop.main,preRoll.shop.main);assert.ok(await page.evaluate(()=>testShopBody===document.getElementById('shop_screen')));assert.equal(await page.locator('#shop_reroll').innerText(),'Переброс\n$6');
   await page.screenshot({path:'artifacts/shop-'+width+'x'+height+'.png'});assert.deepEqual(errors,[]);await page.close();console.log('shop buy/sell/reroll/touch/reload '+width+'x'+height);
  }
@@ -76,4 +76,5 @@ try{
  }
  const huge=fixture();huge.shop.main[0].cost=123456789012345678901234567890n;const fit=await browser.newPage();await install(fit,huge);const plaque=fit.locator('[data-offer-id=visible_1] .shop-price');assert.equal(await plaque.innerText(),'$'+huge.shop.main[0].cost);assert.ok(await plaque.evaluate(el=>el.firstChild.getBoundingClientRect().width<=el.clientWidth+1));await fit.close();console.log('long BigInt price fits plaque without truncating stored value');
 }finally{await browser.close();}
+
 

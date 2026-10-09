@@ -1,16 +1,18 @@
+import {getSkipAvailability} from '../core/skip-blind.js';
 import {APK_BLINDS_BY_ID} from '../content/apk-blinds.js';
 import {blindBase} from '../core/blind-progression.js';
 import {APK_TAGS_BY_ID} from '../content/apk-tags.js';
 import {APK_HAND_NAMES} from '../core/apk-shop-state.js';
 import {HAND_NAMES} from './field.js';
+import {appendTooltipContents} from './tooltip-text.js';
 let overlay,controller;
 const russianHands=Object.fromEntries(Object.entries(APK_HAND_NAMES).map(([id,name])=>[name,HAND_NAMES[id]]));
 function node(tag,className,text){const el=document.createElement(tag);if(className)el.className=className;if(text!==undefined)el.textContent=text;return el;}
 /** Ordinary unskipped Small/Big selection. Boss and skip tags remain unavailable. */
-export function renderBlindSelect(state,busy,onSelect){
+export function renderBlindSelect(state,busy,onSelect,onSkip){
  if(state.phase!=='blind_selection'){removeBlindSelect();return;}
  if(overlay&&(overlay.dataset.blindId!==state.round.blindId || overlay.dataset.selection!==JSON.stringify(state.apkBlinds??null)))removeBlindSelect();
- if(overlay){const select=overlay.querySelector('#select_'+state.round.blindId);select.disabled=Boolean(busy);select.onclick=()=>{if(!select.disabled)onSelect?.();};overlay.querySelector('#select_'+state.round.blindId+'_target').textContent=String(state.round.target);return overlay;}
+ if(overlay){for(const id of ['small','big']){const button=overlay.querySelector('#skip_'+id);if(button){const skip=getSkipAvailability(state,id);button.disabled=busy||!skip.available;button.title=skip.reason??'Получить награду и перейти к следующему блайнду';button.onclick=()=>{if(!button.disabled)onSkip?.(id);};}}const select=overlay.querySelector('#select_'+state.round.blindId);select.disabled=Boolean(busy);select.onclick=()=>{if(!select.disabled)onSelect?.();};overlay.querySelector('#select_'+state.round.blindId+'_target').textContent=String(state.round.target);return overlay;}
  overlay=node('section','blind-selection');overlay.id='blind_selection';overlay.dataset.blindId=state.round.blindId;overlay.dataset.selection=JSON.stringify(state.apkBlinds??null);
  controller=new AbortController();
  const closeTip=()=>{overlay?.querySelector('#blind_tag_tooltip')?.remove();overlay?.querySelectorAll('.blind-tag').forEach(b=>b.setAttribute('aria-expanded','false'));};
@@ -32,8 +34,8 @@ export function renderBlindSelect(state,busy,onSelect){
     if(tag){const stamp=node('button','blind-tag',String(tag.order).padStart(2,'0'));stamp.type='button';stamp.id='tag_'+id;stamp.setAttribute('aria-label',tag.name+' — описание награды');stamp.setAttribute('aria-expanded','false');
      stamp.onclick=()=>{const open=stamp.getAttribute('aria-expanded')==='true';closeTip();if(open)return;stamp.setAttribute('aria-expanded','true');
       const tip=node('aside','blind-tag-tooltip');tip.id='blind_tag_tooltip';tip.setAttribute('role','status');
-      tip.append(node('strong','',tag.name),node('p','',tag.description+(tag.id==='tag_orbital'?' Комбинация: '+russianHands[state.apkBlinds.orbitalHands[id]]+'.':'')));overlay.append(tip);};row.append(stamp);}
-    const skip=node('button','red','Пропустить блайнд');skip.id='skip_'+id;skip.type='button';skip.disabled=true;skip.setAttribute('aria-label','Пропустить блайнд — награды за пропуск ещё не реализованы');row.append(skip);lower.append(row);card.append(lower);
+      const availability=getSkipAvailability(state,id);appendTooltipContents(tip,tag.name,[tag.description+(tag.id==='tag_orbital'?' Комбинация: '+russianHands[state.apkBlinds.orbitalHands[id]]+'.':''),...(current&&!availability.available?['Пропуск недоступен: '+availability.reason]:[])]);overlay.append(tip);};row.append(stamp);}
+    const skip=node('button','red','Пропустить блайнд');skip.id='skip_'+id;skip.type='button';const availability=getSkipAvailability(state,id);skip.disabled=busy||!availability.available;skip.title=availability.reason??'Получить награду и перейти к следующему блайнду';skip.setAttribute('aria-label','Пропустить блайнд'+(availability.reason?' — '+availability.reason:''));skip.onclick=()=>{if(!skip.disabled)onSkip?.(id);};row.append(skip);lower.append(row);card.append(lower);
    }
   }else card.append(node('p','blind-choice-unavailable',passed?'Пройден':'В разработке'));
   overlay.append(card);

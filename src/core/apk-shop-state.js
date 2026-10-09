@@ -9,7 +9,7 @@ export const APK_HAND_NAMES={high_card:'High Card',pair:'Pair',two_pair:'Two Pai
 // Consumable ownership and modified playing cards await their own state model.
 export function currentApkShopContext(state) {
  if(!state.apkShop || !state.rng?.apk)throw new TypeError('Missing APK shop state');
- const ownedCentreIds=state.jokers.map(j=>originalJokers[j.entityId]??j.entityId);
+ const ownedCentreIds=[...state.jokers,...(state.consumables??[])].map(j=>originalJokers[j.entityId]??j.entityId);
  const offers=state.shop?[...state.shop.main,...state.shop.vouchers,...state.shop.boosters]:[];
  const identities=[...ownedCentreIds,...offers.map(o=>o.originalKey??o.entityId)];
  if(identities.some(id=>!centres.has(id)))throw new TypeError('Unsupported centre identity');
@@ -18,4 +18,5 @@ export function currentApkShopContext(state) {
  return createApkShopContext({...state.apkShop.context,ante:state.round.ante+(state.phase==='shop'&&state.round.blindId==='boss'?1:0),ownedCentreIds,usedCentreIds,
   shopVoucherIds:state.shop?.vouchers.map(o=>o.originalKey??o.entityId)??[]});
 }
+
 
