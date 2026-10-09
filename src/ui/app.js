@@ -48,7 +48,8 @@ function showMenu(){if(busy)return;closeDialog();renderStartScreen({hasSave:!!st
 function storageError(){openDialog('Не удалось сохранить','<p>Действие не применено. Проверьте свободное место и доступ к сохранению.</p>');}
 async function perform(type,ids,mode,fields={}) {
  if(busy || !state)return;if(type!=='REORDER_HAND')dismissCardTip();busy=true;
- const result=dispatch(state,{type,expectedRevision:state.revision,cardIds:ids,mode,...fields});
+ const action={type,expectedRevision:state.revision,...fields};if(ids!==undefined)action.cardIds=ids;if(mode!==undefined)action.mode=mode;
+ const result=dispatch(state,action);
  if(result.error){busy=false;notice('Действие недоступно');render();return;}
  try{repository.save(result.state);}catch{busy=false;render();storageError();return;}
  const previousRound=state.round,previousScore=state.round.score,previousMoney=state.money;
