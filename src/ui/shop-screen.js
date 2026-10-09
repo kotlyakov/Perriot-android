@@ -7,6 +7,13 @@ let view=null,selected=null,tip=null,held=false,lastMain=null,entryMotion,stageT
 const reduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
 const node=(tag,className,text)=>{const n=document.createElement(tag);if(className)n.className=className;if(text!==undefined)n.textContent=text;return n;};
 export function shopMoneyFontSize(value,width,max=27){return Math.min(max,width/(String(value).length+1)/.66);}
+// Damped spring along the actual flight vector; visual only, no game RNG.
+export function shopReturnFrames(dx,dy){
+ return Array.from({length:61},(_,i)=>{
+  const t=i/60,q=Math.exp(-6*t)*(Math.cos(10*t)+.6*Math.sin(10*t))*(1-t*t);
+  return {translate:`${dx*q}px ${dy*q}px`,offset:t};
+ });
+}
 function money(value,width=56,max=27){const n=node('span','shop-money','$'+value);n.style.fontSize=shopMoneyFontSize(value,width,max)+'px';return n;}
 function rect(n,x,y,w,h){Object.assign(n.style,{left:x+'px',top:y+'px',width:w+'px',height:h+'px'});return n;}
 function dismissTip(){tip?.remove();tip=null;}
@@ -61,14 +68,8 @@ function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
     let finished=false,motion;
     const finish=()=>{if(finished)return;finished=true;motion?.cancel();returning.remove();wrap.style.opacity='';if(cancelReturn===finish)cancelReturn=null;};
     cancelReturn=finish;
-    motion=returning.animate([
-     {translate:returning.style.translate,offset:0,easing:'cubic-bezier(.2,.7,.3,1)'},
-     {translate:'0 0',offset:.68},
-     {translate:'0 -4px',offset:.77},
-     {translate:'0 2px',offset:.86},
-     {translate:'0 -1px',offset:.93},
-     {translate:'0 0',offset:1}
-    ],{duration:440,fill:'forwards',easing:'linear'});
+    const [dx,dy=0]=returning.style.translate.split(' ').map(parseFloat);
+    motion=returning.animate(shopReturnFrames(dx,dy),{duration:720,fill:'forwards',easing:'linear'});
     motion.finished.then(finish,finish);
    }else{returning?.remove();wrap.style.opacity='';}
    card.removeEventListener('pointermove',move);card.removeEventListener('pointerup',end);card.removeEventListener('pointercancel',cancel);card.removeEventListener('lostpointercapture',cancel);card.removeEventListener('keydown',escape);cancelDrag=null;if(card.hasPointerCapture?.(e.pointerId))card.releasePointerCapture(e.pointerId);
@@ -152,3 +153,4 @@ export function renderShop(state,busy,{onAction,onNotice}={}){
  const rerollCost=getRerollCost(state.shop),reroll=rect(node('button','shop-action shop-reroll'),21,107,155,89);reroll.id='shop_reroll';reroll.append(node('span','','Переброс'),money(rerollCost,137,38));reroll.disabled=busy||!canAfford(state.money,rerollCost,state.bankruptAt??0n);reroll.onclick=()=>{clearSelection();onAction?.('REROLL_SHOP',{});};view.append(reroll);
  const signature=main.map(o=>o.id).join('|');if(!fresh&&lastMain!==null&&signature!==lastMain&&!reduced())offers.querySelectorAll('[data-kind=main]').forEach((n,i)=>n.animate([{opacity:0,translate:'0 12px'},{opacity:1,translate:'0 0'}],{duration:220,delay:i*35,easing:'ease-out'}));lastMain=signature;
 }
+
