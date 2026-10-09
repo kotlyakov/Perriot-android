@@ -45,7 +45,7 @@ test('native reroll is atomic when unaffordable or unsupported, and free reroll 
  const s=act(won(),'CASH_OUT').state;s.money=0n;const before=structuredClone(s);
  const denied=act(s,'REROLL_SHOP');assert.equal(denied.error.code,'INSUFFICIENT_FUNDS');assert.strictEqual(denied.state,s);assert.deepEqual(s,before);
  s.shop.freeRerolls=1;const r=act(s,'REROLL_SHOP');assert.equal(r.error,null);assert.equal(r.state.money,0n);assert.equal(getRerollCost(r.state.shop),5n);
- const unsupported=act(r.state,'BUY_SHOP_CARD',{offerId:r.state.shop.main[0].id});assert.equal(unsupported.error.code,'UNSUPPORTED_CONTENT');assert.strictEqual(unsupported.state,r.state);
+ const unaffordable=act(r.state,'BUY_SHOP_CARD',{offerId:r.state.shop.main[0].id});assert.equal(unaffordable.error.code,'INSUFFICIENT_FUNDS');assert.strictEqual(unaffordable.state,r.state);
 });
 test('legacy and old reference runs retain their previous shop transition without retroactive generation',()=>{
  for(const referenceRng of [false,true]){const s=createRun('old',{runId:'old',money:4n,referenceRng});s.phase='round_won';s.round.score=300n;const r=act(s,'CASH_OUT');assert.equal(r.error,null);assert.ok(!Object.hasOwn(r.state,'apkShop'));assert.ok(!Object.hasOwn(r.state,'shop'));assert.deepEqual(deserializeState(serializeState(r.state)),r.state);}
@@ -76,3 +76,4 @@ test('native shop refuses caller-invented next blind configurations without losi
  assert.equal(r.error?.code,'NEXT_BLIND_UNAVAILABLE');assert.strictEqual(r.state,s);assert.deepEqual(s,before);
  assert.deepEqual(deserializeState(serializeState(s)),s);
 });
+

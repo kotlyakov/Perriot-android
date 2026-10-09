@@ -6,6 +6,7 @@ import {canAfford} from './shop-pricing.js';
 import {validateApkRng} from './apk-rng.js';
 import {rerollApkShop} from './apk-shop.js';
 import {currentApkShopContext} from './apk-shop-state.js';
+import {supportsConsumableEffect} from './consumables.js';
 
 const amount=x=>typeof x==='bigint' && x>=0n;
 const count=x=>Number.isSafeInteger(x) && x>=0;
@@ -36,6 +37,14 @@ export function hasJokerSpace(state,offer) {
   const negatives=state.jokers.filter(j=>j.edition==='negative').length;
   return state.jokers.length<slots+negatives+(offer?.edition==='negative'?1:0);
 }
+export function hasConsumableSpace(state,offer){
+ const cards=state.consumables??[],slots=state.consumableSlots??2;
+ return Array.isArray(cards)&&count(slots)&&cards.length<slots+cards.filter(c=>c.edition==='negative').length+(offer?.edition==='negative'?1:0);
+}
+export function canBuyShopCard(state,offer){
+ const consumable=supportsConsumableEffect(offer);
+ return state.phase==='shop'&&(state.inflation??0n)===0n&&(consumable||supportsJoker(offer))&&canAfford(state.money,offer.cost,state.bankruptAt??0n)&&(consumable?hasConsumableSpace(state,offer):hasJokerSpace(state,offer));
+}
 
 // Caller supplies verified offers and RNG producer; no inferred original pool here.
 export function applyShopAction(state,action,{refill,nextRound}={}) {
@@ -52,18 +61,19 @@ export function applyShopAction(state,action,{refill,nextRound}={}) {
   if(action.type==='BUY_SHOP_CARD') {
     const offer=state.shop.main.find(o=>o.id===action.offerId);
     if(!offer)return reject('OFFER_NOT_FOUND','Shop offer is no longer available');
-    if(!supportsJoker(offer) || (state.inflation??0n)!==0n)
+    const consumable=supportsConsumableEffect(offer);
+    if(!consumable&&!supportsJoker(offer) || (state.inflation??0n)!==0n)
       return reject('UNSUPPORTED_CONTENT','Purchase effect is not implemented');
-    if(state.apkShop&&(offer.originalKey!==offer.entityId||offer.set!=='Joker'))return reject('INVALID_STATE','Invalid native Joker identity');
+    if(state.apkShop&&(offer.originalKey!==offer.entityId||!(consumable?['Planet','Spectral'].includes(offer.set):offer.set==='Joker')))return reject('INVALID_STATE','Invalid native offer identity');
     if(state.cards&&Object.hasOwn(state.cards,offer.id))return reject('INVALID_STATE','Instance ID collides with a playing card');
-    if(state.jokers.some(j=>j.id===offer.id))return reject('INVALID_STATE','Instance ID already owned');
-    if(!hasJokerSpace(state,offer))return reject('NO_SPACE','Joker area is full');
+    if([...state.jokers,...(state.consumables??[])].some(j=>j.id===offer.id))return reject('INVALID_STATE','Instance ID already owned');
+    if(!(consumable?hasConsumableSpace(state,offer):hasJokerSpace(state,offer)))return reject('NO_SPACE','Inventory area is full');
     if(!canAfford(state.money,offer.cost,floor))return reject('INSUFFICIENT_FUNDS','Insufficient available money');
     const next=structuredClone(state);
     next.shop.main=next.shop.main.filter(o=>o.id!==offer.id);
-    next.jokers.push(structuredClone(offer));next.money-=offer.cost;
+    if(consumable){next.consumables??=[];next.consumables.push(structuredClone(offer));}else next.jokers.push(structuredClone(offer));next.money-=offer.cost;
     if(next.apkShop)next.apkShop.context=currentApkShopContext(next);
-    return finish(next,[{type:'shop_card_bought',offerId:offer.id,jokerId:offer.id,cost:offer.cost},
+    return finish(next,[{type:'shop_card_bought',offerId:offer.id,...(consumable?{consumableId:offer.id}:{jokerId:offer.id}),cost:offer.cost},
       {type:'money_changed',before:state.money,after:next.money,delta:-offer.cost}]);
   }
   if(action.type==='SELL_JOKER') {
