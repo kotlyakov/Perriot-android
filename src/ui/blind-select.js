@@ -34,7 +34,7 @@ export function renderBlindSelect(state,busy,onSelect,onSkip){
     if(tag){const stamp=node('button','blind-tag',String(tag.order).padStart(2,'0'));stamp.type='button';stamp.id='tag_'+id;stamp.setAttribute('aria-label',tag.name+' — описание награды');stamp.setAttribute('aria-expanded','false');
      stamp.onclick=()=>{const open=stamp.getAttribute('aria-expanded')==='true';closeTip();if(open)return;stamp.setAttribute('aria-expanded','true');
       const tip=node('aside','blind-tag-tooltip');tip.id='blind_tag_tooltip';tip.setAttribute('role','status');
-      appendTooltipContents(tip,tag.name,[tag.description+(tag.id==='tag_orbital'?' Комбинация: '+russianHands[state.apkBlinds.orbitalHands[id]]+'.':'')]);overlay.append(tip);};row.append(stamp);}
+      const availability=getSkipAvailability(state,id);appendTooltipContents(tip,tag.name,[tag.description+(tag.id==='tag_orbital'?' Комбинация: '+russianHands[state.apkBlinds.orbitalHands[id]]+'.':''),...(current&&!availability.available?['Пропуск недоступен: '+availability.reason]:[])]);overlay.append(tip);};row.append(stamp);}
     const skip=node('button','red','Пропустить блайнд');skip.id='skip_'+id;skip.type='button';const availability=getSkipAvailability(state,id);skip.disabled=busy||!availability.available;skip.title=availability.reason??'Получить награду и перейти к следующему блайнду';skip.setAttribute('aria-label','Пропустить блайнд'+(availability.reason?' — '+availability.reason:''));skip.onclick=()=>{if(!skip.disabled)onSkip?.(id);};row.append(skip);lower.append(row);card.append(lower);
    }
   }else card.append(node('p','blind-choice-unavailable',passed?'Пройден':'В разработке'));
