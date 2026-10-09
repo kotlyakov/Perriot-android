@@ -39,7 +39,7 @@ function openDialog(title,body,actions=[['Закрыть',closeDialog]]) {
   dialogMotion=dialog.animate([{translate:`0 ${distance}px`},{translate:'0 0'}],{duration:360,easing:'cubic-bezier(.16,1,.3,1)'});
  }
 }
-function render(hand=state?.hand,scoringPreview=null){if(state){renderField(!busy?roundDeckView({...state,hand}):{...state,hand},selected,busy,toggle,reorder,scoringPreview);renderPostRound(state,busy&&!state.shop,()=>perform('CASH_OUT'));renderShop(state,busy,{onAction:(type,fields)=>perform(type,undefined,undefined,fields),onNotice:notice});renderBlindSelect(state,busy,()=>perform('START_BLIND'),blindId=>perform('SKIP_BLIND',undefined,undefined,{blindId}));for(const id of ['blind_panel','blind_title','blind_token','blind_target','hand','hand_count','play_hand','discard','sort_panel','sort_label','sort_rank','sort_suit'])document.getElementById(id).hidden=state.phase==='blind_selection'||(state.phase==='shop'&&!!state.shop)||(!busy&&['round_won','shop'].includes(state.phase));}}
+function render(hand=state?.hand,scoringPreview=null){if(state){renderField(!busy?roundDeckView({...state,hand}):{...state,hand},selected,busy,toggle,reorder,scoringPreview);renderPostRound(state,busy&&!state.shop,()=>perform('CASH_OUT'));renderShop(state,busy,{onAction:(type,fields)=>perform(type,undefined,undefined,fields),onNotice:notice});renderBlindSelect(state,busy,()=>perform('START_BLIND'),blindId=>perform('SKIP_BLIND',undefined,undefined,{blindId}));for(const id of ['blind_panel','blind_title','blind_token','blind_target','hand','hand_count','play_hand','discard','sort_panel','sort_label','sort_rank','sort_suit'])document.getElementById(id).hidden=state.phase==='blind_selection'||(['shop','pack'].includes(state.phase)&&!!state.shop)||(!busy&&['round_won','shop','pack'].includes(state.phase));}}
 function toggle(id){if(busy || state?.phase!=='playing')return;dismissCardTip();if(selected.has(id))selected.delete(id);else if(selected.size<5)selected.add(id);else {notice('Можно выбрать до 5 карт');return;}render();}
 async function reorder(id,to){const movement=prepareHandMovement();const ids=[...state.hand],from=ids.indexOf(id);ids.splice(from,1);ids.splice(to,0,id);if(to===from){render();await movement();return;}await perform('REORDER_HAND',ids);await movement();}
 function newState({deckId='red',seed}={}){return createRun(seed??crypto.randomUUID().replaceAll('-','').slice(0,8).toUpperCase(),{runId:crypto.randomUUID(),deckId,money:4n,referenceRng:true,referenceShop:true,reducedMotion:matchMedia('(prefers-reduced-motion: reduce)').matches});}
@@ -48,7 +48,8 @@ function showMenu(){if(busy)return;closeDialog();renderStartScreen({hasSave:!!st
 function storageError(){openDialog('Не удалось сохранить','<p>Действие не применено. Проверьте свободное место и доступ к сохранению.</p>');}
 async function perform(type,ids,mode,fields={}) {
  if(busy || !state)return;if(type!=='REORDER_HAND')dismissCardTip();busy=true;
- const result=dispatch(state,{type,expectedRevision:state.revision,cardIds:ids,mode,...fields});
+ const action={type,expectedRevision:state.revision,...fields};if(ids!==undefined)action.cardIds=ids;if(mode!==undefined)action.mode=mode;
+ const result=dispatch(state,action);
  if(result.error){busy=false;notice('Действие недоступно');render();return;}
  try{repository.save(result.state);}catch{busy=false;render();storageError();return;}
  const previousRound=state.round,previousScore=state.round.score,previousMoney=state.money;
@@ -92,7 +93,7 @@ document.getElementById('play_hand').onclick=()=>perform('PLAY_HAND',[...selecte
 document.getElementById('discard').onclick=()=>perform('DISCARD',[...selected]);
 function sort(mode){if(busy || state?.phase!=='playing')return;perform('SET_SORT',undefined,mode);}
 document.getElementById('sort_rank').onclick=()=>sort('rank');document.getElementById('sort_suit').onclick=()=>sort('suit');
-function showSettings(){openDialog('Настройки','<p>Пьеро · промежуточная сборка 0.4.11</p><p>Переходы анте и обычные боссы, скрытые карты, магазин и 32 эффекта джокеров. «Буйвол» доступен при сохранённой однозначной любимой комбинации. Финальные боссы, остальные товары, наборы и ваучеры ещё недоступны. Продолжение сохраняется после каждого действия.</p>',[['Продолжить',closeDialog],['Новый забег',()=>confirmNew()],['Главное меню',showMenu]]);}
+function showSettings(){openDialog('Настройки','<p>Пьеро · промежуточная сборка 0.4.13</p><p>Переходы анте и обычные боссы, скрытые карты, магазин, 32 эффекта джокеров, Планеты и Небесные наборы. Финальные боссы, остальные товары, наборы и ваучеры ещё недоступны. Продолжение сохраняется после каждого действия.</p>',[['Продолжить',closeDialog],['Новый забег',()=>confirmNew()],['Главное меню',showMenu]]);}
 document.getElementById('options').onclick=showSettings;
 document.getElementById('run_info').onclick=()=>{
  if(!state)return;const table=document.createElement('table');

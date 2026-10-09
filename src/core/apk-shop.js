@@ -97,7 +97,7 @@ function session(rng,context){
   if(['Base','Enhanced'].includes(type)&&illusion&&random('illusion')>0.8){const ep=random('illusion');offer.edition=ep>0.85?'polychrome':ep>0.5?'holographic':'foil';reprice(offer);}
   if(reroll)juice();return offer;
  });
- return {random,unkeyed,select,construct,main,get rng(){return current;}};
+ return {random,unkeyed,select,construct,main,usedHas:id=>used.has(id),get rng(){return current;}};
 }
 export function chooseApkVoucher(rng,context){context=createApkShopContext(context);const s=session(rng,context);return {voucherId:s.select('Voucher'),rng:s.rng};}
 export function generateApkShop(rng,context,{voucherId,firstShopBuffoon=false,instancePrefix='shop'}={}){
@@ -124,3 +124,28 @@ export function rerollApkShop(rng,context,{previousMain=[],instancePrefix='rerol
  const retained=context.usedCentreIds.filter(id=>!removed.has(id)||context.ownedCentreIds.includes(id));
  const s=session(rng,{...context,usedCentreIds:retained});return {main:s.main(instancePrefix,true),rng:s.rng};
 }
+
+const telescopeHands=['Flush Five','Flush House','Five of a Kind','Straight Flush','Four of a Kind','Full House','Flush','Straight','Three of a Kind','Two Pair','Pair','High Card'];
+export function generateApkCelestialPack(rng,context,{size,instancePrefix='celestial'}={}){
+ context=createApkShopContext(context);
+ if(![3,5].includes(size)||typeof instancePrefix!=='string'||!instancePrefix)throw new TypeError('Invalid Celestial pack options');
+ const s=session(rng,context),showman=context.ownedCentreIds.includes('j_ring_master');
+ let telescopePlanet=null;
+ if(context.usedVoucherIds.includes('v_telescope')){
+  let tally=0,hand=null;
+  for(const candidate of telescopeHands)if(context.visibleHandOrder.includes(candidate)&&(context.playedHands[candidate]??0)>tally){hand=candidate;tally=context.playedHands[candidate];}
+  telescopePlanet=pools.Planet.find(card=>card.handType===hand)?.key??null;
+ }
+ const cards=[];
+ for(let index=0;index<size;index++){
+  const forced=index===0?telescopePlanet:null;
+  let id=forced;
+  if(!forced){
+   if((!s.usedHas('c_black_hole')||showman)&&s.random('soul_Planet'+context.ante)>0.997)id='c_black_hole';
+  }
+  if(!id||context.bannedCentreIds.includes(id))id=s.select('Planet','pl1');
+  cards.push(s.construct(id,`${instancePrefix}_${index+1}`));
+ }
+ return {cards,rng:s.rng};
+}
+

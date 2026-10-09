@@ -1,5 +1,6 @@
 import {applySkipBlind} from './skip-blind.js';
 import {applyConsumableAction} from './consumables.js';
+import {applyCelestialPackAction} from './celestial-pack.js';
 import {canEnterBoss,chooseHookDiscards,resolveMostPlayedHand} from './boss-effects.js';
 import {applyInventoryAction} from './inventory.js';
 import {chooseNextAnteBlinds} from './blind-progression.js';
@@ -81,6 +82,7 @@ export function dispatch(state, action, shopOptions={}) {
   if (!Number.isSafeInteger(state.revision) || state.revision<0 || state.revision===Number.MAX_SAFE_INTEGER) return reject('INVALID_STATE','Invalid revision');
   if(['REORDER_JOKERS','REORDER_CONSUMABLES','SELL_OWNED_CARD'].includes(action.type))return applyInventoryAction(state,action);
   if(action.type==='USE_CONSUMABLE')return applyConsumableAction(state,action);
+  if(['OPEN_BOOSTER','USE_PACK_CARD','SKIP_PACK'].includes(action.type))return applyCelestialPackAction(state,action);
   if(action.type==='SKIP_BLIND')return applySkipBlind(state,action);
   if(['BUY_SHOP_CARD','SELL_JOKER','REROLL_SHOP','LEAVE_SHOP'].includes(action.type))return applyShopAction(state,action,shopOptions);
   if(action.type==='CASH_OUT') {
