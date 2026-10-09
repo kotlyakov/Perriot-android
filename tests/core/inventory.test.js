@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createRun,dispatch} from '../../src/core/run.js';
+import {scoreHand} from '../../src/core/score.js';
 import {serializeState,deserializeState} from '../../src/persistence/save.js';
 const fresh=()=>{const s=createRun('inventory',{runId:'inventory',money:4n});s.jokers=[{id:'a',entityId:'j_joker',sellCost:2n},{id:'b',entityId:'j_duo',sellCost:4n}];return s;};
 const act=(s,type,fields)=>dispatch(s,{type,expectedRevision:s.revision,...fields});
@@ -25,4 +26,12 @@ test('known consumables reorder and sell without executing use effects, survivin
  assert.deepEqual(deserializeState(serializeState(r.state)).consumables.map(c=>c.id),['d','c']);
  const sale=act(r.state,'SELL_OWNED_CARD',{area:'consumables',cardId:'c'});assert.equal(sale.error,null);assert.equal(sale.state.money,5n);
  assert.equal(deserializeState(serializeState(sale.state)).consumables.length,1);
+});
+
+test('reordered Jokers change real scoring order for addition followed by multiplication',()=>{
+ const s=fresh();s.jokers[0].entityId='j_joker';
+ const cards=[s.cards.card_hearts_2,s.cards.card_clubs_2];
+ assert.equal(scoreHand(s,cards).score,168n);
+ const r=act(s,'REORDER_JOKERS',{cardIds:['b','a']});
+ assert.equal(r.error,null);assert.equal(scoreHand(r.state,cards).score,112n);
 });
