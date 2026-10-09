@@ -1,3 +1,4 @@
+import {canEnterFirstAnteBoss,chooseHookDiscards} from './boss-effects.js';
 import {chooseApkBoss} from './apk-blinds.js';
 import {createApkTagContext,chooseApkTag,chooseApkOrbitalHand} from './apk-tags.js';
 import {sortHand,SORT_MODES} from './sort.js';
@@ -37,7 +38,7 @@ export function createRun(seed, {runId,deckId='red',money,referenceRng=false,ref
       const context=createApkShopContext({reducedMotion}),voucher=chooseApkVoucher(rng,context);rng=voucher.rng;
       const tagContext=createApkTagContext(),small=chooseApkTag(rng,tagContext),big=chooseApkTag(small.rng,tagContext);rng=big.rng;
       state.apkBlinds={version:1,ante:1,bossId:boss.bossId,bossesUsed:boss.bossesUsed,
-        tags:{small:small.tagId,big:big.tagId},orbitalHands:{},tagContext};
+        tags:{small:small.tagId,big:big.tagId},orbitalHands:{},tagContext,playedCardIds:[]};
       state.roundNumber=1;state.apkShop={version:1,voucherId:voucher.voucherId,firstShopBuffoon:false,context};
     }
     const shuffled=shuffleApkDeck(cards,rng,'shuffle');state.drawPile=shuffled.cardIds;state.rng.apk=shuffled.rng;
@@ -66,7 +67,7 @@ export function dispatch(state, action, shopOptions={}) {
   if(action.type==='CASH_OUT') {
     if(state.phase!=='round_won')return reject('INVALID_PHASE','Round has not been won');
     let quote;try{quote=getCashout(state);}catch{return reject('INVALID_STATE','Invalid cashout state');}
-    const next=structuredClone(state);next.money+=quote.total;next.phase='shop';next.revision++;
+    const next=structuredClone(state);if(next.bossState){next.round.handSize=next.bossState.baseHandSize;delete next.bossState;next.apkBlinds.playedCardIds=[];}next.money+=quote.total;next.phase='shop';next.revision++;
     next.drawPile=Object.keys(next.cards);next.hand=[];next.discardPile=[];next.lastScore=null;
     if(next.apkShop){
       try{
@@ -84,7 +85,13 @@ export function dispatch(state, action, shopOptions={}) {
   }
   if (action.type==='START_BLIND') {
     if (state.phase!=='blind_selection') return reject('INVALID_PHASE','Not selecting a blind');
+    if(state.round.blindId==='boss'&&!canEnterFirstAnteBoss(state))return reject('BOSS_UNAVAILABLE','Boss lifecycle is unavailable');
     const next=structuredClone(state);const events=[];
+    if(next.round.blindId==='boss'){
+      next.bossState={version:1,id:next.apkBlinds.bossId,playedBeforeBoss:[...next.apkBlinds.playedCardIds],baseHandSize:next.round.handSize};
+      if(next.bossState.id==='bl_manacle')next.round.handSize--;
+      next.roundNumber=3;
+    }
     if(next.rng.apk){
       const shuffled=shuffleApkDeck(next.drawPile.map(id=>next.cards[id]),next.rng.apk,'nr'+next.round.ante);next.drawPile=shuffled.cardIds;next.rng.apk=shuffled.rng;
     }else for(let i=next.drawPile.length-1;i>0;i--) {
@@ -121,7 +128,14 @@ export function dispatch(state, action, shopOptions={}) {
   }
   const next=structuredClone(state);const events=[];
   next.hand=next.hand.filter(id=>!selected.has(id));next.discardPile.push(...playedIds);
+  if(score&&next.bossState?.id==='bl_hook'){
+    const forced=chooseHookDiscards(next.rng.apk,next.hand);next.rng.apk=forced.rng;
+    const discarded=next.hand.filter(id=>forced.cardIds.includes(id));
+    next.hand=next.hand.filter(id=>!forced.cardIds.includes(id));next.discardPile.push(...discarded);
+    if(discarded.length)events.push({type:'cards_forced_discarded',cardIds:discarded});
+  }
   if (score) {
+    if(next.apkBlinds?.playedCardIds)for(const id of playedIds)if(!next.apkBlinds.playedCardIds.includes(id))next.apkBlinds.playedCardIds.push(id);
     next.round.handsRemaining--;next.round.score+=score.score;next.lastScore=score;
     if (!next.discoveredHands.includes(score.handId)) next.discoveredHands.push(score.handId);
     if(next.apkShop){const name=APK_HAND_NAMES[score.handId];next.apkShop.context.playedHands[name]=(next.apkShop.context.playedHands[name]??0)+1;}

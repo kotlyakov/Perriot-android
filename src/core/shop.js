@@ -1,3 +1,4 @@
+import {canEnterFirstAnteBoss} from './boss-effects.js';
 import {SUPPORTED_JOKERS,supportsJoker} from '../content/jokers.js';
 import {canAfford} from './shop-pricing.js';
 import {validateApkRng} from './apk-rng.js';
@@ -101,11 +102,12 @@ export function applyShopAction(state,action,{refill,nextRound}={}) {
   }
   if(action.type==='LEAVE_SHOP') {
     if(state.apkShop){
-      if(nextRound||state.round.blindId!=='small'||state.round.ante!==1)return reject('NEXT_BLIND_UNAVAILABLE','Next boss lifecycle is not implemented');
+      const boss=state.round.blindId==='big'&&canEnterFirstAnteBoss(state);
+      if(nextRound||state.round.ante!==1||state.round.blindId!=='small'&&!boss)return reject('NEXT_BLIND_UNAVAILABLE','Next blind lifecycle is unavailable');
       const next=structuredClone(state);next.phase='blind_selection';next.shop=null;
-      next.round={...next.round,blindId:'big',target:450n,score:0n,handsRemaining:next.deckId==='blue'?5:4,discardsRemaining:next.deckId==='red'?4:3};
+      next.round={...next.round,blindId:boss?'boss':'big',target:boss?600n:450n,score:0n,handsRemaining:next.deckId==='blue'?5:4,discardsRemaining:next.deckId==='red'?4:3};
       next.hand=[];next.discardPile=[];next.apkShop.context=currentApkShopContext(next);
-      return finish(next,[{type:'shop_left',nextBlindId:'big'}]);
+      return finish(next,[{type:'shop_left',nextBlindId:next.round.blindId}]);
     }
     if(!nextRound || typeof nextRound.blindId!=='string' || !amount(nextRound.target) || nextRound.target===0n ||
       !count(nextRound.ante) || nextRound.ante===0 || nextRound.score!==0n || !count(nextRound.handsRemaining) ||
@@ -116,3 +118,4 @@ export function applyShopAction(state,action,{refill,nextRound}={}) {
   }
   return reject('UNKNOWN_ACTION','Unsupported shop action');
 }
+

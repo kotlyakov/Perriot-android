@@ -1,3 +1,4 @@
+import {APK_BLINDS_BY_ID} from '../content/apk-blinds.js';
 import {getCashout} from '../core/cashout.js';
 // Outside the active blind, the deck preview represents the full run deck.
 export function roundDeckView(state){return state.phase==='round_won'?{...state,hand:[],discardPile:[],drawPile:Object.keys(state.cards)}:state;}
@@ -15,7 +16,7 @@ export function renderPostRound(state,busy,cashout){
  if(phase==='round_won'){
   const quote=getCashout(state),button=document.createElement('button');button.id='cashout';button.className='orange';button.textContent='Обналичить: $'+quote.total;button.onclick=cashout;panel.append(button);
   const reward=document.createElement('div');reward.className='payout-blind';
-  const token=document.createElement('div');token.className='token';token.textContent=state.round.blindId==='big'?'БОЛЬШОЙ\nБЛАЙНД':'МАЛЫЙ\nБЛАЙНД';
+  const token=document.createElement('div');token.className='token';token.textContent=state.round.blindId==='boss'?APK_BLINDS_BY_ID[state.apkBlinds.bossId].name:state.round.blindId==='big'?'БОЛЬШОЙ\nБЛАЙНД':'МАЛЫЙ\nБЛАЙНД';
   const target=document.createElement('div');target.className='payout-target';target.textContent='Минимум очков';const score=document.createElement('strong');score.className='scarlet';score.textContent=state.round.target;target.append(score);
   const amount=document.createElement('strong');amount.className='gold';amount.textContent='$'.repeat(Number(quote.reward));reward.append(token,target,amount);panel.append(reward);
   function row(className,value,label,total){const item=document.createElement('div');item.className='payout-row '+className;const n=document.createElement('strong');n.textContent=value;const text=document.createElement('span');text.textContent=label;const dollars=document.createElement('strong');dollars.className='gold';dollars.textContent='$'+total;item.append(n,text,dollars);panel.append(item);}
@@ -27,3 +28,4 @@ export function renderPostRound(state,busy,cashout){
  document.getElementById('stage').append(panel);
  if(!matchMedia('(prefers-reduced-motion: reduce)').matches)motion=panel.animate([{translate:'0 488px'},{translate:'0 0'}],{duration:360,easing:'cubic-bezier(.16,1,.3,1)'});
 }
+

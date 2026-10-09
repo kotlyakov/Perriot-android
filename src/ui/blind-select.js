@@ -17,7 +17,7 @@ export function renderBlindSelect(state,busy,onSelect){
  document.addEventListener('click',e=>{if(!e.target.closest('.blind-tag,#blind_tag_tooltip'))closeTip();},{signal:controller.signal});overlay.setAttribute('aria-label','Выбор блайнда');
  overlay.append(node('h2','blind-selection-prompt','Выберите ваш\nследующий блайнд'));
  for(const [id,name] of [['small','Малый блайнд'],['big','Большой блайнд'],['boss','Босс']]){
-  const current=id===state.round.blindId,passed=id==='small'&&state.round.blindId==='big';
+  const current=id===state.round.blindId,passed=id!=='boss'&&(state.round.blindId==='boss'||id==='small'&&state.round.blindId==='big');
   const card=node('section','blind-choice blind-choice-'+id);card.setAttribute('aria-label',name);
   const select=node('button','blind-choice-select orange',current?'Выбрать':passed?'Пройден':'В разработке');select.type='button';select.id='select_'+id;select.disabled=!current||Boolean(busy);select.onclick=()=>{if(current&&!select.disabled)onSelect?.();};card.append(select,node('h3','blind-choice-name',name));
   if(current || state.apkBlinds && !passed){

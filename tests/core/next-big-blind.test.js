@@ -7,7 +7,9 @@ test('leaving first native shop selects exact Big Blind and preserves money owne
  assert.equal(dispatch(r.state,{type:'LEAVE_SHOP',expectedRevision:s.revision}).error.code,'STALE_ACTION');
  const expected=shuffleApkDeck(Object.values(r.state.cards),r.state.rng.apk,'nr1');const play=act(r.state,'START_BLIND');assert.equal(play.error,null);assert.deepEqual(play.state.rng.apk,expected.rng);assert.notEqual(play.state.rng.apk.streams.nr1,s.rng.apk.streams.nr1);assert.deepEqual(deserializeState(serializeState(play.state)),play.state);
 });
-test('Big payout uses four dollars and keeps same ante voucher without inventing boss',()=>{
+test('Big payout keeps its voucher and enters the already assigned boss without RNG',()=>{
  const s=act(smallShop(),'LEAVE_SHOP').state;s.phase='round_won';s.round.score=450n;s.round.handsRemaining=2;const quote=getCashout(s);assert.equal(quote.reward,4n);
- const r=act(s,'CASH_OUT');assert.equal(r.error,null);assert.equal(r.state.money,s.money+quote.total);assert.equal(r.state.apkShop.voucherId,s.apkShop.voucherId);assert.equal(r.state.round.ante,1);assert.deepEqual(deserializeState(serializeState(r.state)),r.state);const next=act(r.state,'LEAVE_SHOP');assert.equal(next.error.code,'NEXT_BLIND_UNAVAILABLE');assert.strictEqual(next.state,r.state);
+ const r=act(s,'CASH_OUT');assert.equal(r.error,null);assert.equal(r.state.money,s.money+quote.total);assert.equal(r.state.apkShop.voucherId,s.apkShop.voucherId);assert.equal(r.state.round.ante,1);assert.deepEqual(deserializeState(serializeState(r.state)),r.state);const next=act(r.state,'LEAVE_SHOP');assert.equal(next.error,null);assert.equal(next.state.round.blindId,'boss');assert.equal(next.state.round.target,600n);assert.deepEqual(next.state.rng,r.state.rng);assert.equal(next.state.apkBlinds.bossId,r.state.apkBlinds.bossId);assert.deepEqual(deserializeState(serializeState(next.state)),next.state);
+ const old=structuredClone(r.state);delete old.apkBlinds.playedCardIds;const gated=act(old,'LEAVE_SHOP');assert.equal(gated.error.code,'NEXT_BLIND_UNAVAILABLE');assert.strictEqual(gated.state,old);
 });
+

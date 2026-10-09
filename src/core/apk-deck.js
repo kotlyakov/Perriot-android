@@ -8,7 +8,7 @@ const RANKS = { 10: 'T', 11: 'J', 12: 'Q', 13: 'K', 14: 'A' };
 // follows ASCII prototype order C,D,H,S / 2..9,A,J,K,Q,T, not numeric rank.
 // Modified/added duplicate cards need explicit persistent sort_id support and
 // are deliberately outside this module's verified scope. See deck-generation.md.
-function canonicalCards(cards) {
+export function canonicalCards(cards) {
   if (!cards || typeof cards !== 'object') throw new TypeError('Expected plain cards');
   const list = Array.isArray(cards) ? [...cards] : Object.entries(cards).map(([id, card]) => {
     if (card?.id !== id) throw new TypeError('Card registry key must match its identity');
@@ -38,3 +38,4 @@ export function shuffleApkDeck(cards, rng, key) {
   }
   return { cardIds, rng: { ...seed.rng, mathState } };
 }
+

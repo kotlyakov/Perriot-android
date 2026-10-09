@@ -1,3 +1,4 @@
+import {canEnterFirstAnteBoss} from '../core/boss-effects.js';
 import {describeShopItem} from '../content/shop-display.js';
 import {getRerollCost,hasJokerSpace} from '../core/shop.js';
 import {canAfford} from '../core/shop-pricing.js';
@@ -149,7 +150,7 @@ export function renderShop(state,busy,{onAction,onNotice}={}){
  state.shop.boosters.forEach((o,i)=>offers.append(choice(o,'booster',i,state,busy,callbacks,364+i*127,246,111,181)));
  renderOwned(state,busy,callbacks);
  view.querySelectorAll('.shop-action').forEach(n=>n.remove());
- const next=rect(node('button','shop-action shop-next'),20,19,156,82);next.id='shop_next_round';next.append(node('span','','Следующий'),node('strong','','Раунд'));next.disabled=busy||state.round.blindId!=='small';next.title=state.round.blindId==='small'?'Перейти к большому блайнду':'Следующий блайнд пока недоступен';next.onclick=()=>onAction?.('LEAVE_SHOP',{});view.append(next);
+ const next=rect(node('button','shop-action shop-next'),20,19,156,82);next.id='shop_next_round';next.append(node('span','','Следующий'),node('strong','','Раунд'));const boss=state.round.blindId==='big'&&canEnterFirstAnteBoss(state);next.disabled=busy||state.round.blindId!=='small'&&!boss;next.title=state.round.blindId==='small'?'Перейти к большому блайнду':boss?'Перейти к выбранному боссу':'Следующий блайнд пока недоступен';next.onclick=()=>onAction?.('LEAVE_SHOP',{});view.append(next);
  const rerollCost=getRerollCost(state.shop),reroll=rect(node('button','shop-action shop-reroll'),21,107,155,89);reroll.id='shop_reroll';reroll.append(node('span','','Переброс'),money(rerollCost,137,38));reroll.disabled=busy||!canAfford(state.money,rerollCost,state.bankruptAt??0n);reroll.onclick=()=>{clearSelection();onAction?.('REROLL_SHOP',{});};view.append(reroll);
  const signature=main.map(o=>o.id).join('|');if(!fresh&&lastMain!==null&&signature!==lastMain&&!reduced())offers.querySelectorAll('[data-kind=main]').forEach((n,i)=>n.animate([{opacity:0,translate:'0 12px'},{opacity:1,translate:'0 0'}],{duration:220,delay:i*35,easing:'ease-out'}));lastMain=signature;
 }

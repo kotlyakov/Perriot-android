@@ -1,3 +1,5 @@
+import {isBossCardDebuffed} from '../core/boss-effects.js';
+import {APK_BLINDS_BY_ID} from '../content/apk-blinds.js';
 import {animateNumber} from './number-animation.js';
 import {showFlame} from './flame.js';
 import {pipArtwork,suitSvg} from './card-art.js';
@@ -25,7 +27,8 @@ export function showNumbers(chips,mult,animate=false){
 export function dismissCardTip(){document.querySelector('.card-tip')?.remove();}
 export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=null) {
  document.getElementById('deck').dataset.deck=state.deckId;
- text('target_value',state.round.target);text('blind_title',state.round.blindId==='big'?'Большой блайнд':'Малый блайнд');document.querySelector('#blind_token span').textContent=state.round.blindId==='big'?'БОЛЬШОЙ\nБЛАЙНД':'МАЛЫЙ\nБЛАЙНД';document.querySelector('#blind_target b').textContent=state.round.blindId==='big'?'$$$$':'$$$';document.querySelector('#round strong').textContent=state.roundNumber??1;animateNumber(document.getElementById('round_score_value'),state.round.score,{format:displayInteger});animateNumber(document.getElementById('hands_value'),state.round.handsRemaining);animateNumber(document.getElementById('discards_value'),state.round.discardsRemaining);text('money_value','$'+state.money);
+ const boss=state.round.blindId==='boss'?APK_BLINDS_BY_ID[state.apkBlinds?.bossId]:null;
+ text('target_value',state.round.target);text('blind_title',boss?boss.name:state.round.blindId==='big'?'Большой блайнд':'Малый блайнд');document.querySelector('#blind_token span').textContent=boss?boss.name:state.round.blindId==='big'?'БОЛЬШОЙ\nБЛАЙНД':'МАЛЫЙ\nБЛАЙНД';document.querySelector('#blind_target b').textContent=boss?'$$$$$':state.round.blindId==='big'?'$$$$':'$$$';document.querySelector('#round strong').textContent=state.roundNumber??1;animateNumber(document.getElementById('round_score_value'),state.round.score,{format:displayInteger});animateNumber(document.getElementById('hands_value'),state.round.handsRemaining);animateNumber(document.getElementById('discards_value'),state.round.discardsRemaining);text('money_value','$'+state.money);
  text('hand_count',state.hand.length+'/'+state.round.handSize);text('deck_count',state.drawPile.length+'/'+Object.keys(state.cards).length);text('joker_count',state.jokers.length+'/5');
  const played=state.hand.filter(id=>selected.has(id)).map(id=>state.cards[id]);
  let preview=scoringPreview;try{if(!preview && played.length)preview=scoreHand(state,played);}catch{}
@@ -47,11 +50,11 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
  const start=478+(fanWidth-115-gap*(state.hand.length-1))/2;
  state.hand.forEach((id,i)=>{
    const card=state.cards[id],b=document.createElement('button'),middle=(state.hand.length-1)/2,tilt=state.hand.length>1?(i-middle)*1.35:0;
-   b.className='playing-card'+(selected.has(id)?' selected':'');b.dataset.cardId=id;
-   b.setAttribute('aria-label',`${rankLabel(card.rank)} ${({clubs:'трефы',diamonds:'бубны',hearts:'червы',spades:'пики'})[card.suit]}`);b.setAttribute('aria-pressed',selected.has(id));
+   const debuffed=isBossCardDebuffed(state,card);b.className='playing-card'+(selected.has(id)?' selected':'')+(debuffed?' boss-debuffed':'');b.dataset.cardId=id;
+   b.setAttribute('aria-label',`${rankLabel(card.rank)} ${({clubs:'трефы',diamonds:'бубны',hearts:'червы',spades:'пики'})[card.suit]}${debuffed?' — ослаблена':''}`);b.setAttribute('aria-pressed',selected.has(id));
    const left=start+i*gap,top=388+Math.abs(i-middle)*2.5-(selected.has(id)?28:0);
    Object.assign(b.style,{left:left+'px',top:top+'px',transform:`rotate(${tilt}deg)`,zIndex:String(3+i),color:SUITS[card.suit][1]});
-   b.innerHTML=cardMarkup(card);b.disabled=busy || !playing;
+   b.innerHTML=cardMarkup(card)+(debuffed?'<span class=debuff-stamp>Ослаблена</span>':'');b.disabled=busy || !playing;
    // Touch emits a compatibility click with detail=0 after pointerup. Only
    // keyboard/programmatic clicks need this path; pointers already toggled.
    b.addEventListener('click',e=>{if(e.detail===0 && !e.pointerType && !e.sourceCapabilities?.firesTouchEvents)onCard(id);});
@@ -59,7 +62,7 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
      if(b.disabled || e.button!==0)return;e.preventDefault();b.setPointerCapture(e.pointerId);
      document.querySelector('.card-tip')?.remove();
      const tip=document.createElement('div');tip.className='card-tip';tip.setAttribute('role','tooltip');
-     tip.innerHTML=`<strong>${rankLabel(card.rank)} <span style="color:${SUITS[card.suit][1]}">${({clubs:'треф',diamonds:'бубен',hearts:'червей',spades:'пик'})[card.suit]}</span></strong><p><span>+${card.rank===14?11:Math.min(card.rank,10)}</span> очков</p>`;
+     tip.innerHTML=`<strong>${rankLabel(card.rank)} <span style="color:${SUITS[card.suit][1]}">${({clubs:'треф',diamonds:'бубен',hearts:'червей',spades:'пик'})[card.suit]}</span></strong><p><span>+${debuffed?0:card.rank===14?11:Math.min(card.rank,10)}</span> очков</p>${debuffed?'<p>Не даёт фишек и не запускает эффекты джокеров за эту карту.</p>':''}`;
      tip.dataset.cardId=id;
      const placeTip=()=>{tip.style.left=Math.max(8,Math.min(1348,parseFloat(b.style.left)-32))+'px';tip.style.top=Math.max(8,parseFloat(b.style.top)-100)+'px';};placeTip();
      const x=e.clientX,y=e.clientY,scale=document.getElementById('stage').getBoundingClientRect().width/1536;let dragged=false,to=i,held=false;
@@ -83,3 +86,4 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
    if(id===focusedCard)b.focus({preventScroll:true});
  });
 }
+
