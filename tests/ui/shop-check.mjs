@@ -28,7 +28,7 @@ async function blindGeometry(page){
  const values=await page.locator('.blind-choice').evaluateAll(nodes=>nodes.map(el=>{const b=el.getBoundingClientRect();return{width:b.width,height:b.height,top:b.top,font:getComputedStyle(el.querySelector('.blind-choice-select')).fontSize};}));
  for(const value of values){for(const key of ['width','height','top'])assert.ok(Math.abs(value[key]-values[0][key])<=1,'Blind panel geometry must match');assert.equal(value.font,values[0].font,'Blind status fonts must match');}
  assert.ok(await page.locator('.blind-choice-unavailable').evaluateAll(nodes=>nodes.every(el=>getComputedStyle(el).fontSize===getComputedStyle(document.querySelector('.blind-choice-select')).fontSize)));
- assert.ok(await page.locator('.blind-choice-skip button').evaluate(button=>{const b=button.getBoundingClientRect(),p=button.closest('.blind-choice').getBoundingClientRect();return b.left>=p.left&&b.right<=p.right&&b.top>=p.top&&b.bottom<=p.bottom;}),'Skip button must fit panel');
+ assert.ok(await page.locator('.blind-choice-skip button').evaluateAll(buttons=>buttons.length>0&&buttons.every(button=>{const b=button.getBoundingClientRect(),p=button.closest('.blind-choice').getBoundingClientRect();return b.left>=p.left&&b.right<=p.right&&b.top>=p.top&&b.bottom<=p.bottom;})),'Skip controls must fit their panels');
 }
 try{
  for(const [width,height] of [[1536,688],[915,412],[568,320],[360,800]]){
@@ -76,3 +76,4 @@ try{
  }
  const huge=fixture();huge.shop.main[0].cost=123456789012345678901234567890n;const fit=await browser.newPage();await install(fit,huge);const plaque=fit.locator('[data-offer-id=visible_1] .shop-price');assert.equal(await plaque.innerText(),'$'+huge.shop.main[0].cost);assert.ok(await plaque.evaluate(el=>el.firstChild.getBoundingClientRect().width<=el.clientWidth+1));await fit.close();console.log('long BigInt price fits plaque without truncating stored value');
 }finally{await browser.close();}
+

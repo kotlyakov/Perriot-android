@@ -1,3 +1,5 @@
+import {APK_BOSSES,APK_BLINDS_BY_ID} from '../content/apk-blinds.js';
+import {createApkTagContext,getApkTagPool} from '../core/apk-tags.js';
 import { apkPseudoHash, validateApkRng } from '../core/apk-rng.js';
 import { HANDS } from '../content/hands.js';
 import { SUPPORTED_JOKERS,supportsJoker } from '../content/jokers.js';
@@ -48,6 +50,20 @@ function decodeApkShop(value,state) {
       requireValue(offer.originalKey===offer.entityId && centres.get(offer.originalKey)?.set===offer.set && allowed.includes(offer.set));
     }
   }else requireValue(state.shop===null || state.shop===undefined);
+}
+function decodeApkBlinds(value,state){
+  object(value,['version','ante','bossId','bossesUsed','tags','orbitalHands','tagContext']);
+  requireValue(value.version===1 && value.ante===state.round.ante && state.apkShop && state.rng.apk);
+  const boss=APK_BLINDS_BY_ID[value.bossId];
+  requireValue(boss && APK_BOSSES.includes(boss) && boss.showdown===(value.ante>=2 && value.ante%8===0) && (boss.showdown || boss.minAnte<=value.ante));
+  object(value.bossesUsed,APK_BOSSES.map(b=>b.id));for(const count of Object.values(value.bossesUsed))integer(count);
+  requireValue(value.bossesUsed[value.bossId]>=1);
+  object(value.tagContext,Object.keys(createApkTagContext()));const context=createApkTagContext(value.tagContext);
+  requireValue(context.ante===value.ante);
+  object(value.tags,['small','big']);const pool=getApkTagPool(context);
+  for(const tag of Object.values(value.tags))requireValue(pool.includes(tag) && tag!=='UNAVAILABLE');
+  object(value.orbitalHands,['small','big','boss']);
+  for(const hand of Object.values(value.orbitalHands))requireValue(context.visibleHandOrder.includes(hand));
 }
 function decodeShop(shop,ids) {
   if(shop===null)return;
@@ -133,7 +149,7 @@ function decode(payload) {
   const state=payload.state;
   const sortMode=state.sortMode;
   if(Object.hasOwn(state,'sortMode'))requireValue(['rank','suit'].includes(sortMode));
-  optionalObject(state,['schemaVersion','runId','seed','revision','phase','deckId','cards','hand','drawPile','discardPile','jokers','handLevels','discoveredHands','rng','money','round','lastScore'],['shop','bankruptAt','jokerSlots','apkShop','sortMode','roundNumber']);
+  optionalObject(state,['schemaVersion','runId','seed','revision','phase','deckId','cards','hand','drawPile','discardPile','jokers','handLevels','discoveredHands','rng','money','round','lastScore'],['shop','bankruptAt','jokerSlots','apkShop','sortMode','roundNumber','apkBlinds']);
   requireValue(state.schemaVersion===1 && PHASES.includes(state.phase) && ['red','blue'].includes(state.deckId));
   requireValue(typeof state.runId==='string' && state.runId.length>=1 && state.runId.length<=120);
   requireValue(typeof state.seed==='string' && state.seed.length>=1 && state.seed.length<=1000);integer(state.revision);
@@ -160,6 +176,7 @@ function decode(payload) {
   const round=state.round;requireValue(['small','big'].includes(round.blindId));integer(round.ante,1,8);integer(round.handsRemaining,0,state.deckId==='blue'?5:4);integer(round.discardsRemaining,0,state.deckId==='red'?4:3);integer(round.handSize,1,10000);
   round.target=decimal(round.target);round.score=decimal(round.score);requireValue(round.target>0n);
   if(Object.hasOwn(state,'apkShop'))decodeApkShop(state.apkShop,state);
+  if(Object.hasOwn(state,'apkBlinds'))decodeApkBlinds(state.apkBlinds,state);
   if(state.phase==='round_won')requireValue(round.score>=round.target);
   if(state.phase==='shop')requireValue(round.score>=round.target && state.hand.length===0 && state.discardPile.length===0 && state.drawPile.length===cardIds.length && state.lastScore===null);
   if(state.phase==='game_over')requireValue(round.handsRemaining===0 && round.score<round.target);
@@ -187,3 +204,4 @@ export function deserializeState(text) {
   requireValue(typeof text==='string' && text.length<=LIMIT && new TextEncoder().encode(text).length<=LIMIT);
   return decode(JSON.parse(text));
 }
+
