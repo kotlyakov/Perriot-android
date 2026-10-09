@@ -23,6 +23,8 @@ descriptions.c_black_hole='Повышает уровень всех 12 комб�
 descriptions.c_fool='Создаёт последнюю использованную карту Таро или Планеты, кроме Дурака.';
 descriptions.c_hermit='Удваивает текущие деньги, но добавляет не более $20.';
 descriptions.c_temperance='Даёт сумму стоимости продажи всех ваших джокеров, но не более $50.';
+descriptions.c_empress='Усиливает до 2 выбранных карт: каждая даёт +4 к множителю при подсчёте.';
+descriptions.c_heirophant='Усиливает до 2 выбранных карт: каждая даёт +30 очков при подсчёте.';
 export function describeShopItem(offer){
  const key=originalJokerKey(offer.entityId);
  const base=descriptions[key]??'В этой предварительной версии доступен просмотр карты.';
