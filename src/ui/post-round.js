@@ -3,13 +3,15 @@ import {getCashout} from '../core/cashout.js';
 // Outside the active blind, the deck preview represents the full run deck.
 export function roundDeckView(state){return state.phase==='round_won'?{...state,hand:[],discardPile:[],drawPile:Object.keys(state.cards)}:state;}
 const hiddenIds=['blind_panel','blind_title','blind_token','blind_target','hand','hand_count','play_hand','discard','sort_panel','sort_label','sort_rank','sort_suit'];
-let currentPhase=null,motion;
+let currentPhase=null,currentQuote=null,motion;
 export function renderPostRound(state,busy,cashout){
  const phase=busy?'playing':state.phase;
  const visible=phase==='round_won'||phase==='shop';
  for(const id of hiddenIds)document.getElementById(id).hidden=visible;
  if(phase==='shop'&&state.shop){currentPhase=phase;motion?.cancel();document.getElementById('post_round')?.remove();return;}
- if(phase===currentPhase)return;
+ const quoteKey=phase==='round_won'?Object.values(getCashout(state)).map(String).join(':'):null;
+ if(phase===currentPhase&&quoteKey===currentQuote)return;
+ const entering=phase!==currentPhase;currentQuote=quoteKey;
  currentPhase=phase;motion?.cancel();document.getElementById('post_round')?.remove();
  if(!visible)return;
  const panel=document.createElement('section');panel.id='post_round';panel.className='panel fixed';panel.setAttribute('aria-label',phase==='shop'?'Магазин':'Награда за блайнд');
@@ -26,6 +28,7 @@ export function renderPostRound(state,busy,cashout){
   const entry=document.createElement('div');entry.id='shop_entry';const title=document.createElement('h2');title.textContent='Магазин';const text=document.createElement('p');text.textContent='Награда получена. Переход сохранён.';const scope=document.createElement('p');scope.className='shop-scope';scope.textContent='Промежуточная сборка: покупки, обновление магазина и следующий блайнд будут добавлены на следующем этапе.';entry.append(title,text,scope);panel.append(entry);
  }
  document.getElementById('stage').append(panel);
- if(!matchMedia('(prefers-reduced-motion: reduce)').matches)motion=panel.animate([{translate:'0 488px'},{translate:'0 0'}],{duration:360,easing:'cubic-bezier(.16,1,.3,1)'});
+ if(entering&&!matchMedia('(prefers-reduced-motion: reduce)').matches)motion=panel.animate([{translate:'0 488px'},{translate:'0 0'}],{duration:360,easing:'cubic-bezier(.16,1,.3,1)'});
 }
+
 
