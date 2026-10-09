@@ -12,9 +12,10 @@ const counter=value=>Number.isSafeInteger(value)&&value>=0;
 const record=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
 const blocked=(code,reason)=>({available:false,code,reason});
 const moneyTarots=new Set(['c_hermit','c_temperance']);
+const enhancementTarots=new Map([['c_empress','mult'],['c_heirophant','bonus']]);
 const hasFoolSpace=(state,card)=>{const remaining=(state.consumables??[]).filter(c=>c.id!==card.id);return remaining.length<(state.consumableSlots??2)+remaining.filter(c=>c.edition==='negative').length;};
 const generatedFoolId=card=>`fool:${card.id}`;
-export function supportsConsumableEffect(card){const centre=centres.get(card?.entityId);return supportsConsumable(card)&&!!(centre?.set==='Planet'&&handIds[centre.handType]||centre?.key==='c_black_hole'||centre?.key==='c_fool'||moneyTarots.has(centre?.key));}
+export function supportsConsumableEffect(card){const centre=centres.get(card?.entityId);return supportsConsumable(card)&&!!(centre?.set==='Planet'&&handIds[centre.handType]||centre?.key==='c_black_hole'||centre?.key==='c_fool'||moneyTarots.has(centre?.key)||enhancementTarots.has(centre?.key));}
 
 export function validConsumableUsage(state){
  const hasUsage=Object.hasOwn(state,'consumableUsage'),hasTotals=Object.hasOwn(state,'consumableUsageTotal');
@@ -42,7 +43,7 @@ export function validConsumableUsage(state){
 }
 
 // Read-only capability query for an owned card. Purchase-and-use must acquire it first.
-export function canUseConsumable(state,card){
+export function canUseConsumable(state,card,targetCardIds=[]){
  if(!canManageInventory(state))return blocked('INVALID_PHASE','Расходная карта недоступна в текущей фазе.');
  if(!counter(state.revision)||state.revision===Number.MAX_SAFE_INTEGER)return blocked('INVALID_STATE','Некорректная версия состояния.');
  const cards=state.consumables??[];
@@ -51,6 +52,9 @@ export function canUseConsumable(state,card){
  if(!owned)return blocked('CARD_NOT_FOUND','Карта больше не принадлежит игроку.');
  const centre=centres.get(owned.entityId);
  if(!supportsConsumableEffect(owned))return blocked('USE_UNAVAILABLE','Эффект этой расходной карты ещё не реализован.');
+ if(enhancementTarots.has(centre.key)){
+  if(!Array.isArray(targetCardIds)||targetCardIds.length<1||targetCardIds.length>2||new Set(targetCardIds).size!==targetCardIds.length||targetCardIds.some(id=>typeof id!=='string'||!state.hand?.includes(id)||!state.cards?.[id]))return blocked('INVALID_TARGETS','Выберите одну или две карты в руке.');
+ }
  let shopContext=null;
  try{if(state.apkShop){if(!record(state.apkShop.context))throw new TypeError('Missing shop context');shopContext=currentApkShopContext(state);}}catch{return blocked('INVALID_STATE','Некорректное состояние магазина.');}
  if(centre.key==='c_fool'){
@@ -76,10 +80,13 @@ export function applyConsumableAction(state,action){
  if(!action||action.type!=='USE_CONSUMABLE'||!Number.isSafeInteger(action.expectedRevision)||typeof action.cardId!=='string'||!action.cardId)return reject('INVALID_ACTION','Malformed consumable action');
  if(action.expectedRevision!==state.revision)return reject('STALE_ACTION','State revision has changed');
  const card=Array.isArray(state.consumables)?state.consumables.find(c=>c?.id===action.cardId):null;
- const capability=canUseConsumable(state,card);
+ const capability=canUseConsumable(state,card,action.targetCardIds);
  if(!capability.available)return reject(capability.code,capability.reason);
  const centre=centres.get(card.entityId),next=structuredClone(state),events=[];
  const previousTarotPlanet=state.lastTarotPlanet??null;
+ if(!card.debuffed&&enhancementTarots.has(centre.key))for(const cardId of action.targetCardIds){
+  const enhancement=enhancementTarots.get(centre.key);next.cards[cardId].enhancement=enhancement;events.push({type:'card_enhanced',cardId,enhancement,sourceId:card.id});
+ }
  const affected=card.debuffed||centre.set==='Tarot'?[]:centre.key==='c_black_hole'?Object.keys(APK_HAND_NAMES):[handIds[centre.handType]];
  for(const handId of affected){next.handLevels[handId]++;events.push({type:'hand_level_changed',handId,levels:1,level:next.handLevels[handId]});}
  if(!card.debuffed&&moneyTarots.has(centre.key)){

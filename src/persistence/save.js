@@ -45,6 +45,8 @@ function decodeApkShop(value,state) {
   requireValue(value.voucherId===null || centres.get(value.voucherId)?.set==='Voucher');
   optionalObject(value.context,Object.keys(createApkShopContext()),['tutorialShopSurcharge']);
   createApkShopContext(value.context); // Validate actual saved inputs without selecting or polling.
+  const enhancements=[...new Set(Object.values(state.cards).map(card=>({mult:'m_mult',bonus:'m_bonus'})[card.enhancement]).filter(Boolean))];
+  requireValue(value.context.enhancementIds.length===enhancements.length&&value.context.enhancementIds.every(id=>enhancements.includes(id)));
   requireValue(value.context.ante===state.round.ante+(['shop','pack'].includes(state.phase)&&state.round.blindId==='boss'?1:0));
   if(['shop','pack'].includes(state.phase)){
     requireValue(state.shop!==null && state.shop!==undefined);
@@ -202,7 +204,7 @@ function decode(payload) {
   requireValue(typeof state.seed==='string' && state.seed.length>=1 && state.seed.length<=1000);integer(state.revision);
   requireValue(state.cards!==null && typeof state.cards==='object' && !Array.isArray(state.cards));
   const cardIds=Object.keys(state.cards);requireValue(cardIds.length>=1 && cardIds.length<=10000);
-  for(const key of cardIds) { id(key);object(state.cards[key],['id','rank','suit']);requireValue(state.cards[key].id===key);evaluateHand([state.cards[key]]); }
+  for(const key of cardIds) { id(key);optionalObject(state.cards[key],['id','rank','suit'],['enhancement']);requireValue(state.cards[key].id===key);evaluateHand([state.cards[key]]); }
   const partitions=[state.hand,state.drawPile,state.discardPile];requireValue(partitions.every(Array.isArray));
   const all=partitions.flat();requireValue(all.length===cardIds.length && new Set(all).size===all.length && all.every(key=>Object.hasOwn(state.cards,key)));
   if(Object.hasOwn(state,'runStats')){object(state.runStats,['handsPlayed','unusedDiscards','skips']);for(const count of Object.values(state.runStats))integer(count);}

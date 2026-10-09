@@ -45,6 +45,8 @@ export function scoreHand(state, playedCards) {
     const before = {chips,mult};
     chips += BigInt(card.rank===14 ? 11 : Math.min(card.rank,10));
     trace.push({type:'score_step',phase:'scored_card',sourceId:card.id,operation:'add_chips',before,after:{chips,mult}});
+    if(card.enhancement==='bonus')apply({operation:'add_chips',amount:30n},'scored_card',card.id);
+    if(card.enhancement==='mult')apply({operation:'add_mult',amount:4n},'scored_card',card.id);
     for(const joker of state.jokers)for(const effect of scoredJokerEffects(joker.entityId,card))apply(effect,'scored_card',card.id,joker.id);
   }
   const rankCounts = new Map();

@@ -55,8 +55,8 @@ function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
  function select(){
   clearSelection();selected={id:offer.id,kind};wrap.classList.add('is-selected');card.setAttribute('aria-pressed','true');
   if(kind==='consumable'){
-   const capability=canUseConsumable(state,offer),use=node('button','shop-use','Использовать');use.type='button';use.disabled=busy||!capability.available;use.title=capability.reason??'Повысить уровень комбинации';
-   use.onclick=()=>{if(use.disabled||!canUseConsumable(state,offer).available)return;use.disabled=true;clearSelection();callbacks.onAction?.('USE_CONSUMABLE',{cardId:offer.id});};wrap.append(use);
+   const targets=callbacks.targetCardIds??[],capability=canUseConsumable(state,offer,targets),use=node('button','shop-use','Использовать');use.type='button';use.disabled=busy||!capability.available;use.title=capability.reason??'Использовать расходную карту';
+   use.onclick=()=>{if(use.disabled||!canUseConsumable(state,offer,targets).available)return;use.disabled=true;clearSelection();callbacks.onAction?.('USE_CONSUMABLE',{cardId:offer.id,targetCardIds:targets});};wrap.append(use);
   }else if(kind==='pack'){
    const use=node('button','shop-use','Использовать');use.type='button';use.disabled=busy;
    use.onclick=()=>{if(use.disabled)return;use.disabled=true;clearSelection();callbacks.onAction?.('USE_PACK_CARD',{cardId:offer.id});};wrap.append(use);
@@ -158,14 +158,14 @@ function renderOwned(state,busy,callbacks){
  document.getElementById('joker_count').textContent=jokers.length+'/'+((state.jokerSlots??5)+jokers.filter(j=>j.edition==='negative').length);
  document.getElementById('consumable_count').textContent=(state.consumables?.length??0)+'/'+((state.consumableSlots??2)+(state.consumables??[]).filter(c=>c.edition==='negative').length);
 }
-export function renderShop(state,busy,{onAction,onNotice}={}){
+export function renderShop(state,busy,{onAction,onNotice,targetCardIds=[]}={}){
  cancelDrag?.();cancelReturn?.();
- if(state.phase==='pack'&&state.packState){renderPack(state,busy,{onAction,onNotice});return;}
+ if(state.phase==='pack'&&state.packState){renderPack(state,busy,{onAction,onNotice,targetCardIds});return;}
  packView?.remove();packView=null;
  if(state.phase!=='shop'||!state.shop){
-  dismissTip();entryMotion?.cancel();view?.controller?.abort();view?.remove();document.getElementById('shop_sign')?.remove();view=null;selected=null;lastMain=null;renderOwned(state,busy,{onAction,onNotice});return;
+  dismissTip();entryMotion?.cancel();view?.controller?.abort();view?.remove();document.getElementById('shop_sign')?.remove();view=null;selected=null;lastMain=null;renderOwned(state,busy,{onAction,onNotice,targetCardIds});return;
  }
- const fresh=ensureView();view.querySelector('.shop-voucher-label').textContent='ВАУЧЕР '+(state.apkShop?.context.ante??state.round?.ante??'')+' АНТЕ';const callbacks={onAction,onNotice},offers=view.querySelector('.shop-offers'),owned=document.getElementById('shop_owned');
+ const fresh=ensureView();view.querySelector('.shop-voucher-label').textContent='ВАУЧЕР '+(state.apkShop?.context.ante??state.round?.ante??'')+' АНТЕ';const callbacks={onAction,onNotice,targetCardIds},offers=view.querySelector('.shop-offers'),owned=document.getElementById('shop_owned');
  const all=[...state.shop.main,...state.shop.vouchers,...state.shop.boosters,...state.jokers,...(state.consumables??[])];if(selected&&!all.some(o=>o.id===selected.id))clearSelection();dismissTip();offers.replaceChildren();owned.replaceChildren();
  const main=state.shop.main,mainWidth=104,spacing=Math.min(118,main.length>1?330/(main.length-1):118),start=413-mainWidth/2-spacing*(main.length-1)/2;
  main.forEach((o,i)=>offers.append(choice(o,'main',i,state,busy,callbacks,start+i*spacing,38,104,142)));
