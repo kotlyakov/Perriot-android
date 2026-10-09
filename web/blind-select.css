@@ -13,3 +13,8 @@
 .blind-choice-skip{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:10px;font-size:20px;font-weight:800}.blind-choice-skip button{width:100%;height:49px;font-size:15px;padding:0 4px}
 .blind-choice-unavailable{margin:55px 2px 0;font-size:21px;font-weight:800;line-height:1.4;color:#d5caa8}
 @media(prefers-reduced-motion:reduce){.blind-selection{animation:none;transition:none}}
+
+
+.blind-skip-row{display:flex;width:100%;gap:7px;align-items:center}.blind-skip-row .blind-tag{flex:0 0 44px;width:44px;height:44px;border:4px double #bd9350;border-radius:8px;background:#513828;color:#f3dba7;font-size:19px;box-shadow:2px 2px #071d23}.blind-skip-row .red{flex:1;min-width:0;font-size:13px}
+.blind-boss-description{margin:10px 0 0;font-size:15px;line-height:1.25}.blind-choice-boss .blind-choice-token{font-size:12px;line-height:14px}
+.blind-tag-tooltip{position:absolute;left:474px;top:100px;width:688px;min-height:90px;padding:12px 18px;border:3px solid #bd9350;border-radius:10px;background:#142e2c;box-shadow:0 5px #102626;pointer-events:auto;text-align:left;font-size:18px;line-height:1.25;z-index:2}.blind-tag-tooltip strong{color:#f3dba7}.blind-tag-tooltip p{margin:5px 0 0}

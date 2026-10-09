@@ -1,3 +1,5 @@
+import {chooseApkBoss} from './apk-blinds.js';
+import {createApkTagContext,chooseApkTag,chooseApkOrbitalHand} from './apk-tags.js';
 import {sortHand,SORT_MODES} from './sort.js';
 import {getCashout} from './cashout.js';
 import { createRng, randomInt } from './rng.js';
@@ -30,9 +32,20 @@ export function createRun(seed, {runId,deckId='red',money,referenceRng=false,ref
   };
   if(referenceRng){
     let rng=createApkRng(seed);
-    if(referenceShop){const context=createApkShopContext({reducedMotion}),voucher=chooseApkVoucher(rng,context);rng=voucher.rng;
-      state.roundNumber=1;state.apkShop={version:1,voucherId:voucher.voucherId,firstShopBuffoon:false,context};}
+    if(referenceShop){
+      const boss=chooseApkBoss(rng);rng=boss.rng;
+      const context=createApkShopContext({reducedMotion}),voucher=chooseApkVoucher(rng,context);rng=voucher.rng;
+      const tagContext=createApkTagContext(),small=chooseApkTag(rng,tagContext),big=chooseApkTag(small.rng,tagContext);rng=big.rng;
+      state.apkBlinds={version:1,ante:1,bossId:boss.bossId,bossesUsed:boss.bossesUsed,
+        tags:{small:small.tagId,big:big.tagId},orbitalHands:{},tagContext};
+      state.roundNumber=1;state.apkShop={version:1,voucherId:voucher.voucherId,firstShopBuffoon:false,context};
+    }
     const shuffled=shuffleApkDeck(cards,rng,'shuffle');state.drawPile=shuffled.cardIds;state.rng.apk=shuffled.rng;
+    // The initial blind screen fixes all three orbital hands after the deck shuffle.
+    if(state.apkBlinds)for(const id of ['small','big','boss']){
+      const selected=chooseApkOrbitalHand(state.rng.apk,state.apkBlinds.tagContext);
+      state.apkBlinds.orbitalHands[id]=selected.hand;state.rng.apk=selected.rng;
+    }
   }
   return state;
 }
@@ -122,3 +135,4 @@ export function dispatch(state, action, shopOptions={}) {
   next.revision++;
   return {state:next,events,error:null};
 }
+
