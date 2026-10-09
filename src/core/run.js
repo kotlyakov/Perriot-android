@@ -71,9 +71,12 @@ export function dispatch(state, action, shopOptions={}) {
     next.drawPile=Object.keys(next.cards);next.hand=[];next.discardPile=[];next.lastScore=null;
     if(next.apkShop){
       try{
-        const shuffled=shuffleApkDeck(Object.values(next.cards),next.rng.apk,'cashout'+next.round.ante);
-        next.drawPile=shuffled.cardIds;next.rng.apk=shuffled.rng;
         const context=currentApkShopContext(next);
+        if(next.round.blindId==='boss'){
+          const voucher=chooseApkVoucher(next.rng.apk,context);next.rng.apk=voucher.rng;next.apkShop.voucherId=voucher.voucherId;
+        }
+        const shuffled=shuffleApkDeck(Object.values(next.cards),next.rng.apk,'cashout'+context.ante);
+        next.drawPile=shuffled.cardIds;next.rng.apk=shuffled.rng;
         const generated=generateApkShop(next.rng.apk,context,{voucherId:next.apkShop.voucherId,
           firstShopBuffoon:next.apkShop.firstShopBuffoon,instancePrefix:'shop_'+next.revision});
         next.shop=createShop({offers:generated.offers});next.rng.apk=generated.rng;
@@ -129,7 +132,7 @@ export function dispatch(state, action, shopOptions={}) {
   const next=structuredClone(state);const events=[];
   next.hand=next.hand.filter(id=>!selected.has(id));next.discardPile.push(...playedIds);
   if(score&&next.bossState?.id==='bl_hook'){
-    const forced=chooseHookDiscards(next.rng.apk,next.hand);next.rng.apk=forced.rng;
+    let forced;try{forced=chooseHookDiscards(next.rng.apk,next.hand);}catch{return reject('UNSUPPORTED_BOSS_STATE','Invalid Hook card identities');}next.rng.apk=forced.rng;
     const discarded=next.hand.filter(id=>forced.cardIds.includes(id));
     next.hand=next.hand.filter(id=>!forced.cardIds.includes(id));next.discardPile.push(...discarded);
     if(discarded.length)events.push({type:'cards_forced_discarded',cardIds:discarded});

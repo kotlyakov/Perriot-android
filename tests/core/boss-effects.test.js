@@ -44,3 +44,11 @@ test('old saves lack ante history and cannot enter boss; malformed boss state is
  const s=pending('bl_window');delete s.apkBlinds.playedCardIds;assert.ok(act(s,'START_BLIND').error);
  const active=act(pending('bl_window'),'START_BLIND').state;for(const mutate of [s=>s.bossState.id='bl_hook',s=>s.bossState.extra=1,s=>s.bossState.baseHandSize=7,s=>s.bossState.playedBeforeBoss=['missing']]){const copy=structuredClone(active);mutate(copy);assert.throws(()=>serializeState(copy));}
 });
+test('boss shop advances its generation ante and restocks the voucher before cashout shuffle',()=>{
+ const s=act(pending('bl_window'),'START_BLIND').state;s.phase='round_won';s.round.score=600n;
+ const r=act(s,'CASH_OUT');assert.equal(r.error,null);assert.equal(r.state.apkShop.context.ante,2);assert.ok(r.state.rng.apk.streams.Voucher2);assert.ok(r.state.rng.apk.streams.cashout2);assert.deepEqual(r.state.apkBlinds.playedCardIds,[]);assert.deepEqual(deserializeState(serializeState(r.state)),r.state);
+});
+test('corrupted Hook card identities are rejected on load and play fails atomically',()=>{
+ const s=act(pending('bl_hook'),'START_BLIND').state,old=s.hand[0],bad='modified_card';s.cards[bad]={...s.cards[old],id:bad};delete s.cards[old];s.hand[0]=bad;
+ const before=structuredClone(s);const result=act(s,'PLAY_HAND',s.hand.slice(1,2));assert.ok(result.error);assert.equal(result.state,s);assert.deepEqual(s,before);assert.throws(()=>serializeState(s));
+});

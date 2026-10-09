@@ -43,7 +43,7 @@ function decodeApkShop(value,state) {
   requireValue(value.voucherId===null || centres.get(value.voucherId)?.set==='Voucher');
   optionalObject(value.context,Object.keys(createApkShopContext()),['tutorialShopSurcharge']);
   createApkShopContext(value.context); // Validate actual saved inputs without selecting or polling.
-  requireValue(value.context.ante===state.round.ante);
+  requireValue(value.context.ante===state.round.ante+(state.phase==='shop'&&state.round.blindId==='boss'?1:0));
   if(state.phase==='shop'){
     requireValue(state.shop!==null && state.shop!==undefined);
     const sets={main:['Joker','Tarot','Planet','Spectral','Base','Enhanced'],vouchers:['Voucher'],boosters:['Booster']};

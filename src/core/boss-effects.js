@@ -3,7 +3,8 @@ import {nextApkRandom,validateApkRng} from './apk-rng.js';
 export const FIRST_ANTE_BOSSES=Object.freeze(['bl_hook','bl_club','bl_manacle','bl_psychic','bl_goad','bl_window','bl_head','bl_pillar']);
 const suits={bl_club:'clubs',bl_goad:'spades',bl_window:'diamonds',bl_head:'hearts'};
 export function canEnterFirstAnteBoss(state){
- return state.round?.ante===1 && FIRST_ANTE_BOSSES.includes(state.apkBlinds?.bossId) && Array.isArray(state.apkBlinds.playedCardIds) && !!state.rng?.apk;
+ if(!(state.round?.ante===1 && FIRST_ANTE_BOSSES.includes(state.apkBlinds?.bossId) && Array.isArray(state.apkBlinds.playedCardIds) && state.rng?.apk))return false;
+ try{canonicalCards(state.cards);}catch{return false;}return true;
 }
 export function isBossCardDebuffed(state,card){
  const boss=state.bossState;

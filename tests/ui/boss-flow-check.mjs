@@ -14,5 +14,14 @@ try{for(const [width,height] of [[1536,688],[915,412],[360,800]]){
  if(width===1536)await page.screenshot({path:'artifacts/boss-playing.png'});
  await page.reload();await enterRun(page);assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),serializeState(active));assert.deepEqual(errors,[]);await page.close();console.log('boss enter/start/debuff/reload '+width+'x'+height);
  }
+ const effectsPage=await browser.newPage();await effectsPage.goto(process.env.PREVIEW_URL);await enterRun(effectsPage);
+ const hook=createRun('AAAAAAA1',{runId:'hook-ui',money:4n,referenceRng:true,referenceShop:true});hook.apkBlinds.bossesUsed.bl_window=0;hook.apkBlinds.bossId='bl_hook';hook.apkBlinds.bossesUsed.bl_hook=1;hook.round.blindId='boss';hook.round.target=600n;
+ const playing=dispatch(hook,{type:'START_BLIND',expectedRevision:0}).state;
+ await effectsPage.evaluate(s=>localStorage.setItem('card-cascade.current',s),serializeState(playing));await effectsPage.reload();await enterRun(effectsPage);
+ for(const id of playing.hand.slice(0,3))await effectsPage.locator(`#hand [data-card-id="${id}"]`).click();
+ await effectsPage.locator('#play_hand').click();await effectsPage.waitForFunction(()=>!document.getElementById('play_hand').disabled&&document.querySelectorAll('#hand .playing-card').length===8);
+ assert.equal(await effectsPage.locator('.played-card').count(),0);const after=deserializeState(await effectsPage.evaluate(()=>localStorage.getItem('card-cascade.current')));assert.equal(after.discardPile.length,5);assert.equal(after.round.discardsRemaining,4);
+ after.phase='round_won';after.round.score=600n;after.lastScore=null;await effectsPage.evaluate(s=>localStorage.setItem('card-cascade.current',s),serializeState(after));await effectsPage.reload();await enterRun(effectsPage);await effectsPage.locator('#cashout').click();await effectsPage.locator('#shop_screen').waitFor();
+ const bossShop=deserializeState(await effectsPage.evaluate(()=>localStorage.getItem('card-cascade.current')));assert.equal(bossShop.apkShop.context.ante,2);assert.match(await effectsPage.locator('#ante').innerText(),/2/);assert.equal(await effectsPage.locator('#shop_next_round').isDisabled(),true);await effectsPage.close();console.log('Hook forced-discard animation and boss cashout into ante2 shop');
  const page=await browser.newPage({reducedMotion:'reduce'});await page.goto(process.env.PREVIEW_URL);await enterRun(page);const s=shop();delete s.apkBlinds.playedCardIds;await page.evaluate(s=>localStorage.setItem('card-cascade.current',s),serializeState(s));await page.reload();await enterRun(page);assert.equal(await page.locator('#shop_next_round').isDisabled(),true);await page.close();console.log('legacy missing history safely gated');
 }finally{await browser.close();}
