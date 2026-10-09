@@ -175,5 +175,9 @@ Actions37812813108 SUCCESS на f90446d94d921fe7a26afb71c24168fcf15ba34e (merge 
 
 Пользователь поручил сначала собрать/отсортировать замечания, не исправлять всё сразу. `docs/backlog.md` — 9 открытых требований и 4 уже проверенные правки 0.4.8. Проверена текущая реализация, обнаружены английские запасные названия, удержание подсказки, мгновенный возврат и шрифт кнопок13px. Независимые аналитики исследовали24награды за пропуск и полное меню колоды по Lua оригинального APK; два исследованных файла сверены побайтно с APK. Нового запуска оригинала/телефона или сборки не заявляем. Следующий плановый блок — управление и русификация/читаемость, игровые награды за пропуск связаны с полным циклом и соответствующими обработчиками.
 
+## Celestial pack block — 09.10.2026
+
+Eight Celestial booster identities now share the exact Normal 3/1, Jumbo 5/1 and Mega 5/2 lifecycle. A 64-case native fixture covers Telescope, Black Hole, bans, owned/offered/generated duplicate suppression and Showman with exact keyed-stream states. Opening pays once, generated Planets/Black Hole apply immediately without a consumable slot, Mega choices and the underlying shop survive reload, and skipping neither refunds nor consumes RNG. Strict save/dispatch validation and a dedicated selection UI use only project artwork. Core has 301 passing tests; official browser/Android CI remains the release gate. Other pack families, profiles and source animation timing remain open.
+
 
 

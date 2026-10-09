@@ -1,0 +1,1095 @@
+{
+  "runtime": "LuaJIT 2.1.1774896198 (lupa 2.8)",
+  "scope": "Original Planet pool/create_card/Celestial selection loop. Card constructor stub marks used identities; render/materialize/statistics stubbed. IDs and keyed stream values only; global RNG state NOT verified. Fresh streams ante2; Pair/Flush played4 except telescope_zero, softlock hidden played1, owned/showman c_pluto+c_saturn.",
+  "cases": [
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 3,
+      "mode": "base",
+      "centreIds": [
+        "c_saturn",
+        "c_venus",
+        "c_pluto"
+      ],
+      "streams": {
+        "Planetpl12": 0.8220701622558,
+        "Planetpl12_resample2": 0.2679073487937,
+        "soul_Planet2": 0.2078673281053
+      }
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 3,
+      "mode": "telescope",
+      "centreIds": [
+        "c_jupiter",
+        "c_saturn",
+        "c_venus"
+      ],
+      "streams": {
+        "Planetpl12": 0.3987773660048,
+        "Planetpl12_resample2": 0.2679073487937,
+        "soul_Planet2": 0.6225170893136
+      }
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 3,
+      "mode": "softlock",
+      "centreIds": [
+        "c_saturn",
+        "c_ceres",
+        "c_pluto"
+      ],
+      "streams": {
+        "Planetpl12": 0.8220701622558,
+        "soul_Planet2": 0.2078673281053
+      }
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 3,
+      "mode": "owned",
+      "centreIds": [
+        "c_venus",
+        "c_mercury",
+        "c_mars"
+      ],
+      "streams": {
+        "Planetpl12": 0.8220701622558,
+        "Planetpl12_resample2": 0.1628494769777,
+        "Planetpl12_resample3": 0.3552332087153,
+        "Planetpl12_resample4": 0.5752070719993,
+        "soul_Planet2": 0.2078673281053
+      }
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 3,
+      "mode": "showman",
+      "centreIds": [
+        "c_saturn",
+        "c_venus",
+        "c_pluto"
+      ],
+      "streams": {
+        "Planetpl12": 0.8220701622558,
+        "Planetpl12_resample2": 0.2679073487937,
+        "soul_Planet2": 0.2078673281053
+      }
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 3,
+      "mode": "telescope_zero",
+      "centreIds": [
+        "c_saturn",
+        "c_venus",
+        "c_pluto"
+      ],
+      "streams": {
+        "Planetpl12": 0.8220701622558,
+        "Planetpl12_resample2": 0.2679073487937,
+        "soul_Planet2": 0.2078673281053
+      }
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 3,
+      "mode": "telescope_banned",
+      "centreIds": [
+        "c_saturn",
+        "c_venus",
+        "c_pluto"
+      ],
+      "streams": {
+        "Planetpl12": 0.8220701622558,
+        "Planetpl12_resample2": 0.2679073487937,
+        "soul_Planet2": 0.6225170893136
+      }
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 3,
+      "mode": "blackhole_banned",
+      "centreIds": [
+        "c_saturn",
+        "c_venus",
+        "c_pluto"
+      ],
+      "streams": {
+        "Planetpl12": 0.8220701622558,
+        "Planetpl12_resample2": 0.2679073487937,
+        "soul_Planet2": 0.2078673281053
+      }
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 5,
+      "mode": "base",
+      "centreIds": [
+        "c_saturn",
+        "c_venus",
+        "c_pluto",
+        "c_mercury",
+        "c_mars"
+      ],
+      "streams": {
+        "Planetpl12": 0.0862034100152,
+        "Planetpl12_resample2": 0.5964093766427,
+        "Planetpl12_resample3": 0.128039320054,
+        "Planetpl12_resample4": 0.5752070719993,
+        "soul_Planet2": 0.9843353025914
+      }
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 5,
+      "mode": "telescope",
+      "centreIds": [
+        "c_jupiter",
+        "c_saturn",
+        "c_venus",
+        "c_pluto",
+        "c_mercury"
+      ],
+      "streams": {
+        "Planetpl12": 0.5519591542645,
+        "Planetpl12_resample2": 0.2679073487937,
+        "soul_Planet2": 0.4928816280758
+      }
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 5,
+      "mode": "softlock",
+      "centreIds": [
+        "c_saturn",
+        "c_ceres",
+        "c_pluto",
+        "c_mercury",
+        "c_eris"
+      ],
+      "streams": {
+        "Planetpl12": 0.0862034100152,
+        "soul_Planet2": 0.9843353025914
+      }
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 5,
+      "mode": "owned",
+      "centreIds": [
+        "c_venus",
+        "c_mercury",
+        "c_mars",
+        "c_jupiter",
+        "c_earth"
+      ],
+      "streams": {
+        "Planetpl12": 0.0862034100152,
+        "Planetpl12_resample2": 0.8504858396075,
+        "Planetpl12_resample3": 0.4224913559733,
+        "Planetpl12_resample4": 0.3522169749957,
+        "soul_Planet2": 0.9843353025914
+      }
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 5,
+      "mode": "showman",
+      "centreIds": [
+        "c_saturn",
+        "c_venus",
+        "c_pluto",
+        "c_mercury",
+        "c_saturn"
+      ],
+      "streams": {
+        "Planetpl12": 0.0862034100152,
+        "Planetpl12_resample2": 0.5964093766427,
+        "soul_Planet2": 0.9843353025914
+      }
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 5,
+      "mode": "telescope_zero",
+      "centreIds": [
+        "c_saturn",
+        "c_venus",
+        "c_pluto",
+        "c_mercury",
+        "c_mars"
+      ],
+      "streams": {
+        "Planetpl12": 0.0862034100152,
+        "Planetpl12_resample2": 0.5964093766427,
+        "Planetpl12_resample3": 0.128039320054,
+        "Planetpl12_resample4": 0.5752070719993,
+        "soul_Planet2": 0.9843353025914
+      }
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 5,
+      "mode": "telescope_banned",
+      "centreIds": [
+        "c_saturn",
+        "c_venus",
+        "c_pluto",
+        "c_mercury",
+        "c_mars"
+      ],
+      "streams": {
+        "Planetpl12": 0.0862034100152,
+        "Planetpl12_resample2": 0.5964093766427,
+        "Planetpl12_resample3": 0.128039320054,
+        "Planetpl12_resample4": 0.5752070719993,
+        "soul_Planet2": 0.4928816280758
+      }
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 5,
+      "mode": "blackhole_banned",
+      "centreIds": [
+        "c_saturn",
+        "c_venus",
+        "c_pluto",
+        "c_mercury",
+        "c_mars"
+      ],
+      "streams": {
+        "Planetpl12": 0.0862034100152,
+        "Planetpl12_resample2": 0.5964093766427,
+        "Planetpl12_resample3": 0.128039320054,
+        "Planetpl12_resample4": 0.5752070719993,
+        "soul_Planet2": 0.9843353025914
+      }
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 3,
+      "mode": "base",
+      "centreIds": [
+        "c_mars",
+        "c_saturn",
+        "c_uranus"
+      ],
+      "streams": {
+        "Planetpl12": 0.3676106515108,
+        "soul_Planet2": 0.5410574781087
+      }
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 3,
+      "mode": "telescope",
+      "centreIds": [
+        "c_jupiter",
+        "c_mars",
+        "c_saturn"
+      ],
+      "streams": {
+        "Planetpl12": 0.1352175107497,
+        "soul_Planet2": 0.2358064948765
+      }
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 3,
+      "mode": "softlock",
+      "centreIds": [
+        "c_mars",
+        "c_saturn",
+        "c_uranus"
+      ],
+      "streams": {
+        "Planetpl12": 0.3676106515108,
+        "soul_Planet2": 0.5410574781087
+      }
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 3,
+      "mode": "owned",
+      "centreIds": [
+        "c_mars",
+        "c_uranus",
+        "c_neptune"
+      ],
+      "streams": {
+        "Planetpl12": 0.3676106515108,
+        "Planetpl12_resample2": 0.5237377208643,
+        "soul_Planet2": 0.5410574781087
+      }
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 3,
+      "mode": "showman",
+      "centreIds": [
+        "c_mars",
+        "c_saturn",
+        "c_uranus"
+      ],
+      "streams": {
+        "Planetpl12": 0.3676106515108,
+        "soul_Planet2": 0.5410574781087
+      }
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 3,
+      "mode": "telescope_zero",
+      "centreIds": [
+        "c_mars",
+        "c_saturn",
+        "c_uranus"
+      ],
+      "streams": {
+        "Planetpl12": 0.3676106515108,
+        "soul_Planet2": 0.5410574781087
+      }
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 3,
+      "mode": "telescope_banned",
+      "centreIds": [
+        "c_mars",
+        "c_saturn",
+        "c_uranus"
+      ],
+      "streams": {
+        "Planetpl12": 0.3676106515108,
+        "soul_Planet2": 0.2358064948765
+      }
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 3,
+      "mode": "blackhole_banned",
+      "centreIds": [
+        "c_mars",
+        "c_saturn",
+        "c_uranus"
+      ],
+      "streams": {
+        "Planetpl12": 0.3676106515108,
+        "soul_Planet2": 0.5410574781087
+      }
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 5,
+      "mode": "base",
+      "centreIds": [
+        "c_mars",
+        "c_saturn",
+        "c_uranus",
+        "c_neptune",
+        "c_earth"
+      ],
+      "streams": {
+        "Planetpl12": 0.4592926254652,
+        "soul_Planet2": 0.250681590945
+      }
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 5,
+      "mode": "telescope",
+      "centreIds": [
+        "c_jupiter",
+        "c_mars",
+        "c_saturn",
+        "c_uranus",
+        "c_neptune"
+      ],
+      "streams": {
+        "Planetpl12": 0.7683290118565,
+        "soul_Planet2": 0.0674055152931
+      }
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 5,
+      "mode": "softlock",
+      "centreIds": [
+        "c_mars",
+        "c_saturn",
+        "c_uranus",
+        "c_neptune",
+        "c_earth"
+      ],
+      "streams": {
+        "Planetpl12": 0.4592926254652,
+        "soul_Planet2": 0.250681590945
+      }
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 5,
+      "mode": "owned",
+      "centreIds": [
+        "c_mars",
+        "c_uranus",
+        "c_neptune",
+        "c_jupiter",
+        "c_earth"
+      ],
+      "streams": {
+        "Planetpl12": 0.4592926254652,
+        "Planetpl12_resample2": 0.0375408441508,
+        "Planetpl12_resample3": 0.4815748681764,
+        "soul_Planet2": 0.250681590945
+      }
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 5,
+      "mode": "showman",
+      "centreIds": [
+        "c_mars",
+        "c_saturn",
+        "c_uranus",
+        "c_neptune",
+        "c_earth"
+      ],
+      "streams": {
+        "Planetpl12": 0.4592926254652,
+        "soul_Planet2": 0.250681590945
+      }
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 5,
+      "mode": "telescope_zero",
+      "centreIds": [
+        "c_mars",
+        "c_saturn",
+        "c_uranus",
+        "c_neptune",
+        "c_earth"
+      ],
+      "streams": {
+        "Planetpl12": 0.4592926254652,
+        "soul_Planet2": 0.250681590945
+      }
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 5,
+      "mode": "telescope_banned",
+      "centreIds": [
+        "c_mars",
+        "c_saturn",
+        "c_uranus",
+        "c_neptune",
+        "c_earth"
+      ],
+      "streams": {
+        "Planetpl12": 0.4592926254652,
+        "soul_Planet2": 0.0674055152931
+      }
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 5,
+      "mode": "blackhole_banned",
+      "centreIds": [
+        "c_mars",
+        "c_saturn",
+        "c_uranus",
+        "c_neptune",
+        "c_earth"
+      ],
+      "streams": {
+        "Planetpl12": 0.4592926254652,
+        "soul_Planet2": 0.250681590945
+      }
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 3,
+      "mode": "base",
+      "centreIds": [
+        "c_pluto",
+        "c_jupiter",
+        "c_mars"
+      ],
+      "streams": {
+        "Planetpl12": 0.337552040551,
+        "soul_Planet2": 0.990387064764
+      }
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 3,
+      "mode": "telescope",
+      "centreIds": [
+        "c_jupiter",
+        "c_pluto",
+        "c_earth"
+      ],
+      "streams": {
+        "Planetpl12": 0.1177852797887,
+        "Planetpl12_resample2": 0.1896715632874,
+        "soul_Planet2": 0.4963912951078
+      }
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 3,
+      "mode": "softlock",
+      "centreIds": [
+        "c_pluto",
+        "c_jupiter",
+        "c_mars"
+      ],
+      "streams": {
+        "Planetpl12": 0.337552040551,
+        "soul_Planet2": 0.990387064764
+      }
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 3,
+      "mode": "owned",
+      "centreIds": [
+        "c_earth",
+        "c_jupiter",
+        "c_mars"
+      ],
+      "streams": {
+        "Planetpl12": 0.337552040551,
+        "Planetpl12_resample2": 0.1896715632874,
+        "soul_Planet2": 0.990387064764
+      }
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 3,
+      "mode": "showman",
+      "centreIds": [
+        "c_pluto",
+        "c_jupiter",
+        "c_mars"
+      ],
+      "streams": {
+        "Planetpl12": 0.337552040551,
+        "soul_Planet2": 0.990387064764
+      }
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 3,
+      "mode": "telescope_zero",
+      "centreIds": [
+        "c_pluto",
+        "c_jupiter",
+        "c_mars"
+      ],
+      "streams": {
+        "Planetpl12": 0.337552040551,
+        "soul_Planet2": 0.990387064764
+      }
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 3,
+      "mode": "telescope_banned",
+      "centreIds": [
+        "c_pluto",
+        "c_earth",
+        "c_mars"
+      ],
+      "streams": {
+        "Planetpl12": 0.337552040551,
+        "Planetpl12_resample2": 0.1896715632874,
+        "soul_Planet2": 0.4963912951078
+      }
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 3,
+      "mode": "blackhole_banned",
+      "centreIds": [
+        "c_pluto",
+        "c_jupiter",
+        "c_mars"
+      ],
+      "streams": {
+        "Planetpl12": 0.337552040551,
+        "soul_Planet2": 0.990387064764
+      }
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 5,
+      "mode": "base",
+      "centreIds": [
+        "c_pluto",
+        "c_jupiter",
+        "c_mars",
+        "c_earth",
+        "c_mercury"
+      ],
+      "streams": {
+        "Planetpl12": 0.3699207688742,
+        "Planetpl12_resample2": 0.1896715632874,
+        "soul_Planet2": 0.5866521530701
+      }
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 5,
+      "mode": "telescope",
+      "centreIds": [
+        "c_jupiter",
+        "c_pluto",
+        "c_earth",
+        "c_mars",
+        "c_mercury"
+      ],
+      "streams": {
+        "Planetpl12": 0.7164985780553,
+        "Planetpl12_resample2": 0.4615064462646,
+        "Planetpl12_resample3": 0.3169623260527,
+        "Planetpl12_resample4": 0.1213663343088,
+        "soul_Planet2": 0.8421900662899
+      }
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 5,
+      "mode": "softlock",
+      "centreIds": [
+        "c_pluto",
+        "c_jupiter",
+        "c_mars",
+        "c_planet_x",
+        "c_mercury"
+      ],
+      "streams": {
+        "Planetpl12": 0.3699207688742,
+        "soul_Planet2": 0.5866521530701
+      }
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 5,
+      "mode": "owned",
+      "centreIds": [
+        "c_earth",
+        "c_jupiter",
+        "c_mars",
+        "c_mercury",
+        "c_neptune"
+      ],
+      "streams": {
+        "Planetpl12": 0.3699207688742,
+        "Planetpl12_resample2": 0.9302346894246,
+        "Planetpl12_resample3": 0.3169623260527,
+        "Planetpl12_resample4": 0.1213663343088,
+        "soul_Planet2": 0.5866521530701
+      }
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 5,
+      "mode": "showman",
+      "centreIds": [
+        "c_pluto",
+        "c_jupiter",
+        "c_mars",
+        "c_earth",
+        "c_mercury"
+      ],
+      "streams": {
+        "Planetpl12": 0.3699207688742,
+        "Planetpl12_resample2": 0.1896715632874,
+        "soul_Planet2": 0.5866521530701
+      }
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 5,
+      "mode": "telescope_zero",
+      "centreIds": [
+        "c_pluto",
+        "c_jupiter",
+        "c_mars",
+        "c_earth",
+        "c_mercury"
+      ],
+      "streams": {
+        "Planetpl12": 0.3699207688742,
+        "Planetpl12_resample2": 0.1896715632874,
+        "soul_Planet2": 0.5866521530701
+      }
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 5,
+      "mode": "telescope_banned",
+      "centreIds": [
+        "c_pluto",
+        "c_earth",
+        "c_mars",
+        "c_mercury",
+        "c_neptune"
+      ],
+      "streams": {
+        "Planetpl12": 0.3699207688742,
+        "Planetpl12_resample2": 0.9302346894246,
+        "Planetpl12_resample3": 0.3169623260527,
+        "Planetpl12_resample4": 0.1213663343088,
+        "soul_Planet2": 0.8421900662899
+      }
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 5,
+      "mode": "blackhole_banned",
+      "centreIds": [
+        "c_pluto",
+        "c_jupiter",
+        "c_mars",
+        "c_earth",
+        "c_mercury"
+      ],
+      "streams": {
+        "Planetpl12": 0.3699207688742,
+        "Planetpl12_resample2": 0.1896715632874,
+        "soul_Planet2": 0.5866521530701
+      }
+    },
+    {
+      "seed": "BH76",
+      "ante": 2,
+      "size": 3,
+      "mode": "base",
+      "centreIds": [
+        "c_black_hole",
+        "c_venus",
+        "c_pluto"
+      ],
+      "streams": {
+        "Planetpl12": 0.3810440098455,
+        "Planetpl12_resample2": 0.1145850314733,
+        "soul_Planet2": 0.7992332990421
+      }
+    },
+    {
+      "seed": "BH76",
+      "ante": 2,
+      "size": 3,
+      "mode": "telescope",
+      "centreIds": [
+        "c_jupiter",
+        "c_black_hole",
+        "c_venus"
+      ],
+      "streams": {
+        "Planetpl12": 0.1430080705126,
+        "soul_Planet2": 0.7992332990421
+      }
+    },
+    {
+      "seed": "BH76",
+      "ante": 2,
+      "size": 3,
+      "mode": "softlock",
+      "centreIds": [
+        "c_black_hole",
+        "c_venus",
+        "c_pluto"
+      ],
+      "streams": {
+        "Planetpl12": 0.3810440098455,
+        "Planetpl12_resample2": 0.1145850314733,
+        "soul_Planet2": 0.7992332990421
+      }
+    },
+    {
+      "seed": "BH76",
+      "ante": 2,
+      "size": 3,
+      "mode": "owned",
+      "centreIds": [
+        "c_black_hole",
+        "c_venus",
+        "c_mercury"
+      ],
+      "streams": {
+        "Planetpl12": 0.3810440098455,
+        "Planetpl12_resample2": 0.1145850314733,
+        "Planetpl12_resample3": 0.2575762536432,
+        "soul_Planet2": 0.7992332990421
+      }
+    },
+    {
+      "seed": "BH76",
+      "ante": 2,
+      "size": 3,
+      "mode": "showman",
+      "centreIds": [
+        "c_black_hole",
+        "c_venus",
+        "c_venus"
+      ],
+      "streams": {
+        "Planetpl12": 0.3810440098455,
+        "soul_Planet2": 0.0183036369068
+      }
+    },
+    {
+      "seed": "BH76",
+      "ante": 2,
+      "size": 3,
+      "mode": "telescope_zero",
+      "centreIds": [
+        "c_black_hole",
+        "c_venus",
+        "c_pluto"
+      ],
+      "streams": {
+        "Planetpl12": 0.3810440098455,
+        "Planetpl12_resample2": 0.1145850314733,
+        "soul_Planet2": 0.7992332990421
+      }
+    },
+    {
+      "seed": "BH76",
+      "ante": 2,
+      "size": 3,
+      "mode": "telescope_banned",
+      "centreIds": [
+        "c_venus",
+        "c_black_hole",
+        "c_pluto"
+      ],
+      "streams": {
+        "Planetpl12": 0.3810440098455,
+        "Planetpl12_resample2": 0.1145850314733,
+        "soul_Planet2": 0.7992332990421
+      }
+    },
+    {
+      "seed": "BH76",
+      "ante": 2,
+      "size": 3,
+      "mode": "blackhole_banned",
+      "centreIds": [
+        "c_venus",
+        "c_pluto",
+        "c_neptune"
+      ],
+      "streams": {
+        "Planetpl12": 0.7914923174007,
+        "Planetpl12_resample2": 0.3320338128897,
+        "soul_Planet2": 0.0183036369068
+      }
+    },
+    {
+      "seed": "BH76",
+      "ante": 2,
+      "size": 5,
+      "mode": "base",
+      "centreIds": [
+        "c_black_hole",
+        "c_venus",
+        "c_pluto",
+        "c_neptune",
+        "c_mercury"
+      ],
+      "streams": {
+        "Planetpl12": 0.4992333990502,
+        "Planetpl12_resample2": 0.3320338128897,
+        "soul_Planet2": 0.7992332990421
+      }
+    },
+    {
+      "seed": "BH76",
+      "ante": 2,
+      "size": 5,
+      "mode": "telescope",
+      "centreIds": [
+        "c_jupiter",
+        "c_black_hole",
+        "c_venus",
+        "c_pluto",
+        "c_neptune"
+      ],
+      "streams": {
+        "Planetpl12": 0.7914923174007,
+        "Planetpl12_resample2": 0.3320338128897,
+        "soul_Planet2": 0.7992332990421
+      }
+    },
+    {
+      "seed": "BH76",
+      "ante": 2,
+      "size": 5,
+      "mode": "softlock",
+      "centreIds": [
+        "c_black_hole",
+        "c_venus",
+        "c_pluto",
+        "c_planet_x",
+        "c_mercury"
+      ],
+      "streams": {
+        "Planetpl12": 0.4992333990502,
+        "Planetpl12_resample2": 0.1145850314733,
+        "soul_Planet2": 0.7992332990421
+      }
+    },
+    {
+      "seed": "BH76",
+      "ante": 2,
+      "size": 5,
+      "mode": "owned",
+      "centreIds": [
+        "c_black_hole",
+        "c_venus",
+        "c_mercury",
+        "c_neptune",
+        "c_mars"
+      ],
+      "streams": {
+        "Planetpl12": 0.4992333990502,
+        "Planetpl12_resample2": 0.706983430004,
+        "Planetpl12_resample3": 0.5785953417889,
+        "Planetpl12_resample4": 0.7216670400755,
+        "Planetpl12_resample5": 0.7068766739068,
+        "soul_Planet2": 0.7992332990421
+      }
+    },
+    {
+      "seed": "BH76",
+      "ante": 2,
+      "size": 5,
+      "mode": "showman",
+      "centreIds": [
+        "c_black_hole",
+        "c_venus",
+        "c_venus",
+        "c_pluto",
+        "c_mercury"
+      ],
+      "streams": {
+        "Planetpl12": 0.4992333990502,
+        "Planetpl12_resample2": 0.1145850314733,
+        "soul_Planet2": 0.4207144803479
+      }
+    },
+    {
+      "seed": "BH76",
+      "ante": 2,
+      "size": 5,
+      "mode": "telescope_zero",
+      "centreIds": [
+        "c_black_hole",
+        "c_venus",
+        "c_pluto",
+        "c_neptune",
+        "c_mercury"
+      ],
+      "streams": {
+        "Planetpl12": 0.4992333990502,
+        "Planetpl12_resample2": 0.3320338128897,
+        "soul_Planet2": 0.7992332990421
+      }
+    },
+    {
+      "seed": "BH76",
+      "ante": 2,
+      "size": 5,
+      "mode": "telescope_banned",
+      "centreIds": [
+        "c_venus",
+        "c_black_hole",
+        "c_pluto",
+        "c_neptune",
+        "c_mercury"
+      ],
+      "streams": {
+        "Planetpl12": 0.4992333990502,
+        "Planetpl12_resample2": 0.3320338128897,
+        "soul_Planet2": 0.7992332990421
+      }
+    },
+    {
+      "seed": "BH76",
+      "ante": 2,
+      "size": 5,
+      "mode": "blackhole_banned",
+      "centreIds": [
+        "c_venus",
+        "c_pluto",
+        "c_neptune",
+        "c_mercury",
+        "c_saturn"
+      ],
+      "streams": {
+        "Planetpl12": 0.9952877396634,
+        "Planetpl12_resample2": 0.706983430004,
+        "Planetpl12_resample3": 0.2575762536432,
+        "Planetpl12_resample4": 0.7216670400755,
+        "soul_Planet2": 0.4207144803479
+      }
+    }
+  ]
+}
