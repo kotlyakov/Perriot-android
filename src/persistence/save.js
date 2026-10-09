@@ -52,7 +52,7 @@ function decodeApkShop(value,state) {
     }
   }else requireValue(state.shop===null || state.shop===undefined);
 }
-function decodeApkBlinds(value,state){
+function decodeApkBlinds(value,state,pending=false){
   optionalObject(value,['version','ante','bossId','bossesUsed','tags','orbitalHands','tagContext'],['playedCardIds']);
   if(Object.hasOwn(value,'playedCardIds'))cardList(value.playedCardIds,state);
   requireValue(value.version===1 && value.ante===state.round.ante && state.apkShop && state.rng.apk);
@@ -64,7 +64,7 @@ function decodeApkBlinds(value,state){
   requireValue(context.ante===value.ante);
   object(value.tags,['small','big']);const pool=getApkTagPool(context);
   for(const tag of Object.values(value.tags))requireValue(pool.includes(tag) && tag!=='UNAVAILABLE');
-  object(value.orbitalHands,['small','big','boss']);
+  object(value.orbitalHands,pending?[]:['small','big','boss']);
   for(const hand of Object.values(value.orbitalHands))requireValue(context.visibleHandOrder.includes(hand));
 }
 function cardList(ids,state){
@@ -162,7 +162,7 @@ function decode(payload) {
   const state=payload.state;
   const sortMode=state.sortMode;
   if(Object.hasOwn(state,'sortMode'))requireValue(['rank','suit'].includes(sortMode));
-  optionalObject(state,['schemaVersion','runId','seed','revision','phase','deckId','cards','hand','drawPile','discardPile','jokers','handLevels','discoveredHands','rng','money','round','lastScore'],['shop','bankruptAt','jokerSlots','apkShop','sortMode','roundNumber','apkBlinds','bossState']);
+  optionalObject(state,['schemaVersion','runId','seed','revision','phase','deckId','cards','hand','drawPile','discardPile','jokers','handLevels','discoveredHands','rng','money','round','lastScore'],['shop','bankruptAt','jokerSlots','apkShop','sortMode','roundNumber','apkBlinds','bossState','nextAnteBlinds']);
   requireValue(state.schemaVersion===1 && PHASES.includes(state.phase) && ['red','blue'].includes(state.deckId));
   requireValue(typeof state.runId==='string' && state.runId.length>=1 && state.runId.length<=120);
   requireValue(typeof state.seed==='string' && state.seed.length>=1 && state.seed.length<=1000);integer(state.revision);
@@ -185,11 +185,15 @@ function decode(payload) {
   if(Object.hasOwn(state.rng,'apk'))decodeApkRng(state.rng.apk,state.seed);
   state.money=decimal(state.money,true);
   object(state.round,['blindId','ante','target','score','handsRemaining','discardsRemaining','handSize']);
-  if(Object.hasOwn(state,'roundNumber'))integer(state.roundNumber,1,3);
+  if(Object.hasOwn(state,'roundNumber'))integer(state.roundNumber,1,6);
   const round=state.round;requireValue(['small','big','boss'].includes(round.blindId));integer(round.ante,1,8);integer(round.handsRemaining,0,state.deckId==='blue'?5:4);integer(round.discardsRemaining,0,state.deckId==='red'?4:3);integer(round.handSize,1,10000);
   round.target=decimal(round.target);round.score=decimal(round.score);requireValue(round.target>0n);
   if(Object.hasOwn(state,'apkShop'))decodeApkShop(state.apkShop,state);
   if(Object.hasOwn(state,'apkBlinds'))decodeApkBlinds(state.apkBlinds,state);
+  if(Object.hasOwn(state,'nextAnteBlinds')){
+    requireValue(state.phase==='shop'&&round.blindId==='boss'&&round.ante===1&&state.nextAnteBlinds.playedCardIds?.length===0);
+    decodeApkBlinds(state.nextAnteBlinds,{...state,round:{...round,ante:2}},true);
+  }
   if(Object.hasOwn(state,'bossState'))decodeBoss(state.bossState,state);
   if(round.blindId==='boss'){
     requireValue(canEnterFirstAnteBoss(state)&&round.target===600n);
@@ -222,4 +226,5 @@ export function deserializeState(text) {
   requireValue(typeof text==='string' && text.length<=LIMIT && new TextEncoder().encode(text).length<=LIMIT);
   return decode(JSON.parse(text));
 }
+
 

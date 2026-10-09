@@ -1,4 +1,6 @@
 import {canEnterFirstAnteBoss} from './boss-effects.js';
+import {blindBase,canLeaveApkShop,chooseNextAnteBlinds} from './blind-progression.js';
+import {chooseApkOrbitalHand} from './apk-tags.js';
 import {SUPPORTED_JOKERS,supportsJoker} from '../content/jokers.js';
 import {canAfford} from './shop-pricing.js';
 import {validateApkRng} from './apk-rng.js';
@@ -103,9 +105,21 @@ export function applyShopAction(state,action,{refill,nextRound}={}) {
   if(action.type==='LEAVE_SHOP') {
     if(state.apkShop){
       const boss=state.round.blindId==='big'&&canEnterFirstAnteBoss(state);
-      if(nextRound||state.round.ante!==1||state.round.blindId!=='small'&&!boss)return reject('NEXT_BLIND_UNAVAILABLE','Next blind lifecycle is unavailable');
+      if(nextRound||!canLeaveApkShop(state))return reject('NEXT_BLIND_UNAVAILABLE','Next blind lifecycle is unavailable');
       const next=structuredClone(state);next.phase='blind_selection';next.shop=null;
-      next.round={...next.round,blindId:boss?'boss':'big',target:boss?600n:450n,score:0n,handsRemaining:next.deckId==='blue'?5:4,discardsRemaining:next.deckId==='red'?4:3};
+      const newAnte=state.round.blindId==='boss',ante=state.round.ante+(newAnte?1:0);
+      if(newAnte){
+        try{
+          // Old boss-shop saves lack a pending selection: create it once, preserving the paid shop.
+          const selected=next.nextAnteBlinds?{selection:next.nextAnteBlinds,rng:next.rng.apk}:chooseNextAnteBlinds(next,next.rng.apk);
+          next.apkBlinds=selected.selection;next.rng.apk=selected.rng;delete next.nextAnteBlinds;
+          for(const id of ['small','big','boss']){
+            const orbital=chooseApkOrbitalHand(next.rng.apk,next.apkBlinds.tagContext);
+            next.apkBlinds.orbitalHands[id]=orbital.hand;next.rng.apk=orbital.rng;
+          }
+        }catch{return reject('NEXT_BLIND_UNAVAILABLE','Invalid next ante selection');}
+      }
+      next.round={...next.round,ante,blindId:newAnte?'small':boss?'boss':'big',target:newAnte?blindBase(ante):blindBase(ante)*(boss?4n:3n)/2n,score:0n,handsRemaining:next.deckId==='blue'?5:4,discardsRemaining:next.deckId==='red'?4:3};
       next.hand=[];next.discardPile=[];next.apkShop.context=currentApkShopContext(next);
       return finish(next,[{type:'shop_left',nextBlindId:next.round.blindId}]);
     }
@@ -118,4 +132,5 @@ export function applyShopAction(state,action,{refill,nextRound}={}) {
   }
   return reject('UNKNOWN_ACTION','Unsupported shop action');
 }
+
 
