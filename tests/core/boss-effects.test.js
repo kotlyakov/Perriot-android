@@ -35,10 +35,10 @@ test('Hook removes two unplayed cards without spending a discard, advances RNG a
  assert.equal(r.error,null);assert.equal(forced.cardIds.length,2);assert.ok(forced.cardIds.every(id=>s.hand.includes(id)&&!ids.includes(id)));assert.equal(r.state.round.discardsRemaining,s.round.discardsRemaining);assert.equal(r.state.discardPile.length,5);assert.equal(r.state.drawPile.length,s.drawPile.length-5);assert.ok(r.state.rng.apk.streams.hook);assert.deepEqual(s,before);
  assert.deepEqual(deserializeState(serializeState(r.state)),r.state);assert.deepEqual(act(deserializeState(serializeState(s)),'PLAY_HAND',ids),r);
 });
-test('boss completion restores Manacle hand size and pays five dollars; next ante remains gated',()=>{
+test('boss completion restores Manacle hand size and pays five dollars; next ante is selectable',()=>{
  const s=act(pending('bl_manacle'),'START_BLIND').state;s.phase='round_won';s.round.score=600n;s.round.handsRemaining=1;
  const cash=act(s,'CASH_OUT');assert.equal(cash.error,null);assert.equal(cash.state.money,10n);assert.equal(cash.state.round.handSize,8);assert.equal(cash.state.bossState,undefined);assert.deepEqual(deserializeState(serializeState(cash.state)),cash.state);
- const next=act(cash.state,'LEAVE_SHOP');assert.equal(next.state,cash.state);assert.ok(next.error);
+ const next=act(cash.state,'LEAVE_SHOP');assert.equal(next.error,null);assert.equal(next.state.round.ante,2);assert.equal(next.state.round.handSize,8);
 });
 test('old saves lack ante history and cannot enter boss; malformed boss state is rejected',()=>{
  const s=pending('bl_window');delete s.apkBlinds.playedCardIds;assert.ok(act(s,'START_BLIND').error);
@@ -52,3 +52,4 @@ test('corrupted Hook card identities are rejected on load and play fails atomica
  const s=act(pending('bl_hook'),'START_BLIND').state,old=s.hand[0],bad='modified_card';s.cards[bad]={...s.cards[old],id:bad};delete s.cards[old];s.hand[0]=bad;
  const before=structuredClone(s);const result=act(s,'PLAY_HAND',s.hand.slice(1,2));assert.ok(result.error);assert.equal(result.state,s);assert.deepEqual(s,before);assert.throws(()=>serializeState(s));
 });
+

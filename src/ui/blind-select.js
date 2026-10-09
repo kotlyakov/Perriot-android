@@ -1,4 +1,5 @@
 import {APK_BLINDS_BY_ID} from '../content/apk-blinds.js';
+import {blindBase} from '../core/blind-progression.js';
 import {APK_TAGS_BY_ID} from '../content/apk-tags.js';
 import {APK_HAND_NAMES} from '../core/apk-shop-state.js';
 import {HAND_NAMES} from './field.js';
@@ -23,7 +24,7 @@ export function renderBlindSelect(state,busy,onSelect){
   if(current || state.apkBlinds && !passed){
    const boss=id==='boss'?APK_BLINDS_BY_ID[state.apkBlinds.bossId]:null;
    const token=node('div','blind-choice-token',boss?boss.name:id==='big'?'БОЛЬШОЙ\nБЛАЙНД':'МАЛЫЙ\nБЛАЙНД');token.setAttribute('aria-hidden','true');card.append(token);
-   const target=node('div','blind-choice-target');target.append(node('span','','Минимум очков'));const score=node('strong','scarlet',String(current?state.round.target:id==='big'?450:300*boss.mult));score.id='select_'+id+'_target';target.append(score);const reward=node('span');reward.append(node('span','','Награда: '),node('strong','gold',id==='big'?'$$$$':boss?'$'.repeat(boss.dollars):'$$$'));target.append(reward);card.append(target);
+   const base=blindBase(state.round.ante),target=node('div','blind-choice-target');target.append(node('span','','Минимум очков'));const score=node('strong','scarlet',String(current?state.round.target:id==='big'?base*3n/2n:base*BigInt(boss.mult)));score.id='select_'+id+'_target';target.append(score);const reward=node('span');reward.append(node('span','','Награда: '),node('strong','gold',id==='big'?'$$$$':boss?'$'.repeat(boss.dollars):'$$$'));target.append(reward);card.append(target);
    if(boss)card.append(node('p','blind-boss-description',boss.description));
    else{
     const lower=node('div','blind-choice-skip');lower.append(node('span','','ИЛИ'));
@@ -42,4 +43,5 @@ export function renderBlindSelect(state,busy,onSelect){
  return overlay;
 }
 export function removeBlindSelect(){controller?.abort();controller=undefined;overlay?.remove();overlay=undefined;}
+
 

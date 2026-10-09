@@ -1,4 +1,5 @@
 import {canEnterFirstAnteBoss,chooseHookDiscards} from './boss-effects.js';
+import {chooseNextAnteBlinds} from './blind-progression.js';
 import {chooseApkBoss} from './apk-blinds.js';
 import {createApkTagContext,chooseApkTag,chooseApkOrbitalHand} from './apk-tags.js';
 import {sortHand,SORT_MODES} from './sort.js';
@@ -77,6 +78,10 @@ export function dispatch(state, action, shopOptions={}) {
         }
         const shuffled=shuffleApkDeck(Object.values(next.cards),next.rng.apk,'cashout'+context.ante);
         next.drawPile=shuffled.cardIds;next.rng.apk=shuffled.rng;
+        if(next.round.blindId==='boss'){
+          const selected=chooseNextAnteBlinds(next,next.rng.apk);
+          next.nextAnteBlinds=selected.selection;next.rng.apk=selected.rng;
+        }
         const generated=generateApkShop(next.rng.apk,context,{voucherId:next.apkShop.voucherId,
           firstShopBuffoon:next.apkShop.firstShopBuffoon,instancePrefix:'shop_'+next.revision});
         next.shop=createShop({offers:generated.offers});next.rng.apk=generated.rng;
@@ -93,7 +98,6 @@ export function dispatch(state, action, shopOptions={}) {
     if(next.round.blindId==='boss'){
       next.bossState={version:1,id:next.apkBlinds.bossId,playedBeforeBoss:[...next.apkBlinds.playedCardIds],baseHandSize:next.round.handSize};
       if(next.bossState.id==='bl_manacle')next.round.handSize--;
-      next.roundNumber=3;
     }
     if(next.rng.apk){
       const shuffled=shuffleApkDeck(next.drawPile.map(id=>next.cards[id]),next.rng.apk,'nr'+next.round.ante);next.drawPile=shuffled.cardIds;next.rng.apk=shuffled.rng;
@@ -101,7 +105,7 @@ export function dispatch(state, action, shopOptions={}) {
       const draw=randomInt(next.rng.deck,i+1);next.rng.deck=draw.rng;
       [next.drawPile[i],next.drawPile[draw.value]]=[next.drawPile[draw.value],next.drawPile[i]];
     }
-    if(next.apkShop&&next.round.blindId==='big')next.roundNumber=2;
+    if(next.apkShop)next.roundNumber=(next.round.ante-1)*3+({small:1,big:2,boss:3}[next.round.blindId]);
     next.phase='playing';next.revision++;
     events.push({type:'round_started',blindId:next.round.blindId,target:next.round.target});
     drawToLimit(next,events);
@@ -152,4 +156,5 @@ export function dispatch(state, action, shopOptions={}) {
   next.revision++;
   return {state:next,events,error:null};
 }
+
 

@@ -1,4 +1,5 @@
 import {canEnterFirstAnteBoss} from '../core/boss-effects.js';
+import {canLeaveApkShop} from '../core/blind-progression.js';
 import {describeShopItem} from '../content/shop-display.js';
 import {getRerollCost,hasJokerSpace} from '../core/shop.js';
 import {canAfford} from '../core/shop-pricing.js';
@@ -142,7 +143,7 @@ export function renderShop(state,busy,{onAction,onNotice}={}){
  if(state.phase!=='shop'){
   dismissTip();entryMotion?.cancel();view?.controller?.abort();view?.remove();document.getElementById('shop_sign')?.remove();view=null;selected=null;lastMain=null;renderOwned(state,busy,{onAction,onNotice});return;
  }
- const fresh=ensureView();view.querySelector('.shop-voucher-label').textContent='ВАУЧЕР '+(state.round?.ante??'')+' АНТЕ';const callbacks={onAction,onNotice},offers=view.querySelector('.shop-offers'),owned=document.getElementById('shop_owned');
+ const fresh=ensureView();view.querySelector('.shop-voucher-label').textContent='ВАУЧЕР '+(state.apkShop?.context.ante??state.round?.ante??'')+' АНТЕ';const callbacks={onAction,onNotice},offers=view.querySelector('.shop-offers'),owned=document.getElementById('shop_owned');
  const all=[...state.shop.main,...state.shop.vouchers,...state.shop.boosters,...state.jokers];if(selected&&!all.some(o=>o.id===selected.id))clearSelection();dismissTip();offers.replaceChildren();owned.replaceChildren();
  const main=state.shop.main,mainWidth=104,spacing=Math.min(118,main.length>1?330/(main.length-1):118),start=413-mainWidth/2-spacing*(main.length-1)/2;
  main.forEach((o,i)=>offers.append(choice(o,'main',i,state,busy,callbacks,start+i*spacing,38,104,142)));
@@ -150,8 +151,9 @@ export function renderShop(state,busy,{onAction,onNotice}={}){
  state.shop.boosters.forEach((o,i)=>offers.append(choice(o,'booster',i,state,busy,callbacks,364+i*127,246,111,181)));
  renderOwned(state,busy,callbacks);
  view.querySelectorAll('.shop-action').forEach(n=>n.remove());
- const next=rect(node('button','shop-action shop-next'),20,19,156,82);next.id='shop_next_round';next.append(node('span','','Следующий'),node('strong','','Раунд'));const boss=state.round.blindId==='big'&&canEnterFirstAnteBoss(state);next.disabled=busy||state.round.blindId!=='small'&&!boss;next.title=state.round.blindId==='small'?'Перейти к большому блайнду':boss?'Перейти к выбранному боссу':'Следующий блайнд пока недоступен';next.onclick=()=>onAction?.('LEAVE_SHOP',{});view.append(next);
+ const next=rect(node('button','shop-action shop-next'),20,19,156,82);next.id='shop_next_round';next.append(node('span','','Следующий'),node('strong','','Раунд'));const boss=state.round.blindId==='big'&&canEnterFirstAnteBoss(state);next.disabled=busy||!canLeaveApkShop(state);next.title=state.round.blindId==='boss'?'Перейти ко второму анте':state.round.blindId==='small'?'Перейти к большому блайнду':boss?'Перейти к выбранному боссу':'Следующий блайнд пока недоступен';next.onclick=()=>onAction?.('LEAVE_SHOP',{});view.append(next);
  const rerollCost=getRerollCost(state.shop),reroll=rect(node('button','shop-action shop-reroll'),21,107,155,89);reroll.id='shop_reroll';reroll.append(node('span','','Переброс'),money(rerollCost,137,38));reroll.disabled=busy||!canAfford(state.money,rerollCost,state.bankruptAt??0n);reroll.onclick=()=>{clearSelection();onAction?.('REROLL_SHOP',{});};view.append(reroll);
  const signature=main.map(o=>o.id).join('|');if(!fresh&&lastMain!==null&&signature!==lastMain&&!reduced())offers.querySelectorAll('[data-kind=main]').forEach((n,i)=>n.animate([{opacity:0,translate:'0 12px'},{opacity:1,translate:'0 0'}],{duration:220,delay:i*35,easing:'ease-out'}));lastMain=signature;
 }
+
 
