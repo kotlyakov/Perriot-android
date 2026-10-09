@@ -58,3 +58,14 @@ test('money rewards use their own gold effect colour',async()=>{
  const format=await formatter();
  assert.deepEqual(format('Награда $25; потратить −$5.').filter(t=>t.kind),[{text:'$25',kind:'money'},{text:'−$5',kind:'money'}]);
 });
+
+
+test('Planet and Black Hole level increments are bold neutral effects',async()=>{
+ const format=await formatter();
+ for(const [entityId,set] of [['c_pluto','Planet'],['c_black_hole','Spectral']]){
+  const text=describeShopItem({entityId,originalKey:entityId,set}).description;
+  assert.deepEqual(format(text).filter(t=>t.kind),[{text:'+1',kind:'level'}]);
+  assert.equal(format(text).map(t=>t.text).join(''),text);
+ }
+ assert.deepEqual(format('Ранг +1. 12 комбинаций; +3 места; награда на +1.').filter(t=>t.kind),[]);
+});

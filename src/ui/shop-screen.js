@@ -2,7 +2,8 @@ import {canEnterBoss} from '../core/boss-effects.js';
 import {canLeaveApkShop} from '../core/blind-progression.js';
 import {describeShopItem} from '../content/shop-display.js';
 import {appendTooltipContents} from './tooltip-text.js';
-import {getRerollCost,hasJokerSpace} from '../core/shop.js';
+import {getRerollCost,hasJokerSpace,hasConsumableSpace,canBuyShopCard} from '../core/shop.js';
+import {canUseConsumable,supportsConsumableEffect} from '../core/consumables.js';
 import {canAfford} from '../core/shop-pricing.js';
 import {canManageInventory,canSellOwned} from '../core/inventory.js';
 
@@ -20,7 +21,7 @@ export function shopReturnFrames(dx,dy){
 function money(value,width=56,max=27){const n=node('span','shop-money','$'+value);n.style.fontSize=shopMoneyFontSize(value,width,max)+'px';return n;}
 function rect(n,x,y,w,h){Object.assign(n.style,{left:x+'px',top:y+'px',width:w+'px',height:h+'px'});return n;}
 function dismissTip(){tip?.remove();tip=null;}
-function clearSelection(){selected=null;dismissTip();view?.querySelectorAll('.shop-choice').forEach(n=>{n.classList.remove('is-selected');n.querySelector('.shop-card')?.setAttribute('aria-pressed','false');});document.getElementById('shop_owned')?.querySelectorAll('.shop-choice').forEach(n=>{n.classList.remove('is-selected');n.querySelector('.shop-card')?.setAttribute('aria-pressed','false');});view?.querySelectorAll('.shop-buy').forEach(n=>n.remove());document.getElementById('shop_owned')?.querySelectorAll('.shop-buy').forEach(n=>n.remove());}
+function clearSelection(){selected=null;dismissTip();view?.querySelectorAll('.shop-choice').forEach(n=>{n.classList.remove('is-selected');n.querySelector('.shop-card')?.setAttribute('aria-pressed','false');});document.getElementById('shop_owned')?.querySelectorAll('.shop-choice').forEach(n=>{n.classList.remove('is-selected');n.querySelector('.shop-card')?.setAttribute('aria-pressed','false');});view?.querySelectorAll('.shop-buy,.shop-use').forEach(n=>n.remove());document.getElementById('shop_owned')?.querySelectorAll('.shop-buy,.shop-use').forEach(n=>n.remove());}
 function showTip(offer,card){
  dismissTip();const details=describeShopItem(offer);tip=node('aside','shop-tooltip');tip.setAttribute('role','tooltip');tip.id='shop_tooltip';
  appendTooltipContents(tip,details.name,[details.description]);
@@ -52,9 +53,12 @@ function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
  wrap.append(card);
  function select(){
   clearSelection();selected={id:offer.id,kind};wrap.classList.add('is-selected');card.setAttribute('aria-pressed','true');
-
+  if(kind==='consumable'){
+   const capability=canUseConsumable(state,offer),use=node('button','shop-use','Использовать');use.type='button';use.disabled=busy||!capability.available;use.title=capability.reason??'Повысить уровень комбинации';
+   use.onclick=()=>{if(use.disabled||!canUseConsumable(state,offer).available)return;use.disabled=true;clearSelection();callbacks.onAction?.('USE_CONSUMABLE',{cardId:offer.id});};wrap.append(use);
+  }
  }
- card.onclick=()=>{if(held){held=false;return;}if(!busy){if(kind==='owned')select();showTip(offer,card);}};
+ card.onclick=()=>{if(held){held=false;return;}if(!busy){if(kind==='owned'||kind==='consumable')select();showTip(offer,card);}};
  card.onpointerdown=e=>{
   if(busy||card.disabled||e.button!==0)return;cancelDrag?.();cancelReturn?.();held=false;showTip(offer,card);
   const inventory=kind==='owned'||kind==='consumable',area=kind==='owned'?'jokers':'consumables';
@@ -74,17 +78,17 @@ function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
    }else{returning?.remove();wrap.style.opacity='';}
    card.removeEventListener('pointermove',move);card.removeEventListener('pointerup',end);card.removeEventListener('pointercancel',cancel);card.removeEventListener('lostpointercapture',cancel);card.removeEventListener('keydown',escape);cancelDrag=null;if(card.hasPointerCapture?.(e.pointerId))card.releasePointerCapture(e.pointerId);
   }
-  function cancel(){held=dragged||held;cleanup(dragged);dismissTip();}
+  function cancel(){held=dragged||held;cleanup(dragged);clearSelection();}
   function escape(ev){if(ev.key==='Escape'){ev.preventDefault();cancel();}}
   function move(ev){
    if(ev.pointerId!==e.pointerId||!draggable)return;
    if(!dragged&&Math.hypot(ev.clientX-startX,ev.clientY-startY)>8){
     dragged=true;held=true;clearSelection();
     const stage=document.getElementById('stage'),bounds=wrap.getBoundingClientRect(),stageBounds=stage.getBoundingClientRect();
-    ghost=wrap.cloneNode(true);rect(ghost,(bounds.left-stageBounds.left)/scale,(bounds.top-stageBounds.top)/scale,w,h);ghost.classList.add('is-dragging');ghost.setAttribute('aria-hidden','true');ghost.style.pointerEvents='none';stage.append(ghost);wrap.style.opacity='0';ghost.querySelector('button').tabIndex=-1;
+    ghost=wrap.cloneNode(true);ghost.querySelector('.shop-use')?.remove();rect(ghost,(bounds.left-stageBounds.left)/scale,(bounds.top-stageBounds.top)/scale,w,h);ghost.classList.add('is-dragging');ghost.setAttribute('aria-hidden','true');ghost.style.pointerEvents='none';stage.append(ghost);wrap.style.opacity='0';ghost.querySelector('button').tabIndex=-1;
     zone=inventory?rect(node('div','shop-buy-zone shop-sell-zone'),1375,210,150,225):rect(node('div','shop-buy-zone'),454,15,895,182);zone.id=inventory?'shop_sell_zone':'shop_buy_zone';zone.setAttribute('aria-live','polite');
-    const supported=kind==='main'&&details.canBuy&&(state.inflation??0n)===0n;
-    const reason=inventory?(canSellOwned(state,offer,area)?null:offer.eternal?'Вечная карта':'Продажа недоступна'):!supported?'Доступен только просмотр':!canAfford(state.money,offer.cost,state.bankruptAt??0n)?'Недостаточно денег':!hasJokerSpace(state,offer)?'Нет места для джокера':null;
+    const supported=kind==='main'&&details.canBuy&&(state.inflation??0n)===0n,consumable=supportsConsumableEffect(offer);
+    const reason=inventory?(canSellOwned(state,offer,area)?null:offer.eternal?'Вечная карта':'Продажа недоступна'):!supported?'Доступен только просмотр':!canAfford(state.money,offer.cost,state.bankruptAt??0n)?'Недостаточно денег':!(consumable?hasConsumableSpace(state,offer):hasJokerSpace(state,offer))?(consumable?'Нет места для расходной карты':'Нет места для джокера'):!canBuyShopCard(state,offer)?'Покупка недоступна':null;
     zone.dataset.available=String(!reason);zone.append(node('strong','',reason??(inventory?'Продать':'Купить')),money(inventory?offer.sellCost??0n:offer.cost,inventory?125:800,43));document.getElementById('stage').append(zone);
    }
    if(dragged){ev.preventDefault();ghost.style.translate=(ev.clientX-startX)/scale+'px '+(ev.clientY-startY)/scale+'px';const b=zone.getBoundingClientRect();zone.classList.toggle('is-over',ev.clientX>=b.left&&ev.clientX<=b.right&&ev.clientY>=b.top&&ev.clientY<=b.bottom);}
@@ -139,7 +143,7 @@ function renderOwned(state,busy,callbacks){
  jokers.forEach((o,i)=>owned.append(choice(o,'owned',i,state,busy,callbacks,jokerStart+i*step,23,104,143)));
  (state.consumables??[]).forEach((o,i,a)=>owned.append(choice(o,'consumable',i,state,busy,callbacks,1145+(i-(a.length-1)/2)*103,25,96,141)));
  document.getElementById('joker_count').textContent=jokers.length+'/'+((state.jokerSlots??5)+jokers.filter(j=>j.edition==='negative').length);
- document.getElementById('consumable_count').textContent=(state.consumables?.length??0)+'/'+(state.consumableSlots??2);
+ document.getElementById('consumable_count').textContent=(state.consumables?.length??0)+'/'+((state.consumableSlots??2)+(state.consumables??[]).filter(c=>c.edition==='negative').length);
 }
 export function renderShop(state,busy,{onAction,onNotice}={}){
  cancelDrag?.();cancelReturn?.();
@@ -147,7 +151,7 @@ export function renderShop(state,busy,{onAction,onNotice}={}){
   dismissTip();entryMotion?.cancel();view?.controller?.abort();view?.remove();document.getElementById('shop_sign')?.remove();view=null;selected=null;lastMain=null;renderOwned(state,busy,{onAction,onNotice});return;
  }
  const fresh=ensureView();view.querySelector('.shop-voucher-label').textContent='ВАУЧЕР '+(state.apkShop?.context.ante??state.round?.ante??'')+' АНТЕ';const callbacks={onAction,onNotice},offers=view.querySelector('.shop-offers'),owned=document.getElementById('shop_owned');
- const all=[...state.shop.main,...state.shop.vouchers,...state.shop.boosters,...state.jokers];if(selected&&!all.some(o=>o.id===selected.id))clearSelection();dismissTip();offers.replaceChildren();owned.replaceChildren();
+ const all=[...state.shop.main,...state.shop.vouchers,...state.shop.boosters,...state.jokers,...(state.consumables??[])];if(selected&&!all.some(o=>o.id===selected.id))clearSelection();dismissTip();offers.replaceChildren();owned.replaceChildren();
  const main=state.shop.main,mainWidth=104,spacing=Math.min(118,main.length>1?330/(main.length-1):118),start=413-mainWidth/2-spacing*(main.length-1)/2;
  main.forEach((o,i)=>offers.append(choice(o,'main',i,state,busy,callbacks,start+i*spacing,38,104,142)));
  state.shop.vouchers.forEach((o,i)=>offers.append(choice(o,'voucher',i,state,busy,callbacks,150+i*98,265,90,143)));

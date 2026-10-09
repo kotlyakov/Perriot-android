@@ -13,3 +13,6 @@
 
 
 .shop-sell-zone{background:#b55f25e8;border-color:#f6c35d;font-size:29px;text-shadow:1px 2px #653315}.shop-sell-zone.is-over{background:#d0762bf2}.shop-sell-zone[data-available=false]{font-size:20px}.shop-choice{transform-origin:center center}
+
+
+.shop-use{position:absolute;left:0;top:146px;width:96px;height:34px;padding:0;border:2px solid #19312b;border-radius:7px;box-shadow:0 3px #0d2422;background:#3eaa78;color:#f6f2df;font-size:12px;font-weight:700;z-index:12}.shop-use:disabled{background:#6f7967;color:#f0e5c8;opacity:.9}

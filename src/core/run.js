@@ -1,4 +1,5 @@
 import {applySkipBlind} from './skip-blind.js';
+import {applyConsumableAction} from './consumables.js';
 import {canEnterBoss,chooseHookDiscards,resolveMostPlayedHand} from './boss-effects.js';
 import {applyInventoryAction} from './inventory.js';
 import {chooseNextAnteBlinds} from './blind-progression.js';
@@ -34,6 +35,7 @@ export function createRun(seed, {runId,deckId='red',money,referenceRng=false,ref
     rng:{deck:createRng(`${seed}:deck`),effects:createRng(`${seed}:effects`)},money,
     round:{blindId:'small',ante:1,target:300n,score:0n,handsRemaining:deckId==='blue'?5:4,discardsRemaining:deckId==='red'?4:3,handSize:8},
     lastScore:null,sortMode:'rank',mostPlayedHand:'high_card',
+    consumableUsage:{},consumableUsageTotal:{tarot:0,planet:0,spectral:0,tarot_planet:0,all:0},lastTarotPlanet:null,
   };
   if(referenceRng){
     let rng=createApkRng(seed);
@@ -78,6 +80,7 @@ export function dispatch(state, action, shopOptions={}) {
   if (action.expectedRevision!==state.revision) return reject('STALE_ACTION','State revision has changed');
   if (!Number.isSafeInteger(state.revision) || state.revision<0 || state.revision===Number.MAX_SAFE_INTEGER) return reject('INVALID_STATE','Invalid revision');
   if(['REORDER_JOKERS','REORDER_CONSUMABLES','SELL_OWNED_CARD'].includes(action.type))return applyInventoryAction(state,action);
+  if(action.type==='USE_CONSUMABLE')return applyConsumableAction(state,action);
   if(action.type==='SKIP_BLIND')return applySkipBlind(state,action);
   if(['BUY_SHOP_CARD','SELL_JOKER','REROLL_SHOP','LEAVE_SHOP'].includes(action.type))return applyShopAction(state,action,shopOptions);
   if(action.type==='CASH_OUT') {
