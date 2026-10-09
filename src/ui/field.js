@@ -30,11 +30,13 @@ export function dismissCardTip(){document.querySelector('.card-tip')?.remove();}
 export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=null) {
  document.getElementById('deck').dataset.deck=state.deckId;
  const boss=state.round.blindId==='boss'?APK_BLINDS_BY_ID[state.apkBlinds?.bossId]:null;
- text('target_value',state.round.target);text('blind_title',boss?boss.name:state.round.blindId==='big'?'Большой блайнд':'Малый блайнд');document.querySelector('#blind_token span').textContent=boss?boss.name:state.round.blindId==='big'?'БОЛЬШОЙ\nБЛАЙНД':'МАЛЫЙ\nБЛАЙНД';document.querySelector('#blind_target b').textContent=boss?'$$$$$':state.round.blindId==='big'?'$$$$':'$$$';document.querySelector('#round strong').textContent=state.roundNumber??1;animateNumber(document.getElementById('round_score_value'),state.round.score,{format:displayInteger});animateNumber(document.getElementById('hands_value'),state.round.handsRemaining);animateNumber(document.getElementById('discards_value'),state.round.discardsRemaining);text('money_value','$'+state.money);
+ text('target_value',state.round.target);text('blind_title',boss?boss.name:state.round.blindId==='big'?'Большой блайнд':'Малый блайнд');document.querySelector('#blind_token span').textContent=boss?boss.name:state.round.blindId==='big'?'БОЛЬШОЙ\nБЛАЙНД':'МАЛЫЙ\nБЛАЙНД';document.querySelector('#blind_target b').textContent=boss?'$'.repeat(boss.dollars):state.round.blindId==='big'?'$$$$':'$$$';document.querySelector('#round strong').textContent=state.roundNumber??1;animateNumber(document.getElementById('round_score_value'),state.round.score,{format:displayInteger});animateNumber(document.getElementById('hands_value'),state.round.handsRemaining);animateNumber(document.getElementById('discards_value'),state.round.discardsRemaining);text('money_value','$'+state.money);
  document.querySelector('#ante strong').firstChild.textContent=String(state.phase==='shop'&&state.round.blindId==='boss'?state.apkShop.context.ante:state.round.ante);
  text('hand_count',state.hand.length+'/'+state.round.handSize);text('deck_count',state.drawPile.length+'/'+Object.keys(state.cards).length);text('joker_count',state.jokers.length+'/5');
+ const hiddenCardIds=new Set(state.bossState?.hiddenCardIds??[]);
+ const hiddenSelection=state.hand.some(id=>selected.has(id)&&hiddenCardIds.has(id));
  const played=state.hand.filter(id=>selected.has(id)).map(id=>state.cards[id]);
- let preview=scoringPreview;try{if(!preview && played.length)preview=scoreHand(state,played);}catch{}
+ let preview=hiddenSelection?null:scoringPreview;try{if(!hiddenSelection && !preview && played.length)preview=scoreHand(state,played);}catch{}
  text('hand_name',preview?HAND_NAMES[preview.handId]:'');text('hand_level',preview?'Ур. '+state.handLevels[preview.handId]:'');
  const base=preview?.trace[0]?.after;
  showNumbers(base?.chips??0n,base?.mult??0n);
@@ -53,11 +55,12 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
  const start=478+(fanWidth-115-gap*(state.hand.length-1))/2;
  state.hand.forEach((id,i)=>{
    const card=state.cards[id],b=document.createElement('button'),middle=(state.hand.length-1)/2,tilt=state.hand.length>1?(i-middle)*1.35:0;
-   const debuffed=isBossCardDebuffed(state,card);b.className='playing-card'+(selected.has(id)?' selected':'')+(debuffed?' boss-debuffed':'');b.dataset.cardId=id;
-   b.setAttribute('aria-label',`${rankLabel(card.rank)} ${({clubs:'трефы',diamonds:'бубны',hearts:'червы',spades:'пики'})[card.suit]}${debuffed?' — ослаблена':''}`);b.setAttribute('aria-pressed',selected.has(id));
+   const hidden=hiddenCardIds.has(id),debuffed=!hidden&&isBossCardDebuffed(state,card);b.className='playing-card'+(hidden?' hidden-card deck-back':'')+(selected.has(id)?' selected':'')+(debuffed?' boss-debuffed':'');b.dataset.cardId=id;
+   if(hidden)b.dataset.deck=state.deckId;
+   b.setAttribute('aria-label',hidden?'Скрытая карта':`${rankLabel(card.rank)} ${({clubs:'трефы',diamonds:'бубны',hearts:'червы',spades:'пики'})[card.suit]}${debuffed?' — ослаблена':''}`);b.setAttribute('aria-pressed',selected.has(id));
    const left=start+i*gap,top=388+Math.abs(i-middle)*2.5-(selected.has(id)?28:0);
-   Object.assign(b.style,{left:left+'px',top:top+'px',transform:`rotate(${tilt}deg)`,zIndex:String(3+i),color:SUITS[card.suit][1]});
-   b.innerHTML=cardMarkup(card)+(debuffed?'<span class=debuff-stamp>Ослаблена</span>':'');b.disabled=busy || !playing;
+   Object.assign(b.style,{left:left+'px',top:top+'px',transform:`rotate(${tilt}deg)`,zIndex:String(3+i),color:hidden?'#f0e5c8':SUITS[card.suit][1]});
+   b.innerHTML=hidden?'<span class="deck-seal" aria-hidden="true"><svg viewBox="0 0 32 32"><path fill="currentColor" d="M16 0Q19 13 32 16Q19 19 16 32Q13 19 0 16Q13 13 16 0Z"/></svg></span>':cardMarkup(card)+(debuffed?'<span class=debuff-stamp>Ослаблена</span>':'');b.disabled=busy || !playing;
    // Touch emits a compatibility click with detail=0 after pointerup. Only
    // keyboard/programmatic clicks need this path; pointers already toggled.
    b.addEventListener('click',e=>{if(e.detail===0 && !e.pointerType && !e.sourceCapabilities?.firesTouchEvents)onCard(id);});
@@ -65,9 +68,12 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
      if(b.disabled || e.button!==0)return;e.preventDefault();b.setPointerCapture(e.pointerId);
      document.querySelector('.card-tip')?.remove();
      const tip=document.createElement('div');tip.className='card-tip';tip.setAttribute('role','tooltip');
-     const title=document.createDocumentFragment(),suit=document.createElement('span');
-     title.append(document.createTextNode(rankLabel(card.rank)+' '));suit.style.color=SUITS[card.suit][1];suit.textContent=({clubs:'треф',diamonds:'бубен',hearts:'червей',spades:'пик'})[card.suit];title.append(suit);
-     appendTooltipContents(tip,title,[`+${debuffed?0:card.rank===14?11:Math.min(card.rank,10)} очков`,...describeCardModifiers(card),...(debuffed?['Не даёт фишек и не запускает эффекты джокеров за эту карту.']:[])]);
+     if(hidden)appendTooltipContents(tip,'Скрытая карта',['Неизвестна до игры или сброса.']);
+     else {
+      const title=document.createDocumentFragment(),suit=document.createElement('span');
+      title.append(document.createTextNode(rankLabel(card.rank)+' '));suit.style.color=SUITS[card.suit][1];suit.textContent=({clubs:'треф',diamonds:'бубен',hearts:'червей',spades:'пик'})[card.suit];title.append(suit);
+      appendTooltipContents(tip,title,[`+${debuffed?0:card.rank===14?11:Math.min(card.rank,10)} очков`,...describeCardModifiers(card),...(debuffed?['Не даёт фишек и не запускает эффекты джокеров за эту карту.']:[])]);
+     }
      tip.dataset.cardId=id;
      const placeTip=()=>{tip.style.left=Math.max(8,Math.min(1348,parseFloat(b.style.left)-32))+'px';tip.style.top=Math.max(8,parseFloat(b.style.top)-100)+'px';};placeTip();
      const x=e.clientX,y=e.clientY,scale=document.getElementById('stage').getBoundingClientRect().width/1536;let dragged=false,to=i,held=false;
@@ -91,5 +97,6 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
    if(id===focusedCard)b.focus({preventScroll:true});
  });
 }
+
 
 

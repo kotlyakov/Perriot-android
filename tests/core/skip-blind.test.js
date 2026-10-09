@@ -23,12 +23,13 @@ test('deferred and unsupported rewards all reject unchanged; full 24-tag selecti
  const supported=new Set(['tag_economy','tag_skip','tag_handy','tag_garbage','tag_orbital','tag_boss']);
  for(const tag of APK_TAGS.filter(t=>!supported.has(t.id))){const s=ante2(tag.id),before=structuredClone(s),r=act(s,'SKIP_BLIND');assert.equal(r.error?.code,'SKIP_UNAVAILABLE',tag.id);assert.strictEqual(r.state,s);assert.deepEqual(s,before);assert.match(r.error.message,/./);}
  const legacy=run();delete legacy.runStats;assert.equal(act(legacy,'SKIP_BLIND').error.code,'SKIP_UNAVAILABLE');
- const s=ante2('tag_economy');s.round.blindId='big';s.apkBlinds.tags.big='tag_economy';assert.equal(act(s,'SKIP_BLIND').error.code,'SKIP_UNAVAILABLE');assert.equal(act(run(),'SKIP_BLIND',{blindId:'big'}).error.code,'SKIP_UNAVAILABLE');
+ const s=ante2('tag_economy');s.round.blindId='big';s.apkBlinds.bossId='bl_final_bell';s.apkBlinds.tags.big='tag_economy';assert.equal(act(s,'SKIP_BLIND').error.code,'SKIP_UNAVAILABLE');assert.equal(act(run(),'SKIP_BLIND',{blindId:'big'}).error.code,'SKIP_UNAVAILABLE');
 });
 test('Boss tag consumes only exact boss selection RNG and rejects unsupported results atomically',()=>{
  const s=run('tag_boss');const selected=chooseApkBoss(s.rng.apk,{ante:1,bossesUsed:s.apkBlinds.bossesUsed});const r=act(s,'SKIP_BLIND');assert.equal(r.error,null);assert.equal(r.state.apkBlinds.bossId,selected.bossId);assert.deepEqual(r.state.rng.apk,selected.rng);assert.deepEqual(r.state.apkBlinds.bossesUsed,selected.bossesUsed);assert.deepEqual(r.state.apkBlinds.orbitalHands,s.apkBlinds.orbitalHands);assert.equal(r.state.money,s.money);
- const later=ante2('tag_boss'),before=structuredClone(later);assert.equal(act(later,'SKIP_BLIND').error.code,'SKIP_UNAVAILABLE');assert.deepEqual(later,before);
+ const later=ante2('tag_boss'),before=structuredClone(later),picked=chooseApkBoss(later.rng.apk,{ante:2,bossesUsed:later.apkBlinds.bossesUsed}),updated=act(later,'SKIP_BLIND');assert.equal(updated.error,null);assert.equal(updated.state.apkBlinds.bossId,picked.bossId);assert.deepEqual(updated.state.rng.apk,picked.rng);assert.deepEqual(later,before);assert.deepEqual(deserializeState(serializeState(updated.state)),updated.state);
 });
 test('played-hand and winning unused-discard totals persist across rounds and reloads',()=>{
  let s=run();s=act(s,'START_BLIND').state;const ids=s.hand.slice(0,1);let r=act(s,'PLAY_HAND',{cardIds:ids});assert.equal(r.error,null);assert.equal(r.state.runStats.handsPlayed,1);assert.equal(r.state.runStats.unusedDiscards,0);s=r.state;s.round.target=1n;s.round.score=0n;r=act(s,'PLAY_HAND',{cardIds:s.hand.slice(0,1)});assert.equal(r.error,null);assert.equal(r.state.phase,'round_won');assert.equal(r.state.runStats.handsPlayed,2);assert.equal(r.state.runStats.unusedDiscards,4);assert.deepEqual(deserializeState(serializeState(r.state)).runStats,r.state.runStats);
 });
+

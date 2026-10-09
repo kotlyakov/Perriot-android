@@ -1,4 +1,4 @@
-import {canEnterFirstAnteBoss} from './boss-effects.js';
+import {canEnterBoss} from './boss-effects.js';
 import {chooseApkBoss} from './apk-blinds.js';
 import {createApkTagContext,chooseApkTag} from './apk-tags.js';
 
@@ -9,8 +9,9 @@ export function blindBase(ante){
 }
 export function canLeaveApkShop(state){
  return !!state.apkShop && state.phase==='shop' && (
-  state.round.blindId==='small'&&[1,2].includes(state.round.ante) ||
-  ['big','boss'].includes(state.round.blindId)&&canEnterFirstAnteBoss(state));
+  state.round.blindId==='small'&&state.round.ante>=1&&state.round.ante<=8 ||
+  state.round.blindId==='big'&&canEnterBoss({...state,phase:'blind_selection'}) ||
+  state.round.blindId==='boss'&&canEnterBoss(state));
 }
 // Boss cashout selects tags, then boss, after the cashout shuffle and before shop generation.
 // Orbital hands are selected when entering the next blind selection screen.
@@ -22,3 +23,4 @@ export function chooseNextAnteBlinds(state,rng){
  return {selection:{version:1,ante,bossId:boss.bossId,bossesUsed:boss.bossesUsed,
   tags:{small:small.tagId,big:big.tagId},orbitalHands:{},tagContext,playedCardIds:[]},rng:boss.rng};
 }
+

@@ -1,5 +1,5 @@
 import {applySkipBlind} from './skip-blind.js';
-import {canEnterFirstAnteBoss,chooseHookDiscards} from './boss-effects.js';
+import {canEnterBoss,chooseHookDiscards,resolveMostPlayedHand} from './boss-effects.js';
 import {applyInventoryAction} from './inventory.js';
 import {chooseNextAnteBlinds} from './blind-progression.js';
 import {chooseApkBoss} from './apk-blinds.js';
@@ -9,7 +9,8 @@ import {getCashout} from './cashout.js';
 import { createRng, randomInt } from './rng.js';
 import { scoreHand } from './score.js';
 import { HANDS } from '../content/hands.js';
-import {createApkRng} from './apk-rng.js';
+import {createApkRng,nextApkRandom} from './apk-rng.js';
+import {evaluateHand} from './hands.js';
 import {shuffleApkDeck} from './apk-deck.js';
 import {applyShopAction,createShop} from './shop.js';
 import {createApkShopContext,chooseApkVoucher,generateApkShop} from './apk-shop.js';
@@ -32,7 +33,7 @@ export function createRun(seed, {runId,deckId='red',money,referenceRng=false,ref
     discoveredHands:Object.keys(HANDS).slice(0,9),
     rng:{deck:createRng(`${seed}:deck`),effects:createRng(`${seed}:effects`)},money,
     round:{blindId:'small',ante:1,target:300n,score:0n,handsRemaining:deckId==='blue'?5:4,discardsRemaining:deckId==='red'?4:3,handSize:8},
-    lastScore:null,sortMode:'rank',
+    lastScore:null,sortMode:'rank',mostPlayedHand:'high_card',
   };
   if(referenceRng){
     let rng=createApkRng(seed);
@@ -54,9 +55,19 @@ export function createRun(seed, {runId,deckId='red',money,referenceRng=false,ref
   return state;
 }
 
-function drawToLimit(state, events) {
-  const count=Math.min(Math.max(0,state.round.handSize-state.hand.length),state.drawPile.length);
+function drawToLimit(state, events,action='START_BLIND') {
+  const serpent=state.bossState?.id==='bl_serpent'&&action!=='START_BLIND';
+  const count=Math.min(serpent?3:Math.max(0,state.round.handSize-state.hand.length),state.drawPile.length);
   const ids=state.rng.apk?Array.from({length:count},()=>state.drawPile.pop()):state.drawPile.splice(0,count);
+  const boss=state.bossState;
+  if(boss && ['bl_house','bl_wheel','bl_fish','bl_mark'].includes(boss.id)){
+    boss.hiddenCardIds??=[];
+    for(const id of ids){
+      let hidden=boss.id==='bl_house'&&action==='START_BLIND'||boss.id==='bl_fish'&&action==='PLAY_HAND'||boss.id==='bl_mark'&&state.cards[id].rank>=11&&state.cards[id].rank<=13;
+      if(boss.id==='bl_wheel'){const draw=nextApkRandom(state.rng.apk,'wheel');state.rng.apk=draw.rng;hidden=draw.value<1/7;}
+      if(hidden)boss.hiddenCardIds.push(id);
+    }
+  }
   state.hand.push(...ids);sortHand(state);
   if (ids.length) events.push({type:'cards_drawn',cardIds:[...ids]});
 }
@@ -72,7 +83,7 @@ export function dispatch(state, action, shopOptions={}) {
   if(action.type==='CASH_OUT') {
     if(state.phase!=='round_won')return reject('INVALID_PHASE','Round has not been won');
     let quote;try{quote=getCashout(state);}catch{return reject('INVALID_STATE','Invalid cashout state');}
-    const next=structuredClone(state);if(next.bossState){next.round.handSize=next.bossState.baseHandSize;delete next.bossState;next.apkBlinds.playedCardIds=[];}next.money+=quote.total;next.phase='shop';next.revision++;
+    const next=structuredClone(state);if(next.bossState){next.round.handSize=next.bossState.baseHandSize;delete next.bossState;next.apkBlinds.playedCardIds=[];next.mostPlayedHand=resolveMostPlayedHand(next.apkShop.context.playedHands);}next.money+=quote.total;next.phase='shop';next.revision++;
     next.drawPile=Object.keys(next.cards);next.hand=[];next.discardPile=[];next.lastScore=null;
     if(next.apkShop){
       try{
@@ -97,11 +108,17 @@ export function dispatch(state, action, shopOptions={}) {
   }
   if (action.type==='START_BLIND') {
     if (state.phase!=='blind_selection') return reject('INVALID_PHASE','Not selecting a blind');
-    if(state.round.blindId==='boss'&&!canEnterFirstAnteBoss(state))return reject('BOSS_UNAVAILABLE','Boss lifecycle is unavailable');
+    if(state.round.blindId==='boss'&&!canEnterBoss(state))return reject('BOSS_UNAVAILABLE','Boss lifecycle is unavailable');
     const next=structuredClone(state);const events=[];
     if(next.round.blindId==='boss'){
       next.bossState={version:1,id:next.apkBlinds.bossId,playedBeforeBoss:[...next.apkBlinds.playedCardIds],baseHandSize:next.round.handSize};
       if(next.bossState.id==='bl_manacle')next.round.handSize--;
+      if(next.bossState.id==='bl_water')next.round.discardsRemaining=0;
+      if(next.bossState.id==='bl_needle')next.round.handsRemaining=1;
+      if(['bl_house','bl_wheel','bl_fish','bl_mark'].includes(next.bossState.id))next.bossState.hiddenCardIds=[];
+      if(next.bossState.id==='bl_eye')next.bossState.playedHands=[];
+      if(next.bossState.id==='bl_mouth')next.bossState.firstHand=null;
+      if(next.bossState.id==='bl_ox')next.bossState.oxHand=next.mostPlayedHand;
     }
     if(next.rng.apk){
       const shuffled=shuffleApkDeck(next.drawPile.map(id=>next.cards[id]),next.rng.apk,'nr'+next.round.ante);next.drawPile=shuffled.cardIds;next.rng.apk=shuffled.rng;
@@ -132,14 +149,24 @@ export function dispatch(state, action, shopOptions={}) {
   if (action.type==='PLAY_HAND' && state.round.handsRemaining<=0 || action.type==='DISCARD' && state.round.discardsRemaining<=0) return reject('NO_ACTIONS_LEFT','Counter exhausted');
   const selected=new Set(ids);
   const playedIds=state.hand.filter(id=>selected.has(id));
-  let score=null;
+  let score=null,scoringState=state;
   if (action.type==='PLAY_HAND') {
-    try { score=scoreHand(state,playedIds.map(id=>state.cards[id])); }
+    try {
+      if(state.bossState?.id==='bl_arm'){
+        const handId=evaluateHand(playedIds.map(id=>state.cards[id])).handId;
+        scoringState={...state,handLevels:{...state.handLevels,[handId]:Math.max(1,state.handLevels[handId]-1)}};
+      }
+      score=scoreHand(scoringState,playedIds.map(id=>state.cards[id]));
+      if(state.bossState?.id==='bl_eye')score.bossHistory={playedHands:[...state.bossState.playedHands]};
+      if(state.bossState?.id==='bl_mouth')score.bossHistory={firstHand:state.bossState.firstHand};
+    }
     catch (error) { return reject('UNSUPPORTED_CONTENT',error.message); }
   }
   if(state.runStats && action.type==='PLAY_HAND' && (state.runStats.handsPlayed>=Number.MAX_SAFE_INTEGER || state.runStats.unusedDiscards>Number.MAX_SAFE_INTEGER-state.round.discardsRemaining))return reject('INVALID_STATE','Run counters exhausted');
   const next=structuredClone(state);const events=[];
+  if(scoringState!==state){next.handLevels={...scoringState.handLevels};if(next.handLevels[score.handId]!==state.handLevels[score.handId])events.push({type:'hand_level_changed',handId:score.handId,levels:-1,level:next.handLevels[score.handId]});}
   next.hand=next.hand.filter(id=>!selected.has(id));next.discardPile.push(...playedIds);
+  if(next.bossState?.hiddenCardIds)next.bossState.hiddenCardIds=next.bossState.hiddenCardIds.filter(id=>next.hand.includes(id));
   if(score&&next.bossState?.id==='bl_hook'){
     let forced;try{forced=chooseHookDiscards(next.rng.apk,next.hand);}catch{return reject('UNSUPPORTED_BOSS_STATE','Invalid Hook card identities');}next.rng.apk=forced.rng;
     const discarded=next.hand.filter(id=>forced.cardIds.includes(id));
@@ -147,6 +174,12 @@ export function dispatch(state, action, shopOptions={}) {
     if(discarded.length)events.push({type:'cards_forced_discarded',cardIds:discarded});
   }
   if (score) {
+    if(next.bossState?.id==='bl_eye'&&!next.bossState.playedHands.includes(score.handId))next.bossState.playedHands.push(score.handId);
+    if(next.bossState?.id==='bl_mouth'&&!next.bossState.firstHand)next.bossState.firstHand=score.handId;
+    const beforeMoney=next.money;
+    if(next.bossState?.id==='bl_tooth')next.money-=BigInt(playedIds.length);
+    if(next.bossState?.id==='bl_ox'&&score.handId===next.bossState.oxHand)next.money=0n;
+    if(next.money!==beforeMoney)events.push({type:'money_changed',before:beforeMoney,after:next.money,delta:next.money-beforeMoney});
     if(next.apkBlinds?.playedCardIds)for(const id of playedIds)if(!next.apkBlinds.playedCardIds.includes(id))next.apkBlinds.playedCardIds.push(id);
     if(next.runStats)next.runStats.handsPlayed++;
     next.round.handsRemaining--;next.round.score+=score.score;next.lastScore=score;
@@ -158,9 +191,10 @@ export function dispatch(state, action, shopOptions={}) {
   } else {
     next.round.discardsRemaining--;events.push({type:'cards_discarded',cardIds:[...playedIds]});
   }
-  if (next.phase==='playing') drawToLimit(next,events);
+  if (next.phase==='playing') drawToLimit(next,events,action.type);
   next.revision++;
   return {state:next,events,error:null};
 }
+
 
 

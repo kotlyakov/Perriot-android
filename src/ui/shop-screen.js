@@ -1,4 +1,4 @@
-import {canEnterFirstAnteBoss} from '../core/boss-effects.js';
+import {canEnterBoss} from '../core/boss-effects.js';
 import {canLeaveApkShop} from '../core/blind-progression.js';
 import {describeShopItem} from '../content/shop-display.js';
 import {appendTooltipContents} from './tooltip-text.js';
@@ -154,9 +154,10 @@ export function renderShop(state,busy,{onAction,onNotice}={}){
  state.shop.boosters.forEach((o,i)=>offers.append(choice(o,'booster',i,state,busy,callbacks,364+i*127,246,111,181)));
  renderOwned(state,busy,callbacks);
  view.querySelectorAll('.shop-action').forEach(n=>n.remove());
- const next=rect(node('button','shop-action shop-next'),20,19,156,82);next.id='shop_next_round';next.append(node('span','','Следующий'),node('strong','','Раунд'));const boss=state.round.blindId==='big'&&canEnterFirstAnteBoss(state);next.disabled=busy||!canLeaveApkShop(state);next.title=state.round.blindId==='boss'?'Перейти ко второму анте':state.round.blindId==='small'?'Перейти к большому блайнду':boss?'Перейти к выбранному боссу':'Следующий блайнд пока недоступен';next.onclick=()=>onAction?.('LEAVE_SHOP',{});view.append(next);
+ const next=rect(node('button','shop-action shop-next'),20,19,156,82);next.id='shop_next_round';next.append(node('span','','Следующий'),node('strong','','Раунд'));const boss=state.round.blindId==='big'&&canEnterBoss({...state,phase:'blind_selection'});next.disabled=busy||!canLeaveApkShop(state);next.title=state.round.blindId==='boss'?'Перейти к следующему анте':state.round.blindId==='small'?'Перейти к большому блайнду':boss?'Перейти к выбранному боссу':state.apkBlinds?.bossId==='bl_ox'?'Нет однозначного сохранённого выбора комбинации Буйвола':'Следующий блайнд пока недоступен';next.onclick=()=>onAction?.('LEAVE_SHOP',{});view.append(next);
  const rerollCost=getRerollCost(state.shop),reroll=rect(node('button','shop-action shop-reroll'),21,107,155,89);reroll.id='shop_reroll';reroll.append(node('span','','Переброс'),money(rerollCost,137,38));reroll.disabled=busy||!canAfford(state.money,rerollCost,state.bankruptAt??0n);reroll.onclick=()=>{clearSelection();onAction?.('REROLL_SHOP',{});};view.append(reroll);
  const signature=main.map(o=>o.id).join('|');if(!fresh&&lastMain!==null&&signature!==lastMain&&!reduced())offers.querySelectorAll('[data-kind=main]').forEach((n,i)=>n.animate([{opacity:0,scale:0},{opacity:1,scale:.12,offset:.15},{opacity:1,scale:1}],{duration:200,delay:i*15,easing:'cubic-bezier(.15,.7,.3,1)'}));lastMain=signature;
 }
+
 
 

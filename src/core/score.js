@@ -17,7 +17,7 @@ export function scoreHand(state, playedCards) {
     if (!supportsJoker(joker)) throw new Error('Unsupported joker modifier');
     jokerIds.add(joker.id);
   }
-  if(isBossHandDebuffed(state,playedCards))return {...hand,playedCardIds:playedCards.map(c=>c.id),scoringCardIds:[],handDebuffed:true,chips:0n,mult:0n,score:0n,trace:[
+  if(isBossHandDebuffed(state,playedCards,hand.handId))return {...hand,playedCardIds:playedCards.map(c=>c.id),scoringCardIds:[],handDebuffed:true,chips:0n,mult:0n,score:0n,trace:[
     {type:'score_step',phase:'base',sourceId:`hand:${hand.handId}`,operation:'base',before:{chips:0n,mult:0n},after:{chips:0n,mult:0n}},
     {type:'score_total',phase:'total',chips:0n,mult:0n,score:0n}]};
   const level = state.handLevels[hand.handId] ?? 1;
@@ -25,6 +25,11 @@ export function scoreHand(state, playedCards) {
   const definition = HANDS[hand.handId];
   let chips = BigInt(definition.chips) + BigInt(level-1)*BigInt(definition.chipGain);
   let mult = BigInt(definition.mult) + BigInt(level-1)*BigInt(definition.multGain);
+  if(state.bossState?.id==='bl_flint'){
+    chips=(chips+1n)/2n;
+    mult=(mult+1n)/2n;
+    if(mult<1n)mult=1n;
+  }
   const trace = [{type:'score_step',phase:'base',sourceId:`hand:${hand.handId}`,operation:'base',before:{chips:0n,mult:0n},after:{chips,mult}}];
   const scoringCardIds = state.jokers.some(j=>originalJokerKey(j.entityId)==='j_splash') ? playedCards.map(c=>c.id) : hand.scoringCardIds;
   const scoringSet = new Set(scoringCardIds);
@@ -54,4 +59,5 @@ export function scoreHand(state, playedCards) {
   trace.push({type:'score_total',phase:'total',chips,mult,score});
   return {...hand,playedCardIds:playedCards.map(c=>c.id),scoringCardIds,chips,mult,score,trace};
 }
+
 
