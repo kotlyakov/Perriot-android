@@ -205,12 +205,12 @@ tarot_the_hierophant,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,no
 tarot_the_lovers,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
 tarot_the_chariot,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
 tarot_justice,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
-tarot_the_hermit,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
+tarot_the_hermit,entity,docs/apk-findings/targetless-tarots.md,src/core/consumables.js;src/core/shop.js;src/ui/shop-screen.js,tests/core/targetless-tarots.test.js;tests/ui/targetless-tarots-check.mjs,tested_scoped,Exact nonnegative current-money doubling capped at plus20; usage/debuff/save included
 tarot_the_wheel_of_fortune,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
 tarot_strength,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
 tarot_the_hanged_man,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
 tarot_death,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
-tarot_temperance,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
+tarot_temperance,entity,docs/apk-findings/targetless-tarots.md,src/core/consumables.js;src/core/shop.js;src/ui/shop-screen.js,tests/core/targetless-tarots.test.js;tests/ui/targetless-tarots-check.mjs,tested_scoped,Exact owned Joker sell sum capped at50; usage/debuff/save included
 tarot_the_devil,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
 tarot_the_tower,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
 tarot_the_star,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
