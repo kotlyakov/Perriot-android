@@ -64,7 +64,7 @@ export function applyShopAction(state,action,{refill,nextRound}={}) {
     const consumable=supportsConsumableEffect(offer);
     if(!consumable&&!supportsJoker(offer) || (state.inflation??0n)!==0n)
       return reject('UNSUPPORTED_CONTENT','Purchase effect is not implemented');
-    if(state.apkShop&&(offer.originalKey!==offer.entityId||!(consumable?['Planet','Spectral'].includes(offer.set):offer.set==='Joker')))return reject('INVALID_STATE','Invalid native offer identity');
+    if(state.apkShop&&(offer.originalKey!==offer.entityId||!(consumable?['Tarot','Planet','Spectral'].includes(offer.set):offer.set==='Joker')))return reject('INVALID_STATE','Invalid native offer identity');
     if(state.cards&&Object.hasOwn(state.cards,offer.id))return reject('INVALID_STATE','Instance ID collides with a playing card');
     if([...state.jokers,...(state.consumables??[])].some(j=>j.id===offer.id))return reject('INVALID_STATE','Instance ID already owned');
     if(!(consumable?hasConsumableSpace(state,offer):hasJokerSpace(state,offer)))return reject('NO_SPACE','Inventory area is full');

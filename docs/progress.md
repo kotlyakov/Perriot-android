@@ -179,5 +179,9 @@ Actions37812813108 SUCCESS на f90446d94d921fe7a26afb71c24168fcf15ba34e (merge 
 
 Eight Celestial booster identities now share the exact Normal 3/1, Jumbo 5/1 and Mega 5/2 lifecycle. A 64-case native fixture covers Telescope, Black Hole, bans, owned/offered/generated duplicate suppression and Showman with exact keyed-stream states. Opening pays once, generated Planets/Black Hole apply immediately without a consumable slot, Mega choices and the underlying shop survive reload, and skipping neither refunds nor consumes RNG. Strict save/dispatch validation and a dedicated selection UI use only project artwork. Core has 301 passing tests; official browser/Android CI remains the release gate. Other pack families, profiles and source animation timing remain open.
 
+## Targetless money Tarot block — 09.10.2026
+
+Hermit and Temperance use exact APK money formulas, consume/count while debuffed without payout, preserve RNG and persist Tarot totals/last key. Native shop purchase and the existing owned-card use interaction are enabled only for these two Tarot identities. The other 20 remain explicitly unavailable. Core has 307 passing tests; official browser/Android CI remains the gate.
+
 
 

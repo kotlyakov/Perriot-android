@@ -1,3 +1,7 @@
+# П-05в — денежные Tarot, 09.10.2026
+
+Отшельник и Умеренность выделены как точный targetless-блок: формулы денег, cap, debuff, usage, покупка и UI. Остальные 20 Tarot не сокращены и остаются открыты вместе с target/generator зависимостями. Итоговый CI/merge фиксировать в STATUS.
+
 # П-05б — Небесные наборы, 09.10.2026
 
 Точный генератор восьми Celestial booster identities проверяется 64 нативными случаями: Normal 3/1, Jumbo 5/1, Mega 5/2, Telescope, Black Hole, bans и duplicate/Showman. Shop→pack→shop, выбор, пропуск, Mega reload и строгий save реализованы; браузерный/Android CI и слияние записывать в STATUS. Остальные семейства наборов и профиль остаются открыты.

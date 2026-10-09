@@ -9,7 +9,8 @@ const emptyTotals=()=>Object.fromEntries(totalKeys.map(key=>[key,0]));
 const counter=value=>Number.isSafeInteger(value)&&value>=0;
 const record=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
 const blocked=(code,reason)=>({available:false,code,reason});
-export function supportsConsumableEffect(card){const centre=centres.get(card?.entityId);return supportsConsumable(card)&&!!(centre?.set==='Planet'&&handIds[centre.handType]||centre?.key==='c_black_hole');}
+const moneyTarots=new Set(['c_hermit','c_temperance']);
+export function supportsConsumableEffect(card){const centre=centres.get(card?.entityId);return supportsConsumable(card)&&!!(centre?.set==='Planet'&&handIds[centre.handType]||centre?.key==='c_black_hole'||moneyTarots.has(centre?.key));}
 
 export function validConsumableUsage(state){
  const hasUsage=Object.hasOwn(state,'consumableUsage'),hasTotals=Object.hasOwn(state,'consumableUsageTotal');
@@ -46,10 +47,11 @@ export function canUseConsumable(state,card){
  if(!owned)return blocked('CARD_NOT_FOUND','Карта больше не принадлежит игроку.');
  const centre=centres.get(owned.entityId);
  if(!supportsConsumableEffect(owned))return blocked('USE_UNAVAILABLE','Эффект этой расходной карты ещё не реализован.');
- const affected=owned.debuffed?[]:centre.key==='c_black_hole'?Object.keys(APK_HAND_NAMES):[handIds[centre.handType]];
+ const affected=owned.debuffed||centre.set==='Tarot'?[]:centre.key==='c_black_hole'?Object.keys(APK_HAND_NAMES):[handIds[centre.handType]];
  if(!record(state.handLevels)||Object.keys(state.handLevels).length!==Object.keys(APK_HAND_NAMES).length||!Object.keys(APK_HAND_NAMES).every(id=>Number.isSafeInteger(state.handLevels[id])&&state.handLevels[id]>=1)||affected.some(id=>state.handLevels[id]===Number.MAX_SAFE_INTEGER)||!validConsumableUsage(state))return blocked('INVALID_STATE','Некорректный уровень комбинации или счётчик использования.');
+ if(!owned.debuffed&&moneyTarots.has(centre.key)&&(typeof state.money!=='bigint'||centre.key==='c_temperance'&&(!Array.isArray(state.jokers)||state.jokers.some(joker=>typeof joker?.sellCost!=='bigint'||joker.sellCost<0n))))return blocked('INVALID_STATE','Некорректная сумма денег или стоимость джокера.');
  const totals=state.consumableUsageTotal??emptyTotals();
- const incremented=centre.set==='Planet'?['planet','tarot_planet','all']:['spectral','all'];
+ const incremented=centre.set==='Planet'?['planet','tarot_planet','all']:centre.set==='Tarot'?['tarot','tarot_planet','all']:['spectral','all'];
  if(state.consumableUsage?.[centre.key]?.count===Number.MAX_SAFE_INTEGER||incremented.some(key=>totals[key]===Number.MAX_SAFE_INTEGER))return blocked('INVALID_STATE','Переполнение счётчика использования.');
  try{if(state.apkShop)currentApkShopContext(state);}catch{return blocked('INVALID_STATE','Некорректное состояние магазина.');}
  return {available:true,code:null,reason:null};
@@ -64,13 +66,19 @@ export function applyConsumableAction(state,action){
  const capability=canUseConsumable(state,card);
  if(!capability.available)return reject(capability.code,capability.reason);
  const centre=centres.get(card.entityId),next=structuredClone(state),events=[];
- const affected=card.debuffed?[]:centre.key==='c_black_hole'?Object.keys(APK_HAND_NAMES):[handIds[centre.handType]];
+ const affected=card.debuffed||centre.set==='Tarot'?[]:centre.key==='c_black_hole'?Object.keys(APK_HAND_NAMES):[handIds[centre.handType]];
  for(const handId of affected){next.handLevels[handId]++;events.push({type:'hand_level_changed',handId,levels:1,level:next.handLevels[handId]});}
+ if(!card.debuffed&&moneyTarots.has(centre.key)){
+  let delta;if(centre.key==='c_hermit')delta=next.money<=0n?0n:next.money<20n?next.money:20n;
+  else{const total=next.jokers.reduce((sum,joker)=>sum+joker.sellCost,0n);delta=total>50n?50n:total;}
+  const before=next.money;next.money+=delta;events.push({type:'money_changed',before,after:next.money,delta});
+ }
  // States predating the first implemented use operation have no possible prior uses.
  next.consumableUsage??={};next.consumableUsageTotal??=emptyTotals();next.lastTarotPlanet??=null;
  const usage=next.consumableUsage[centre.key]??{count:0,order:centre.order,set:centre.set};
  usage.count++;next.consumableUsage[centre.key]=usage;
  if(centre.set==='Planet'){next.consumableUsageTotal.planet++;next.consumableUsageTotal.tarot_planet++;next.lastTarotPlanet=centre.key;}
+ else if(centre.set==='Tarot'){next.consumableUsageTotal.tarot++;next.consumableUsageTotal.tarot_planet++;next.lastTarotPlanet=centre.key;}
  else next.consumableUsageTotal.spectral++;
  next.consumableUsageTotal.all++;
  next.consumables=next.consumables.filter(c=>c.id!==card.id);next.lastScore=null;next.revision++;

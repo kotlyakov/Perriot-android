@@ -20,6 +20,8 @@ for(const [keys,kind,label,amounts] of [
 const planetHands={c_pluto:'Старшая карта',c_mercury:'Пара',c_uranus:'Две пары',c_venus:'Тройка',c_saturn:'Стрит',c_jupiter:'Флеш',c_earth:'Фулл-хаус',c_mars:'Каре',c_neptune:'Стрит-флеш',c_planet_x:'Пятёрка',c_ceres:'Флеш-хаус',c_eris:'Флеш-пятёрка'};
 for(const [key,hand] of Object.entries(planetHands))descriptions[key]=`Повышает уровень комбинации «${hand}» на +1.`;
 descriptions.c_black_hole='Повышает уровень всех 12 комбинаций на +1.';
+descriptions.c_hermit='Удваивает текущие деньги, но добавляет не более $20.';
+descriptions.c_temperance='Даёт сумму стоимости продажи всех ваших джокеров, но не более $50.';
 export function describeShopItem(offer){
  const key=originalJokerKey(offer.entityId);
  const base=descriptions[key]??'В этой предварительной версии доступен просмотр карты.';
