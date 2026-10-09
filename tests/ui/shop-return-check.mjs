@@ -31,6 +31,12 @@ try {
   assert.ok(Math.max(...projection.slice(secondCross))<Math.abs(Math.min(...projection)),'Successive swings must decay');
   assert.ok(Math.hypot(...samples.at(-1))<.01,'Animation ends exactly at home');
   peaks.push(-Math.min(...projection));
+  if(dx===250&&dy===180){
+   for(const [i,t] of [0,.18,.32,.55,1].entries()){
+    await page.evaluate(t=>{const a=document.querySelector('.shop-choice.is-dragging').getAnimations()[0];a.currentTime=a.effect.getTiming().duration*t;},t);
+    await page.screenshot({path:`artifacts/shop-return-${i}.png`});
+   }
+  }
   await page.evaluate(()=>document.querySelector('.shop-choice.is-dragging').getAnimations()[0].finish());
   await page.waitForFunction(()=>!document.querySelector('.shop-choice.is-dragging'));
   assert.equal(await page.locator('[data-offer-id=return_card]').evaluate(el=>getComputedStyle(el).opacity),'1');

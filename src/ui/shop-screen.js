@@ -68,7 +68,7 @@ function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
     let finished=false,motion;
     const finish=()=>{if(finished)return;finished=true;motion?.cancel();returning.remove();wrap.style.opacity='';if(cancelReturn===finish)cancelReturn=null;};
     cancelReturn=finish;
-    const [dx,dy]=returning.style.translate.split(' ').map(parseFloat);
+    const [dx,dy=0]=returning.style.translate.split(' ').map(parseFloat);
     motion=returning.animate(shopReturnFrames(dx,dy),{duration:720,fill:'forwards',easing:'linear'});
     motion.finished.then(finish,finish);
    }else{returning?.remove();wrap.style.opacity='';}
