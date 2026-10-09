@@ -1,3 +1,7 @@
+# П-05г — Дурак, 10.10.2026
+
+Покупка и создание предыдущей Tarot/Planet, full/negative slots, debuff, pricing, usage/history, constructor RNG и reload реализованы. 320 core и локальный browser desktop/touch PASS; полный CI обязателен. Banned-key combined fallback, profile/discovery, deferred sound RNG остаются открыты. Затем следующий связанный блок П-05: targeted Tarot/модификаторы карт.
+
 # П-05в — денежные Tarot, 09.10.2026
 
 Отшельник и Умеренность выделены как точный targetless-блок: формулы денег, cap, debuff, usage, покупка и UI. Остальные 20 Tarot не сокращены и остаются открыты вместе с target/generator зависимостями. Итоговый CI/merge фиксировать в STATUS.
