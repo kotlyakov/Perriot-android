@@ -1,3 +1,4 @@
+import {canEnterFirstAnteBoss} from '../core/boss-effects.js';
 import {APK_BOSSES,APK_BLINDS_BY_ID} from '../content/apk-blinds.js';
 import {createApkTagContext,getApkTagPool} from '../core/apk-tags.js';
 import { apkPseudoHash, validateApkRng } from '../core/apk-rng.js';
@@ -42,7 +43,7 @@ function decodeApkShop(value,state) {
   requireValue(value.voucherId===null || centres.get(value.voucherId)?.set==='Voucher');
   optionalObject(value.context,Object.keys(createApkShopContext()),['tutorialShopSurcharge']);
   createApkShopContext(value.context); // Validate actual saved inputs without selecting or polling.
-  requireValue(value.context.ante===state.round.ante);
+  requireValue(value.context.ante===state.round.ante+(state.phase==='shop'&&state.round.blindId==='boss'?1:0));
   if(state.phase==='shop'){
     requireValue(state.shop!==null && state.shop!==undefined);
     const sets={main:['Joker','Tarot','Planet','Spectral','Base','Enhanced'],vouchers:['Voucher'],boosters:['Booster']};
@@ -52,7 +53,8 @@ function decodeApkShop(value,state) {
   }else requireValue(state.shop===null || state.shop===undefined);
 }
 function decodeApkBlinds(value,state){
-  object(value,['version','ante','bossId','bossesUsed','tags','orbitalHands','tagContext']);
+  optionalObject(value,['version','ante','bossId','bossesUsed','tags','orbitalHands','tagContext'],['playedCardIds']);
+  if(Object.hasOwn(value,'playedCardIds'))cardList(value.playedCardIds,state);
   requireValue(value.version===1 && value.ante===state.round.ante && state.apkShop && state.rng.apk);
   const boss=APK_BLINDS_BY_ID[value.bossId];
   requireValue(boss && APK_BOSSES.includes(boss) && boss.showdown===(value.ante>=2 && value.ante%8===0) && (boss.showdown || boss.minAnte<=value.ante));
@@ -64,6 +66,16 @@ function decodeApkBlinds(value,state){
   for(const tag of Object.values(value.tags))requireValue(pool.includes(tag) && tag!=='UNAVAILABLE');
   object(value.orbitalHands,['small','big','boss']);
   for(const hand of Object.values(value.orbitalHands))requireValue(context.visibleHandOrder.includes(hand));
+}
+function cardList(ids,state){
+ requireValue(Array.isArray(ids)&&ids.length<=Object.keys(state.cards).length&&new Set(ids).size===ids.length&&ids.every(id=>Object.hasOwn(state.cards,id)));
+}
+function decodeBoss(value,state){
+ object(value,['version','id','playedBeforeBoss','baseHandSize']);
+ requireValue(value.version===1&&value.id===state.apkBlinds?.bossId&&canEnterFirstAnteBoss(state));
+ requireValue(state.round.blindId==='boss'&&['playing','round_won','game_over'].includes(state.phase)&&state.roundNumber===3&&value.baseHandSize===8);
+ cardList(value.playedBeforeBoss,state);requireValue(value.playedBeforeBoss.every(id=>state.apkBlinds.playedCardIds.includes(id)));
+ requireValue(state.round.handSize===(value.id==='bl_manacle'?7:8));
 }
 function decodeShop(shop,ids) {
   if(shop===null)return;
@@ -106,14 +118,15 @@ function encodeScore(score) {
 }
 function decodeScore(value,state) {
   if(value===null)return null;
-  optionalObject(value,['handId','isRoyal','scoringCardIds','chips','mult','score','trace'],['playedCardIds']);
+  optionalObject(value,['handId','isRoyal','scoringCardIds','chips','mult','score','trace'],['playedCardIds','handDebuffed']);
+  if(Object.hasOwn(value,'handDebuffed'))requireValue(value.handDebuffed===true);
   if(value.playedCardIds)requireValue(Array.isArray(value.playedCardIds)&&value.playedCardIds.length>=1&&value.playedCardIds.length<=5&&new Set(value.playedCardIds).size===value.playedCardIds.length&&value.playedCardIds.every(id=>Object.hasOwn(state.cards,id))); 
   requireValue(Object.hasOwn(HANDS,value.handId) && typeof value.isRoyal==='boolean');
   requireValue(!value.isRoyal || value.handId==='straight_flush');
-  requireValue(Array.isArray(value.scoringCardIds) && value.scoringCardIds.length>=1 && value.scoringCardIds.length<=5);
+  requireValue(Array.isArray(value.scoringCardIds) && value.scoringCardIds.length>=0 && value.scoringCardIds.length<=5);
   requireValue(new Set(value.scoringCardIds).size===value.scoringCardIds.length && value.scoringCardIds.every(key=>Object.hasOwn(state.cards,key)));
   const chips=decimal(value.chips),mult=decimal(value.mult),score=decimal(value.score);
-  requireValue(score===chips*mult && Array.isArray(value.trace) && value.trace.length>=3 && value.trace.length<=10000);
+  requireValue(score===chips*mult && Array.isArray(value.trace) && value.trace.length>=2 && value.trace.length<=10000);
   let previous={chips:0n,mult:0n};
   const trace=value.trace.map((event,i)=>{
     if(i===value.trace.length-1) {
@@ -136,7 +149,7 @@ function decodeScore(value,state) {
     previous=after;return {...event,before,after};
   });
   const expected=scoreHand(state,(value.playedCardIds??value.scoringCardIds).map(key=>state.cards[key]));
-  requireValue(expected.handId===value.handId && expected.isRoyal===value.isRoyal && expected.chips===chips && expected.mult===mult && expected.score===score);
+  requireValue(expected.handDebuffed===value.handDebuffed && expected.handId===value.handId && expected.isRoyal===value.isRoyal && expected.chips===chips && expected.mult===mult && expected.score===score);
   requireValue(expected.scoringCardIds.length===value.scoringCardIds.length && expected.scoringCardIds.every((key,i)=>key===value.scoringCardIds[i]));
   requireValue(expected.trace.length===trace.length && expected.trace.every((event,i)=>{
     const actual=trace[i];
@@ -149,7 +162,7 @@ function decode(payload) {
   const state=payload.state;
   const sortMode=state.sortMode;
   if(Object.hasOwn(state,'sortMode'))requireValue(['rank','suit'].includes(sortMode));
-  optionalObject(state,['schemaVersion','runId','seed','revision','phase','deckId','cards','hand','drawPile','discardPile','jokers','handLevels','discoveredHands','rng','money','round','lastScore'],['shop','bankruptAt','jokerSlots','apkShop','sortMode','roundNumber','apkBlinds']);
+  optionalObject(state,['schemaVersion','runId','seed','revision','phase','deckId','cards','hand','drawPile','discardPile','jokers','handLevels','discoveredHands','rng','money','round','lastScore'],['shop','bankruptAt','jokerSlots','apkShop','sortMode','roundNumber','apkBlinds','bossState']);
   requireValue(state.schemaVersion===1 && PHASES.includes(state.phase) && ['red','blue'].includes(state.deckId));
   requireValue(typeof state.runId==='string' && state.runId.length>=1 && state.runId.length<=120);
   requireValue(typeof state.seed==='string' && state.seed.length>=1 && state.seed.length<=1000);integer(state.revision);
@@ -172,11 +185,16 @@ function decode(payload) {
   if(Object.hasOwn(state.rng,'apk'))decodeApkRng(state.rng.apk,state.seed);
   state.money=decimal(state.money,true);
   object(state.round,['blindId','ante','target','score','handsRemaining','discardsRemaining','handSize']);
-  if(Object.hasOwn(state,'roundNumber'))integer(state.roundNumber,1,2);
-  const round=state.round;requireValue(['small','big'].includes(round.blindId));integer(round.ante,1,8);integer(round.handsRemaining,0,state.deckId==='blue'?5:4);integer(round.discardsRemaining,0,state.deckId==='red'?4:3);integer(round.handSize,1,10000);
+  if(Object.hasOwn(state,'roundNumber'))integer(state.roundNumber,1,3);
+  const round=state.round;requireValue(['small','big','boss'].includes(round.blindId));integer(round.ante,1,8);integer(round.handsRemaining,0,state.deckId==='blue'?5:4);integer(round.discardsRemaining,0,state.deckId==='red'?4:3);integer(round.handSize,1,10000);
   round.target=decimal(round.target);round.score=decimal(round.score);requireValue(round.target>0n);
   if(Object.hasOwn(state,'apkShop'))decodeApkShop(state.apkShop,state);
   if(Object.hasOwn(state,'apkBlinds'))decodeApkBlinds(state.apkBlinds,state);
+  if(Object.hasOwn(state,'bossState'))decodeBoss(state.bossState,state);
+  if(round.blindId==='boss'){
+    requireValue(canEnterFirstAnteBoss(state)&&round.target===600n);
+    requireValue(['playing','round_won','game_over'].includes(state.phase)?!!state.bossState:!state.bossState&&round.handSize===8);
+  }
   if(state.phase==='round_won')requireValue(round.score>=round.target);
   if(state.phase==='shop')requireValue(round.score>=round.target && state.hand.length===0 && state.discardPile.length===0 && state.drawPile.length===cardIds.length && state.lastScore===null);
   if(state.phase==='game_over')requireValue(round.handsRemaining===0 && round.score<round.target);

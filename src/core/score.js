@@ -1,3 +1,4 @@
+import {isBossCardDebuffed,isBossHandDebuffed} from './boss-effects.js';
 import { evaluateHand } from './hands.js';
 import { HANDS } from '../content/hands.js';
 import { SUPPORTED_JOKERS, independentEffect, originalJokerKey, supportsJoker, scoredJokerEffects } from '../content/jokers.js';
@@ -16,6 +17,9 @@ export function scoreHand(state, playedCards) {
     if (!supportsJoker(joker)) throw new Error('Unsupported joker modifier');
     jokerIds.add(joker.id);
   }
+  if(isBossHandDebuffed(state,playedCards))return {...hand,playedCardIds:playedCards.map(c=>c.id),scoringCardIds:[],handDebuffed:true,chips:0n,mult:0n,score:0n,trace:[
+    {type:'score_step',phase:'base',sourceId:`hand:${hand.handId}`,operation:'base',before:{chips:0n,mult:0n},after:{chips:0n,mult:0n}},
+    {type:'score_total',phase:'total',chips:0n,mult:0n,score:0n}]};
   const level = state.handLevels[hand.handId] ?? 1;
   if (!Number.isSafeInteger(level) || level < 1) throw new RangeError('Invalid hand level');
   const definition = HANDS[hand.handId];
@@ -32,7 +36,7 @@ export function scoreHand(state, playedCards) {
     trace.push({type:'score_step',phase,sourceId,operation:effect.operation,before,after:{chips,mult},...(effectSourceId?{effectSourceId}:{})});
   }
   for (const card of playedCards) {
-    if (!scoringSet.has(card.id)) continue;
+    if (!scoringSet.has(card.id) || isBossCardDebuffed(state,card)) continue;
     const before = {chips,mult};
     chips += BigInt(card.rank===14 ? 11 : Math.min(card.rank,10));
     trace.push({type:'score_step',phase:'scored_card',sourceId:card.id,operation:'add_chips',before,after:{chips,mult}});
@@ -50,3 +54,4 @@ export function scoreHand(state, playedCards) {
   trace.push({type:'score_total',phase:'total',chips,mult,score});
   return {...hand,playedCardIds:playedCards.map(c=>c.id),scoringCardIds,chips,mult,score,trace};
 }
+
