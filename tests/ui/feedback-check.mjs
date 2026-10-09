@@ -16,7 +16,7 @@ async function drag(page,id,x,y,{cancel=false,touch=false}={}){
  if(touch){const session=await page.context().newCDPSession(page);await session.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[from]});await session.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[to]});await page.locator('#shop_sell_zone').waitFor();await session.send('Input.dispatchTouchEvent',{type:cancel?'touchCancel':'touchEnd',touchPoints:[]});await session.detach();}
  else{await page.mouse.move(from.x,from.y);await page.mouse.down();await page.mouse.move(to.x,to.y,{steps:6});await page.locator('#shop_sell_zone').waitFor();if(x===1450&&!cancel&&page.viewportSize().width===1536)await page.screenshot({path:'artifacts/owned-drag-sale.png'});if(cancel)await card.press('Escape');await page.mouse.up();}
  await page.waitForFunction(()=>!document.querySelector('.is-dragging,#shop_sell_zone'));
- const balance=(await saved(page)).money.toString();await page.waitForFunction(value=>document.getElementById('money_value').dataset.number===value,balance);await page.waitForFunction(()=>!document.querySelector('.money-pop'));
+ const balance=(await saved(page)).money.toString();await page.waitForFunction(value=>document.getElementById('money_value').textContent==='$'+value,balance);await page.waitForFunction(()=>!document.querySelector('.money-pop'));
 }
 try{
  await mkdir('artifacts',{recursive:true});
