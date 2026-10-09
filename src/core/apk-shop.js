@@ -149,3 +149,13 @@ export function generateApkCelestialPack(rng,context,{size,instancePrefix='celes
  return {cards,rng:s.rng};
 }
 
+
+// Forced Fool creation skips pool/edition selection, but retains native construction draws.
+export function generateApkFoolCard(rng,context,{centreId,instanceId}={}){
+ context=createApkShopContext(context);
+ if(!['Tarot','Planet'].includes(centres[centreId]?.set)||centreId==='c_fool'||context.bannedCentreIds.includes(centreId)||typeof instanceId!=='string'||!instanceId)throw new TypeError('Unsupported Fool copy');
+ // Card:juice_up consumes raw Math RNG even with reduced motion in this APK.
+ const s=session(rng,{...context,reducedMotion:false}),card=s.construct(centreId,instanceId,{materialize:true});
+ s.unkeyed(); // used_tarot:juice_up after emplacing the copy
+ return {card,rng:s.rng};
+}

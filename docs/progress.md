@@ -185,3 +185,7 @@ Hermit and Temperance use exact APK money formulas, consume/count while debuffed
 
 
 
+
+## Fool Tarot block — 10.10.2026
+
+Resumed existing feat/fool-tarot-015 without discarding prior work. PR #11 is merged at b61b2b52eeed1ae3d3bd759ad5c91e185c09bcc1; Android Actions37957172138 SUCCESS. Fool copies the previous Tarot/Planet before last-key update, frees its slot, respects remaining capacity after negative removal, and uses native quotation. Five raw constructor/juice draws advance Math RNG for both motion modes; no keyed selection/edition draw. Legacy RNG remains unchanged. Banned forced-key fallback stays explicitly unavailable until combined Tarot_Planet pool ordering is verified. Full original deferred sound/visual RNG remains a parity gap. Independent QA found malformed context throw; regression RED→GREEN fixes it. 320/320 core, desktop/touch/double click/reload/failure-to-save UI PASS locally using research Chromium. Official CI and Android remain mandatory before merge. No original resources added. Next: complete CI/merge then targeted Tarot and playing-card modifiers.

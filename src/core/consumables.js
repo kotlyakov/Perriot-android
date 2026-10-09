@@ -1,3 +1,5 @@
+import {generateApkFoolCard} from './apk-shop.js';
+import {quoteShopCard} from './shop-pricing.js';
 import catalogue from '../content/apk-shop-catalog.js';
 import {supportsConsumable,canManageInventory} from './inventory.js';
 import {APK_HAND_NAMES,currentApkShopContext} from './apk-shop-state.js';
@@ -10,7 +12,9 @@ const counter=value=>Number.isSafeInteger(value)&&value>=0;
 const record=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
 const blocked=(code,reason)=>({available:false,code,reason});
 const moneyTarots=new Set(['c_hermit','c_temperance']);
-export function supportsConsumableEffect(card){const centre=centres.get(card?.entityId);return supportsConsumable(card)&&!!(centre?.set==='Planet'&&handIds[centre.handType]||centre?.key==='c_black_hole'||moneyTarots.has(centre?.key));}
+const hasFoolSpace=(state,card)=>{const remaining=(state.consumables??[]).filter(c=>c.id!==card.id);return remaining.length<(state.consumableSlots??2)+remaining.filter(c=>c.edition==='negative').length;};
+const generatedFoolId=card=>`fool:${card.id}`;
+export function supportsConsumableEffect(card){const centre=centres.get(card?.entityId);return supportsConsumable(card)&&!!(centre?.set==='Planet'&&handIds[centre.handType]||centre?.key==='c_black_hole'||centre?.key==='c_fool'||moneyTarots.has(centre?.key));}
 
 export function validConsumableUsage(state){
  const hasUsage=Object.hasOwn(state,'consumableUsage'),hasTotals=Object.hasOwn(state,'consumableUsageTotal');
@@ -47,6 +51,15 @@ export function canUseConsumable(state,card){
  if(!owned)return blocked('CARD_NOT_FOUND','Карта больше не принадлежит игроку.');
  const centre=centres.get(owned.entityId);
  if(!supportsConsumableEffect(owned))return blocked('USE_UNAVAILABLE','Эффект этой расходной карты ещё не реализован.');
+ let shopContext=null;
+ try{if(state.apkShop){if(!record(state.apkShop.context))throw new TypeError('Missing shop context');shopContext=currentApkShopContext(state);}}catch{return blocked('INVALID_STATE','Некорректное состояние магазина.');}
+ if(centre.key==='c_fool'){
+  const previous=state.lastTarotPlanet,target=centres.get(previous);
+  if(!previous||previous==='c_fool'||!['Tarot','Planet'].includes(target?.set))return blocked('USE_UNAVAILABLE','Сначала используйте другую карту Таро или Планеты.');
+  if(!owned.debuffed&&hasFoolSpace(state,owned)&&shopContext?.bannedCentreIds.includes(previous))return blocked('USE_UNAVAILABLE','Создание из запрещённого пула ещё не реализовано.');
+  const createdId=generatedFoolId(owned),occupied=[...Object.keys(state.cards??{}),...(state.jokers??[]).map(card=>card?.id),...cards.filter(card=>card!==owned).map(card=>card?.id)];
+  if(!owned.debuffed&&hasFoolSpace(state,owned)&&occupied.includes(createdId))return blocked('INVALID_STATE','Идентификатор созданной карты уже используется.');
+ }
  const affected=owned.debuffed||centre.set==='Tarot'?[]:centre.key==='c_black_hole'?Object.keys(APK_HAND_NAMES):[handIds[centre.handType]];
  if(!record(state.handLevels)||Object.keys(state.handLevels).length!==Object.keys(APK_HAND_NAMES).length||!Object.keys(APK_HAND_NAMES).every(id=>Number.isSafeInteger(state.handLevels[id])&&state.handLevels[id]>=1)||affected.some(id=>state.handLevels[id]===Number.MAX_SAFE_INTEGER)||!validConsumableUsage(state))return blocked('INVALID_STATE','Некорректный уровень комбинации или счётчик использования.');
  if(!owned.debuffed&&moneyTarots.has(centre.key)&&(typeof state.money!=='bigint'||centre.key==='c_temperance'&&(!Array.isArray(state.jokers)||state.jokers.some(joker=>typeof joker?.sellCost!=='bigint'||joker.sellCost<0n))))return blocked('INVALID_STATE','Некорректная сумма денег или стоимость джокера.');
@@ -66,12 +79,19 @@ export function applyConsumableAction(state,action){
  const capability=canUseConsumable(state,card);
  if(!capability.available)return reject(capability.code,capability.reason);
  const centre=centres.get(card.entityId),next=structuredClone(state),events=[];
+ const previousTarotPlanet=state.lastTarotPlanet??null;
  const affected=card.debuffed||centre.set==='Tarot'?[]:centre.key==='c_black_hole'?Object.keys(APK_HAND_NAMES):[handIds[centre.handType]];
  for(const handId of affected){next.handLevels[handId]++;events.push({type:'hand_level_changed',handId,levels:1,level:next.handLevels[handId]});}
  if(!card.debuffed&&moneyTarots.has(centre.key)){
   let delta;if(centre.key==='c_hermit')delta=next.money<=0n?0n:next.money<20n?next.money:20n;
   else{const total=next.jokers.reduce((sum,joker)=>sum+joker.sellCost,0n);delta=total>50n?50n:total;}
   const before=next.money;next.money+=delta;events.push({type:'money_changed',before,after:next.money,delta});
+ }
+ let created=null;
+ if(!card.debuffed&&centre.key==='c_fool'&&hasFoolSpace(state,card)){
+  if(next.apkShop){const generated=generateApkFoolCard(next.rng.apk,currentApkShopContext(next),{centreId:previousTarotPlanet,instanceId:generatedFoolId(card)});created=generated.card;next.rng.apk=generated.rng;}
+  else{const copied=centres.get(previousTarotPlanet);created={id:generatedFoolId(card),entityId:copied.key,originalKey:copied.key,set:copied.set,edition:'base',...quoteShopCard({baseCost:BigInt(copied.cost),set:copied.set})};}
+  events.push({type:'consumable_created',sourceId:card.id,cardId:created.id,entityId:created.entityId,set:created.set});
  }
  // States predating the first implemented use operation have no possible prior uses.
  next.consumableUsage??={};next.consumableUsageTotal??=emptyTotals();next.lastTarotPlanet??=null;
@@ -81,7 +101,7 @@ export function applyConsumableAction(state,action){
  else if(centre.set==='Tarot'){next.consumableUsageTotal.tarot++;next.consumableUsageTotal.tarot_planet++;next.lastTarotPlanet=centre.key;}
  else next.consumableUsageTotal.spectral++;
  next.consumableUsageTotal.all++;
- next.consumables=next.consumables.filter(c=>c.id!==card.id);next.lastScore=null;next.revision++;
+ next.consumables=next.consumables.filter(c=>c.id!==card.id);if(created)next.consumables.push(created);next.lastScore=null;next.revision++;
  if(next.apkShop)next.apkShop.context=currentApkShopContext(next);
  events.unshift({type:'consumable_used',cardId:card.id,entityId:centre.key,set:centre.set});
  events.push({type:'consumable_usage_changed',entityId:centre.key,count:usage.count});
