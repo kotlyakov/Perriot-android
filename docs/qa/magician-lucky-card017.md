@@ -30,4 +30,13 @@
 - Profile discovery/collection progress and native audiovisual timing.
 - Remaining Tarot, enhancement, edition, seal and broader manifest-parity work.
 
+## Repository result
+
+- PR: #14
+- Source commit: `f1a3ccf7683d0b753214d69cc16df924a9cceade`
+- Squash merge: `d35fccf8ba6ef8f52b5187f8cd17fe462b0af8c8`
+- GitHub Actions: `38018631174` — SUCCESS
+- Verified APK artifact: `11657742588`
+- Artifact ZIP SHA-256: `8a33ab28c39afd21c52c66c1da8ae646b08d74ca7319cb44bbfeb79d7a3218bf`
+
 This is a tested preview increment, not a claim of full Balatro parity.
