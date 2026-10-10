@@ -93,7 +93,7 @@ document.getElementById('play_hand').onclick=()=>perform('PLAY_HAND',[...selecte
 document.getElementById('discard').onclick=()=>perform('DISCARD',[...selected]);
 function sort(mode){if(busy || state?.phase!=='playing')return;perform('SET_SORT',undefined,mode);}
 document.getElementById('sort_rank').onclick=()=>sort('rank');document.getElementById('sort_suit').onclick=()=>sort('suit');
-function showSettings(){openDialog('Настройки','<p>Пьеро · промежуточная сборка 0.4.16</p><p>Переходы анте и обычные боссы, скрытые карты, магазин, 32 эффекта джокеров, Планеты, Небесные наборы, Отшельник, Умеренность, Дурак, Императрица и Иерофант. Финальные боссы и остальной контент ещё недоступны. Продолжение сохраняется после каждого действия.</p>',[['Продолжить',closeDialog],['Новый забег',()=>confirmNew()],['Главное меню',showMenu]]);}
+function showSettings(){openDialog('Настройки','<p>Пьеро · промежуточная сборка 0.4.17</p><p>Переходы анте и обычные боссы, скрытые карты, магазин, 32 эффекта джокеров, Планеты, Небесные наборы, Отшельник, Умеренность, Дурак, Императрица, Иерофант, Маг и Счастливая карта. Финальные боссы и остальной контент ещё недоступны. Продолжение сохраняется после каждого действия.</p>',[['Продолжить',closeDialog],['Новый забег',()=>confirmNew()],['Главное меню',showMenu]]);}
 document.getElementById('options').onclick=showSettings;
 document.getElementById('run_info').onclick=()=>{
  if(!state)return;const table=document.createElement('table');

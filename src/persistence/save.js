@@ -45,7 +45,7 @@ function decodeApkShop(value,state) {
   requireValue(value.voucherId===null || centres.get(value.voucherId)?.set==='Voucher');
   optionalObject(value.context,Object.keys(createApkShopContext()),['tutorialShopSurcharge']);
   createApkShopContext(value.context); // Validate actual saved inputs without selecting or polling.
-  const enhancements=[...new Set(Object.values(state.cards).map(card=>({mult:'m_mult',bonus:'m_bonus'})[card.enhancement]).filter(Boolean))];
+  const enhancements=[...new Set(Object.values(state.cards).map(card=>({mult:'m_mult',bonus:'m_bonus',lucky:'m_lucky'})[card.enhancement]).filter(Boolean))];
   requireValue(value.context.enhancementIds.length===enhancements.length&&value.context.enhancementIds.every(id=>enhancements.includes(id)));
   requireValue(value.context.ante===state.round.ante+(['shop','pack'].includes(state.phase)&&state.round.blindId==='boss'?1:0));
   if(['shop','pack'].includes(state.phase)){
@@ -133,13 +133,13 @@ function decimal(value,negative=false) {
 function pair(value) { object(value,['chips','mult']);return {chips:decimal(value.chips),mult:decimal(value.mult)}; }
 function encodeScore(score) {
   if(score===null)return null;
-  return {...score,chips:score.chips.toString(),mult:score.mult.toString(),score:score.score.toString(),trace:score.trace.map(event=>event.type==='score_total'
+  return {...score,chips:score.chips.toString(),mult:score.mult.toString(),score:score.score.toString(),trace:score.trace.map(event=>event.type==='score_money'?{...event,amount:event.amount.toString()}:event.type==='score_total'
     ? {...event,chips:event.chips.toString(),mult:event.mult.toString(),score:event.score.toString()}
     : {...event,before:{chips:event.before.chips.toString(),mult:event.before.mult.toString()},after:{chips:event.after.chips.toString(),mult:event.after.mult.toString()}})};
 }
 function decodeScore(value,state) {
   if(value===null)return null;
-  optionalObject(value,['handId','isRoyal','scoringCardIds','chips','mult','score','trace'],['playedCardIds','handDebuffed','bossHistory']);
+  optionalObject(value,['handId','isRoyal','scoringCardIds','chips','mult','score','trace'],['playedCardIds','handDebuffed','bossHistory','luckyRolls','luckyRngKind','luckyRngBefore','luckyRngAfter']);
   if(Object.hasOwn(value,'handDebuffed'))requireValue(value.handDebuffed===true);
   if(value.playedCardIds)requireValue(Array.isArray(value.playedCardIds)&&value.playedCardIds.length>=1&&value.playedCardIds.length<=5&&new Set(value.playedCardIds).size===value.playedCardIds.length&&value.playedCardIds.every(id=>Object.hasOwn(state.cards,id))); 
   requireValue(Object.hasOwn(HANDS,value.handId) && typeof value.isRoyal==='boolean');
@@ -157,6 +157,9 @@ function decodeScore(value,state) {
       requireValue(total.chips===chips && total.mult===mult && total.score===score && previous.chips===chips && previous.mult===mult);
       return total;
     }
+    if(event.type==='score_money'){
+      object(event,['type','phase','sourceId','amount']);requireValue(event.phase==='scored_card'&&value.scoringCardIds.includes(event.sourceId));const amount=decimal(event.amount);requireValue(amount===20n);return {...event,amount};
+    }
     optionalObject(event,['type','phase','sourceId','operation','before','after'],['effectSourceId']);
     if(event.effectSourceId)requireValue(state.jokers.some(j=>j.id===event.effectSourceId));
     const before=pair(event.before),after=pair(event.after);
@@ -169,7 +172,24 @@ function decodeScore(value,state) {
     }
     previous=after;return {...event,before,after};
   });
+  const luckyFields=['luckyRolls','luckyRngKind','luckyRngBefore','luckyRngAfter'],hasLucky=luckyFields.some(key=>Object.hasOwn(value,key));
+  requireValue(!hasLucky||luckyFields.every(key=>Object.hasOwn(value,key)));
+  if(hasLucky){
+    requireValue(['apk','effects'].includes(value.luckyRngKind)&&Array.isArray(value.luckyRolls)&&value.luckyRolls.length>=1&&value.luckyRolls.length<=5);
+    for(const roll of value.luckyRolls){object(roll,['cardId','multRoll','moneyRoll','multTriggered','moneyTriggered']);requireValue(value.scoringCardIds.includes(roll.cardId)&&Number.isFinite(roll.multRoll)&&roll.multRoll>=0&&roll.multRoll<1&&Number.isFinite(roll.moneyRoll)&&roll.moneyRoll>=0&&roll.moneyRoll<1&&typeof roll.multTriggered==='boolean'&&typeof roll.moneyTriggered==='boolean');}
+    if(value.luckyRngKind==='apk'){
+      requireValue(state.rng.apk);object(value.luckyRngBefore,['lucky_mult','lucky_money']);object(value.luckyRngAfter,['lucky_mult','lucky_money','mathState']);for(const snapshot of [value.luckyRngBefore,value.luckyRngAfter])for(const key of ['lucky_mult','lucky_money'])requireValue(snapshot[key]===null||Number.isFinite(snapshot[key])&&snapshot[key]>=0&&snapshot[key]<=1);validateApkRng({...state.rng.apk,mathState:value.luckyRngAfter.mathState});
+      requireValue(['lucky_mult','lucky_money'].every(key=>value.luckyRngAfter[key]===(state.rng.apk.streams[key]??null)));
+    }
+    else{randomInt(value.luckyRngBefore,1);randomInt(value.luckyRngAfter,1);requireValue(JSON.stringify(value.luckyRngAfter)===JSON.stringify(state.rng.effects));}
+  }
   let scoringState=state;
+  if(hasLucky){
+    if(value.luckyRngKind==='apk'){
+      const apk=structuredClone(state.rng.apk);for(const key of ['lucky_mult','lucky_money']){const stream=value.luckyRngBefore[key];if(stream===null)delete apk.streams[key];else apk.streams[key]=stream;}
+      scoringState={...state,rng:{...state.rng,apk}};
+    }else scoringState={...state,rng:{...state.rng,effects:structuredClone(value.luckyRngBefore)}};
+  }
   if(state.bossState?.id==='bl_eye'||state.bossState?.id==='bl_mouth'){
     const history=value.bossHistory;object(history,state.bossState.id==='bl_eye'?['playedHands']:['firstHand']);
     if(state.bossState.id==='bl_eye'){
@@ -180,15 +200,19 @@ function decodeScore(value,state) {
       requireValue(history.firstHand===null||Object.hasOwn(HANDS,history.firstHand));
       requireValue(state.bossState.firstHand===(history.firstHand??value.handId));
     }
-    scoringState={...state,bossState:{...state.bossState,...history}};
+    scoringState={...scoringState,bossState:{...state.bossState,...history}};
   }else requireValue(value.bossHistory===undefined);
   const expected=scoreHand(scoringState,(value.playedCardIds??value.scoringCardIds).map(key=>state.cards[key]));
   requireValue(expected.handDebuffed===value.handDebuffed && expected.handId===value.handId && expected.isRoyal===value.isRoyal && expected.chips===chips && expected.mult===mult && expected.score===score);
   requireValue(expected.scoringCardIds.length===value.scoringCardIds.length && expected.scoringCardIds.every((key,i)=>key===value.scoringCardIds[i]));
   requireValue(expected.trace.length===trace.length && expected.trace.every((event,i)=>{
     const actual=trace[i];
-    return event.phase===actual.phase && (event.type==='score_total' || event.sourceId===actual.sourceId && event.effectSourceId===actual.effectSourceId && event.operation===actual.operation && event.before.chips===actual.before.chips && event.before.mult===actual.before.mult && event.after.chips===actual.after.chips && event.after.mult===actual.after.mult);
+    if(event.phase!==actual.phase||event.type!==actual.type)return false;
+    if(event.type==='score_total')return true;
+    if(event.type==='score_money')return event.sourceId===actual.sourceId&&event.amount===actual.amount;
+    return event.sourceId===actual.sourceId && event.effectSourceId===actual.effectSourceId && event.operation===actual.operation && event.before.chips===actual.before.chips && event.before.mult===actual.before.mult && event.after.chips===actual.after.chips && event.after.mult===actual.after.mult;
   }));
+  requireValue(!hasLucky||JSON.stringify({rolls:expected.luckyRolls,kind:expected.luckyRngKind,before:expected.luckyRngBefore,after:expected.luckyRngAfter})===JSON.stringify({rolls:value.luckyRolls,kind:value.luckyRngKind,before:value.luckyRngBefore,after:value.luckyRngAfter}));
   return {...value,chips,mult,score,trace};
 }
 function decode(payload) {
