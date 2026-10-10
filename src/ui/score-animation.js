@@ -1,9 +1,13 @@
 import {showNumbers} from './field.js';
 export function integerText(value){if(typeof value==='bigint')return value.toString();if(value && typeof value.numerator==='bigint')return (value.numerator/value.denominator).toString();return String(Math.trunc(Number(value)));}
 export function scoreDelta(event){const mult=event.operation.includes('mult'),key=mult?'mult':'chips',multiply=event.operation.startsWith('multiply') || event.operation.startsWith('mul_') || event.operation.startsWith('x_');const before=event.before[key],after=event.after[key];return {kind:mult?'mult':'chips',multiply,text:(multiply?'×':'+')+integerText(multiply?(before?after/before:after):after-before)};}
+export function scoreMoneyText(event){return '+$'+integerText(event.amount);}
 const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 export async function animateScore(events){const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
- for(const event of events){if(event.type!=='score_step')continue;
+ for(const event of events){if(!['score_step','score_money'].includes(event.type))continue;
+   if(event.type==='score_money'){
+     const card=document.querySelector(`.played-card[data-card-id="${event.sourceId}"]`);if(card){const pop=document.createElement('span');pop.className='score-pop money gold';pop.textContent=scoreMoneyText(event);pop.dataset.sourceId=event.sourceId;pop.dataset.operation='add_money';Object.assign(pop.style,{left:parseFloat(card.style.left)+57.5+'px',top:parseFloat(card.style.top)-27+'px'});document.getElementById('stage').append(pop);if(!reduced){card.animate([{translate:'0 0'},{translate:'0 -8px'},{translate:'0 0'}],{duration:230});pop.animate([{opacity:1,translate:'0 0'},{opacity:0,translate:'0 -30px'}],{duration:520}).finished.then(()=>pop.remove());}else pop.remove();}if(!reduced)await pause(260);continue;
+   }
    showNumbers(event.after.chips,event.after.mult,true);
    const joker=document.querySelector(`#shop_owned [data-offer-id="${event.effectSourceId??event.sourceId}"]`);
    const card=joker??document.querySelector(`.played-card[data-card-id="${event.sourceId}"]`)??document.querySelector(`#shop_owned [data-offer-id="${event.sourceId}"]`);
@@ -23,4 +27,5 @@ export async function liftScoringCards(ids){
    return reduced?Promise.resolve():card.animate([{top},{top:card.style.top}],{duration:200,easing:'ease-out'}).finished;
  }));
 }
+
 

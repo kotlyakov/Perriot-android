@@ -179,11 +179,19 @@ export function dispatch(state, action, shopOptions={}) {
     if(discarded.length)events.push({type:'cards_forced_discarded',cardIds:discarded});
   }
   if (score) {
+    if(score.luckyRngAfter){
+      if(score.luckyRngKind==='apk'){
+        for(const key of ['lucky_mult','lucky_money']){const value=score.luckyRngAfter[key];if(value===null)delete next.rng.apk.streams[key];else next.rng.apk.streams[key]=value;}
+        next.rng.apk.mathState=[...score.luckyRngAfter.mathState];
+      }
+      else next.rng.effects=structuredClone(score.luckyRngAfter);
+    }
     if(next.bossState?.id==='bl_eye'&&!next.bossState.playedHands.includes(score.handId))next.bossState.playedHands.push(score.handId);
     if(next.bossState?.id==='bl_mouth'&&!next.bossState.firstHand)next.bossState.firstHand=score.handId;
     const beforeMoney=next.money;
     if(next.bossState?.id==='bl_tooth')next.money-=BigInt(playedIds.length);
     if(next.bossState?.id==='bl_ox'&&score.handId===next.bossState.oxHand)next.money=0n;
+    next.money+=score.trace.reduce((sum,event)=>sum+(event.type==='score_money'?event.amount:0n),0n);
     if(next.money!==beforeMoney)events.push({type:'money_changed',before:beforeMoney,after:next.money,delta:next.money-beforeMoney});
     if(next.apkBlinds?.playedCardIds)for(const id of playedIds)if(!next.apkBlinds.playedCardIds.includes(id))next.apkBlinds.playedCardIds.push(id);
     if(next.runStats)next.runStats.handsPlayed++;

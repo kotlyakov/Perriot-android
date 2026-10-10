@@ -25,6 +25,7 @@ descriptions.c_hermit='Удваивает текущие деньги, но до
 descriptions.c_temperance='Даёт сумму стоимости продажи всех ваших джокеров, но не более $50.';
 descriptions.c_empress='Усиливает до 2 выбранных карт: каждая даёт +4 к множителю при подсчёте.';
 descriptions.c_heirophant='Усиливает до 2 выбранных карт: каждая даёт +30 очков при подсчёте.';
+descriptions.c_magician='Усиливает до 2 выбранных карт: каждая получает независимые шансы 1 из 5 на +20 к множителю и 1 из 15 на $20 при подсчёте.';
 export function describeShopItem(offer){
  const key=originalJokerKey(offer.entityId);
  const base=descriptions[key]??'В этой предварительной версии доступен просмотр карты.';

@@ -12,7 +12,7 @@ const counter=value=>Number.isSafeInteger(value)&&value>=0;
 const record=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
 const blocked=(code,reason)=>({available:false,code,reason});
 const moneyTarots=new Set(['c_hermit','c_temperance']);
-const enhancementTarots=new Map([['c_empress','mult'],['c_heirophant','bonus']]);
+const enhancementTarots=new Map([['c_magician','lucky'],['c_empress','mult'],['c_heirophant','bonus']]);
 const hasFoolSpace=(state,card)=>{const remaining=(state.consumables??[]).filter(c=>c.id!==card.id);return remaining.length<(state.consumableSlots??2)+remaining.filter(c=>c.edition==='negative').length;};
 const generatedFoolId=card=>`fool:${card.id}`;
 export function supportsConsumableEffect(card){const centre=centres.get(card?.entityId);return supportsConsumable(card)&&!!(centre?.set==='Planet'&&handIds[centre.handType]||centre?.key==='c_black_hole'||centre?.key==='c_fool'||moneyTarots.has(centre?.key)||enhancementTarots.has(centre?.key));}

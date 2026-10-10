@@ -2,6 +2,8 @@ import {isBossCardDebuffed,isBossHandDebuffed} from './boss-effects.js';
 import { evaluateHand } from './hands.js';
 import { HANDS } from '../content/hands.js';
 import { SUPPORTED_JOKERS, independentEffect, originalJokerKey, supportsJoker, scoredJokerEffects } from '../content/jokers.js';
+import {nextApkRandom} from './apk-rng.js';
+import {randomInt} from './rng.js';
 
 export function scoreHand(state, playedCards) {
   const hand = evaluateHand(playedCards);
@@ -33,6 +35,18 @@ export function scoreHand(state, playedCards) {
   const trace = [{type:'score_step',phase:'base',sourceId:`hand:${hand.handId}`,operation:'base',before:{chips:0n,mult:0n},after:{chips,mult}}];
   const scoringCardIds = state.jokers.some(j=>originalJokerKey(j.entityId)==='j_splash') ? playedCards.map(c=>c.id) : hand.scoringCardIds;
   const scoringSet = new Set(scoringCardIds);
+  let luckyRng,luckyRngBefore,luckyKind;const luckyRolls=[];
+  const luckySnapshot=rng=>({lucky_mult:rng.streams.lucky_mult??null,lucky_money:rng.streams.lucky_money??null});
+  function luckyRoll(key,bound){
+    if(!luckyRng){
+      if(state.rng?.apk){luckyKind='apk';luckyRng=state.rng.apk;}
+      else if(state.rng?.effects){luckyKind='effects';luckyRng=state.rng.effects;}
+      else throw new TypeError('Missing Lucky Card RNG');
+      luckyRngBefore=luckyKind==='apk'?luckySnapshot(luckyRng):structuredClone(luckyRng);
+    }
+    if(luckyKind==='apk'){const draw=nextApkRandom(luckyRng,key);luckyRng=draw.rng;return draw.value;}
+    const draw=randomInt(luckyRng,bound);luckyRng=draw.rng;return draw.value/bound;
+  }
   function apply(effect,phase,sourceId,effectSourceId){
     const before={chips,mult};
     if(effect.operation==='add_chips')chips+=effect.amount;
@@ -47,6 +61,11 @@ export function scoreHand(state, playedCards) {
     trace.push({type:'score_step',phase:'scored_card',sourceId:card.id,operation:'add_chips',before,after:{chips,mult}});
     if(card.enhancement==='bonus')apply({operation:'add_chips',amount:30n},'scored_card',card.id);
     if(card.enhancement==='mult')apply({operation:'add_mult',amount:4n},'scored_card',card.id);
+    if(card.enhancement==='lucky'){
+      const multRoll=luckyRoll('lucky_mult',5),multTriggered=multRoll<1/5;if(multTriggered)apply({operation:'add_mult',amount:20n},'scored_card',card.id);
+      const moneyRoll=luckyRoll('lucky_money',15),moneyTriggered=moneyRoll<1/15;if(moneyTriggered)trace.push({type:'score_money',phase:'scored_card',sourceId:card.id,amount:20n});
+      luckyRolls.push({cardId:card.id,multRoll,moneyRoll,multTriggered,moneyTriggered});
+    }
     for(const joker of state.jokers)for(const effect of scoredJokerEffects(joker.entityId,card))apply(effect,'scored_card',card.id,joker.id);
   }
   const rankCounts = new Map();
@@ -59,7 +78,7 @@ export function scoreHand(state, playedCards) {
   }
   const score = chips*mult;
   trace.push({type:'score_total',phase:'total',chips,mult,score});
-  return {...hand,playedCardIds:playedCards.map(c=>c.id),scoringCardIds,chips,mult,score,trace};
+  return {...hand,playedCardIds:playedCards.map(c=>c.id),scoringCardIds,chips,mult,score,trace,...(luckyRolls.length?{luckyRolls,luckyRngKind:luckyKind,luckyRngBefore,luckyRngAfter:luckyKind==='apk'?{...luckySnapshot(luckyRng),mathState:[...luckyRng.mathState]}:luckyRng}:{})};
 }
 
 

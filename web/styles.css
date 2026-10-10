@@ -87,6 +87,7 @@ button{font-weight:700}.title{font-weight:800;font-size:26px}.token{font-weight:
 
 .playing-card.boss-debuffed{background:#b7ada0}.playing-card.boss-debuffed .corner,.playing-card.boss-debuffed>svg{opacity:.45}.debuff-stamp{position:absolute;left:4px;right:4px;top:65px;transform:rotate(-12deg);padding:3px 0;border:2px solid #9e3831;background:#e4d4b9d9;color:#9e3831;font-size:14px;line-height:18px;font-weight:900;pointer-events:none}
 .playing-card[data-enhancement]::after{position:absolute;left:31px;right:31px;bottom:5px;border-radius:10px;padding:2px;background:#234b47;color:#f0e5c8;font-size:11px;line-height:14px;font-weight:900;pointer-events:none}.playing-card[data-enhancement=mult]::after{content:'+4 MULT';background:#c54d54}.playing-card[data-enhancement=bonus]::after{content:'+30';background:#3c80ad}
+.playing-card[data-enhancement=lucky]::after{content:'1/5 · 1/15';background:#7b5aa3}
 
 
 .tooltip-money{color:#c78b15}
