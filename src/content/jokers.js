@@ -17,6 +17,7 @@ export function independentEffect(entityId,rankCounts,{playedCards=[],handId,jok
  throw new Error('Unsupported joker');
 }
 export function scoredJokerEffects(entityId,card){
+ if(card.enhancement==='stone')return [];
  const key=originalJokerKey(entityId),suits={j_greedy_joker:'diamonds',j_lusty_joker:'hearts',j_wrathful_joker:'spades',j_gluttenous_joker:'clubs'};
  if(suits[key]&&isCardSuit(card,suits[key]))return [{operation:'add_mult',amount:3n}];
  if(key==='j_scary_face'&&card.rank>=11&&card.rank<=13)return [{operation:'add_chips',amount:30n}];
