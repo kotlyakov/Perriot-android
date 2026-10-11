@@ -19,9 +19,10 @@
 ## Automated verification
 
 - Focused core: Lovers targeting and atomic rejection, overwrite, debuffed consumption, Wild hand recognition, suit bosses, suit Jokers, persistence and shop identity.
-- Full local core regression: 349/349 tests passed with `npm test`.
+- Full local core regression: 349/349 tests passed with `npm test`; Actions repeated 349/349.
 - Standalone preview export and `git diff --check` passed.
-- Browser coverage exercises zero/one/two selected targets, copy, Wild marker, derived context and reload.
+- All 26 official Chromium suites passed in Actions, including zero/one/two Lovers targets, copy, Wild marker, derived context, hidden-card privacy and reload.
+- Actions 38111568610 completed fresh Android compilation, `apksigner` verification, `zipalign -c` and artifact upload (artifact 11691682853, ZIP SHA256 `b86776df0d8e4d4a2900ae6a4c07f888e913adff4ae9d410e152da2719ec5e71`).
 - Independent review found and closed a stale browser-fixture context, hidden-card modifier leakage and duplicate saved enhancement identities; re-review has no remaining Critical or Important findings.
 
 ## Deliberately out of scope
