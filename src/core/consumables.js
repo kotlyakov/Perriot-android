@@ -12,7 +12,12 @@ const counter=value=>Number.isSafeInteger(value)&&value>=0;
 const record=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
 const blocked=(code,reason)=>({available:false,code,reason});
 const moneyTarots=new Set(['c_hermit','c_temperance']);
-const enhancementTarots=new Map([['c_magician','lucky'],['c_empress','mult'],['c_heirophant','bonus']]);
+const enhancementTarots=new Map([
+ ['c_magician',{enhancement:'lucky',maximum:2}],
+ ['c_empress',{enhancement:'mult',maximum:2}],
+ ['c_heirophant',{enhancement:'bonus',maximum:2}],
+ ['c_lovers',{enhancement:'wild',maximum:1}],
+]);
 const hasFoolSpace=(state,card)=>{const remaining=(state.consumables??[]).filter(c=>c.id!==card.id);return remaining.length<(state.consumableSlots??2)+remaining.filter(c=>c.edition==='negative').length;};
 const generatedFoolId=card=>`fool:${card.id}`;
 export function supportsConsumableEffect(card){const centre=centres.get(card?.entityId);return supportsConsumable(card)&&!!(centre?.set==='Planet'&&handIds[centre.handType]||centre?.key==='c_black_hole'||centre?.key==='c_fool'||moneyTarots.has(centre?.key)||enhancementTarots.has(centre?.key));}
@@ -53,7 +58,8 @@ export function canUseConsumable(state,card,targetCardIds=[]){
  const centre=centres.get(owned.entityId);
  if(!supportsConsumableEffect(owned))return blocked('USE_UNAVAILABLE','Эффект этой расходной карты ещё не реализован.');
  if(enhancementTarots.has(centre.key)){
-  if(!Array.isArray(targetCardIds)||targetCardIds.length<1||targetCardIds.length>2||new Set(targetCardIds).size!==targetCardIds.length||targetCardIds.some(id=>typeof id!=='string'||!state.hand?.includes(id)||!state.cards?.[id]))return blocked('INVALID_TARGETS','Выберите одну или две карты в руке.');
+  const {maximum}=enhancementTarots.get(centre.key);
+  if(!Array.isArray(targetCardIds)||targetCardIds.length<1||targetCardIds.length>maximum||new Set(targetCardIds).size!==targetCardIds.length||targetCardIds.some(id=>typeof id!=='string'||!state.hand?.includes(id)||!state.cards?.[id]))return blocked('INVALID_TARGETS',maximum===1?'Выберите одну карту в руке.':'Выберите одну или две карты в руке.');
  }
  let shopContext=null;
  try{if(state.apkShop){if(!record(state.apkShop.context))throw new TypeError('Missing shop context');shopContext=currentApkShopContext(state);}}catch{return blocked('INVALID_STATE','Некорректное состояние магазина.');}
@@ -85,7 +91,7 @@ export function applyConsumableAction(state,action){
  const centre=centres.get(card.entityId),next=structuredClone(state),events=[];
  const previousTarotPlanet=state.lastTarotPlanet??null;
  if(!card.debuffed&&enhancementTarots.has(centre.key))for(const cardId of action.targetCardIds){
-  const enhancement=enhancementTarots.get(centre.key);next.cards[cardId].enhancement=enhancement;events.push({type:'card_enhanced',cardId,enhancement,sourceId:card.id});
+  const {enhancement}=enhancementTarots.get(centre.key);next.cards[cardId].enhancement=enhancement;events.push({type:'card_enhanced',cardId,enhancement,sourceId:card.id});
  }
  const affected=card.debuffed||centre.set==='Tarot'?[]:centre.key==='c_black_hole'?Object.keys(APK_HAND_NAMES):[handIds[centre.handType]];
  for(const handId of affected){next.handLevels[handId]++;events.push({type:'hand_level_changed',handId,levels:1,level:next.handLevels[handId]});}

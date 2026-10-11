@@ -55,7 +55,7 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
  const start=478+(fanWidth-115-gap*(state.hand.length-1))/2;
  state.hand.forEach((id,i)=>{
    const card=state.cards[id],b=document.createElement('button'),middle=(state.hand.length-1)/2,tilt=state.hand.length>1?(i-middle)*1.35:0;
-   const hidden=hiddenCardIds.has(id),debuffed=!hidden&&isBossCardDebuffed(state,card);b.className='playing-card'+(hidden?' hidden-card deck-back':'')+(selected.has(id)?' selected':'')+(debuffed?' boss-debuffed':'');b.dataset.cardId=id;if(card.enhancement&&card.enhancement!=='base')b.dataset.enhancement=card.enhancement;
+   const hidden=hiddenCardIds.has(id),debuffed=!hidden&&isBossCardDebuffed(state,card);b.className='playing-card'+(hidden?' hidden-card deck-back':'')+(selected.has(id)?' selected':'')+(debuffed?' boss-debuffed':'');b.dataset.cardId=id;if(!hidden&&card.enhancement&&card.enhancement!=='base')b.dataset.enhancement=card.enhancement;
    if(hidden)b.dataset.deck=state.deckId;
    b.setAttribute('aria-label',hidden?'Скрытая карта':`${rankLabel(card.rank)} ${({clubs:'трефы',diamonds:'бубны',hearts:'червы',spades:'пики'})[card.suit]}${debuffed?' — ослаблена':''}`);b.setAttribute('aria-pressed',selected.has(id));
    const left=start+i*gap,top=388+Math.abs(i-middle)*2.5-(selected.has(id)?28:0);

@@ -1,8 +1,11 @@
+import {isCardSuit} from './card-suits.js';
+
 const SUITS = new Set(['clubs', 'diamonds', 'hearts', 'spades']);
 
 // Base-card recognition. Effects that alter recognition are added separately.
-export function evaluateHand(cards) {
+export function evaluateHand(cards, {isCardDebuffed = () => false} = {}) {
   if (!Array.isArray(cards) || cards.length < 1 || cards.length > 5) throw new RangeError('Select 1 to 5 cards');
+  if (typeof isCardDebuffed !== 'function') throw new TypeError('Invalid card debuff predicate');
   const ids = new Set();
   const ranks = new Map();
   for (const card of cards) {
@@ -10,7 +13,7 @@ export function evaluateHand(cards) {
       || !Number.isInteger(card.rank) || card.rank < 2 || card.rank > 14 || !SUITS.has(card.suit)) {
       throw new TypeError('Invalid or duplicate card');
     }
-    if (card.enhancement !== undefined && !['base','mult','bonus','lucky'].includes(card.enhancement)) throw new Error('Enhanced recognition not implemented');
+    if (card.enhancement !== undefined && !['base','mult','bonus','lucky','wild'].includes(card.enhancement)) throw new Error('Enhanced recognition not implemented');
     ids.add(card.id);
     const group = ranks.get(card.rank) ?? [];
     group.push(card);
@@ -18,7 +21,7 @@ export function evaluateHand(cards) {
   }
   const groups = [...ranks.values()].sort((a, b) => b.length - a.length);
   const unique = [...ranks.keys()].sort((a, b) => a - b);
-  const flush = cards.length === 5 && cards.every(card => card.suit === cards[0].suit);
+  const flush = cards.length === 5 && [...SUITS].some(suit => cards.every(card => isCardSuit(card,suit,{debuffed:isCardDebuffed(card),flushCalc:true})));
   const straight = unique.length === 5 && (unique[4] - unique[0] === 4
     || unique.join(',') === '2,3,4,5,14');
   const five = groups[0].length === 5;

@@ -21,7 +21,7 @@ try{
  // Direct render isolates UI privacy from the persistence/core implementation.
  const page=await browser.newPage({viewport:{width:1536,height:688},reducedMotion:'reduce'}),errors=[];
  page.on('pageerror',error=>errors.push(error.message));await page.goto(process.env.PREVIEW_URL);await enterRun(page);
- const fixture=bossFixture();fixture.bossState.hiddenCardIds=[fixture.hand[0]];
+ const fixture=bossFixture();fixture.bossState.hiddenCardIds=[fixture.hand[0]];fixture.cards[fixture.hand[0]].enhancement='wild';
  await page.evaluate(async raw=>{
   const {renderField}=await import('/src/ui/field.js');
   // The direct fixture is deliberately not decoded: old persistence rejects the new contract.
@@ -33,6 +33,7 @@ try{
  assert.equal(await hidden.locator('.corner,.face,.pip-art,.debuff-stamp').count(),0);
  assert.equal(await hidden.innerText(),'');assert.equal(await hidden.getAttribute('title'),null);
  assert.equal(await hidden.getAttribute('data-deck'),'blue');
+ assert.equal(await hidden.getAttribute('data-enhancement'),null);
  assert.equal(await hidden.evaluate(el=>el.classList.contains('deck-back')),true);
  assert.equal(await page.locator('#hand_name').innerText(),'');assert.equal(await page.locator('#hand_level').innerText(),'');
  assert.equal(await page.locator('#chips_value').innerText(),'0');assert.equal(await page.locator('#mult_value').innerText(),'0');
@@ -69,11 +70,12 @@ try{
  // Normal motion exposes the outgoing clone long enough to check its actual face.
  const motionPage=await browser.newPage({viewport:{width:1536,height:688},reducedMotion:'no-preference'}),motionErrors=[];
  motionPage.on('pageerror',error=>motionErrors.push(error.message));await motionPage.goto(process.env.PREVIEW_URL);await enterRun(motionPage);
- const motionState=bossFixture('bl_house',2);
+ const motionState=bossFixture('bl_house',2);motionState.cards[motionState.hand[0]].enhancement='wild';motionState.apkShop.context.enhancementIds=['m_wild'];
  await motionPage.evaluate(raw=>localStorage.setItem('card-cascade.current',raw),serializeState(motionState));await motionPage.reload();await enterRun(motionPage);
  await motionPage.locator(`#hand [data-card-id="${motionState.hand[0]}"]`).click();await motionPage.locator('#play_hand').click();
  await motionPage.locator('.played-card').waitFor();
  assert.equal(await motionPage.locator('.played-card .corner').count(),2);
+ assert.equal(await motionPage.locator('.played-card').getAttribute('data-enhancement'),'wild');
  assert.equal(await motionPage.locator('.played-card.hidden-card,.played-card.deck-back').count(),0);
  assert.equal(await motionPage.locator('#sort_rank').isDisabled(),true);
  await motionPage.waitForFunction(()=>!document.getElementById('sort_rank').disabled);

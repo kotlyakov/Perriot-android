@@ -6,7 +6,7 @@ import {nextApkRandom} from './apk-rng.js';
 import {randomInt} from './rng.js';
 
 export function scoreHand(state, playedCards) {
-  const hand = evaluateHand(playedCards);
+  const hand = evaluateHand(playedCards,{isCardDebuffed:card=>isBossCardDebuffed(state,card)});
   if (!state || !state.handLevels || typeof state.handLevels !== 'object' || !Array.isArray(state.jokers)) throw new TypeError('Invalid scoring state');
   const heldCards = state.hand === undefined ? [] : state.hand.map(id=>state.cards[id]);
   for (const card of [...playedCards,...heldCards]) {

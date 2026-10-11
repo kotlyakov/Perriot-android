@@ -2,6 +2,7 @@ import {canonicalCards} from './apk-deck.js';
 import {nextApkRandom,validateApkRng} from './apk-rng.js';
 import {APK_BOSSES,APK_BLINDS_BY_ID} from '../content/apk-blinds.js';
 import {APK_HAND_NAMES} from './apk-shop-state.js';
+import {isCardSuit} from './card-suits.js';
 export const FIRST_ANTE_BOSSES=Object.freeze(['bl_hook','bl_club','bl_manacle','bl_psychic','bl_goad','bl_window','bl_head','bl_pillar']);
 export const SUPPORTED_BOSSES=Object.freeze(APK_BOSSES.filter(boss=>!boss.showdown).map(boss=>boss.id));
 const anteBases=[300n,800n,2000n,5000n,11000n,20000n,35000n,50000n];
@@ -35,7 +36,7 @@ export function canEnterFirstAnteBoss(state){
 }
 export function isBossCardDebuffed(state,card){
  const boss=state.bossState;
- return !!boss && (suits[boss.id]===card.suit || boss.id==='bl_pillar'&&boss.playedBeforeBoss.includes(card.id) || boss.id==='bl_plant'&&card.rank>=11&&card.rank<=13);
+ return !!boss && (suits[boss.id]&&isCardSuit(card,suits[boss.id],{bypassDebuff:true}) || boss.id==='bl_pillar'&&boss.playedBeforeBoss.includes(card.id) || boss.id==='bl_plant'&&card.rank>=11&&card.rank<=13);
 }
 export function isBossHandDebuffed(state,cards,handId){
  const boss=state.bossState;
