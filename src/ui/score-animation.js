@@ -1,6 +1,8 @@
 import {showNumbers} from './field.js';
-export function integerText(value){if(typeof value==='bigint')return value.toString();if(value && typeof value.numerator==='bigint')return (value.numerator/value.denominator).toString();return String(Math.trunc(Number(value)));}
-export function scoreDelta(event){const mult=event.operation.includes('mult'),key=mult?'mult':'chips',multiply=event.operation.startsWith('multiply') || event.operation.startsWith('mul_') || event.operation.startsWith('x_');const before=event.before[key],after=event.after[key];return {kind:mult?'mult':'chips',multiply,text:(multiply?'×':'+')+integerText(multiply?(before?after/before:after):after-before)};}
+import {divideExact,exactText,subtractExact} from '../core/numbers.js';
+export {exactText};
+export function integerText(value){return exactText(typeof value==='number'?BigInt(Math.trunc(value)):value);}
+export function scoreDelta(event){const mult=event.operation.includes('mult'),key=mult?'mult':'chips',multiply=event.operation.startsWith('multiply') || event.operation.startsWith('mul_') || event.operation.startsWith('x_');const before=event.before[key],after=event.after[key];return {kind:mult?'mult':'chips',multiply,text:(multiply?'×':'+')+exactText(multiply?divideExact(after,before):subtractExact(after,before))};}
 export function scoreMoneyText(event){return '+$'+integerText(event.amount);}
 const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 export async function animateScore(events){const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -10,7 +12,7 @@ export async function animateScore(events){const reduced=matchMedia('(prefers-re
    }
    showNumbers(event.after.chips,event.after.mult,true);
    const joker=document.querySelector(`#shop_owned [data-offer-id="${event.effectSourceId??event.sourceId}"]`);
-   const card=joker??document.querySelector(`.played-card[data-card-id="${event.sourceId}"]`)??document.querySelector(`#shop_owned [data-offer-id="${event.sourceId}"]`);
+   const card=joker??document.querySelector(`.played-card[data-card-id="${event.sourceId}"]`)??document.querySelector(`.playing-card[data-card-id="${event.sourceId}"]`)??document.querySelector(`#shop_owned [data-offer-id="${event.sourceId}"]`);
    if(card && event.operation!=='base'){
      const d=scoreDelta(event),pop=document.createElement('span');pop.className='score-pop '+d.kind+(d.multiply?' multiply':'');pop.textContent=d.text;pop.dataset.sourceId=event.sourceId;pop.dataset.operation=event.operation;
      Object.assign(pop.style,{left:parseFloat(card.style.left)+57.5+'px',top:parseFloat(card.style.top)+(joker?card.offsetHeight+4:-27)+'px'});document.getElementById('stage').append(pop);

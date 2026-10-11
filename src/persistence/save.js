@@ -9,6 +9,7 @@ import { SUPPORTED_JOKERS,supportsJoker } from '../content/jokers.js';
 import { evaluateHand } from '../core/hands.js';
 import { randomInt } from '../core/rng.js';
 import { scoreHand } from '../core/score.js';
+import {compareExact,equalExact,exact,floorExact,multiplyExact} from '../core/numbers.js';
 import catalogue from '../content/apk-shop-catalog.js';
 import {createApkShopContext} from '../core/apk-shop.js';
 const centres=new Map(catalogue.centres.map(c=>[c.key,c]));
@@ -45,7 +46,7 @@ function decodeApkShop(value,state) {
   requireValue(value.voucherId===null || centres.get(value.voucherId)?.set==='Voucher');
   optionalObject(value.context,Object.keys(createApkShopContext()),['tutorialShopSurcharge']);
   createApkShopContext(value.context); // Validate actual saved inputs without selecting or polling.
-  const enhancements=[...new Set(Object.values(state.cards).map(card=>({mult:'m_mult',bonus:'m_bonus',lucky:'m_lucky',wild:'m_wild'})[card.enhancement]).filter(Boolean))];
+  const enhancements=[...new Set(Object.values(state.cards).map(card=>({mult:'m_mult',bonus:'m_bonus',lucky:'m_lucky',wild:'m_wild',steel:'m_steel'})[card.enhancement]).filter(Boolean))];
   requireValue(new Set(value.context.enhancementIds).size===value.context.enhancementIds.length&&value.context.enhancementIds.length===enhancements.length&&value.context.enhancementIds.every(id=>enhancements.includes(id)));
   requireValue(value.context.ante===state.round.ante+(['shop','pack'].includes(state.phase)&&state.round.blindId==='boss'?1:0));
   if(['shop','pack'].includes(state.phase)){
@@ -130,31 +131,37 @@ function decimal(value,negative=false) {
   requireValue(typeof value==='string' && value.length<=4096 && /^(0|-?[1-9][0-9]*)$/.test(value));
   const n=BigInt(value);requireValue(negative || n>=0n);return n;
 }
-function pair(value) { object(value,['chips','mult']);return {chips:decimal(value.chips),mult:decimal(value.mult)}; }
+function encodeExact(value){return typeof value==='bigint'?value.toString():{n:value.n.toString(),d:value.d.toString()};}
+function decodeExact(value){
+ if(typeof value==='string')return decimal(value);
+ object(value,['n','d']);const raw={n:decimal(value.n,true),d:decimal(value.d)};requireValue(raw.d>0n);const normalized=exact(raw);requireValue(normalized.n===raw.n&&normalized.d===raw.d&&normalized.d!==1n);return normalized;
+}
+function exactPair(value){object(value,['chips','mult']);return {chips:decimal(value.chips),mult:decodeExact(value.mult)};}
 function encodeScore(score) {
   if(score===null)return null;
-  return {...score,chips:score.chips.toString(),mult:score.mult.toString(),score:score.score.toString(),trace:score.trace.map(event=>event.type==='score_money'?{...event,amount:event.amount.toString()}:event.type==='score_total'
-    ? {...event,chips:event.chips.toString(),mult:event.mult.toString(),score:event.score.toString()}
-    : {...event,before:{chips:event.before.chips.toString(),mult:event.before.mult.toString()},after:{chips:event.after.chips.toString(),mult:event.after.mult.toString()}})};
+  return {...score,chips:score.chips.toString(),mult:encodeExact(score.mult),score:score.score.toString(),trace:score.trace.map(event=>event.type==='score_money'?{...event,amount:event.amount.toString()}:event.type==='score_total'
+    ? {...event,chips:event.chips.toString(),mult:encodeExact(event.mult),score:event.score.toString()}
+    : {...event,before:{chips:event.before.chips.toString(),mult:encodeExact(event.before.mult)},after:{chips:event.after.chips.toString(),mult:encodeExact(event.after.mult)}})};
 }
 function decodeScore(value,state) {
   if(value===null)return null;
-  optionalObject(value,['handId','isRoyal','scoringCardIds','chips','mult','score','trace'],['playedCardIds','handDebuffed','bossHistory','luckyRolls','luckyRngKind','luckyRngBefore','luckyRngAfter']);
+  optionalObject(value,['handId','isRoyal','scoringCardIds','chips','mult','score','trace'],['playedCardIds','heldCardIds','handDebuffed','bossHistory','luckyRolls','luckyRngKind','luckyRngBefore','luckyRngAfter']);
   if(Object.hasOwn(value,'handDebuffed'))requireValue(value.handDebuffed===true);
   if(value.playedCardIds)requireValue(Array.isArray(value.playedCardIds)&&value.playedCardIds.length>=1&&value.playedCardIds.length<=5&&new Set(value.playedCardIds).size===value.playedCardIds.length&&value.playedCardIds.every(id=>Object.hasOwn(state.cards,id))); 
+  if(value.heldCardIds){cardList(value.heldCardIds,state);requireValue(value.heldCardIds.length>=1&&value.heldCardIds.every(id=>!value.playedCardIds?.includes(id)));}
   requireValue(Object.hasOwn(HANDS,value.handId) && typeof value.isRoyal==='boolean');
   requireValue(!value.isRoyal || value.handId==='straight_flush');
   requireValue(Array.isArray(value.scoringCardIds) && value.scoringCardIds.length>=0 && value.scoringCardIds.length<=5);
   requireValue(new Set(value.scoringCardIds).size===value.scoringCardIds.length && value.scoringCardIds.every(key=>Object.hasOwn(state.cards,key)));
-  const chips=decimal(value.chips),mult=decimal(value.mult),score=decimal(value.score);
-  requireValue(score===chips*mult && Array.isArray(value.trace) && value.trace.length>=2 && value.trace.length<=10000);
+  const chips=decimal(value.chips),mult=decodeExact(value.mult),score=decimal(value.score);
+  requireValue(score===floorExact(multiplyExact(chips,mult)) && Array.isArray(value.trace) && value.trace.length>=2 && value.trace.length<=10000);
   let previous={chips:0n,mult:0n};
   const trace=value.trace.map((event,i)=>{
     if(i===value.trace.length-1) {
       object(event,['type','phase','chips','mult','score']);
       requireValue(event.type==='score_total' && event.phase==='total');
-      const total={...event,chips:decimal(event.chips),mult:decimal(event.mult),score:decimal(event.score)};
-      requireValue(total.chips===chips && total.mult===mult && total.score===score && previous.chips===chips && previous.mult===mult);
+      const total={...event,chips:decimal(event.chips),mult:decodeExact(event.mult),score:decimal(event.score)};
+      requireValue(total.chips===chips && equalExact(total.mult,mult) && total.score===score && previous.chips===chips && equalExact(previous.mult,mult));
       return total;
     }
     if(event.type==='score_money'){
@@ -162,13 +169,13 @@ function decodeScore(value,state) {
     }
     optionalObject(event,['type','phase','sourceId','operation','before','after'],['effectSourceId']);
     if(event.effectSourceId)requireValue(state.jokers.some(j=>j.id===event.effectSourceId));
-    const before=pair(event.before),after=pair(event.after);
-    requireValue(event.type==='score_step' && before.chips===previous.chips && before.mult===previous.mult);
+    const before=exactPair(event.before),after=exactPair(event.after);
+    requireValue(event.type==='score_step' && before.chips===previous.chips && equalExact(before.mult,previous.mult));
     if(i===0) requireValue(event.phase==='base' && event.operation==='base' && event.sourceId===`hand:${value.handId}`);
     else {
       requireValue(['add_chips','add_mult','multiply_mult'].includes(event.operation));
-      requireValue(event.operation==='add_chips' ? after.chips>=before.chips && after.mult===before.mult : after.mult>=before.mult && after.chips===before.chips);
-      requireValue(event.phase==='scored_card' ? value.scoringCardIds.includes(event.sourceId) : ['independent','edition'].includes(event.phase) && state.jokers.some(j=>j.id===event.sourceId));
+      requireValue(event.operation==='add_chips' ? after.chips>=before.chips && equalExact(after.mult,before.mult) : compareExact(after.mult,before.mult)>=0 && after.chips===before.chips);
+      requireValue(event.phase==='scored_card' ? value.scoringCardIds.includes(event.sourceId) : event.phase==='held_card' ? value.heldCardIds?.includes(event.sourceId) : ['independent','edition'].includes(event.phase) && state.jokers.some(j=>j.id===event.sourceId));
     }
     previous=after;return {...event,before,after};
   });
@@ -202,15 +209,17 @@ function decodeScore(value,state) {
     }
     scoringState={...scoringState,bossState:{...state.bossState,...history}};
   }else requireValue(value.bossHistory===undefined);
+  if(value.heldCardIds)scoringState={...scoringState,hand:[...value.heldCardIds]};
   const expected=scoreHand(scoringState,(value.playedCardIds??value.scoringCardIds).map(key=>state.cards[key]));
-  requireValue(expected.handDebuffed===value.handDebuffed && expected.handId===value.handId && expected.isRoyal===value.isRoyal && expected.chips===chips && expected.mult===mult && expected.score===score);
+  requireValue(expected.handDebuffed===value.handDebuffed && expected.handId===value.handId && expected.isRoyal===value.isRoyal && expected.chips===chips && equalExact(expected.mult,mult) && expected.score===score);
   requireValue(expected.scoringCardIds.length===value.scoringCardIds.length && expected.scoringCardIds.every((key,i)=>key===value.scoringCardIds[i]));
+  requireValue((expected.heldCardIds===undefined)===(value.heldCardIds===undefined)&&(!value.heldCardIds||expected.heldCardIds.every((key,i)=>key===value.heldCardIds[i])&&expected.heldCardIds.length===value.heldCardIds.length));
   requireValue(expected.trace.length===trace.length && expected.trace.every((event,i)=>{
     const actual=trace[i];
     if(event.phase!==actual.phase||event.type!==actual.type)return false;
     if(event.type==='score_total')return true;
     if(event.type==='score_money')return event.sourceId===actual.sourceId&&event.amount===actual.amount;
-    return event.sourceId===actual.sourceId && event.effectSourceId===actual.effectSourceId && event.operation===actual.operation && event.before.chips===actual.before.chips && event.before.mult===actual.before.mult && event.after.chips===actual.after.chips && event.after.mult===actual.after.mult;
+    return event.sourceId===actual.sourceId && event.effectSourceId===actual.effectSourceId && event.operation===actual.operation && event.before.chips===actual.before.chips && equalExact(event.before.mult,actual.before.mult) && event.after.chips===actual.after.chips && equalExact(event.after.mult,actual.after.mult);
   }));
   requireValue(!hasLucky||JSON.stringify({rolls:expected.luckyRolls,kind:expected.luckyRngKind,before:expected.luckyRngBefore,after:expected.luckyRngAfter})===JSON.stringify({rolls:value.luckyRolls,kind:value.luckyRngKind,before:value.luckyRngBefore,after:value.luckyRngAfter}));
   return {...value,chips,mult,score,trace};

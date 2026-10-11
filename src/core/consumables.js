@@ -17,6 +17,7 @@ const enhancementTarots=new Map([
  ['c_empress',{enhancement:'mult',maximum:2}],
  ['c_heirophant',{enhancement:'bonus',maximum:2}],
  ['c_lovers',{enhancement:'wild',maximum:1}],
+ ['c_chariot',{enhancement:'steel',maximum:1}],
 ]);
 const hasFoolSpace=(state,card)=>{const remaining=(state.consumables??[]).filter(c=>c.id!==card.id);return remaining.length<(state.consumableSlots??2)+remaining.filter(c=>c.edition==='negative').length;};
 const generatedFoolId=card=>`fool:${card.id}`;
