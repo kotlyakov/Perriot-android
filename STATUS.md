@@ -1,6 +1,6 @@
 # STATUS.md — Пьеро
 
-10.10.2026. Активный этап П-05д, 0.4.17-preview/code30. Исходники: kotlyakov/Perriot-android. Маг и Lucky Card слиты через PR #14, merge d35fccf8ba6ef8f52b5187f8cd17fe462b0af8c8, Actions38018631174 SUCCESS. Не начинать этот блок повторно.
+11.10.2026. Активный этап П-05д, 0.4.18-preview/code31. Исходники: kotlyakov/Perriot-android. Lovers и Wild Card слиты через PR #15, merge ec37fb3eab34d60575ea0ef3bc9a130905629a3a, Actions38111568610 SUCCESS. Не начинать этот блок повторно.
 
 Planet/Black Hole: точные 12 комбинаций, собственные слоты/покупка, применение без RNG/discovery, run usage и строгие totals, lastTarotPlanet, legacy save, debuff расходует без повышения. Выбранная принадлежащая карта имеет «Использовать»; продажа вправо сохранена. Гонка общего test helper устранена отдельной RED→GREEN регрессией ожидания удаления меню.
 
