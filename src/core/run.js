@@ -186,6 +186,19 @@ export function dispatch(state, action, shopOptions={}) {
       }
       else next.rng.effects=structuredClone(score.luckyRngAfter);
     }
+    if(score.glassRngAfter){
+      if(score.glassRngKind==='apk'){
+        const value=score.glassRngAfter.glass;if(value===null)delete next.rng.apk.streams.glass;else next.rng.apk.streams.glass=value;
+        next.rng.apk.mathState=[...score.glassRngAfter.mathState];
+      }else next.rng.effects=structuredClone(score.glassRngAfter);
+    }
+    const shattered=score.glassRolls?.filter(roll=>roll.destroyed).map(roll=>roll.cardId)??[];
+    if(shattered.length){
+      const removed=new Set(shattered);next.discardPile=next.discardPile.filter(id=>!removed.has(id));
+      for(const id of shattered){delete next.cards[id];events.push({type:'card_shattered',cardId:id});}
+      if(next.bossState?.hiddenCardIds)next.bossState.hiddenCardIds=next.bossState.hiddenCardIds.filter(id=>!removed.has(id));
+      if(next.apkShop)next.apkShop.context=currentApkShopContext(next);
+    }
     if(next.bossState?.id==='bl_eye'&&!next.bossState.playedHands.includes(score.handId))next.bossState.playedHands.push(score.handId);
     if(next.bossState?.id==='bl_mouth'&&!next.bossState.firstHand)next.bossState.firstHand=score.handId;
     const beforeMoney=next.money;
@@ -193,7 +206,7 @@ export function dispatch(state, action, shopOptions={}) {
     if(next.bossState?.id==='bl_ox'&&score.handId===next.bossState.oxHand)next.money=0n;
     next.money+=score.trace.reduce((sum,event)=>sum+(event.type==='score_money'?event.amount:0n),0n);
     if(next.money!==beforeMoney)events.push({type:'money_changed',before:beforeMoney,after:next.money,delta:next.money-beforeMoney});
-    if(next.apkBlinds?.playedCardIds)for(const id of playedIds)if(!next.apkBlinds.playedCardIds.includes(id))next.apkBlinds.playedCardIds.push(id);
+    if(next.apkBlinds?.playedCardIds)for(const id of playedIds)if(Object.hasOwn(next.cards,id)&&!next.apkBlinds.playedCardIds.includes(id))next.apkBlinds.playedCardIds.push(id);
     if(next.runStats)next.runStats.handsPlayed++;
     next.round.handsRemaining--;next.round.score+=score.score;next.lastScore=score;
     if (!next.discoveredHands.includes(score.handId)) next.discoveredHands.push(score.handId);

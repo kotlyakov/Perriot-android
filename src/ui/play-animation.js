@@ -27,6 +27,17 @@ export function preparePlayedCards(ids,discard=false,revealedCards={}) {
  };
 }
 
+export async function animateShatteredCards(ids){
+ const cards=ids.map(id=>document.querySelector(`.played-card[data-card-id="${id}"]`)).filter(Boolean);
+ cards.forEach(card=>{card.classList.add('shattering');card.dataset.shattered='true';});
+ if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ await Promise.all(cards.map(card=>card.animate([
+   {opacity:1,transform:'rotate(0deg) scale(1)',filter:'brightness(1)'},
+   {opacity:.88,transform:'rotate(-4deg) scale(1.08)',filter:'brightness(1.8)'},
+   {opacity:0,transform:'rotate(11deg) scale(.48)',filter:'brightness(2.2) blur(2px)'},
+ ],{duration:380,easing:'cubic-bezier(.45,0,.85,.35)',fill:'forwards'}).finished));
+}
+
 export function prepareDrawnCards(ids){
  const cards=ids.map(id=>document.querySelector(`#hand .playing-card[data-card-id="${id}"]`)).filter(Boolean);
  cards.forEach(card=>card.classList.add('dealing'));

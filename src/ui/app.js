@@ -7,7 +7,7 @@ import {DECKS} from '../content/decks.js';
 import {createDeckView} from './deck-view.js';
 import {liftScoringCards,animateScore} from './score-animation.js';
 import {showFlame} from './flame.js';
-import {preparePlayedCards,prepareDrawnCards,prepareHandMovement} from './play-animation.js';
+import {preparePlayedCards,prepareDrawnCards,prepareHandMovement,animateShatteredCards} from './play-animation.js';
 import {createRun,dispatch} from '../core/run.js';
 import {createRepository} from '../persistence/repository.js';
 import {createBackend} from '../persistence/backend.js';
@@ -74,6 +74,7 @@ async function perform(type,ids,mode,fields={}) {
      showFlame(state.lastScore.score,state.round.target);
      await liftScoringCards(state.lastScore.scoringCardIds);
      await animateScore(result.events);
+     await animateShatteredCards(result.events.filter(event=>event.type==='card_shattered').map(event=>event.cardId));
      await animateNumber(document.getElementById('round_score_value'),state.round.score,{animate:true,from:previousScore,duration:480,format:displayInteger});
      if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.getElementById('round_score_value').animate([{scale:1.18},{scale:1}],{duration:280});
    }
@@ -93,7 +94,7 @@ document.getElementById('play_hand').onclick=()=>perform('PLAY_HAND',[...selecte
 document.getElementById('discard').onclick=()=>perform('DISCARD',[...selected]);
 function sort(mode){if(busy || state?.phase!=='playing')return;perform('SET_SORT',undefined,mode);}
 document.getElementById('sort_rank').onclick=()=>sort('rank');document.getElementById('sort_suit').onclick=()=>sort('suit');
-function showSettings(){openDialog('Настройки','<p>Пьеро · промежуточная сборка 0.4.18</p><p>Переходы анте и обычные боссы, скрытые карты, магазин, 32 эффекта джокеров, Планеты, Небесные наборы, Отшельник, Умеренность, Дурак, Императрица, Иерофант, Маг, Влюблённые, Счастливая и Дикая карты. Финальные боссы и остальной контент ещё недоступны. Продолжение сохраняется после каждого действия.</p>',[['Продолжить',closeDialog],['Новый забег',()=>confirmNew()],['Главное меню',showMenu]]);}
+function showSettings(){openDialog('Настройки','<p>Пьеро · промежуточная сборка 0.4.20</p><p>Переходы анте и обычные боссы, скрытые карты, магазин, 32 эффекта джокеров, Планеты, Небесные наборы, Отшельник, Умеренность, Дурак, Императрица, Иерофант, Маг, Влюблённые, Колесница, Правосудие, Счастливая, Дикая, Стальная и Стеклянная карты. Финальные боссы и остальной контент ещё недоступны. Продолжение сохраняется после каждого действия.</p>',[['Продолжить',closeDialog],['Новый забег',()=>confirmNew()],['Главное меню',showMenu]]);}
 document.getElementById('options').onclick=showSettings;
 document.getElementById('run_info').onclick=()=>{
  if(!state)return;const table=document.createElement('table');
