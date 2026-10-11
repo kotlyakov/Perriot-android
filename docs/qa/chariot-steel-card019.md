@@ -23,7 +23,8 @@
 - `node --test tests/core/chariot-steel-card.test.js`: 11/11 PASS, включая Hook, который после подсчёта сбрасывает источник held‑эффекта, и нативную активацию face-down Steel.
 - `npm test`: 361/361 PASS после финальной интеграции.
 - `tests/ui/chariot-steel-card-check.mjs`: выбор цели, применение, метка, reload, held‑подсчёт, `×1.5`, save trace; включён в официальный Chromium‑набор.
-- Локальный Chromium в текущем окружении отсутствует; обязательная фактическая проверка выполняется Android CI до merge.
+- Actions `38128494254` (run #166): 361/361 core, 27/27 Chromium suites, offline-assets, fresh Gradle compile, APK signature и zipalign — PASS.
+- Проверенный CI-артефакт `11698356881` (`pierrot-ci-debug-no-update-guarantee-38128494254-1`), ZIP SHA256 `7c3d826a5e0a0e263f723d7e630a47cf4954724043f293197fd9f4859c64c081`; это промежуточная debug-сборка, не финальный APK.
 
 ## Вне блока
 
