@@ -35,7 +35,8 @@ export function scoreHand(state, playedCards) {
     if(mult<1n)mult=1n;
   }
   const trace = [{type:'score_step',phase:'base',sourceId:`hand:${hand.handId}`,operation:'base',before:{chips:0n,mult:0n},after:{chips,mult}}];
-  const scoringCardIds = state.jokers.some(j=>originalJokerKey(j.entityId)==='j_splash') ? playedCards.map(c=>c.id) : hand.scoringCardIds;
+  const splash=state.jokers.some(j=>originalJokerKey(j.entityId)==='j_splash'),nativeScoring=new Set(hand.scoringCardIds);
+  const scoringCardIds=playedCards.filter(card=>splash||nativeScoring.has(card.id)||card.enhancement==='stone').map(card=>card.id);
   const scoringSet = new Set(scoringCardIds);
   let luckyRng,luckyRngBefore,luckyKind;const luckyRolls=[];
   let glassRng,glassRngBefore,glassKind;const glassRolls=[];
@@ -71,7 +72,7 @@ export function scoreHand(state, playedCards) {
   for (const card of playedCards) {
     if (!scoringSet.has(card.id) || isBossCardDebuffed(state,card)) continue;
     const before = {chips,mult};
-    chips += BigInt(card.rank===14 ? 11 : Math.min(card.rank,10));
+    chips += card.enhancement==='stone'?50n:BigInt(card.rank===14 ? 11 : Math.min(card.rank,10));
     trace.push({type:'score_step',phase:'scored_card',sourceId:card.id,operation:'add_chips',before,after:{chips,mult}});
     if(card.enhancement==='bonus')apply({operation:'add_chips',amount:30n},'scored_card',card.id);
     if(card.enhancement==='mult')apply({operation:'add_mult',amount:4n},'scored_card',card.id);
@@ -85,7 +86,7 @@ export function scoreHand(state, playedCards) {
   }
   for(const card of heldCards)if(card.enhancement==='steel'&&!isBossCardDebuffed(state,card))apply({operation:'multiply_mult',amount:{n:3n,d:2n}},'held_card',card.id);
   const rankCounts = new Map();
-  for (const card of playedCards) rankCounts.set(card.rank,(rankCounts.get(card.rank)??0)+1);
+  for (const card of playedCards)if(card.enhancement!=='stone')rankCounts.set(card.rank,(rankCounts.get(card.rank)??0)+1);
   for (const joker of state.jokers) {
     if(joker.edition==='foil')apply({operation:'add_chips',amount:50n},'edition',joker.id);
     if(joker.edition==='holographic')apply({operation:'add_mult',amount:10n},'edition',joker.id);
