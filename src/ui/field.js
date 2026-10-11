@@ -6,6 +6,7 @@ import {pipArtwork,suitSvg} from './card-art.js';
 import {scoreHand} from '../core/score.js';
 import {appendTooltipContents} from './tooltip-text.js';
 import {describeCardModifiers} from '../content/card-modifier-display.js';
+import {exactText} from '../core/numbers.js';
 export const HAND_NAMES={high_card:'Старшая карта',pair:'Пара',two_pair:'Две пары',three_of_a_kind:'Тройка',straight:'Стрит',flush:'Флеш',full_house:'Фулл-хаус',four_of_a_kind:'Каре',straight_flush:'Стрит-флеш',five_of_a_kind:'Пятёрка',flush_house:'Флеш-хаус',flush_five:'Флеш-пятёрка'};
 export const SUITS={spades:['♠','#283c53'],hearts:['♥','#bb3034'],clubs:['♣','#143d39'],diamonds:['♦','#ca502a']};
 export function rankLabel(rank){return ({11:'J',12:'Q',13:'K',14:'A'})[rank]??String(rank);}
@@ -19,10 +20,12 @@ export function cardMarkup(card) {
  return `<span class="corner" style="color:${color}">${rank}<span>${suitSvg(card.suit)}</span></span>${inside}<span class="corner bottom" style="color:${color}">${rank}<span>${suitSvg(card.suit)}</span></span>`;
 }
 function text(id,value){document.getElementById(id).textContent=String(value);}
-export function displayInteger(value){const s=String(value);return s.length>10?s.slice(0,3)+'e'+(s.length-3):s;}
+export function displayInteger(value){const s=exactText(value);return !s.includes('.')&&s.length>10?s.slice(0,3)+'e'+(s.length-3):s;}
 export function showNumbers(chips,mult,animate=false){
  for(const [id,value] of [['chips_value',chips],['mult_value',mult]]){
-   const n=document.getElementById(id);animateNumber(n,value,{animate,format:displayInteger,onFrame:()=>{n.style.fontSize=Math.min(43,(n.parentElement.clientWidth-12)/(.7*n.textContent.length))+'px';}});
+   const n=document.getElementById(id),onFrame=()=>{n.style.fontSize=Math.min(43,(n.parentElement.clientWidth-12)/(.7*n.textContent.length))+'px';};
+   if(typeof value!=='bigint'){delete n.dataset.number;n.textContent=displayInteger(value);n.title=exactText(value);onFrame();continue;}
+   animateNumber(n,value,{animate,format:displayInteger,onFrame});
  }
 }
 

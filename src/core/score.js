@@ -4,11 +4,13 @@ import { HANDS } from '../content/hands.js';
 import { SUPPORTED_JOKERS, independentEffect, originalJokerKey, supportsJoker, scoredJokerEffects } from '../content/jokers.js';
 import {nextApkRandom} from './apk-rng.js';
 import {randomInt} from './rng.js';
+import {addExact,floorExact,multiplyExact} from './numbers.js';
 
 export function scoreHand(state, playedCards) {
   const hand = evaluateHand(playedCards,{isCardDebuffed:card=>isBossCardDebuffed(state,card)});
   if (!state || !state.handLevels || typeof state.handLevels !== 'object' || !Array.isArray(state.jokers)) throw new TypeError('Invalid scoring state');
-  const heldCards = state.hand === undefined ? [] : state.hand.map(id=>state.cards[id]);
+  const playedIds=new Set(playedCards.map(card=>card.id));
+  const heldCards = state.hand === undefined ? [] : state.hand.filter(id=>!playedIds.has(id)).map(id=>state.cards[id]);
   for (const card of [...playedCards,...heldCards]) {
     evaluateHand([card]); // Refuse unsupported held recognition/effects too.
     if ((card.edition !== undefined && card.edition !== 'base') || card.seal !== undefined || card.debuffed === true) throw new Error('Unsupported card modifier');
@@ -50,8 +52,8 @@ export function scoreHand(state, playedCards) {
   function apply(effect,phase,sourceId,effectSourceId){
     const before={chips,mult};
     if(effect.operation==='add_chips')chips+=effect.amount;
-    else if(effect.operation==='multiply_mult')mult*=effect.amount;
-    else mult+=effect.amount;
+    else if(effect.operation==='multiply_mult')mult=multiplyExact(mult,effect.amount);
+    else mult=addExact(mult,effect.amount);
     trace.push({type:'score_step',phase,sourceId,operation:effect.operation,before,after:{chips,mult},...(effectSourceId?{effectSourceId}:{})});
   }
   for (const card of playedCards) {
@@ -68,6 +70,7 @@ export function scoreHand(state, playedCards) {
     }
     for(const joker of state.jokers)for(const effect of scoredJokerEffects(joker.entityId,card))apply(effect,'scored_card',card.id,joker.id);
   }
+  for(const card of heldCards)if(card.enhancement==='steel'&&!isBossCardDebuffed(state,card))apply({operation:'multiply_mult',amount:{n:3n,d:2n}},'held_card',card.id);
   const rankCounts = new Map();
   for (const card of playedCards) rankCounts.set(card.rank,(rankCounts.get(card.rank)??0)+1);
   for (const joker of state.jokers) {
@@ -76,9 +79,9 @@ export function scoreHand(state, playedCards) {
     const effect=independentEffect(joker.entityId,[...rankCounts.values()],{playedCards,handId:hand.handId,jokerCount:state.jokers.length});
     if(effect)apply(effect,'independent',joker.id);
   }
-  const score = chips*mult;
+  const score = floorExact(multiplyExact(chips,mult));
   trace.push({type:'score_total',phase:'total',chips,mult,score});
-  return {...hand,playedCardIds:playedCards.map(c=>c.id),scoringCardIds,chips,mult,score,trace,...(luckyRolls.length?{luckyRolls,luckyRngKind:luckyKind,luckyRngBefore,luckyRngAfter:luckyKind==='apk'?{...luckySnapshot(luckyRng),mathState:[...luckyRng.mathState]}:luckyRng}:{})};
+  return {...hand,playedCardIds:playedCards.map(c=>c.id),scoringCardIds,chips,mult,score,trace,...(heldCards.some(card=>card.enhancement==='steel')?{heldCardIds:heldCards.map(card=>card.id)}:{}),...(luckyRolls.length?{luckyRolls,luckyRngKind:luckyKind,luckyRngBefore,luckyRngAfter:luckyKind==='apk'?{...luckySnapshot(luckyRng),mathState:[...luckyRng.mathState]}:luckyRng}:{})};
 }
 
 

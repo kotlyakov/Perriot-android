@@ -4,7 +4,8 @@ import {createRun,dispatch} from '../../src/core/run.js';
 import {serializeState,deserializeState} from '../../src/persistence/save.js';
 import {sortHand} from '../../src/core/sort.js';
 import {flameHeight} from '../../src/ui/flame.js';
-import {scoreDelta,scoreMoneyText} from '../../src/ui/score-animation.js';
+import {exactText,scoreDelta,scoreMoneyText} from '../../src/ui/score-animation.js';
+import {showNumbers} from '../../src/ui/field.js';
 test('chosen sort survives play, discard and save; reordering has no RNG cost',()=>{
  let s=dispatch(createRun('sorting',{runId:'sorting',money:4n}),{type:'START_BLIND',expectedRevision:0}).state;
  for(const mode of ['suit','rank']){
@@ -27,6 +28,15 @@ test('flame is monotonic and bounded even for thousand digit scores',()=>{
 test('score labels distinguish chip/mult addition and multiplication',()=>{
  assert.deepEqual(scoreDelta({operation:'add_chips',before:{chips:5n,mult:2n},after:{chips:12n,mult:2n}}),{kind:'chips',multiply:false,text:'+7'});
  assert.deepEqual(scoreDelta({operation:'multiply_mult',before:{chips:5n,mult:2n},after:{chips:5n,mult:6n}}),{kind:'mult',multiply:true,text:'×3'});
+ assert.equal(exactText({n:3n,d:2n}),'1.5');
+ assert.equal(exactText({n:9n,d:4n}),'2.25');
+ assert.deepEqual(scoreDelta({operation:'multiply_mult',before:{chips:7n,mult:1n},after:{chips:7n,mult:{n:3n,d:2n}}}),{kind:'mult',multiply:true,text:'×1.5'});
  assert.equal(scoreMoneyText({type:'score_money',amount:20n}),'+$20');
+});
+
+test('fractional HUD value clears integer animation origin before a later integral Mult',()=>{
+ const original=globalThis.document,nodes=Object.fromEntries(['chips_value','mult_value'].map(id=>[id,{dataset:{number:'9'},style:{},parentElement:{clientWidth:200},textContent:'9',title:'9'}]));globalThis.document={getElementById:id=>nodes[id]};
+ try{showNumbers(7n,{n:3n,d:2n});assert.equal(nodes.mult_value.textContent,'1.5');assert.equal(Object.hasOwn(nodes.mult_value.dataset,'number'),false);showNumbers(7n,3n);assert.equal(nodes.mult_value.textContent,'3');}
+ finally{globalThis.document=original;}
 });
 
