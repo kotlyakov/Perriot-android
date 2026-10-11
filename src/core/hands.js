@@ -42,7 +42,7 @@ export function evaluateHand(cards, {isCardDebuffed = () => false} = {}) {
   else if (groups[0].length === 3) { handId = 'three_of_a_kind'; scoring = groups[0]; }
   else if (groups[0].length === 2 && groups[1]?.length === 2) { handId = 'two_pair'; scoring = [...groups[0], ...groups[1]]; }
   else if (groups[0].length === 2) { handId = 'pair'; scoring = groups[0]; }
-  else { handId = 'high_card'; scoring = [cards.find(card => card.rank === unique.at(-1))]; }
+  else { handId = 'high_card'; scoring = [rankedCards.find(card => card.rank === unique.at(-1))]; }
   const scoredIds = new Set(scoring.map(card => card.id));
   return {
     handId,
