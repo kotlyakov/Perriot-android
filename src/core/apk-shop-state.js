@@ -14,7 +14,7 @@ export function currentApkShopContext(state) {
  if(identities.some(id=>!centres.has(id)))throw new TypeError('Unsupported centre identity');
  const names=new Set(identities.map(id=>centres.get(id).name));
  const usedCentreIds=catalogue.centres.filter(c=>names.has(c.name)).map(c=>c.key);
- const enhancementIds=[...new Set(Object.values(state.cards??{}).map(card=>({mult:'m_mult',bonus:'m_bonus',lucky:'m_lucky',wild:'m_wild',steel:'m_steel'})[card.enhancement]).filter(Boolean))];
+ const enhancementIds=[...new Set(Object.values(state.cards??{}).map(card=>({mult:'m_mult',bonus:'m_bonus',lucky:'m_lucky',wild:'m_wild',steel:'m_steel',glass:'m_glass'})[card.enhancement]).filter(Boolean))];
  return createApkShopContext({...state.apkShop.context,ante:state.round.ante+(['shop','pack'].includes(state.phase)&&state.round.blindId==='boss'?1:0),ownedCentreIds,usedCentreIds,enhancementIds,
   shopVoucherIds:state.shop?.vouchers.map(o=>o.originalKey??o.entityId)??[]});
 }

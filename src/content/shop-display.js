@@ -28,6 +28,7 @@ descriptions.c_heirophant='Усиливает до 2 выбранных карт
 descriptions.c_magician='Усиливает до 2 выбранных карт: каждая получает независимые шансы 1 из 5 на +20 к множителю и 1 из 15 на $20 при подсчёте.';
 descriptions.c_lovers='Усиливает 1 выбранную карту до Дикой: она считается картой любой масти.';
 descriptions.c_chariot='Усиливает 1 выбранную карту до Стальной: пока она остаётся в руке, она даёт ×1,5 к множителю.';
+descriptions.c_justice='Усиливает 1 выбранную карту до Стеклянной: при подсчёте она даёт ×2 к множителю и имеет шанс 1 из 4 разрушиться.';
 export function describeShopItem(offer){
  const key=originalJokerKey(offer.entityId);
  const base=descriptions[key]??'В этой предварительной версии доступен просмотр карты.';

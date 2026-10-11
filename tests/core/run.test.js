@@ -73,7 +73,7 @@ test('same expectedRevision cannot consume discard twice',()=>{
   const second=dispatch(first.state,a);assert.strictEqual(second.state,first.state);assert.equal(second.error.code,'STALE_ACTION');
 });
 test('unsupported held modifier rejects play before counters or RNG change',()=>{
-  const s=fixture();s.cards[s.hand[2]].enhancement='glass';const before=structuredClone(s);
+  const s=fixture();s.cards[s.hand[2]].enhancement='gold';const before=structuredClone(s);
   const r=dispatch(s,action(s,'PLAY_HAND',s.hand.slice(0,2)));
   assert.equal(r.error?.code,'UNSUPPORTED_CONTENT');assert.strictEqual(r.state,s);assert.deepEqual(s,before);
 });

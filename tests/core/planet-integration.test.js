@@ -23,7 +23,7 @@ test('Black Hole upgrades all twelve hands and save corruption in usage is rejec
 });
 test('legacy state without usage fields migrates on first implemented use and unsupported Tarot remains unavailable',()=>{
  const s=createRun('legacy12',{runId:'legacy12',money:4n});delete s.consumableUsage;delete s.consumableUsageTotal;delete s.lastTarotPlanet;s.consumables=[card('c_mercury')];const saved=reload(s),r=act(saved,'USE_CONSUMABLE',{cardId:'c_mercury'});assert.equal(r.error,null);assert.equal(r.state.handLevels.pair,2);assert.deepEqual(reload(r.state),r.state);
- const native=shop();native.shop.main=[card('c_justice')];assert.equal(act(native,'BUY_SHOP_CARD',{offerId:'c_justice'}).error.code,'UNSUPPORTED_CONTENT');
+ const native=shop();native.shop.main=[card('c_tower')];assert.equal(act(native,'BUY_SHOP_CARD',{offerId:'c_tower'}).error.code,'UNSUPPORTED_CONTENT');
 });
 
 test('debuffed Planet and Black Hole are consumed and counted without changing levels',()=>{

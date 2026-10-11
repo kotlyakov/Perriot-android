@@ -46,7 +46,7 @@ function decodeApkShop(value,state) {
   requireValue(value.voucherId===null || centres.get(value.voucherId)?.set==='Voucher');
   optionalObject(value.context,Object.keys(createApkShopContext()),['tutorialShopSurcharge']);
   createApkShopContext(value.context); // Validate actual saved inputs without selecting or polling.
-  const enhancements=[...new Set(Object.values(state.cards).map(card=>({mult:'m_mult',bonus:'m_bonus',lucky:'m_lucky',wild:'m_wild',steel:'m_steel'})[card.enhancement]).filter(Boolean))];
+  const enhancements=[...new Set(Object.values(state.cards).map(card=>({mult:'m_mult',bonus:'m_bonus',lucky:'m_lucky',wild:'m_wild',steel:'m_steel',glass:'m_glass'})[card.enhancement]).filter(Boolean))];
   requireValue(new Set(value.context.enhancementIds).size===value.context.enhancementIds.length&&value.context.enhancementIds.length===enhancements.length&&value.context.enhancementIds.every(id=>enhancements.includes(id)));
   requireValue(value.context.ante===state.round.ante+(['shop','pack'].includes(state.phase)&&state.round.blindId==='boss'?1:0));
   if(['shop','pack'].includes(state.phase)){
@@ -145,14 +145,17 @@ function encodeScore(score) {
 }
 function decodeScore(value,state) {
   if(value===null)return null;
-  optionalObject(value,['handId','isRoyal','scoringCardIds','chips','mult','score','trace'],['playedCardIds','heldCardIds','handDebuffed','bossHistory','luckyRolls','luckyRngKind','luckyRngBefore','luckyRngAfter']);
+  optionalObject(value,['handId','isRoyal','scoringCardIds','chips','mult','score','trace'],['playedCardIds','heldCardIds','handDebuffed','bossHistory','luckyRolls','luckyRngKind','luckyRngBefore','luckyRngAfter','glassRolls','glassRngKind','glassRngBefore','glassRngAfter','glassDestroyedCards']);
   if(Object.hasOwn(value,'handDebuffed'))requireValue(value.handDebuffed===true);
-  if(value.playedCardIds)requireValue(Array.isArray(value.playedCardIds)&&value.playedCardIds.length>=1&&value.playedCardIds.length<=5&&new Set(value.playedCardIds).size===value.playedCardIds.length&&value.playedCardIds.every(id=>Object.hasOwn(state.cards,id))); 
+  const glassDestroyedCards=value.glassDestroyedCards??[];requireValue(Array.isArray(glassDestroyedCards)&&glassDestroyedCards.length<=5);
+  const destroyedById=new Map();for(const card of glassDestroyedCards){object(card,['id','rank','suit','enhancement']);id(card.id);requireValue(card.enhancement==='glass'&&!Object.hasOwn(state.cards,card.id)&&!destroyedById.has(card.id));evaluateHand([card]);destroyedById.set(card.id,card);}
+  const scoreCards={...state.cards,...Object.fromEntries(destroyedById)};
+  if(value.playedCardIds)requireValue(Array.isArray(value.playedCardIds)&&value.playedCardIds.length>=1&&value.playedCardIds.length<=5&&new Set(value.playedCardIds).size===value.playedCardIds.length&&value.playedCardIds.every(id=>Object.hasOwn(scoreCards,id)));
   if(value.heldCardIds){cardList(value.heldCardIds,state);requireValue(value.heldCardIds.length>=1&&value.heldCardIds.every(id=>!value.playedCardIds?.includes(id)));}
   requireValue(Object.hasOwn(HANDS,value.handId) && typeof value.isRoyal==='boolean');
   requireValue(!value.isRoyal || value.handId==='straight_flush');
   requireValue(Array.isArray(value.scoringCardIds) && value.scoringCardIds.length>=0 && value.scoringCardIds.length<=5);
-  requireValue(new Set(value.scoringCardIds).size===value.scoringCardIds.length && value.scoringCardIds.every(key=>Object.hasOwn(state.cards,key)));
+  requireValue(new Set(value.scoringCardIds).size===value.scoringCardIds.length && value.scoringCardIds.every(key=>Object.hasOwn(scoreCards,key)));
   const chips=decimal(value.chips),mult=decodeExact(value.mult),score=decimal(value.score);
   requireValue(score===floorExact(multiplyExact(chips,mult)) && Array.isArray(value.trace) && value.trace.length>=2 && value.trace.length<=10000);
   let previous={chips:0n,mult:0n};
@@ -190,12 +193,29 @@ function decodeScore(value,state) {
     }
     else{randomInt(value.luckyRngBefore,1);randomInt(value.luckyRngAfter,1);requireValue(JSON.stringify(value.luckyRngAfter)===JSON.stringify(state.rng.effects));}
   }
+  const glassFields=['glassRolls','glassRngKind','glassRngBefore','glassRngAfter','glassDestroyedCards'],hasGlass=glassFields.some(key=>Object.hasOwn(value,key));
+  requireValue(!hasGlass||glassFields.every(key=>Object.hasOwn(value,key)));
+  if(hasGlass){
+    requireValue(['apk','effects'].includes(value.glassRngKind)&&Array.isArray(value.glassRolls)&&value.glassRolls.length>=1&&value.glassRolls.length<=5&&new Set(value.glassRolls.map(roll=>roll.cardId)).size===value.glassRolls.length);
+    for(const roll of value.glassRolls){object(roll,['cardId','roll','destroyed']);const source=scoreCards[roll.cardId];requireValue(value.scoringCardIds.includes(roll.cardId)&&source?.enhancement==='glass'&&Number.isFinite(roll.roll)&&roll.roll>=0&&roll.roll<1&&typeof roll.destroyed==='boolean'&&roll.destroyed===(roll.roll<1/4));}
+    requireValue(JSON.stringify(glassDestroyedCards.map(card=>card.id))===JSON.stringify(value.glassRolls.filter(roll=>roll.destroyed).map(roll=>roll.cardId)));
+    if(value.glassRngKind==='apk'){
+      requireValue(state.rng.apk);object(value.glassRngBefore,['glass']);object(value.glassRngAfter,['glass','mathState']);for(const snapshot of [value.glassRngBefore,value.glassRngAfter])requireValue(snapshot.glass===null||Number.isFinite(snapshot.glass)&&snapshot.glass>=0&&snapshot.glass<=1);validateApkRng({...state.rng.apk,mathState:value.glassRngAfter.mathState});
+      requireValue(value.glassRngAfter.glass===(state.rng.apk.streams.glass??null)&&JSON.stringify(value.glassRngAfter.mathState)===JSON.stringify(state.rng.apk.mathState));
+    }else{randomInt(value.glassRngBefore,1);randomInt(value.glassRngAfter,1);requireValue(JSON.stringify(value.glassRngAfter)===JSON.stringify(state.rng.effects));}
+  }else requireValue(glassDestroyedCards.length===0);
   let scoringState=state;
   if(hasLucky){
     if(value.luckyRngKind==='apk'){
       const apk=structuredClone(state.rng.apk);for(const key of ['lucky_mult','lucky_money']){const stream=value.luckyRngBefore[key];if(stream===null)delete apk.streams[key];else apk.streams[key]=stream;}
       scoringState={...state,rng:{...state.rng,apk}};
     }else scoringState={...state,rng:{...state.rng,effects:structuredClone(value.luckyRngBefore)}};
+  }
+  if(hasGlass){
+    if(value.glassRngKind==='apk'){
+      const apk=structuredClone(scoringState.rng.apk),stream=value.glassRngBefore.glass;if(stream===null)delete apk.streams.glass;else apk.streams.glass=stream;
+      scoringState={...scoringState,rng:{...scoringState.rng,apk}};
+    }else scoringState={...scoringState,rng:{...scoringState.rng,effects:structuredClone(value.glassRngBefore)}};
   }
   if(state.bossState?.id==='bl_eye'||state.bossState?.id==='bl_mouth'){
     const history=value.bossHistory;object(history,state.bossState.id==='bl_eye'?['playedHands']:['firstHand']);
@@ -209,8 +229,8 @@ function decodeScore(value,state) {
     }
     scoringState={...scoringState,bossState:{...state.bossState,...history}};
   }else requireValue(value.bossHistory===undefined);
-  if(value.heldCardIds)scoringState={...scoringState,hand:[...value.heldCardIds]};
-  const expected=scoreHand(scoringState,(value.playedCardIds??value.scoringCardIds).map(key=>state.cards[key]));
+  scoringState={...scoringState,cards:scoreCards};if(value.heldCardIds)scoringState={...scoringState,hand:[...value.heldCardIds]};
+  const expected=scoreHand(scoringState,(value.playedCardIds??value.scoringCardIds).map(key=>scoreCards[key]));
   requireValue(expected.handDebuffed===value.handDebuffed && expected.handId===value.handId && expected.isRoyal===value.isRoyal && expected.chips===chips && equalExact(expected.mult,mult) && expected.score===score);
   requireValue(expected.scoringCardIds.length===value.scoringCardIds.length && expected.scoringCardIds.every((key,i)=>key===value.scoringCardIds[i]));
   requireValue((expected.heldCardIds===undefined)===(value.heldCardIds===undefined)&&(!value.heldCardIds||expected.heldCardIds.every((key,i)=>key===value.heldCardIds[i])&&expected.heldCardIds.length===value.heldCardIds.length));
@@ -222,6 +242,7 @@ function decodeScore(value,state) {
     return event.sourceId===actual.sourceId && event.effectSourceId===actual.effectSourceId && event.operation===actual.operation && event.before.chips===actual.before.chips && equalExact(event.before.mult,actual.before.mult) && event.after.chips===actual.after.chips && equalExact(event.after.mult,actual.after.mult);
   }));
   requireValue(!hasLucky||JSON.stringify({rolls:expected.luckyRolls,kind:expected.luckyRngKind,before:expected.luckyRngBefore,after:expected.luckyRngAfter})===JSON.stringify({rolls:value.luckyRolls,kind:value.luckyRngKind,before:value.luckyRngBefore,after:value.luckyRngAfter}));
+  requireValue(!hasGlass||JSON.stringify({rolls:expected.glassRolls,kind:expected.glassRngKind,before:expected.glassRngBefore,after:expected.glassRngAfter,destroyed:expected.glassDestroyedCards})===JSON.stringify({rolls:value.glassRolls,kind:value.glassRngKind,before:value.glassRngBefore,after:value.glassRngAfter,destroyed:glassDestroyedCards}));
   return {...value,chips,mult,score,trace};
 }
 function decode(payload) {
