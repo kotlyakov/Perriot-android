@@ -5,6 +5,7 @@ const SUITS = new Set(['clubs', 'diamonds', 'hearts', 'spades']);
 // back to its printed suit without retaining its universal-suit ability.
 export function isCardSuit(card, suit, {debuffed = false, bypassDebuff = false, flushCalc = false} = {}) {
   if (!card || !SUITS.has(card.suit) || !SUITS.has(suit)) throw new TypeError('Invalid card or suit');
+  if (card.enhancement === 'stone') return false;
   if (debuffed && !bypassDebuff && !flushCalc) return false;
   if (card.enhancement === 'wild' && (!flushCalc || !debuffed)) return true;
   return card.suit === suit;

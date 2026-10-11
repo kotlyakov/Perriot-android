@@ -36,7 +36,7 @@ export function canEnterFirstAnteBoss(state){
 }
 export function isBossCardDebuffed(state,card){
  const boss=state.bossState;
- return !!boss && (suits[boss.id]&&isCardSuit(card,suits[boss.id],{bypassDebuff:true}) || boss.id==='bl_pillar'&&boss.playedBeforeBoss.includes(card.id) || boss.id==='bl_plant'&&card.rank>=11&&card.rank<=13);
+ return !!boss && (suits[boss.id]&&isCardSuit(card,suits[boss.id],{bypassDebuff:true}) || boss.id==='bl_pillar'&&boss.playedBeforeBoss.includes(card.id) || boss.id==='bl_plant'&&card.enhancement!=='stone'&&card.rank>=11&&card.rank<=13);
 }
 export function isBossHandDebuffed(state,cards,handId){
  const boss=state.bossState;

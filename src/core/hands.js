@@ -13,12 +13,15 @@ export function evaluateHand(cards, {isCardDebuffed = () => false} = {}) {
       || !Number.isInteger(card.rank) || card.rank < 2 || card.rank > 14 || !SUITS.has(card.suit)) {
       throw new TypeError('Invalid or duplicate card');
     }
-    if (card.enhancement !== undefined && !['base','mult','bonus','lucky','wild','steel','glass'].includes(card.enhancement)) throw new Error('Enhanced recognition not implemented');
+    if (card.enhancement !== undefined && !['base','mult','bonus','lucky','wild','steel','glass','stone'].includes(card.enhancement)) throw new Error('Enhanced recognition not implemented');
     ids.add(card.id);
+    if (card.enhancement === 'stone') continue;
     const group = ranks.get(card.rank) ?? [];
     group.push(card);
     ranks.set(card.rank, group);
   }
+  const rankedCards=cards.filter(card=>card.enhancement!=='stone');
+  if(!rankedCards.length)return {handId:'high_card',scoringCardIds:[cards[0].id],isRoyal:false};
   const groups = [...ranks.values()].sort((a, b) => b.length - a.length);
   const unique = [...ranks.keys()].sort((a, b) => a - b);
   const flush = cards.length === 5 && [...SUITS].some(suit => cards.every(card => isCardSuit(card,suit,{debuffed:isCardDebuffed(card),flushCalc:true})));
@@ -39,7 +42,7 @@ export function evaluateHand(cards, {isCardDebuffed = () => false} = {}) {
   else if (groups[0].length === 3) { handId = 'three_of_a_kind'; scoring = groups[0]; }
   else if (groups[0].length === 2 && groups[1]?.length === 2) { handId = 'two_pair'; scoring = [...groups[0], ...groups[1]]; }
   else if (groups[0].length === 2) { handId = 'pair'; scoring = groups[0]; }
-  else { handId = 'high_card'; scoring = [cards.find(card => card.rank === unique.at(-1))]; }
+  else { handId = 'high_card'; scoring = [rankedCards.find(card => card.rank === unique.at(-1))]; }
   const scoredIds = new Set(scoring.map(card => card.id));
   return {
     handId,
