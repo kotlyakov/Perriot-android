@@ -51,6 +51,7 @@ test('Stone has no rank or suit for recognition and every played Stone scores in
  ]);
  assert.equal(result.score,152n);
  const only=scoreHand({handLevels:levels(),jokers:[]},[card('only',13,'hearts','stone')]);assert.equal(only.handId,'high_card');assert.deepEqual(only.scoringCardIds,['only']);assert.equal(only.score,55n);
+ const tied=[card('tied-stone',8,'diamonds','stone'),card('ranked-eight',8,'clubs')];assert.deepEqual(evaluateHand(tied).scoringCardIds,['ranked-eight']);assert.deepEqual(scoreHand({handLevels:levels(),jokers:[]},tied).scoringCardIds,['tied-stone','ranked-eight']);
 });
 
 test('Stone ignores printed rank and suit for Jokers, bosses and Mark concealment',()=>{
