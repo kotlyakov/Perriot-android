@@ -6,7 +6,7 @@ export function deckStats(state,mode){
  const unknown=[...state.drawPile,...(state.bossState?.hiddenCardIds??[])];
  const cards=mode==='full'?Object.values(state.cards):unknown.map(id=>state.cards[id]);
  const stats={total:cards.length,categories:{aces:0,faces:0,numbered:0},suits:Object.fromEntries(suits.map(s=>[s,0])),ranks:Object.fromEntries(Array.from({length:13},(_,i)=>[i+2,0]))};
- for(const c of cards){stats.suits[c.suit]++;stats.ranks[c.rank]++;stats.categories[c.rank===14?'aces':c.rank>=11?'faces':'numbered']++;}
+ for(const c of cards)if(c.enhancement!=='stone'){stats.suits[c.suit]++;stats.ranks[c.rank]++;stats.categories[c.rank===14?'aces':c.rank>=11?'faces':'numbered']++;}
  return stats;
 }
 export function createDeckView(state){
@@ -22,10 +22,10 @@ export function createDeckView(state){
    const gap=Math.min(56, (760-79)/Math.max(1,ordered.length-1));
    ordered.forEach((card,i)=>{
      const item=document.createElement('div');item.className='deck-card';item.dataset.cardId=card.id;
-     item.dataset.available=String(available.has(card.id));item.setAttribute('aria-label',`${rankLabel(card.rank)} ${suit}, ${available.has(card.id)?hidden.length?'в колоде или скрытой руке':'в колоде':state.hand.includes(card.id)?'в руке':'сброшена'}`);
+     item.dataset.available=String(available.has(card.id));item.setAttribute('aria-label',`${card.enhancement==='stone'?'Каменная карта':`${rankLabel(card.rank)} ${suit}`}, ${available.has(card.id)?hidden.length?'в колоде или скрытой руке':'в колоде':state.hand.includes(card.id)?'в руке':'сброшена'}`);
      const middle=(ordered.length-1)/2;
      item.style.left=((760-79-gap*(ordered.length-1))/2+i*gap)+'px';item.style.top=(Math.abs(i-middle)*.75)+'px';item.style.transform=`rotate(${(i-middle)*.55}deg)`;
-     const art=document.createElement('div');art.className='playing-card card-scale';art.style.color=SUITS[suit][1];art.innerHTML=cardMarkup(card);item.append(art);row.append(item);
+     const art=document.createElement('div');art.className='playing-card card-scale';art.style.color=SUITS[suit][1];if(card.enhancement&&card.enhancement!=='base')art.dataset.enhancement=card.enhancement;art.innerHTML=cardMarkup(card);item.append(art);row.append(item);
    });
  }
  function select(mode){
