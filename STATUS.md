@@ -1,6 +1,6 @@
 # STATUS.md — Пьеро
 
-11.10.2026. Активный этап П-05д, 0.4.19-preview/code32. Исходники: kotlyakov/Perriot-android. Chariot и Steel Card слиты через PR #16, merge 373d4bb71204c111f62ffaff47574e631e39d9ca, Actions38128494254 SUCCESS. Не начинать этот блок повторно.
+11.10.2026. Активный этап П-05д, 0.4.19-preview/code32. Исходники: kotlyakov/Perriot-android. Chariot и Steel Card слиты через PR #16, merge 373d4bb71204c111f62ffaff47574e631e39d9ca, Actions38129247376 SUCCESS. Не начинать этот блок повторно.
 
 Planet/Black Hole: точные 12 комбинаций, собственные слоты/покупка, применение без RNG/discovery, run usage и строгие totals, lastTarotPlanet, legacy save, debuff расходует без повышения. Выбранная принадлежащая карта имеет «Использовать»; продажа вправо сохранена. Гонка общего test helper устранена отдельной RED→GREEN регрессией ожидания удаления меню.
 
@@ -14,7 +14,7 @@ Celestial packs: восемь identities; Normal 3/1, Jumbo 5/1, Mega 5/2; Teles
 
 Открыто: финальные боссы, победа/endless, равные максимумы любимой комбинации Ox (нативный LuaJIT pairs порядок различается между процессами), остальные118 джокеров, остальные усиления/издания/печати игральных карт, остальные14 Tarot/прочие Spectral, четыре других семейства наборов, ваучеры, оставшиеся теги, колоды/сложности/профили/испытания. Полная игра не готова. Анимация использования/повышения и buy-and-use, профиль/discovery расходников отдельно открыты. Следующий связанный шаг П-05 — Justice/Glass Card, played-card ×2 Mult и разрушение как отдельный блок. Не повторять Дурака, Императрицу, Иерофанта, Мага, Lovers или Chariot.
 
-Текущая проверенная промежуточная сборка: 0.4.19-preview/code32, Actions38128494254, artifact11698356881, ZIP SHA256 7c3d826a5e0a0e263f723d7e630a47cf4954724043f293197fd9f4859c64c081. Это CI debug без гарантии обновления, не полная игра и не финальный APK.
+Текущая проверенная промежуточная сборка: 0.4.19-preview/code32, Actions38129247376, artifact11698317115, ZIP SHA256 9f11169bc8c2e40cb590be05c34c8699781824280be4850bd524688b62b7ebca. Это CI debug без гарантии обновления, не полная игра и не финальный APK.
 
 Дурак: покупка и forced copy предыдущей Tarot/Planet, full/negative slots, debuff, история/usage, цены со скидкой/inflation и пять constructor/juice Math RNG draws. 320/320 core PASS, локальный browser mouse/touch/doubleclick/reload/writefail PASS; независимое QA выявило и помогло закрыть throw при неверном context. PR #12 слит, merge 0b4078f071f14ccf5f2c0c9bf44014f98adbbcd4. Проверенный head 0824c96a08161567a1eb23e83f9433a13accffcf, Actions37992249865 SUCCESS: 320 core, 23 official Chromium suites, fresh Gradle compile, APK signature/alignment и artifact PASS. Полный локальный browser также 23/23 PASS. Banned-key fallback, discovery и deferred sound RNG отдельно открыты.
 
