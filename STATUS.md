@@ -1,6 +1,6 @@
 # STATUS.md — Пьеро
 
-12.10.2026. Активный этап П-05ж, 0.4.22-preview/code35. Исходники: kotlyakov/Perriot-android. Devil и Gold Card слиты через PR #19, merge a9de021d2ed6a0f93597c5b608fc59aed3ed86cb, Actions38193962576 SUCCESS. Не начинать этот блок повторно.
+12.10.2026. Активный этап П-05з, 0.4.23-preview/code36. Исходники: kotlyakov/Perriot-android. Hanged Man и Death слиты через PR #20, merge 7076ef3aba8a8d305294049f697727363349f67e, Actions38228168667 SUCCESS. Не начинать этот блок повторно.
 
 Planet/Black Hole: точные 12 комбинаций, собственные слоты/покупка, применение без RNG/discovery, run usage и строгие totals, lastTarotPlanet, legacy save, debuff расходует без повышения. Выбранная принадлежащая карта имеет «Использовать»; продажа вправо сохранена. Гонка общего test helper устранена отдельной RED→GREEN регрессией ожидания удаления меню.
 
@@ -14,7 +14,7 @@ Celestial packs: восемь identities; Normal 3/1, Jumbo 5/1, Mega 5/2; Teles
 
 Открыто: финальные боссы, победа/endless, равные максимумы любимой комбинации Ox (нативный LuaJIT pairs порядок различается между процессами), остальные118 джокеров, остальные усиления/издания/печати игральных карт, остальные9 Tarot/прочие Spectral, четыре других семейства наборов, ваучеры, оставшиеся теги, колоды/сложности/профили/испытания. Полная игра не готова. Анимация использования/повышения и buy-and-use, профиль/discovery расходников отдельно открыты. Следующий связанный шаг П-05 — Strength и Tarot смены масти/ранга на уже проверенном targeted-card контракте. Не повторять уже слитые Hanged Man/Death и targeted Tarot.
 
-Текущая проверенная промежуточная сборка: 0.4.22-preview/code35, Actions38193962576, artifact11722394662, ZIP SHA256 53f497e7af972cd9cacea9901b9808ea1400e924b1913208a84b77c91df05973. Это CI debug без гарантии обновления, не полная игра и не финальный APK.
+Текущая проверенная промежуточная сборка: 0.4.23-preview/code36, Actions38228168667, artifact11737982895, ZIP SHA256 a8deda3e108803d705217d851b09a1e24d147dc92eb4c2b990618a2fbb1e7ee9. Это CI debug без гарантии обновления, не полная игра и не финальный APK.
 
 Дурак: покупка и forced copy предыдущей Tarot/Planet, full/negative slots, debuff, история/usage, цены со скидкой/inflation и пять constructor/juice Math RNG draws. 320/320 core PASS, локальный browser mouse/touch/doubleclick/reload/writefail PASS; независимое QA выявило и помогло закрыть throw при неверном context. PR #12 слит, merge 0b4078f071f14ccf5f2c0c9bf44014f98adbbcd4. Проверенный head 0824c96a08161567a1eb23e83f9433a13accffcf, Actions37992249865 SUCCESS: 320 core, 23 official Chromium suites, fresh Gradle compile, APK signature/alignment и artifact PASS. Полный локальный browser также 23/23 PASS. Banned-key fallback, discovery и deferred sound RNG отдельно открыты.
 
