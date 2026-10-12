@@ -39,7 +39,7 @@ test('scoring cards retain played order while kickers are excluded', () => {
   assert.deepEqual(evaluateHand(cards([2])).scoringCardIds, ['c0']);
 });
 test('invalid selections and unresolved enhancements fail explicitly', () => {
-  for (const input of [[], cards([2,3,4,5,6,7]), [{id:'x',rank:1,suit:'clubs'}], [{id:'x',rank:2,suit:'unknown'}], [{id:'x',rank:2,suit:'clubs'},{id:'x',rank:3,suit:'clubs'}], [{id:'x',rank:2,suit:'clubs',enhancement:'gold'}]]) {
+  for (const input of [[], cards([2,3,4,5,6,7]), [{id:'x',rank:1,suit:'clubs'}], [{id:'x',rank:2,suit:'unknown'}], [{id:'x',rank:2,suit:'clubs'},{id:'x',rank:3,suit:'clubs'}], [{id:'x',rank:2,suit:'clubs',enhancement:'future'}]]) {
     assert.throws(() => evaluateHand(input));
   }
 });
