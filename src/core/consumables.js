@@ -69,7 +69,7 @@ export function canUseConsumable(state,card,targetCardIds=[]){
  const targetRule=enhancementTarots.has(centre.key)?{minimum:1,maximum:enhancementTarots.get(centre.key).maximum}:deckTarots.get(centre.key);
  if(targetRule){
   const {minimum,maximum}=targetRule;
-  if(!Array.isArray(targetCardIds)||targetCardIds.length<minimum||targetCardIds.length>maximum||new Set(targetCardIds).size!==targetCardIds.length||targetCardIds.some(id=>typeof id!=='string'||!state.hand?.includes(id)||!state.cards?.[id]))return blocked('INVALID_TARGETS',minimum===maximum?`Выберите ${minimum===1?'одну':'две'} карты в руке.`:'Выберите одну или две карты в руке.');
+  if(!Array.isArray(targetCardIds)||targetCardIds.length<minimum||targetCardIds.length>maximum||new Set(targetCardIds).size!==targetCardIds.length||targetCardIds.some(id=>typeof id!=='string'||!state.hand?.includes(id)||!state.cards?.[id]))return blocked('INVALID_TARGETS',minimum===maximum?(minimum===1?'Выберите одну карту в руке.':'Выберите две карты в руке.'):'Выберите одну или две карты в руке.');
  }
  let shopContext=null;
  try{if(state.apkShop){if(!record(state.apkShop.context))throw new TypeError('Missing shop context');shopContext=currentApkShopContext(state);}}catch{return blocked('INVALID_STATE','Некорректное состояние магазина.');}
