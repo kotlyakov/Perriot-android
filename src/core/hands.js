@@ -13,7 +13,7 @@ export function evaluateHand(cards, {isCardDebuffed = () => false} = {}) {
       || !Number.isInteger(card.rank) || card.rank < 2 || card.rank > 14 || !SUITS.has(card.suit)) {
       throw new TypeError('Invalid or duplicate card');
     }
-    if (card.enhancement !== undefined && !['base','mult','bonus','lucky','wild','steel','glass','stone'].includes(card.enhancement)) throw new Error('Enhanced recognition not implemented');
+    if (card.enhancement !== undefined && !['base','mult','bonus','lucky','wild','steel','glass','stone','gold'].includes(card.enhancement)) throw new Error('Enhanced recognition not implemented');
     ids.add(card.id);
     if (card.enhancement === 'stone') continue;
     const group = ranks.get(card.rank) ?? [];
