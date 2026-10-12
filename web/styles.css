@@ -92,6 +92,7 @@ button{font-weight:700}.title{font-weight:800;font-size:26px}.token{font-weight:
 .playing-card[data-enhancement=steel]::after{content:'×1.5 В РУКЕ';background:linear-gradient(135deg,#8499a4,#40515b);color:#fff}
 .playing-card[data-enhancement=glass]::after{content:'×2 · 1/4';background:linear-gradient(135deg,#bce8ec,#5d99a3);color:#17383d;text-shadow:0 1px #fff8}
 .playing-card[data-enhancement=stone]{background:linear-gradient(145deg,#ded7c8,#89877d 48%,#4c5352);border-color:#343b3c}.playing-card[data-enhancement=stone]::after{content:'+50';background:#3c80ad;color:#fff}.stone-face{position:absolute;inset:4px 22px 19px;width:70px;height:124px;filter:drop-shadow(0 3px 2px #2228)}
+.playing-card[data-enhancement=gold]{background:linear-gradient(145deg,#fff7cb,#d7a82f 52%,#8d5c10);border-color:#6f470c}.playing-card[data-enhancement=gold]::after{content:'$3 В КОНЦЕ';background:#9b6918;color:#fff7cb}
 .played-card.shattering{border-color:#d9fbff;box-shadow:0 0 0 2px #a7e4e9,0 0 24px #d9fbff;clip-path:polygon(0 0,46% 0,52% 19%,100% 5%,100% 43%,78% 51%,100% 74%,91% 100%,49% 87%,18% 100%,0 71%,24% 48%,0 31%)}
 
 

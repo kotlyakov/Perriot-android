@@ -64,7 +64,7 @@ test('boss-debuffed enhanced cards form the hand but award neither rank nor enha
 test('playing-card enhancement codec is strict and legacy cards remain compatible',()=>{
  const state=run('c_empress'),id=state.hand[0];assert.doesNotThrow(()=>reload(state));
  for(const enhancement of ['base','mult','bonus']){const copy=structuredClone(state);copy.cards[id].enhancement=enhancement;assert.equal(reload(copy).cards[id].enhancement,enhancement);}
- for(const enhancement of ['gold','',null,false]){const copy=structuredClone(state);copy.cards[id].enhancement=enhancement;assert.throws(()=>serializeState(copy));}
+ for(const enhancement of ['future','',null,false]){const copy=structuredClone(state);copy.cards[id].enhancement=enhancement;assert.throws(()=>serializeState(copy));}
 });
 
 test('APK shop enhancement identities derive from cards and forged saved context is rejected',()=>{
