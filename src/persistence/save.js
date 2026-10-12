@@ -12,6 +12,7 @@ import { scoreHand } from '../core/score.js';
 import {compareExact,equalExact,exact,floorExact,multiplyExact} from '../core/numbers.js';
 import catalogue from '../content/apk-shop-catalog.js';
 import {createApkShopContext} from '../core/apk-shop.js';
+import {APK_BASE_CARD_IDS} from '../core/apk-deck.js';
 const centres=new Map(catalogue.centres.map(c=>[c.key,c]));
 const handNames=new Set(catalogue.centres.filter(c=>c.set==='Planet').map(c=>c.handType));
 
@@ -82,8 +83,10 @@ function decodeBoss(value,state){
  requireValue(state.round.blindId==='boss'&&['playing','round_won','game_over'].includes(state.phase)&&state.roundNumber===state.round.ante*3&&value.baseHandSize===8);
  cardList(value.playedBeforeBoss,state);requireValue(value.playedBeforeBoss.every(id=>state.apkBlinds.playedCardIds.includes(id)));
  requireValue(state.round.handSize===(value.id==='bl_manacle'?7:8));
- if(Object.hasOwn(value,'hiddenCardIds')){cardList(value.hiddenCardIds,state);requireValue(value.hiddenCardIds.every(id=>state.hand.includes(id)));}
- if(value.id==='bl_mark')requireValue(value.hiddenCardIds.every(id=>state.cards[id].rank>=11&&state.cards[id].rank<=13));
+ if(Object.hasOwn(value,'hiddenCardIds')){
+  cardList(value.hiddenCardIds,state);requireValue(value.hiddenCardIds.every(id=>state.hand.includes(id)));
+  if(value.id==='bl_mark')requireValue(value.hiddenCardIds.every(id=>state.cards[id].rank>=11&&state.cards[id].rank<=13||/^card_(?:clubs|diamonds|hearts|spades)_(?:11|12|13)$/.test(id)));
+ }
  if(value.id==='bl_eye')requireValue(Array.isArray(value.playedHands)&&new Set(value.playedHands).size===value.playedHands.length&&value.playedHands.every(id=>Object.hasOwn(HANDS,id)));
  if(value.id==='bl_mouth')requireValue(value.firstHand===null||Object.hasOwn(HANDS,value.firstHand));
  if(value.id==='bl_ox')requireValue(Object.hasOwn(HANDS,value.oxHand)&&value.oxHand===state.mostPlayedHand);
@@ -250,18 +253,31 @@ function decode(payload) {
   const state=payload.state;
   const sortMode=state.sortMode;
   if(Object.hasOwn(state,'sortMode'))requireValue(['rank','suit'].includes(sortMode));
-  optionalObject(state,['schemaVersion','runId','seed','revision','phase','deckId','cards','hand','drawPile','discardPile','jokers','handLevels','discoveredHands','rng','money','round','lastScore'],['shop','bankruptAt','jokerSlots','apkShop','sortMode','roundNumber','apkBlinds','bossState','nextAnteBlinds','runStats','consumables','consumableSlots','mostPlayedHand','consumableUsage','consumableUsageTotal','lastTarotPlanet','packState']);
+  optionalObject(state,['schemaVersion','runId','seed','revision','phase','deckId','cards','hand','drawPile','discardPile','jokers','handLevels','discoveredHands','rng','money','round','lastScore'],['shop','bankruptAt','jokerSlots','apkShop','sortMode','roundNumber','apkBlinds','bossState','nextAnteBlinds','runStats','consumables','consumableSlots','mostPlayedHand','consumableUsage','consumableUsageTotal','lastTarotPlanet','packState','destroyedCardIds','hangedDestroyedCardIds','hangedShortfallCardIds']);
   requireValue(validConsumableUsage(state));
   if(Object.hasOwn(state,'mostPlayedHand'))requireValue(state.mostPlayedHand===null||Object.hasOwn(HANDS,state.mostPlayedHand));
   requireValue(state.schemaVersion===1 && PHASES.includes(state.phase) && ['red','blue'].includes(state.deckId));
   requireValue(typeof state.runId==='string' && state.runId.length>=1 && state.runId.length<=120);
   requireValue(typeof state.seed==='string' && state.seed.length>=1 && state.seed.length<=1000);integer(state.revision);
   requireValue(state.cards!==null && typeof state.cards==='object' && !Array.isArray(state.cards));
-  const cardIds=Object.keys(state.cards);requireValue(cardIds.length>=1 && cardIds.length<=10000);
+  const cardIds=Object.keys(state.cards);requireValue(cardIds.length<=10000);
   for(const key of cardIds) { id(key);optionalObject(state.cards[key],['id','rank','suit'],['enhancement']);requireValue(state.cards[key].id===key);evaluateHand([state.cards[key]]); }
+  if(Object.hasOwn(state,'destroyedCardIds')){
+    const baseIds=new Set(APK_BASE_CARD_IDS),missing=APK_BASE_CARD_IDS.filter(key=>!Object.hasOwn(state.cards,key));
+    requireValue(Array.isArray(state.destroyedCardIds)&&state.destroyedCardIds.length>=1&&state.destroyedCardIds.length===missing.length&&new Set(state.destroyedCardIds).size===state.destroyedCardIds.length&&state.destroyedCardIds.every(key=>baseIds.has(key)&&!Object.hasOwn(state.cards,key)));
+  }
+  if(Object.hasOwn(state,'hangedDestroyedCardIds')){
+    const destroyed=state.destroyedCardIds??[],uses=state.consumableUsage?.c_hanged_man?.count??0;
+    requireValue(Array.isArray(state.hangedDestroyedCardIds)&&state.hangedDestroyedCardIds.length>=1&&new Set(state.hangedDestroyedCardIds).size===state.hangedDestroyedCardIds.length&&state.hangedDestroyedCardIds.every(key=>destroyed.includes(key))&&Math.ceil(state.hangedDestroyedCardIds.length/2)<=uses);
+  }
+  requireValue(cardIds.length>0||state.destroyedCardIds?.length===APK_BASE_CARD_IDS.length);
   const partitions=[state.hand,state.drawPile,state.discardPile];requireValue(partitions.every(Array.isArray));
   const all=partitions.flat();requireValue(all.length===cardIds.length && new Set(all).size===all.length && all.every(key=>Object.hasOwn(state.cards,key)));
   if(Object.hasOwn(state,'runStats')){object(state.runStats,['handsPlayed','unusedDiscards','skips']);for(const count of Object.values(state.runStats))integer(count);}
+  if(Object.hasOwn(state,'hangedShortfallCardIds')){
+    const destroyed=state.hangedDestroyedCardIds??[],suffix=destroyed.slice(-state.hangedShortfallCardIds.length);
+    requireValue(Array.isArray(state.hangedShortfallCardIds)&&state.hangedShortfallCardIds.length>=1&&new Set(state.hangedShortfallCardIds).size===state.hangedShortfallCardIds.length&&state.hangedShortfallCardIds.every(key=>destroyed.includes(key))&&JSON.stringify(suffix)===JSON.stringify(state.hangedShortfallCardIds));
+  }
   if(Object.hasOwn(state,'jokerSlots'))integer(state.jokerSlots,0,10000);
   if(Object.hasOwn(state,'bankruptAt'))state.bankruptAt=decimal(state.bankruptAt,true);
   requireValue(Array.isArray(state.jokers) && state.jokers.length<=10000);
@@ -284,6 +300,7 @@ function decode(payload) {
   object(state.round,['blindId','ante','target','score','handsRemaining','discardsRemaining','handSize']);
   if(Object.hasOwn(state,'roundNumber'))integer(state.roundNumber,1,24);
   const round=state.round;requireValue(['small','big','boss'].includes(round.blindId));integer(round.ante,1,8);integer(round.handsRemaining,0,state.deckId==='blue'?5:4);integer(round.discardsRemaining,0,state.deckId==='red'?4:3);integer(round.handSize,1,10000);
+  if(Object.hasOwn(state,'hangedShortfallCardIds'))requireValue(['playing','round_won'].includes(state.phase)&&(state.phase==='round_won'||!state.drawPile.length||state.bossState?.id==='bl_serpent'||state.hand.length+state.hangedShortfallCardIds.length===round.handSize));
   round.target=decimal(round.target);round.score=decimal(round.score);requireValue(round.target>0n);
   if(Object.hasOwn(state,'apkShop'))decodeApkShop(state.apkShop,state);
   if(Object.hasOwn(state,'apkBlinds'))decodeApkBlinds(state.apkBlinds,state);
@@ -299,7 +316,7 @@ function decode(payload) {
   if(state.phase==='round_won')requireValue(round.score>=round.target);
   if(['shop','pack'].includes(state.phase))requireValue(round.score>=round.target && state.hand.length===0 && state.discardPile.length===0 && state.drawPile.length===cardIds.length && state.lastScore===null);
   if(state.phase==='game_over')requireValue(round.handsRemaining===0 && round.score<round.target);
-  if(state.phase==='playing')requireValue(round.handsRemaining>0 && round.score<round.target && state.hand.length>0 && (state.hand.length>=round.handSize || state.drawPile.length===0 || state.bossState?.id==='bl_serpent'));
+  if(state.phase==='playing')requireValue(round.handsRemaining>0 && round.score<round.target && (state.hand.length+(state.hangedShortfallCardIds?.length??0)>=round.handSize || state.drawPile.length===0 || state.bossState?.id==='bl_serpent'));
   if(state.phase==='blind_selection')requireValue(state.hand.length===0 && state.discardPile.length===0 && round.score===0n);
   state.lastScore=decodeScore(state.lastScore,state);
   if(state.lastScore!==null)requireValue(state.lastScore.score<=round.score);

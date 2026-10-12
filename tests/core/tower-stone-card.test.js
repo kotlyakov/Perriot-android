@@ -33,6 +33,7 @@ test('Tower accepts exactly one current-hand target, overwrites its enhancement 
  assert.deepEqual(result.events.filter(event=>event.type==='card_enhanced'),[{type:'card_enhanced',cardId:target,enhancement:'stone',sourceId:'tower'}]);
  assert.deepEqual(result.state.apkShop.context.enhancementIds,['m_stone']);assert.deepEqual(result.state.rng,rng);assert.deepEqual(reload(result.state),result.state);
  assert.equal(before.cards[target].enhancement,undefined);
+ assert.equal(canUseConsumable(state,state.consumables[0],[]).reason,'Выберите одну карту в руке.');
  for(const targets of [[],state.hand.slice(0,2),[state.drawPile[0]],['missing']]){const fixture=run(),snapshot=structuredClone(fixture),rejected=use(fixture,targets);assert.equal(rejected.error.code,'INVALID_TARGETS');assert.equal(rejected.state,fixture);assert.deepEqual(fixture,snapshot);}
 });
 
