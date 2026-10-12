@@ -2,17 +2,16 @@ import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import catalogue from '../../src/content/apk-shop-catalog.js';
 import {createRun} from '../../src/core/run.js';
-import {currentApkShopContext} from '../../src/core/apk-shop-state.js';
 import {serializeState,deserializeState} from '../../src/persistence/save.js';
 import {enterRun} from './enter-run.mjs';
 
 const {chromium}=createRequire(import.meta.url)(process.env.PLAYWRIGHT_MODULE??process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');
 const centre=catalogue.centres.find(card=>card.key==='c_devil');
 const devil={id:'devil',entityId:'c_devil',originalKey:'c_devil',set:'Tarot',edition:'base',cost:BigInt(centre.cost),sellCost:1n};
-const fixture=createRun('GOLDUI22',{runId:'gold-ui',money:4n,referenceRng:true,referenceShop:true,reducedMotion:true});
+const fixture=createRun('GOLDUI22',{runId:'gold-ui',money:4n,reducedMotion:true});
 fixture.phase='playing';fixture.revision=1;fixture.round.target=1n;fixture.round.handsRemaining=2;
 fixture.hand=['card_hearts_10','card_hearts_11','card_hearts_12','card_hearts_13','card_hearts_14','card_clubs_2','card_diamonds_3','card_spades_4'];
-fixture.drawPile=Object.keys(fixture.cards).filter(id=>!fixture.hand.includes(id));fixture.consumables=[devil];fixture.apkShop.context=currentApkShopContext(fixture);
+fixture.drawPile=Object.keys(fixture.cards).filter(id=>!fixture.hand.includes(id));fixture.consumables=[devil];
 
 const browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_PATH});
 try{
