@@ -1,7 +1,7 @@
 import {applySkipBlind} from './skip-blind.js';
 import {applyConsumableAction} from './consumables.js';
 import {applyCelestialPackAction} from './celestial-pack.js';
-import {canEnterBoss,chooseHookDiscards,resolveMostPlayedHand} from './boss-effects.js';
+import {canEnterBoss,chooseHookDiscards,isBossCardDebuffed,resolveMostPlayedHand} from './boss-effects.js';
 import {applyInventoryAction} from './inventory.js';
 import {chooseNextAnteBlinds} from './blind-progression.js';
 import {chooseApkBoss} from './apk-blinds.js';
@@ -212,7 +212,13 @@ export function dispatch(state, action, shopOptions={}) {
     if (!next.discoveredHands.includes(score.handId)) next.discoveredHands.push(score.handId);
     if(next.apkShop){const name=APK_HAND_NAMES[score.handId];next.apkShop.context.playedHands[name]=(next.apkShop.context.playedHands[name]??0)+1;}
     events.push({type:'hand_played',cardIds:[...playedIds]},...structuredClone(score.trace));
-    if (next.round.score>=next.round.target) { if(next.runStats)next.runStats.unusedDiscards+=next.round.discardsRemaining;next.phase='round_won';events.push({type:'round_won',score:next.round.score}); }
+    if (next.round.score>=next.round.target) {
+      if(next.runStats)next.runStats.unusedDiscards+=next.round.discardsRemaining;
+      const beforeGold=next.money;
+      for(const cardId of next.hand){const card=next.cards[cardId];if(card.enhancement==='gold'&&!isBossCardDebuffed(next,card)){next.money+=3n;events.push({type:'gold_card_paid',cardId,amount:3n});}}
+      if(next.money!==beforeGold)events.push({type:'money_changed',before:beforeGold,after:next.money,delta:next.money-beforeGold});
+      next.phase='round_won';events.push({type:'round_won',score:next.round.score});
+    }
     else if (next.round.handsRemaining===0) { next.phase='game_over';events.push({type:'round_lost',score:next.round.score}); }
   } else {
     next.round.discardsRemaining--;events.push({type:'cards_discarded',cardIds:[...playedIds]});
