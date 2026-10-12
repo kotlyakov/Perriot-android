@@ -13,7 +13,7 @@ import { scoreHand } from './score.js';
 import { HANDS } from '../content/hands.js';
 import {createApkRng,nextApkRandom} from './apk-rng.js';
 import {evaluateHand} from './hands.js';
-import {shuffleApkDeck} from './apk-deck.js';
+import {APK_BASE_CARD_IDS,shuffleApkDeck} from './apk-deck.js';
 import {applyShopAction,createShop} from './shop.js';
 import {createApkShopContext,chooseApkVoucher,generateApkShop} from './apk-shop.js';
 import {APK_HAND_NAMES,currentApkShopContext} from './apk-shop-state.js';
@@ -89,7 +89,7 @@ export function dispatch(state, action, shopOptions={}) {
     if(state.phase!=='round_won')return reject('INVALID_PHASE','Round has not been won');
     let quote;try{quote=getCashout(state);}catch{return reject('INVALID_STATE','Invalid cashout state');}
     const next=structuredClone(state);if(next.bossState){next.round.handSize=next.bossState.baseHandSize;delete next.bossState;next.apkBlinds.playedCardIds=[];next.mostPlayedHand=resolveMostPlayedHand(next.apkShop.context.playedHands);}next.money+=quote.total;next.phase='shop';next.revision++;
-    next.drawPile=Object.keys(next.cards);next.hand=[];next.discardPile=[];next.lastScore=null;
+    next.drawPile=Object.keys(next.cards);next.hand=[];next.discardPile=[];next.lastScore=null;delete next.hangedShortfallCardIds;
     if(next.apkShop){
       try{
         const context=currentApkShopContext(next);
@@ -195,6 +195,7 @@ export function dispatch(state, action, shopOptions={}) {
     const shattered=score.glassRolls?.filter(roll=>roll.destroyed).map(roll=>roll.cardId)??[];
     if(shattered.length){
       const removed=new Set(shattered);next.discardPile=next.discardPile.filter(id=>!removed.has(id));
+      const priorDestroyed=next.destroyedCardIds??APK_BASE_CARD_IDS.filter(id=>!Object.hasOwn(next.cards,id));next.destroyedCardIds=[...priorDestroyed,...shattered];
       for(const id of shattered){delete next.cards[id];events.push({type:'card_shattered',cardId:id});}
       if(next.bossState?.hiddenCardIds)next.bossState.hiddenCardIds=next.bossState.hiddenCardIds.filter(id=>!removed.has(id));
       if(next.apkShop)next.apkShop.context=currentApkShopContext(next);
@@ -224,6 +225,7 @@ export function dispatch(state, action, shopOptions={}) {
     next.round.discardsRemaining--;events.push({type:'cards_discarded',cardIds:[...playedIds]});
   }
   if (next.phase==='playing') drawToLimit(next,events,action.type);
+  delete next.hangedShortfallCardIds;
   next.revision++;
   return {state:next,events,error:null};
 }
