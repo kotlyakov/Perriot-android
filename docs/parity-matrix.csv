@@ -208,8 +208,8 @@ tarot_justice,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_imple
 tarot_the_hermit,entity,docs/apk-findings/targetless-tarots.md,src/core/consumables.js;src/core/shop.js;src/ui/shop-screen.js,tests/core/targetless-tarots.test.js;tests/ui/targetless-tarots-check.mjs,tested_scoped,Exact nonnegative current-money doubling capped at plus20; usage/debuff/save included
 tarot_the_wheel_of_fortune,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
 tarot_strength,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
-tarot_the_hanged_man,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
-tarot_death,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
+tarot_the_hanged_man,entity,docs/apk-findings/hanged-death.md,src/core/consumables.js;src/persistence/save.js,tests/core/hanged-death-card.test.js;tests/ui/hanged-death-card-check.mjs,tested_scoped,Exact one-or-two held-card destruction; deck partition/history/debuff/save/UI included; removal-trigger Jokers pending
+tarot_death,entity,docs/apk-findings/hanged-death.md,src/core/consumables.js;src/core/apk-deck.js;src/persistence/save.js,tests/core/hanged-death-card.test.js;tests/ui/hanged-death-card-check.mjs,tested_scoped,Exact visual left copies right for supported rank/suit/enhancement; persistent identity/sort/debuff/save/UI included; editions seals permanent fields pending
 tarot_temperance,entity,docs/apk-findings/targetless-tarots.md,src/core/consumables.js;src/core/shop.js;src/ui/shop-screen.js,tests/core/targetless-tarots.test.js;tests/ui/targetless-tarots-check.mjs,tested_scoped,Exact owned Joker sell sum capped at50; usage/debuff/save included
 tarot_the_devil,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
 tarot_the_tower,entity,https://balatrogame.fandom.com/wiki/Tarot_Cards,,,not_implemented,identity_verified_parameters_pending
