@@ -7,6 +7,7 @@
 | П-05-JOKERS-38 | Основное · высокий | Judgement нельзя честно включить при частичном runtime-пуле джокеров | Расширять полный 150-пул проверенными партиями без фильтрации генератора | 38/150: добавлены Acrobat, Banner, Blackboard, Mystic Summit, Raised Fist, Joker Stencil; 424 core PASS, CI ждёт публикации | 0.4.27-preview/code40 |
 | П-05-JOKERS-40 | Основное · высокий | Динамические эффекты колоды/мастей требуют реального scoring context | Не подменять всю сыгранную руку и не терять native Wild/debuff порядок | 40/150: Blue Joker и Flower Pot; 425 core, assets/config PASS, CI ждёт публикации | 0.4.28-preview/code41 |
 | П-05-JOKERS-42 | Основное · высокий | Held-card джокеры должны срабатывать для каждой карты в нативной фазе | Сохранить порядок card effect → Joker effects и boss-debuff | 42/150: Baron и Shoot the Moon; 426 core, assets/config PASS, CI ждёт публикации | 0.4.29-preview/code42 |
+| П-05-JOKERS-47 | Основное · высокий | Money/deck/inventory эффекты нельзя replay-проверить из конечного состояния | Хранить и строго проверять pre-score money; считать полный playing-card набор и остальных джокеров | 47/150: Bull, Bootstraps, Swashbuckler, Stone/Steel Joker; 428 core, assets/config PASS | 0.4.30-preview/code43 |
 
 ## П-05к — 13.10.2026
 

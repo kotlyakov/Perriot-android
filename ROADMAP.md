@@ -1,3 +1,7 @@
+## П-05п — state-derived Jokers, 13.10.2026
+
+Bull, Bootstraps, Swashbuckler, Stone Joker и Steel Joker расширяют runtime-пул до 47/150. Значения извлечены из `assets/game.lua`, ветви — из `assets/card.lua`: +2 chips/$, +2 Mult/$5, сумма sell cost остальных джокеров, +25 chips/Stone и XMult `1 + 0,2×Steel`. Подсчёт читает pre-score money и полный `state.cards`; replay хранит `moneyBefore` и доказывает разрешённый переход через Lucky/Tooth/Ox/held Gold. Точечные RED→GREEN тесты проходят, полный core/CI обязателен.
+
 ## П-05о — Baron / Shoot the Moon, 13.10.2026
 
 Baron и Shoot the Moon расширяют runtime-пул до 42/150: каждый неослабленный король, оставшийся в руке, даёт точное ×1,5, каждая дама — +13 Mult. Эффекты идут для каждой held-карты в её порядке, после собственного Steel-эффекта карты и до основных эффектов джокеров; boss-debuff блокирует оба. Точечная RED→GREEN-регрессия проходит, полный core/CI обязателен.
