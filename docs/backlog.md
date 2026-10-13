@@ -4,6 +4,7 @@
 | --- | --- | --- | --- | --- | --- |
 | П-05л | Некритическое · высокий | Wheel / Polychrome | APK RNG, persistent creation order, pricing, ×1,5, save/UI | Реализовано локально; 421 core PASS; CI ожидается | 0.4.26-preview/code39 |
 | П-05-WHEEL-LEGACY | Некритическое · высокий | В старых saves неизвестен sort_id нескольких джокеров | Не угадывать выбор по позиции; явно блокировать эффект при неоднозначности | Закрыто строгим legacy gate; один eligible допустим | 0.4.26-preview/code39 |
+| П-05-JOKERS-38 | Основное · высокий | Judgement нельзя честно включить при частичном runtime-пуле джокеров | Расширять полный 150-пул проверенными партиями без фильтрации генератора | 38/150: добавлены Acrobat, Banner, Blackboard, Mystic Summit, Raised Fist, Joker Stencil; 424 core PASS, CI ждёт публикации | 0.4.27-preview/code40 |
 
 ## П-05к — 13.10.2026
 

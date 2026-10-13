@@ -1,7 +1,7 @@
 import {isBossCardDebuffed,isBossHandDebuffed} from './boss-effects.js';
 import { evaluateHand } from './hands.js';
 import { HANDS } from '../content/hands.js';
-import { SUPPORTED_JOKERS, independentEffect, originalJokerKey, supportsJoker, scoredJokerEffects } from '../content/jokers.js';
+import { SUPPORTED_JOKERS, heldJokerEffects, independentEffect, originalJokerKey, supportsJoker, scoredJokerEffects } from '../content/jokers.js';
 import {nextApkRandom} from './apk-rng.js';
 import {randomInt} from './rng.js';
 import {addExact,floorExact,multiplyExact} from './numbers.js';
@@ -84,13 +84,18 @@ export function scoreHand(state, playedCards) {
     if(card.enhancement==='glass')apply({operation:'multiply_mult',amount:2n},'scored_card',card.id);
     for(const joker of state.jokers)for(const effect of scoredJokerEffects(joker.entityId,card))apply(effect,'scored_card',card.id,joker.id);
   }
-  for(const card of heldCards)if(card.enhancement==='steel'&&!isBossCardDebuffed(state,card))apply({operation:'multiply_mult',amount:{n:3n,d:2n}},'held_card',card.id);
+  for(const card of heldCards)if(!isBossCardDebuffed(state,card)){
+    if(card.enhancement==='steel')apply({operation:'multiply_mult',amount:{n:3n,d:2n}},'held_card',card.id);
+    for(const joker of state.jokers)for(const effect of heldJokerEffects(joker.entityId,card,heldCards))apply(effect,'held_card',card.id,joker.id);
+  }
   const rankCounts = new Map();
   for (const card of playedCards)if(card.enhancement!=='stone')rankCounts.set(card.rank,(rankCounts.get(card.rank)??0)+1);
   for (const joker of state.jokers) {
     if(joker.edition==='foil')apply({operation:'add_chips',amount:50n},'edition',joker.id);
     if(joker.edition==='holographic')apply({operation:'add_mult',amount:10n},'edition',joker.id);
-    const effect=independentEffect(joker.entityId,[...rankCounts.values()],{playedCards,handId:hand.handId,jokerCount:state.jokers.length});
+    const effect=independentEffect(joker.entityId,[...rankCounts.values()],{playedCards,handId:hand.handId,jokerCount:state.jokers.length,
+      handsRemaining:state.round?.handsRemaining,discardsRemaining:state.round?.discardsRemaining,heldCards,jokerSlots:state.jokerSlots??5,
+      negativeCount:state.jokers.filter(card=>card.edition==='negative').length,stencilCount:state.jokers.filter(card=>originalJokerKey(card.entityId)==='j_stencil').length});
     if(effect)apply(effect,'independent',joker.id);
     if(joker.edition==='polychrome')apply({operation:'multiply_mult',amount:{n:3n,d:2n}},'edition',joker.id);
   }

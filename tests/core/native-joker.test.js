@@ -20,6 +20,36 @@ test('native scored effects run per scoring card, left to right and in joker ord
  assert.deepEqual(r.trace.filter(e=>e.effectSourceId).map(e=>[e.sourceId,e.effectSourceId,e.operation]),[['c0','j0','add_chips'],['c0','j0','add_mult'],['c0','j1','add_mult'],['c0','j3','add_chips'],['c1','j0','add_chips'],['c1','j0','add_mult'],['c1','j1','add_mult'],['c1','j3','add_chips']]);
  assert.equal(score(['j_even_steven'],[14]).mult,1n);assert.equal(score(['j_odd_todd'],[13]).chips,15n);
 });
+test('round-state Jokers use the counters before PLAY_HAND spends the current hand',()=>{
+ const base={handLevels:{},hand:[],cards:{},jokerSlots:5,round:{handsRemaining:1,discardsRemaining:3}};
+ let r=scoreHand({...base,jokers:[{id:'a',entityId:'j_acrobat'},{id:'b',entityId:'j_banner'},{id:'c',entityId:'j_mystic_summit'}]},cards([14]));
+ assert.deepEqual(r.trace.filter(e=>e.phase==='independent').map(e=>[e.sourceId,e.operation,e.after.chips,e.after.mult]),[
+  ['a','multiply_mult',16n,3n],['b','add_chips',106n,3n],
+ ]);
+ r=scoreHand({...base,round:{handsRemaining:2,discardsRemaining:0},jokers:[{id:'a',entityId:'j_acrobat'},{id:'b',entityId:'j_banner'},{id:'c',entityId:'j_mystic_summit'}]},cards([14]));
+ assert.deepEqual(r.trace.filter(e=>e.phase==='independent').map(e=>[e.sourceId,e.operation]),[['c','add_mult']]);
+ assert.equal(r.mult,16n);
+});
+test('Blackboard and Joker Stencil match held-card and effective-capacity boundaries',()=>{
+ const held={h1:{id:'h1',rank:7,suit:'clubs'},h2:{id:'h2',rank:9,suit:'spades'}};
+ const base={handLevels:{},hand:Object.keys(held),cards:held,jokerSlots:5,round:{handsRemaining:2,discardsRemaining:2}};
+ let r=scoreHand({...base,jokers:[{id:'board',entityId:'j_blackboard'},{id:'stencil',entityId:'j_stencil'}]},cards([14]));
+ assert.deepEqual(r.trace.filter(e=>e.phase==='independent').map(e=>[e.sourceId,e.operation]),[['board','multiply_mult'],['stencil','multiply_mult']]);
+ assert.equal(r.mult,12n); // Blackboard x3, Stencil x(3 empty + itself).
+ r=scoreHand({...base,cards:{...held,h2:{...held.h2,suit:'hearts'}},jokers:[{id:'board',entityId:'j_blackboard'}]},cards([14]));
+ assert.equal(r.trace.some(e=>e.sourceId==='board'),false);
+ const full=Array.from({length:5},(_,i)=>({id:'j'+i,entityId:i===0?'j_stencil':'j_joker'}));
+ r=scoreHand({...base,jokers:full},cards([14]));assert.equal(r.trace.some(e=>e.sourceId==='j0'&&e.operation==='multiply_mult'),false);
+ const negative=full.map((j,i)=>i===4?{...j,edition:'negative'}:j);
+ r=scoreHand({...base,jokers:negative},cards([14]));assert.equal(r.trace.find(e=>e.sourceId==='j0'&&e.operation==='multiply_mult').after.mult,2n);
+});
+test('Raised Fist uses the lowest non-Stone held rank and a debuffed tie stays silent',()=>{
+ const state={handLevels:{},jokerSlots:5,round:{handsRemaining:2,discardsRemaining:2},jokers:[{id:'fist',entityId:'j_raised_fist'}],
+  hand:['ace','stone','low'],cards:{ace:{id:'ace',rank:14,suit:'clubs'},stone:{id:'stone',rank:2,suit:'spades',enhancement:'stone'},low:{id:'low',rank:4,suit:'hearts'}}};
+ let r=scoreHand(state,cards([10]));const effect=r.trace.find(e=>e.sourceId==='low'&&e.effectSourceId==='fist');assert.equal(effect.operation,'add_mult');assert.equal(effect.after.mult-effect.before.mult,8n);
+ const tied={...state,hand:['low','tie'],cards:{low:state.cards.low,tie:{id:'tie',rank:4,suit:'spades'}}};
+ r=scoreHand({...tied,bossState:{id:'bl_goad'}},cards([10]));assert.equal(r.trace.some(e=>e.effectSourceId==='fist'),false);
+});
 test('native suit and face effects do not score kickers without Splash',()=>{
  for(const [key,suit,operation,amount] of [['j_greedy_joker','diamonds','add_mult',3n],['j_lusty_joker','hearts','add_mult',3n],['j_wrathful_joker','spades','add_mult',3n],['j_gluttenous_joker','clubs','add_mult',3n],['j_arrowhead','spades','add_chips',50n],['j_onyx_agate','clubs','add_mult',7n]]){
  const s={handLevels:{},jokers:[{id:'j',entityId:key}]};const r=scoreHand(s,[{id:'a',rank:14,suit}]);const e=r.trace.find(e=>e.effectSourceId);assert.equal(e.operation,operation);const target=operation.includes('mult')?'mult':'chips';assert.equal(e.after[target]-e.before[target],amount);
