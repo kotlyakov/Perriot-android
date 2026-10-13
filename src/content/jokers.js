@@ -1,7 +1,7 @@
 import {isCardSuit} from '../core/card-suits.js';
 
 // Exact supported scoring slice; the random shop still uses the complete catalogue.
-export const NATIVE_JOKERS=Object.freeze(['j_joker','j_jolly','j_zany','j_mad','j_crazy','j_droll','j_sly','j_wily','j_clever','j_devious','j_crafty','j_half','j_splash','j_abstract','j_duo','j_trio','j_family','j_order','j_tribe','j_greedy_joker','j_lusty_joker','j_wrathful_joker','j_gluttenous_joker','j_scary_face','j_even_steven','j_odd_todd','j_scholar','j_fibonacci','j_arrowhead','j_onyx_agate','j_smiley','j_walkie_talkie','j_acrobat','j_banner','j_blackboard','j_mystic_summit','j_raised_fist','j_stencil','j_blue_joker','j_flower_pot']);
+export const NATIVE_JOKERS=Object.freeze(['j_joker','j_jolly','j_zany','j_mad','j_crazy','j_droll','j_sly','j_wily','j_clever','j_devious','j_crafty','j_half','j_splash','j_abstract','j_duo','j_trio','j_family','j_order','j_tribe','j_greedy_joker','j_lusty_joker','j_wrathful_joker','j_gluttenous_joker','j_scary_face','j_even_steven','j_odd_todd','j_scholar','j_fibonacci','j_arrowhead','j_onyx_agate','j_smiley','j_walkie_talkie','j_acrobat','j_banner','j_blackboard','j_mystic_summit','j_raised_fist','j_stencil','j_blue_joker','j_flower_pot','j_baron','j_shoot_the_moon']);
 export const SUPPORTED_JOKERS=Object.freeze(['joker_joker','joker_sly_joker','joker_clever_joker','joker_splash',...NATIVE_JOKERS]);
 const aliases={joker_joker:'j_joker',joker_sly_joker:'j_sly',joker_clever_joker:'j_clever',joker_splash:'j_splash'};
 export const originalJokerKey=id=>aliases[id]??id;
@@ -36,7 +36,10 @@ export function independentEffect(entityId,rankCounts,{playedCards=[],scoringCar
  throw new Error('Unsupported joker');
 }
 export function heldJokerEffects(entityId,card,heldCards){
- if(originalJokerKey(entityId)!=='j_raised_fist')return [];
+ const key=originalJokerKey(entityId);
+ if(key==='j_shoot_the_moon'&&card.rank===12)return [{operation:'add_mult',amount:13n}];
+ if(key==='j_baron'&&card.rank===13)return [{operation:'multiply_mult',amount:{n:3n,d:2n}}];
+ if(key!=='j_raised_fist')return [];
  let lowest=null;
  for(const held of heldCards)if(held.enhancement!=='stone'&&(!lowest||held.rank<=lowest.rank))lowest=held;
  if(lowest!==card)return [];

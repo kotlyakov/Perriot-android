@@ -50,6 +50,17 @@ test('Raised Fist uses the lowest non-Stone held rank and a debuffed tie stays s
  const tied={...state,hand:['low','tie'],cards:{low:state.cards.low,tie:{id:'tie',rank:4,suit:'spades'}}};
  r=scoreHand({...tied,bossState:{id:'bl_goad'}},cards([10]));assert.equal(r.trace.some(e=>e.effectSourceId==='fist'),false);
 });
+test('Baron and Shoot the Moon trigger per held card in card then Joker order',()=>{
+ const held={queen:{id:'queen',rank:12,suit:'hearts'},king:{id:'king',rank:13,suit:'clubs',enhancement:'steel'}};
+ const state={handLevels:{},hand:Object.keys(held),cards:held,jokerSlots:5,round:{handsRemaining:2,discardsRemaining:2},drawPile:[],
+  jokers:[{id:'moon',entityId:'j_shoot_the_moon'},{id:'baron',entityId:'j_baron'}]};
+ let r=scoreHand(state,cards([10]));
+ assert.deepEqual(r.trace.filter(e=>e.phase==='held_card').map(e=>[e.sourceId,e.effectSourceId??'card',e.operation]),[
+  ['queen','moon','add_mult'],['king','card','multiply_mult'],['king','baron','multiply_mult'],
+ ]);
+ assert.deepEqual(r.mult,{n:63n,d:2n});
+ r=scoreHand({...state,bossState:{id:'bl_plant'}},cards([10]));assert.equal(r.trace.some(e=>e.phase==='held_card'),false);
+});
 test('Blue Joker uses the pre-draw deck and Flower Pot uses only scoring-card suit coverage',()=>{
  const base={handLevels:{},hand:[],cards:{},jokerSlots:5,round:{handsRemaining:2,discardsRemaining:2}};
  let r=scoreHand({...base,drawPile:['a','b','c'],jokers:[{id:'blue',entityId:'j_blue_joker'}]},cards([14]));
