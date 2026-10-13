@@ -14,7 +14,7 @@ import { HANDS } from '../content/hands.js';
 import {createApkRng,nextApkRandom} from './apk-rng.js';
 import {evaluateHand} from './hands.js';
 import {APK_BASE_CARD_IDS,shuffleApkDeck} from './apk-deck.js';
-import {applyShopAction,createShop} from './shop.js';
+import {applyShopAction,createShop,stampJokerCreationOrdinals} from './shop.js';
 import {createApkShopContext,chooseApkVoucher,generateApkShop} from './apk-shop.js';
 import {APK_HAND_NAMES,currentApkShopContext} from './apk-shop-state.js';
 
@@ -35,7 +35,7 @@ export function createRun(seed, {runId,deckId='red',money,referenceRng=false,ref
     discoveredHands:Object.keys(HANDS).slice(0,9),
     rng:{deck:createRng(`${seed}:deck`),effects:createRng(`${seed}:effects`)},money,
     round:{blindId:'small',ante:1,target:300n,score:0n,handsRemaining:deckId==='blue'?5:4,discardsRemaining:deckId==='red'?4:3,handSize:8},
-    lastScore:null,sortMode:'rank',mostPlayedHand:'high_card',
+    lastScore:null,sortMode:'rank',mostPlayedHand:'high_card',nextJokerCreationOrdinal:1,
     consumableUsage:{},consumableUsageTotal:{tarot:0,planet:0,spectral:0,tarot_planet:0,all:0},lastTarotPlanet:null,
   };
   if(referenceRng){
@@ -107,7 +107,7 @@ export function dispatch(state, action, shopOptions={}) {
         }
         const generated=generateApkShop(next.rng.apk,context,{voucherId:next.apkShop.voucherId,
           firstShopBuffoon:next.apkShop.firstShopBuffoon,instancePrefix:'shop_'+next.revision});
-        next.shop=createShop({offers:generated.offers});next.rng.apk=generated.rng;
+        next.shop=createShop({offers:generated.offers});stampJokerCreationOrdinals(next,next.shop.main);next.rng.apk=generated.rng;
         next.apkShop.firstShopBuffoon=generated.firstShopBuffoon;
         next.apkShop.context=currentApkShopContext(next);
       }catch{return reject('UNSUPPORTED_SHOP_STATE','Shop generation inputs are unsupported');}

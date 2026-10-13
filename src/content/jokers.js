@@ -5,7 +5,7 @@ export const NATIVE_JOKERS=Object.freeze(['j_joker','j_jolly','j_zany','j_mad','
 export const SUPPORTED_JOKERS=Object.freeze(['joker_joker','joker_sly_joker','joker_clever_joker','joker_splash',...NATIVE_JOKERS]);
 const aliases={joker_joker:'j_joker',joker_sly_joker:'j_sly',joker_clever_joker:'j_clever',joker_splash:'j_splash'};
 export const originalJokerKey=id=>aliases[id]??id;
-export function supportsJoker(offer){return !!offer&&SUPPORTED_JOKERS.includes(offer.entityId)&&['base','foil','holographic','negative'].includes(offer.edition??'base')&&!offer.rental&&!offer.perishable&&!offer.debuffed;}
+export function supportsJoker(offer){return !!offer&&SUPPORTED_JOKERS.includes(offer.entityId)&&['base','foil','holographic','polychrome','negative'].includes(offer.edition??'base')&&!offer.rental&&!offer.perishable&&!offer.debuffed;}
 const combination={j_jolly:['pair','add_mult',8n],j_zany:['three','add_mult',12n],j_mad:['two_pair','add_mult',10n],j_crazy:['straight','add_mult',12n],j_droll:['flush','add_mult',10n],j_sly:['pair','add_chips',50n],j_wily:['three','add_chips',100n],j_clever:['two_pair','add_chips',80n],j_devious:['straight','add_chips',100n],j_crafty:['flush','add_chips',80n],j_duo:['pair','multiply_mult',2n],j_trio:['three','multiply_mult',3n],j_family:['four','multiply_mult',4n],j_order:['straight','multiply_mult',3n],j_tribe:['flush','multiply_mult',2n]};
 export function independentEffect(entityId,rankCounts,{playedCards=[],handId,jokerCount=1}={}){
  const key=originalJokerKey(entityId),rule=combination[key];
@@ -31,4 +31,5 @@ export function scoredJokerEffects(entityId,card){
  if(key==='j_onyx_agate'&&isCardSuit(card,'clubs'))return [{operation:'add_mult',amount:7n}];
  return [];
 }
+
 

@@ -41,6 +41,13 @@ export function hasConsumableSpace(state,offer){
  const cards=state.consumables??[],slots=state.consumableSlots??2;
  return Array.isArray(cards)&&count(slots)&&cards.length<slots+cards.filter(c=>c.edition==='negative').length+(offer?.edition==='negative'?1:0);
 }
+export function stampJokerCreationOrdinals(state,cards){
+ if(!Number.isSafeInteger(state.nextJokerCreationOrdinal)||state.nextJokerCreationOrdinal<1){
+  const known=[...(state.jokers??[]),...(state.shop?['main','vouchers','boosters'].flatMap(area=>state.shop[area]??[]):[])].map(card=>card?.creationOrdinal).filter(value=>Number.isSafeInteger(value)&&value>=1);
+  state.nextJokerCreationOrdinal=(known.length?Math.max(...known):0)+1;
+ }
+ for(const card of cards)if(card?.set==='Joker'&&!Object.hasOwn(card,'creationOrdinal'))card.creationOrdinal=state.nextJokerCreationOrdinal++;
+}
 export function canBuyShopCard(state,offer){
  const consumable=supportsConsumableEffect(offer);
  return state.phase==='shop'&&(state.inflation??0n)===0n&&(consumable||supportsJoker(offer))&&canAfford(state.money,offer.cost,state.bankruptAt??0n)&&(consumable?hasConsumableSpace(state,offer):hasJokerSpace(state,offer));
@@ -71,7 +78,7 @@ export function applyShopAction(state,action,{refill,nextRound}={}) {
     if(!canAfford(state.money,offer.cost,floor))return reject('INSUFFICIENT_FUNDS','Insufficient available money');
     const next=structuredClone(state);
     next.shop.main=next.shop.main.filter(o=>o.id!==offer.id);
-    if(consumable){next.consumables??=[];next.consumables.push(structuredClone(offer));}else next.jokers.push(structuredClone(offer));next.money-=offer.cost;
+    if(consumable){next.consumables??=[];next.consumables.push(structuredClone(offer));}else{const bought=structuredClone(offer);stampJokerCreationOrdinals(next,[bought]);next.jokers.push(bought);}next.money-=offer.cost;
     if(next.apkShop)next.apkShop.context=currentApkShopContext(next);
     return finish(next,[{type:'shop_card_bought',offerId:offer.id,...(consumable?{consumableId:offer.id}:{jokerId:offer.id}),cost:offer.cost},
       {type:'money_changed',before:state.money,after:next.money,delta:-offer.cost}]);
@@ -105,6 +112,7 @@ export function applyShopAction(state,action,{refill,nextRound}={}) {
       if(!validShop(proposed) || produced.main.some(o=>state.jokers.some(j=>j.id===o.id)))return reject('INVALID_REFILL','Duplicate refill instance ID');
     }catch{return reject('INVALID_REFILL','Refill producer failed');}
     const next=structuredClone(state);next.shop.main=structuredClone(produced.main);
+    stampJokerCreationOrdinals(next,next.shop.main);
     next.rng[native?'apk':'shop']=structuredClone(produced.rng);next.money-=cost;
     if(native)next.apkShop.context=currentApkShopContext(next);
     if(next.shop.freeRerolls>0)next.shop.freeRerolls--;
@@ -142,6 +150,7 @@ export function applyShopAction(state,action,{refill,nextRound}={}) {
   }
   return reject('UNKNOWN_ACTION','Unsupported shop action');
 }
+
 
 
 

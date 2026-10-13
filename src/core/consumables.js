@@ -4,6 +4,8 @@ import catalogue from '../content/apk-shop-catalog.js';
 import {supportsConsumable,canManageInventory} from './inventory.js';
 import {APK_HAND_NAMES,currentApkShopContext} from './apk-shop-state.js';
 import {APK_BASE_CARD_IDS} from './apk-deck.js';
+import {nextApkMathRandom,nextApkRandom} from './apk-rng.js';
+import {originalJokerKey} from '../content/jokers.js';
 
 const centres=new Map(catalogue.centres.map(c=>[c.key,c]));
 const handIds=Object.fromEntries(Object.entries(APK_HAND_NAMES).map(([id,name])=>[name,id]));
@@ -14,6 +16,7 @@ const record=value=>value!==null&&typeof value==='object'&&!Array.isArray(value)
 const blocked=(code,reason)=>({available:false,code,reason});
 const moneyTarots=new Set(['c_hermit','c_temperance']);
 const generatorTarots=new Map([['c_emperor','Tarot'],['c_high_priestess','Planet']]);
+const wheelKey='c_wheel_of_fortune';
 const creationSpace=(state,card)=>{const cards=state.consumables??[],remaining=cards.filter(c=>c.id!==card.id);return (state.consumableSlots??2)+cards.filter(c=>c.edition==='negative').length-remaining.length;};
 const generatedCount=(state,card)=>Math.min(2,Math.max(0,creationSpace(state,card)));
 const deckTarots=new Map([
@@ -39,7 +42,11 @@ const enhancementTarots=new Map([
 ]);
 const hasFoolSpace=(state,card)=>creationSpace(state,card)>0;
 const generatedFoolId=card=>`fool:${card.id}`;
-export function supportsConsumableEffect(card){const centre=centres.get(card?.entityId);return supportsConsumable(card)&&!!(centre?.set==='Planet'&&handIds[centre.handType]||centre?.key==='c_black_hole'||centre?.key==='c_fool'||moneyTarots.has(centre?.key)||enhancementTarots.has(centre?.key)||deckTarots.has(centre?.key)||baseTarots.has(centre?.key)||generatorTarots.has(centre?.key));}
+export function wheelSucceeds(roll,normal=1){return Number.isFinite(roll)&&roll>=0&&roll<=1&&Number.isFinite(normal)&&normal>=0&&roll<normal/4;}
+export function wheelEdition(roll){if(!Number.isFinite(roll)||roll<0||roll>1)throw new RangeError('Invalid Wheel edition roll');return roll>.85?'polychrome':roll>.5?'holographic':roll>0?'foil':'base';}
+const wheelEligible=state=>(state.jokers??[]).filter(joker=>(joker.edition??'base')==='base');
+const wheelOrderKnown=jokers=>jokers.length<=1||jokers.every(joker=>Number.isSafeInteger(joker.creationOrdinal)&&joker.creationOrdinal>=1)&&new Set(jokers.map(joker=>joker.creationOrdinal)).size===jokers.length;
+export function supportsConsumableEffect(card){const centre=centres.get(card?.entityId);return supportsConsumable(card)&&!!(centre?.set==='Planet'&&handIds[centre.handType]||centre?.key==='c_black_hole'||centre?.key==='c_fool'||centre?.key===wheelKey||moneyTarots.has(centre?.key)||enhancementTarots.has(centre?.key)||deckTarots.has(centre?.key)||baseTarots.has(centre?.key)||generatorTarots.has(centre?.key));}
 
 export function validConsumableUsage(state){
  const hasUsage=Object.hasOwn(state,'consumableUsage'),hasTotals=Object.hasOwn(state,'consumableUsageTotal');
@@ -87,6 +94,13 @@ export function canUseConsumable(state,card,targetCardIds=[]){
   if(!shopContext)return blocked('USE_UNAVAILABLE','Создание расходных карт требует забега с нативным генератором.');
   const ids=Array.from({length:generatedCount(state,owned)},(_,index)=>`generated:${state.revision}:${index+1}`),occupied=[...Object.keys(state.cards??{}),...(state.jokers??[]).map(c=>c?.id),...cards.filter(c=>c!==owned).map(c=>c.id),...(state.shop?['main','vouchers','boosters'].flatMap(area=>state.shop[area]??[]):[]).map(c=>c?.id)];
   if(ids.some(id=>occupied.includes(id)))return blocked('INVALID_STATE','Идентификатор созданной карты уже используется.');
+ }
+ if(centre.key===wheelKey&&!owned.debuffed){
+  const eligible=wheelEligible(state);
+  if(!eligible.length)return blocked('USE_UNAVAILABLE','Нет джокера без издания.');
+  if(!wheelOrderKnown(eligible))return blocked('USE_UNAVAILABLE','Для старого сохранения неизвестен порядок создания джокеров.');
+  if(!state.rng?.apk||!state.apkShop)return blocked('USE_UNAVAILABLE','Колесо Фортуны требует забега с нативным генератором.');
+  try{const context=currentApkShopContext(state);for(const joker of eligible){const c=centres.get(joker.originalKey??originalJokerKey(joker.entityId));if(!c||c.set!=='Joker'||typeof joker.cost!=='bigint'||typeof joker.sellCost!=='bigint'||!Number.isSafeInteger(context.inflation)||!Number.isSafeInteger(context.discountPercent))throw new TypeError();}}catch{return blocked('INVALID_STATE','Некорректное состояние джокеров или магазина.');}
  }
  if(centre.key==='c_fool'){
   const previous=state.lastTarotPlanet,target=centres.get(previous);
@@ -155,6 +169,20 @@ export function applyConsumableAction(state,action){
   let delta;if(centre.key==='c_hermit')delta=next.money<=0n?0n:next.money<20n?next.money:20n;
   else{const total=next.jokers.reduce((sum,joker)=>sum+joker.sellCost,0n);delta=total>50n?50n:total;}
   const before=next.money;next.money+=delta;events.push({type:'money_changed',before,after:next.money,delta});
+ }
+ if(!card.debuffed&&centre.key===wheelKey){
+  let roll=nextApkRandom(next.rng.apk,'wheel_of_fortune');next.rng.apk=roll.rng;
+  if(wheelSucceeds(roll.value)){
+   const eligible=wheelEligible(next).sort((a,b)=>(a.creationOrdinal??0)-(b.creationOrdinal??0));
+   const selected=nextApkRandom(next.rng.apk,'wheel_of_fortune',1,eligible.length);next.rng.apk=selected.rng;
+   roll=nextApkRandom(next.rng.apk,'wheel_of_fortune');next.rng.apk=roll.rng;
+   const joker=eligible[selected.value-1],edition=wheelEdition(roll.value),context=currentApkShopContext(next),definition=centres.get(joker.originalKey??originalJokerKey(joker.entityId));
+   joker.edition=edition;
+   Object.assign(joker,quoteShopCard({baseCost:BigInt(definition.cost),inflation:BigInt(context.inflation),discountPercent:BigInt(context.discountPercent),set:'Joker',name:definition.name,edition:edition==='base'?{}:{[edition==='holographic'?'holo':edition]:true},rental:!!joker.rental}));
+   events.push({type:'joker_edition_changed',sourceId:card.id,jokerId:joker.id,edition});
+   let juice=nextApkMathRandom(next.rng.apk.mathState);next.rng.apk={...next.rng.apk,mathState:juice.state};
+   if(edition!=='base'){juice=nextApkMathRandom(next.rng.apk.mathState);next.rng.apk={...next.rng.apk,mathState:juice.state};}
+  }else{const juice=nextApkMathRandom(next.rng.apk.mathState);next.rng.apk={...next.rng.apk,mathState:juice.state};}
  }
  let created=null;
  let generatedCards=[];

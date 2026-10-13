@@ -26,11 +26,11 @@ test('tooltip formatter preserves literal markup, money, probabilities and non-e
  assert.equal(format(text).map(t=>t.text).join(''),text);
 });
 
-test('conditional Jokers specify played hand and polychrome describes fractional Mult without enabling purchase',()=>{
+test('conditional Jokers specify played hand and supported polychrome describes fractional Mult',()=>{
  for(const key of ['j_jolly','j_sly','j_duo'])assert.match(describeShopItem({entityId:key}).description,/если сыгранная рука содержит/);
  const item=describeShopItem({entityId:'j_joker',edition:'polychrome'});
  assert.match(item.description,/Полихромия: ×1[.,]5 к множителю/);
- assert.equal(item.canBuy,false);
+ assert.equal(item.canBuy,true);
 });
 
 test('card modifier descriptions compose enhancement, edition and seal independently',async()=>{
@@ -69,3 +69,4 @@ test('Planet and Black Hole level increments are bold neutral effects',async()=>
  }
  assert.deepEqual(format('Ранг +1. 12 комбинаций; +3 места; награда на +1.').filter(t=>t.kind),[]);
 });
+
