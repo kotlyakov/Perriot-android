@@ -68,6 +68,7 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
    // Touch emits a compatibility click with detail=0 after pointerup. Only
    // keyboard/programmatic clicks need this path; pointers already toggled.
    b.addEventListener('click',e=>{if(e.detail===0 && !e.pointerType && !e.sourceCapabilities?.firesTouchEvents)onCard(id);});
+   b.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();if(!e.repeat&&!b.disabled)onCard(id);}});
    b.addEventListener('pointerdown',e=>{
      if(b.disabled || e.button!==0)return;e.preventDefault();b.setPointerCapture(e.pointerId);
      document.querySelector('.card-tip')?.remove();
@@ -102,6 +103,7 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
    if(id===focusedCard)b.focus({preventScroll:true});
  });
 }
+
 
 
 
