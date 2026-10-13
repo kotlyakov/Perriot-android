@@ -93,3 +93,9 @@ test('legacy Mark snapshots capture concealment before Strength and Death transf
   const result=use(state,targets);assert.equal(result.error,null);assert.ok(result.state.bossState.hiddenFaceRanks);assert.deepEqual(reload(result.state),result.state);
  }
 });
+
+test('legacy Mark snapshots migrate existing concealed cards before drawing a new face',()=>{
+ let state=createRun('MARK5',{runId:'mark-draw-legacy',money:4n,referenceRng:true,referenceShop:true});state.round.ante=2;state.round.blindId='boss';state.apkBlinds.ante=2;state.apkBlinds.tagContext.ante=2;state.apkBlinds.bossId='bl_mark';state.apkBlinds.bossesUsed.bl_mark=1;state.round.target=bossTarget(state);state.apkShop.context=currentApkShopContext(state);state.apkShop.context.ante=2;
+ state=dispatch(state,{type:'START_BLIND',expectedRevision:state.revision}).state;delete state.bossState.hiddenFaceRanks;assert.deepEqual(reload(state),state);
+ const result=dispatch(state,{type:'DISCARD',cardIds:['card_hearts_10'],expectedRevision:state.revision});assert.equal(result.error,null);assert.deepEqual(result.state.bossState.hiddenCardIds,['card_spades_11','card_diamonds_13']);assert.deepEqual(reload(result.state),result.state);
+});

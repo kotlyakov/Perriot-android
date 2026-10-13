@@ -65,6 +65,9 @@ function drawToLimit(state, events,action='START_BLIND') {
   const boss=state.bossState;
   if(boss && ['bl_house','bl_wheel','bl_fish','bl_mark'].includes(boss.id)){
     boss.hiddenCardIds??=[];
+    if(boss.id==='bl_mark'&&!boss.hiddenFaceRanks)boss.hiddenFaceRanks=Object.fromEntries(boss.hiddenCardIds.map(id=>{
+      const rank=state.cards[id].rank;return [id,rank>=11&&rank<=13?rank:Number(id.match(/_(\d+)$/)?.[1])];
+    }));
     for(const id of ids){
       let hidden=boss.id==='bl_house'&&action==='START_BLIND'||boss.id==='bl_fish'&&action==='PLAY_HAND'||boss.id==='bl_mark'&&state.cards[id].enhancement!=='stone'&&state.cards[id].rank>=11&&state.cards[id].rank<=13;
       if(boss.id==='bl_wheel'){const draw=nextApkRandom(state.rng.apk,'wheel');state.rng.apk=draw.rng;hidden=draw.value<1/7;}

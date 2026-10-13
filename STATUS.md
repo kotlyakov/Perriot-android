@@ -1,6 +1,6 @@
 # STATUS.md — Пьеро
 
-13.10.2026. Активный этап П-05к, 0.4.25-preview/code38. Emperor/High Priestess реализованы в feat/generated-tarots: 414 core PASS, offline/config PASS; 33 Chromium и Android CI ожидаются. Negative self-slot / допустимое переполнение исправлены, включая прежний Fool. PR #21 Strength требует зелёного CI перед слиянием; новые UI fixture проверки устранены. Следующий шаг после интеграции — Wheel of Fortune и Polychrome, затем Judgement и полный каталог джокеров. Полная игра не готова.
+13.10.2026. Активный этап П-05к, 0.4.25-preview/code38. Emperor/High Priestess реализованы в feat/generated-tarots: 415 core PASS, offline/config PASS; 33 Chromium и Android CI ожидаются. Negative self-slot / допустимое переполнение исправлены, включая прежний Fool. PR #21 Strength требует зелёного CI перед слиянием; новые UI fixture проверки устранены. Следующий шаг после интеграции — Wheel of Fortune и Polychrome, затем Judgement и полный каталог джокеров. Полная игра не готова.
 
 П-05и, 0.4.24-preview/code37. Strength и четыре мастевых Tarot реализованы в feat/strength-suit-tarots; интеграция/CI ожидаются. Локально 405 core-тестов PASS, Android offline/config PASS. Chromium локально недоступен: загрузка браузера заблокирована сетью; 32 набора проверит Actions. Независимый QA нашёл Mark/save дефект; regression RED→GREEN и hiddenFaceRanks snapshot закрывают его. Полная игра не готова.
 
@@ -39,3 +39,5 @@ Devil/Gold Card: Devil атомарно усиливает ровно одну �
 
 
 Hanged Man/Death: Hanged Man удаляет 1–2 выбранные карты без немедленного добора и RNG; Death превращает визуально левую выбранную карту в копию правой независимо от порядка кликов, сохраняя физический ID и нативный creation-order shuffle key. Общий и Hanged-специфичный журналы разрушения строго сохраняют недобор, пустую колоду, Serpent-overdraw и применение после победной руки; debuff и Glass не могут подделать Hanged provenance. Mark сохраняет реально скрытую исходную лицевую карту после face-to-pip Death, но произвольные скрытые пипы отклоняются. Независимое ревью закрыто без Critical/Important. 397/397 core, 31/31 Chromium suites, offline assets, fresh Gradle, apksigner/zipalign и APK artifact PASS. PR #20 слит в 7076ef3aba8a8d305294049f697727363349f67e.
+
+13.10: финальный QA выявил legacy Mark draw partial snapshot; исправлен RED→GREEN (MARK5 discard → новая лицевая). Объединённый core 415/415 PASS. Touch→keyboard регрессия закрыта: 32-suite browser предыдущего head PR #21 PASS в Actions38410401537; новый Mark fix требует свежего CI. Не сливать PR #21/#22 до зелёного CI текущих heads.

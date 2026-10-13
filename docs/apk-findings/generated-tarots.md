@@ -10,6 +10,6 @@
 
 Legacy run без APK context явно блокирует генерацию при наличии места, вместо подмены алгоритма. Debuff и отсутствие места расходуют карту/usage без создания и RNG. Коллизии детерминированных ID отклоняются до мутации.
 
-Проверки: tests/core/generated-tarots.test.js, исправленная negative регрессия tests/core/fool-tarot.test.js и tests/ui/generated-tarots-check.mjs. 414 core PASS; независимый QA выявил Negative-slot дефект, исправленный RED→GREEN. Браузер и Android подтверждаются только результатом Actions.
+Проверки: tests/core/generated-tarots.test.js, исправленная negative регрессия tests/core/fool-tarot.test.js и tests/ui/generated-tarots-check.mjs. 415 core PASS; независимый QA выявил Negative-slot дефект, исправленный RED→GREEN. Браузер и Android подтверждаются только результатом Actions.
 
 Новые ID основаны на монотонной revision, а не рекурсивном source ID: цепочки созданий не превышают лимит сохранения 120 символов. Коллизии проверяются также с предложениями магазина. Длинный source ID покрыт RED→GREEN регрессией.

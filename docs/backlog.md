@@ -2,7 +2,7 @@
 
 | ID | Критичность | Задача | Критерий готовности | Статус | Версия/коммит |
 | --- | --- | --- | --- | --- | --- |
-| П-05к | Некритическое · высокий | Emperor / High Priestess | Полные пулы, keyed RNG, слоты, debuff, сохранение/UI | Реализовано; 414 core PASS; CI ожидается | 0.4.25-preview/code38, feat/generated-tarots |
+| П-05к | Некритическое · высокий | Emperor / High Priestess | Полные пулы, keyed RNG, слоты, debuff, сохранение/UI | Реализовано; 415 core PASS; CI ожидается | 0.4.25-preview/code38, feat/generated-tarots |
 | П-05-NEGATIVE-CREATE | Критическое | Negative creator преждевременно теряет слот | Создание перед потерей Negative slot, допустимое переполнение и последующая продажа/загрузка; Fool тоже | Исправлено, QA finding RED→GREEN | 0.4.25-preview/code38 |
 
 ## П-05и — 13.10.2026
@@ -139,3 +139,6 @@
 Регрессия нового UI-теста: ожидание включённой кнопки «Играть» после очистки выбора давало timeout. Исправлено ожидание доступной сортировки, как в существующем hand-gap тесте; результат повторного CI указан в STATUS.md.
 
 
+
+| П-05-MARK-LEGACY-DRAW | Критическое | Частичный hiddenFaceRanks при новом доборе из старого Mark save | Снимок прежних скрытых карт мигрирует до добора, save/reload допустим | Исправлено RED→GREEN, 415 core PASS; CI нового head ожидается | 0.4.25 / feat/generated-tarots |
+| З-KEYBOARD-TOUCH | Критическое | Space после touch может не выбирать карту | Явный keydown Space/Enter, repeat guard и отсутствие двойного выбора | Код исправлен; full browser предыдущего head PASS, текущий CI ожидается | PR #21/#22 |
