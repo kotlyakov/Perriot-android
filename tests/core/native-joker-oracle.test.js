@@ -20,8 +20,8 @@ test('supported Joker branches match independent original Lua method outputs',()
    if(!played?.length)continue;
    const counts=new Map();for(const card of played)counts.set(card.rank,(counts.get(card.rank)??0)+1);
    const empty=(c.jokerLimit??5)-(c.jokerCount??1);
-   const e=independentEffect(c.key,[...counts.values()],{playedCards:played,handId:evaluateHand(played).handId,jokerCount:c.jokerCount??1,
-    discardsRemaining:c.discards,heldCards:c.held?.map(convert)??[],jokerSlots:c.jokerLimit??5,stencilCount:Math.max(0,(c.stencilX??0)-empty)});
+   const e=independentEffect(c.key,[...counts.values()],{playedCards:played,scoringCards:played.map((card,i)=>({...card,debuffed:c.played?.[i]?.debuff??false})),handId:evaluateHand(played).handId,jokerCount:c.jokerCount??1,
+    discardsRemaining:c.discards,heldCards:c.held?.map(convert)??[],deckCount:c.deckCount,jokerSlots:c.jokerLimit??5,stencilCount:Math.max(0,(c.stencilX??0)-empty)});
    const actual=e?{[{add_chips:'chip_mod',add_mult:'mult_mod',multiply_mult:'Xmult_mod'}[e.operation]]:Number(e.amount)}:{};
    assert.deepEqual(actual,c.expected,c.key+' '+c.case);checked++;
   }

@@ -50,6 +50,17 @@ test('Raised Fist uses the lowest non-Stone held rank and a debuffed tie stays s
  const tied={...state,hand:['low','tie'],cards:{low:state.cards.low,tie:{id:'tie',rank:4,suit:'spades'}}};
  r=scoreHand({...tied,bossState:{id:'bl_goad'}},cards([10]));assert.equal(r.trace.some(e=>e.effectSourceId==='fist'),false);
 });
+test('Blue Joker uses the pre-draw deck and Flower Pot uses only scoring-card suit coverage',()=>{
+ const base={handLevels:{},hand:[],cards:{},jokerSlots:5,round:{handsRemaining:2,discardsRemaining:2}};
+ let r=scoreHand({...base,drawPile:['a','b','c'],jokers:[{id:'blue',entityId:'j_blue_joker'}]},cards([14]));
+ assert.equal(r.trace.find(e=>e.sourceId==='blue').after.chips-r.trace.find(e=>e.sourceId==='blue').before.chips,6n);
+ const fourSuits=suits.map((suit,i)=>({id:'p'+i,rank:8,suit}));
+ r=scoreHand({...base,drawPile:[],jokers:[{id:'pot',entityId:'j_flower_pot'}]},fourSuits);assert.equal(r.trace.find(e=>e.sourceId==='pot').operation,'multiply_mult');
+ r=scoreHand({...base,drawPile:[],bossState:{id:'bl_goad'},jokers:[{id:'pot',entityId:'j_flower_pot'}]},fourSuits);assert.equal(r.trace.find(e=>e.sourceId==='pot').operation,'multiply_mult');
+ const wild=[...fourSuits.slice(0,3),{...fourSuits[3],suit:'diamonds',enhancement:'wild'}];
+ r=scoreHand({...base,drawPile:[],jokers:[{id:'pot',entityId:'j_flower_pot'}]},wild);assert.equal(r.trace.find(e=>e.sourceId==='pot').operation,'multiply_mult');
+ r=scoreHand({...base,drawPile:[],bossState:{id:'bl_goad'},jokers:[{id:'pot',entityId:'j_flower_pot'}]},wild);assert.equal(r.trace.some(e=>e.sourceId==='pot'),false);
+});
 test('native suit and face effects do not score kickers without Splash',()=>{
  for(const [key,suit,operation,amount] of [['j_greedy_joker','diamonds','add_mult',3n],['j_lusty_joker','hearts','add_mult',3n],['j_wrathful_joker','spades','add_mult',3n],['j_gluttenous_joker','clubs','add_mult',3n],['j_arrowhead','spades','add_chips',50n],['j_onyx_agate','clubs','add_mult',7n]]){
  const s={handLevels:{},jokers:[{id:'j',entityId:key}]};const r=scoreHand(s,[{id:'a',rank:14,suit}]);const e=r.trace.find(e=>e.effectSourceId);assert.equal(e.operation,operation);const target=operation.includes('mult')?'mult':'chips';assert.equal(e.after[target]-e.before[target],amount);

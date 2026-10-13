@@ -95,6 +95,7 @@ export function scoreHand(state, playedCards) {
     if(joker.edition==='holographic')apply({operation:'add_mult',amount:10n},'edition',joker.id);
     const effect=independentEffect(joker.entityId,[...rankCounts.values()],{playedCards,handId:hand.handId,jokerCount:state.jokers.length,
       handsRemaining:state.round?.handsRemaining,discardsRemaining:state.round?.discardsRemaining,heldCards,jokerSlots:state.jokerSlots??5,
+      scoringCards:playedCards.filter(card=>scoringSet.has(card.id)).map(card=>({...card,debuffed:isBossCardDebuffed(state,card)})),deckCount:state.drawPile?.length,
       negativeCount:state.jokers.filter(card=>card.edition==='negative').length,stencilCount:state.jokers.filter(card=>originalJokerKey(card.entityId)==='j_stencil').length});
     if(effect)apply(effect,'independent',joker.id);
     if(joker.edition==='polychrome')apply({operation:'multiply_mult',amount:{n:3n,d:2n}},'edition',joker.id);

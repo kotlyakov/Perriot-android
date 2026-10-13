@@ -1,3 +1,7 @@
+## П-05н — Blue Joker / Flower Pot, 13.10.2026
+
+Blue Joker и Flower Pot расширяют runtime-пул до 40/150: первый читает фактический `drawPile` до добора (+2 chips за карту), второй проверяет только scoring hand и повторяет нативный двухпроходный выбор четырёх мастей — обычные карты с bypass debuff, затем активные Wild заполняют первые отсутствующие масти. Независимый fixture oracle и интеграционные границы проходят. Полный core/CI обязателен перед публикацией.
+
 ## П-05л — Wheel / Polychrome, 13.10.2026
 
 Wheel/Polychrome опубликованы в PR #23: шанс 1/4 и пороги изданий, постоянный порядок создания вместо позиции в инвентаре, точные keyed/raw RNG-переходы, переподсчёт цены и дробное ×1,5 после собственного эффекта джокера. Локально 421 core PASS; Actions38433312892 проверяет 34 Chromium suites и fresh Android. Следующий срез 0.4.27 расширяет каталог до 38 джокеров: Acrobat/Banner/Mystic Summit используют реальные round counters, Blackboard/Raised Fist — фактическую оставшуюся руку, Joker Stencil — нативную effective capacity с Negative. Oracle и границы RED→GREEN; после полного core/CI продолжать партии джокеров, затем Judgement на полном пуле.
