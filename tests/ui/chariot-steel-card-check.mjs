@@ -18,6 +18,12 @@ try{
  await page.locator(`#hand [data-card-id=${target}]`).click();await page.locator('[data-offer-id=chariot] .shop-card').click();assert.ok(await page.locator('.shop-use').isEnabled());await page.locator('.shop-use').click();await page.waitForFunction(()=>!document.querySelector('[data-offer-id=chariot]'));
  let steel=page.locator(`#hand [data-card-id=${target}]`);assert.equal(await steel.getAttribute('data-enhancement'),'steel');assert.equal(await steel.evaluate(node=>getComputedStyle(node,'::after').content),'"×1.5 В РУКЕ"');
  const converted=await page.evaluate(()=>localStorage.getItem('card-cascade.current'));await page.reload();await enterRun(page,{startBlind:false});assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),converted);
- await page.locator(`#hand [data-card-id=${played}]`).click();await page.locator('#play_hand').click();const pop=page.locator(`.score-pop[data-source-id=${target}][data-operation=multiply_mult]`);await pop.waitFor();assert.equal(await pop.textContent(),'×1.5');assert.equal(await page.locator('#mult_value').textContent(),'1.5');
+ await page.evaluate(target=>{
+  window.steelPopText=null;
+  const observer=new MutationObserver(records=>{for(const record of records)for(const node of record.addedNodes)if(node instanceof Element&&node.matches(`.score-pop[data-source-id="${target}"][data-operation=multiply_mult]`)){window.steelPopText=node.textContent;observer.disconnect();}});
+  observer.observe(document.getElementById('stage'),{childList:true});
+ },target);
+ await page.locator(`#hand [data-card-id=${played}]`).click();await page.locator('#play_hand').click();await page.waitForFunction(()=>window.steelPopText!==null);assert.equal(await page.evaluate(()=>window.steelPopText),'×1.5');assert.equal(await page.locator('#mult_value').textContent(),'1.5');
  const state=deserializeState(await page.evaluate(()=>localStorage.getItem('card-cascade.current')));assert.deepEqual(state.lastScore.mult,{n:3n,d:2n});assert.equal(state.lastScore.trace.some(event=>event.phase==='held_card'&&event.sourceId===target),true);assert.deepEqual(state.apkShop.context.enhancementIds,['m_steel']);assert.deepEqual(errors,[]);console.log('Chariot target, Steel held score, exact fractional UI and reload PASS');
 }finally{await browser.close();}
+

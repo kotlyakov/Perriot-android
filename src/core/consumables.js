@@ -17,6 +17,13 @@ const deckTarots=new Map([
  ['c_hanged_man',{minimum:1,maximum:2}],
  ['c_death',{minimum:2,maximum:2}],
 ]);
+const baseTarots=new Map([
+ ['c_strength',{minimum:1,maximum:2}],
+ ['c_star',{minimum:1,maximum:3,suit:'diamonds'}],
+ ['c_moon',{minimum:1,maximum:3,suit:'clubs'}],
+ ['c_sun',{minimum:1,maximum:3,suit:'hearts'}],
+ ['c_world',{minimum:1,maximum:3,suit:'spades'}],
+]);
 const enhancementTarots=new Map([
  ['c_magician',{enhancement:'lucky',maximum:2}],
  ['c_empress',{enhancement:'mult',maximum:2}],
@@ -29,7 +36,7 @@ const enhancementTarots=new Map([
 ]);
 const hasFoolSpace=(state,card)=>{const remaining=(state.consumables??[]).filter(c=>c.id!==card.id);return remaining.length<(state.consumableSlots??2)+remaining.filter(c=>c.edition==='negative').length;};
 const generatedFoolId=card=>`fool:${card.id}`;
-export function supportsConsumableEffect(card){const centre=centres.get(card?.entityId);return supportsConsumable(card)&&!!(centre?.set==='Planet'&&handIds[centre.handType]||centre?.key==='c_black_hole'||centre?.key==='c_fool'||moneyTarots.has(centre?.key)||enhancementTarots.has(centre?.key)||deckTarots.has(centre?.key));}
+export function supportsConsumableEffect(card){const centre=centres.get(card?.entityId);return supportsConsumable(card)&&!!(centre?.set==='Planet'&&handIds[centre.handType]||centre?.key==='c_black_hole'||centre?.key==='c_fool'||moneyTarots.has(centre?.key)||enhancementTarots.has(centre?.key)||deckTarots.has(centre?.key)||baseTarots.has(centre?.key));}
 
 export function validConsumableUsage(state){
  const hasUsage=Object.hasOwn(state,'consumableUsage'),hasTotals=Object.hasOwn(state,'consumableUsageTotal');
@@ -66,10 +73,10 @@ export function canUseConsumable(state,card,targetCardIds=[]){
  if(!owned)return blocked('CARD_NOT_FOUND','Карта больше не принадлежит игроку.');
  const centre=centres.get(owned.entityId);
  if(!supportsConsumableEffect(owned))return blocked('USE_UNAVAILABLE','Эффект этой расходной карты ещё не реализован.');
- const targetRule=enhancementTarots.has(centre.key)?{minimum:1,maximum:enhancementTarots.get(centre.key).maximum}:deckTarots.get(centre.key);
+ const targetRule=enhancementTarots.has(centre.key)?{minimum:1,maximum:enhancementTarots.get(centre.key).maximum}:deckTarots.get(centre.key)??baseTarots.get(centre.key);
  if(targetRule){
   const {minimum,maximum}=targetRule;
-  if(!Array.isArray(targetCardIds)||targetCardIds.length<minimum||targetCardIds.length>maximum||new Set(targetCardIds).size!==targetCardIds.length||targetCardIds.some(id=>typeof id!=='string'||!state.hand?.includes(id)||!state.cards?.[id]))return blocked('INVALID_TARGETS',minimum===maximum?(minimum===1?'Выберите одну карту в руке.':'Выберите две карты в руке.'):'Выберите одну или две карты в руке.');
+  if(!Array.isArray(targetCardIds)||targetCardIds.length<minimum||targetCardIds.length>maximum||new Set(targetCardIds).size!==targetCardIds.length||targetCardIds.some(id=>typeof id!=='string'||!state.hand?.includes(id)||!state.cards?.[id]))return blocked('INVALID_TARGETS',minimum===maximum?(minimum===1?'Выберите одну карту в руке.':'Выберите две карты в руке.'):maximum===3?'Выберите от одной до трёх карт в руке.':'Выберите одну или две карты в руке.');
  }
  let shopContext=null;
  try{if(state.apkShop){if(!record(state.apkShop.context))throw new TypeError('Missing shop context');shopContext=currentApkShopContext(state);}}catch{return blocked('INVALID_STATE','Некорректное состояние магазина.');}
@@ -100,6 +107,18 @@ export function applyConsumableAction(state,action){
  if(!capability.available)return reject(capability.code,capability.reason);
  const centre=centres.get(card.entityId),next=structuredClone(state),events=[];
  const previousTarotPlanet=state.lastTarotPlanet??null;
+ // Older Mark saves have no draw-time rank snapshot. Capture it before a
+ // targeted transformation; current rank may cease to be a face afterwards.
+ if(!card.debuffed&&next.bossState?.id==='bl_mark'&&(baseTarots.has(centre.key)||centre.key==='c_death')&&!next.bossState.hiddenFaceRanks){
+  next.bossState.hiddenFaceRanks=Object.fromEntries(next.bossState.hiddenCardIds.map(id=>{
+   const rank=state.cards[id].rank;return [id,rank>=11&&rank<=13?rank:Number(id.match(/_(\d+)$/)?.[1])];
+  }));
+ }
+ if(!card.debuffed&&baseTarots.has(centre.key))for(const cardId of action.targetCardIds){
+  const target=next.cards[cardId],before={rank:target.rank,suit:target.suit},rule=baseTarots.get(centre.key);
+  if(rule.suit)target.suit=rule.suit;else target.rank=target.rank===14?2:target.rank+1;
+  events.push({type:'playing_card_changed',cardId,before,after:{rank:target.rank,suit:target.suit},sourceId:card.id});
+ }
  if(!card.debuffed&&enhancementTarots.has(centre.key))for(const cardId of action.targetCardIds){
   const {enhancement}=enhancementTarots.get(centre.key);next.cards[cardId].enhancement=enhancement;events.push({type:'card_enhanced',cardId,enhancement,sourceId:card.id});
  }
@@ -114,6 +133,7 @@ export function applyConsumableAction(state,action){
   if(next.apkBlinds?.playedCardIds)next.apkBlinds.playedCardIds=next.apkBlinds.playedCardIds.filter(id=>!removed.has(id));
   if(next.bossState?.playedBeforeBoss)next.bossState.playedBeforeBoss=next.bossState.playedBeforeBoss.filter(id=>!removed.has(id));
   if(next.bossState?.hiddenCardIds)next.bossState.hiddenCardIds=next.bossState.hiddenCardIds.filter(id=>!removed.has(id));
+  if(next.bossState?.hiddenFaceRanks)for(const id of removed)delete next.bossState.hiddenFaceRanks[id];
  }
  if(!card.debuffed&&centre.key==='c_death'){
   const selected=new Set(action.targetCardIds),ordered=state.hand.filter(id=>selected.has(id)),[left,right]=ordered;
@@ -148,3 +168,4 @@ export function applyConsumableAction(state,action){
  events.push({type:'consumable_usage_changed',entityId:centre.key,count:usage.count});
  return {state:next,events,error:null};
 }
+

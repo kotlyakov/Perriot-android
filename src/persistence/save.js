@@ -78,14 +78,17 @@ function cardList(ids,state){
 }
 function decodeBoss(value,state){
  const extras={bl_house:['hiddenCardIds'],bl_wheel:['hiddenCardIds'],bl_fish:['hiddenCardIds'],bl_mark:['hiddenCardIds'],bl_eye:['playedHands'],bl_mouth:['firstHand'],bl_ox:['oxHand']};
- object(value,['version','id','playedBeforeBoss','baseHandSize',...(extras[value.id]??[])]);
+ optionalObject(value,['version','id','playedBeforeBoss','baseHandSize',...(extras[value.id]??[])],value.id==='bl_mark'?['hiddenFaceRanks']:[]);
  requireValue(value.version===1&&value.id===state.apkBlinds?.bossId&&canEnterBoss(state));
  requireValue(state.round.blindId==='boss'&&['playing','round_won','game_over'].includes(state.phase)&&state.roundNumber===state.round.ante*3&&value.baseHandSize===8);
  cardList(value.playedBeforeBoss,state);requireValue(value.playedBeforeBoss.every(id=>state.apkBlinds.playedCardIds.includes(id)));
  requireValue(state.round.handSize===(value.id==='bl_manacle'?7:8));
  if(Object.hasOwn(value,'hiddenCardIds')){
   cardList(value.hiddenCardIds,state);requireValue(value.hiddenCardIds.every(id=>state.hand.includes(id)));
-  if(value.id==='bl_mark')requireValue(value.hiddenCardIds.every(id=>state.cards[id].rank>=11&&state.cards[id].rank<=13||/^card_(?:clubs|diamonds|hearts|spades)_(?:11|12|13)$/.test(id)));
+  if(value.id==='bl_mark'){
+   if(Object.hasOwn(value,'hiddenFaceRanks')){object(value.hiddenFaceRanks,value.hiddenCardIds);requireValue(Object.values(value.hiddenFaceRanks).every(rank=>Number.isInteger(rank)&&rank>=11&&rank<=13));}
+   else requireValue(value.hiddenCardIds.every(id=>state.cards[id].rank>=11&&state.cards[id].rank<=13||/^card_(?:clubs|diamonds|hearts|spades)_(?:11|12|13)$/.test(id)));
+  }
  }
  if(value.id==='bl_eye')requireValue(Array.isArray(value.playedHands)&&new Set(value.playedHands).size===value.playedHands.length&&value.playedHands.every(id=>Object.hasOwn(HANDS,id)));
  if(value.id==='bl_mouth')requireValue(value.firstHand===null||Object.hasOwn(HANDS,value.firstHand));
@@ -342,6 +345,7 @@ export function deserializeState(text) {
   requireValue(typeof text==='string' && text.length<=LIMIT && new TextEncoder().encode(text).length<=LIMIT);
   return decode(JSON.parse(text));
 }
+
 
 
 
