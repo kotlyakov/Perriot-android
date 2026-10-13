@@ -28,7 +28,7 @@ function optionalObject(value,required,optional=[]) {
   requireValue(required.every(key=>Object.hasOwn(value,key)) && Object.keys(value).every(key=>required.includes(key) || optional.includes(key)));
 }
 function decodeOffer(value,ids,owned=false,consumable=false) {
-  optionalObject(value,owned?['id','entityId']:['id','entityId','cost','sellCost'],['cost','sellCost','edition','eternal','rental','perishable','debuffed','originalKey','set','frontKey','toDoPokerHand']);
+  optionalObject(value,owned?['id','entityId']:['id','entityId','cost','sellCost'],['cost','sellCost','edition','eternal','rental','perishable','debuffed','originalKey','set','frontKey','toDoPokerHand','creationOrdinal']);
   id(value.id);id(value.entityId);requireValue(!ids.has(value.id));ids.add(value.id);
   if(owned)requireValue(consumable?supportsConsumable(value):supportsJoker(value));
   for(const key of ['cost','sellCost'])if(Object.hasOwn(value,key))value[key]=decimal(value[key]);
@@ -40,6 +40,7 @@ function decodeOffer(value,ids,owned=false,consumable=false) {
   }
   if(Object.hasOwn(value,'frontKey'))requireValue(['Base','Enhanced'].includes(value.set) && typeof value.frontKey==='string' && /^[CDHS]_(?:[2-9]|A|J|K|Q|T)$/.test(value.frontKey));
   if(Object.hasOwn(value,'toDoPokerHand'))requireValue(value.originalKey==='j_todo_list' && handNames.has(value.toDoPokerHand));
+  if(Object.hasOwn(value,'creationOrdinal'))integer(value.creationOrdinal,1,Number.MAX_SAFE_INTEGER);
 }
 function decodeApkShop(value,state) {
   object(value,['version','voucherId','firstShopBuffoon','context']);
@@ -256,7 +257,7 @@ function decode(payload) {
   const state=payload.state;
   const sortMode=state.sortMode;
   if(Object.hasOwn(state,'sortMode'))requireValue(['rank','suit'].includes(sortMode));
-  optionalObject(state,['schemaVersion','runId','seed','revision','phase','deckId','cards','hand','drawPile','discardPile','jokers','handLevels','discoveredHands','rng','money','round','lastScore'],['shop','bankruptAt','jokerSlots','apkShop','sortMode','roundNumber','apkBlinds','bossState','nextAnteBlinds','runStats','consumables','consumableSlots','mostPlayedHand','consumableUsage','consumableUsageTotal','lastTarotPlanet','packState','destroyedCardIds','hangedDestroyedCardIds','hangedShortfallCardIds']);
+  optionalObject(state,['schemaVersion','runId','seed','revision','phase','deckId','cards','hand','drawPile','discardPile','jokers','handLevels','discoveredHands','rng','money','round','lastScore'],['shop','bankruptAt','jokerSlots','apkShop','sortMode','roundNumber','apkBlinds','bossState','nextAnteBlinds','runStats','consumables','consumableSlots','mostPlayedHand','consumableUsage','consumableUsageTotal','lastTarotPlanet','packState','destroyedCardIds','hangedDestroyedCardIds','hangedShortfallCardIds','nextJokerCreationOrdinal']);
   requireValue(validConsumableUsage(state));
   if(Object.hasOwn(state,'mostPlayedHand'))requireValue(state.mostPlayedHand===null||Object.hasOwn(HANDS,state.mostPlayedHand));
   requireValue(state.schemaVersion===1 && PHASES.includes(state.phase) && ['red','blue'].includes(state.deckId));
@@ -284,6 +285,7 @@ function decode(payload) {
   if(Object.hasOwn(state,'jokerSlots'))integer(state.jokerSlots,0,10000);
   if(Object.hasOwn(state,'bankruptAt'))state.bankruptAt=decimal(state.bankruptAt,true);
   requireValue(Array.isArray(state.jokers) && state.jokers.length<=10000);
+  if(Object.hasOwn(state,'nextJokerCreationOrdinal'))integer(state.nextJokerCreationOrdinal,1,Number.MAX_SAFE_INTEGER);
   requireValue(state.jokers.length<=(state.jokerSlots??5)+state.jokers.filter(j=>j.edition==='negative').length);
   const jokerIds=new Set(cardIds);
   for(const joker of state.jokers)decodeOffer(joker,jokerIds,true);
@@ -295,6 +297,10 @@ function decode(payload) {
     for(const card of state.consumables)decodeOffer(card,jokerIds,true,true);
   }
   if(Object.hasOwn(state,'shop'))decodeShop(state.shop,jokerIds);
+  const jokerCards=[...state.jokers,...(state.shop?['main','vouchers','boosters'].flatMap(area=>state.shop[area]??[]):[])].filter(card=>card.set==='Joker'||SUPPORTED_JOKERS.includes(card.entityId));
+  const creationOrdinals=jokerCards.filter(card=>Object.hasOwn(card,'creationOrdinal')).map(card=>card.creationOrdinal);
+  requireValue(new Set(creationOrdinals).size===creationOrdinals.length);
+  if(Object.hasOwn(state,'nextJokerCreationOrdinal'))requireValue(creationOrdinals.every(value=>value<state.nextJokerCreationOrdinal));
   if(Object.hasOwn(state,'packState'))decodePackState(state.packState,state,jokerIds);else requireValue(state.phase!=='pack');
   object(state.handLevels,Object.keys(HANDS));for(const level of Object.values(state.handLevels))integer(level,1);
   requireValue(Array.isArray(state.discoveredHands) && new Set(state.discoveredHands).size===state.discoveredHands.length && state.discoveredHands.every(key=>Object.hasOwn(HANDS,key)));

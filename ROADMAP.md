@@ -1,6 +1,10 @@
+## П-05л — Wheel / Polychrome, 13.10.2026
+
+Wheel/Polychrome реализованы по нативному контракту: шанс 1/4 и пороги изданий, постоянный порядок создания вместо позиции в инвентаре, точные keyed/raw RNG-переходы, переподсчёт цены и дробное ×1,5 после собственного эффекта джокера. Добавлены строгие save-метаданные и отдельные core/UI регрессии. Локально 421 core PASS; 34 Chromium suites и fresh Android ждут Actions. Далее Judgement и создание случайного джокера.
+
 ## П-05к — генераторные Tarot, 13.10.2026
 
-Emperor/High Priestess реализованы: до двух карт из полного нативного пула, keyed RNG, собственные слоты и Negative runtime capacity, debuff/usage/save/UI. 415 core PASS; независимое QA завершено, Negative finding исправлен RED→GREEN. 33 Chromium suites и Android ждут Actions. Далее Wheel/Polychrome и Judgement/остальные джокеры; полный охват по нижнему плану остаётся открытым.
+Emperor/High Priestess реализованы: до двух карт из полного нативного пула, keyed RNG, собственные слоты и Negative runtime capacity, debuff/usage/save/UI. 415 core PASS; независимое QA завершено, Negative finding исправлен RED→GREEN. Предыдущий head полностью прошёл 33 Chromium suites и Android Actions; повторная проверка после синхронизации с PR #21 выполняется. Далее Wheel/Polychrome и Judgement/остальные джокеры; полный охват по нижнему плану остаётся открытым.
 
 ## Возобновление 13.10.2026 — П-05и
 

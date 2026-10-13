@@ -92,6 +92,7 @@ export function scoreHand(state, playedCards) {
     if(joker.edition==='holographic')apply({operation:'add_mult',amount:10n},'edition',joker.id);
     const effect=independentEffect(joker.entityId,[...rankCounts.values()],{playedCards,handId:hand.handId,jokerCount:state.jokers.length});
     if(effect)apply(effect,'independent',joker.id);
+    if(joker.edition==='polychrome')apply({operation:'multiply_mult',amount:{n:3n,d:2n}},'edition',joker.id);
   }
   for(const card of playedCards)if(scoringSet.has(card.id)&&card.enhancement==='glass'&&!isBossCardDebuffed(state,card)){
     const roll=glassRoll(),destroyed=roll<1/4;glassRolls.push({cardId:card.id,roll,destroyed});
@@ -100,5 +101,6 @@ export function scoreHand(state, playedCards) {
   trace.push({type:'score_total',phase:'total',chips,mult,score});
   return {...hand,playedCardIds:playedCards.map(c=>c.id),scoringCardIds,chips,mult,score,trace,...(heldCards.some(card=>card.enhancement==='steel')?{heldCardIds:heldCards.map(card=>card.id)}:{}),...(luckyRolls.length?{luckyRolls,luckyRngKind:luckyKind,luckyRngBefore,luckyRngAfter:luckyKind==='apk'?{...luckySnapshot(luckyRng),mathState:[...luckyRng.mathState]}:luckyRng}:{}),...(glassRolls.length?{glassRolls,glassRngKind:glassKind,glassRngBefore,glassRngAfter:glassKind==='apk'?{...glassSnapshot(glassRng),mathState:[...glassRng.mathState]}:glassRng,glassDestroyedCards:glassRolls.filter(roll=>roll.destroyed).map(roll=>structuredClone(playedCards.find(card=>card.id===roll.cardId)))}:{})};
 }
+
 
 

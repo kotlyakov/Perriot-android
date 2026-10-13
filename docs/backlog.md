@@ -1,8 +1,15 @@
+## П-05л — 13.10.2026
+
+| ID | Критичность | Задача | Критерий готовности | Статус | Версия/коммит |
+| --- | --- | --- | --- | --- | --- |
+| П-05л | Некритическое · высокий | Wheel / Polychrome | APK RNG, persistent creation order, pricing, ×1,5, save/UI | Реализовано локально; 421 core PASS; CI ожидается | 0.4.26-preview/code39 |
+| П-05-WHEEL-LEGACY | Некритическое · высокий | В старых saves неизвестен sort_id нескольких джокеров | Не угадывать выбор по позиции; явно блокировать эффект при неоднозначности | Закрыто строгим legacy gate; один eligible допустим | 0.4.26-preview/code39 |
+
 ## П-05к — 13.10.2026
 
 | ID | Критичность | Задача | Критерий готовности | Статус | Версия/коммит |
 | --- | --- | --- | --- | --- | --- |
-| П-05к | Некритическое · высокий | Emperor / High Priestess | Полные пулы, keyed RNG, слоты, debuff, сохранение/UI | Реализовано; 415 core PASS; CI ожидается | 0.4.25-preview/code38, feat/generated-tarots |
+| П-05к | Некритическое · высокий | Emperor / High Priestess | Полные пулы, keyed RNG, слоты, debuff, сохранение/UI | Реализовано; 415 core PASS; предыдущий head CI SUCCESS, sync-head CI выполняется | 0.4.25-preview/code38, feat/generated-tarots |
 | П-05-NEGATIVE-CREATE | Критическое | Negative creator преждевременно теряет слот | Создание перед потерей Negative slot, допустимое переполнение и последующая продажа/загрузка; Fool тоже | Исправлено, QA finding RED→GREEN | 0.4.25-preview/code38 |
 
 ## П-05и — 13.10.2026
