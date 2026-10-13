@@ -85,7 +85,7 @@ export function canUseConsumable(state,card,targetCardIds=[]){
  try{if(state.apkShop){if(!record(state.apkShop.context))throw new TypeError('Missing shop context');shopContext=currentApkShopContext(state);}}catch{return blocked('INVALID_STATE','Некорректное состояние магазина.');}
  if(generatorTarots.has(centre.key)&&!owned.debuffed&&generatedCount(state,owned)>0){
   if(!shopContext)return blocked('USE_UNAVAILABLE','Создание расходных карт требует забега с нативным генератором.');
-  const ids=Array.from({length:generatedCount(state,owned)},(_,index)=>`generated:${owned.id}:${index+1}`),occupied=[...Object.keys(state.cards??{}),...(state.jokers??[]).map(c=>c?.id),...cards.filter(c=>c!==owned).map(c=>c.id)];
+  const ids=Array.from({length:generatedCount(state,owned)},(_,index)=>`generated:${state.revision}:${index+1}`),occupied=[...Object.keys(state.cards??{}),...(state.jokers??[]).map(c=>c?.id),...cards.filter(c=>c!==owned).map(c=>c.id),...(state.shop?['main','vouchers','boosters'].flatMap(area=>state.shop[area]??[]):[]).map(c=>c?.id)];
   if(ids.some(id=>occupied.includes(id)))return blocked('INVALID_STATE','Идентификатор созданной карты уже используется.');
  }
  if(centre.key==='c_fool'){
@@ -159,7 +159,7 @@ export function applyConsumableAction(state,action){
  let created=null;
  let generatedCards=[];
  if(!card.debuffed&&generatorTarots.has(centre.key)&&generatedCount(state,card)>0){
-  const generated=generateApkTarotConsumables(next.rng.apk,currentApkShopContext(next),{set:generatorTarots.get(centre.key),count:generatedCount(state,card),instancePrefix:`generated:${card.id}`});
+  const generated=generateApkTarotConsumables(next.rng.apk,currentApkShopContext(next),{set:generatorTarots.get(centre.key),count:generatedCount(state,card),instancePrefix:`generated:${state.revision}`});
   generatedCards=generated.cards;next.rng.apk=generated.rng;
   for(const created of generatedCards)events.push({type:'consumable_created',sourceId:card.id,cardId:created.id,entityId:created.entityId,set:created.set});
  }

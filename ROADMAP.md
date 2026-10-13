@@ -1,6 +1,6 @@
 ## П-05к — генераторные Tarot, 13.10.2026
 
-Emperor/High Priestess реализованы: до двух карт из полного нативного пула, keyed RNG, собственные слоты и Negative runtime capacity, debuff/usage/save/UI. 413 core PASS; независимое QA завершено, Negative finding исправлен RED→GREEN. 33 Chromium suites и Android ждут Actions. Далее Wheel/Polychrome и Judgement/остальные джокеры; полный охват по нижнему плану остаётся открытым.
+Emperor/High Priestess реализованы: до двух карт из полного нативного пула, keyed RNG, собственные слоты и Negative runtime capacity, debuff/usage/save/UI. 414 core PASS; независимое QA завершено, Negative finding исправлен RED→GREEN. 33 Chromium suites и Android ждут Actions. Далее Wheel/Polychrome и Judgement/остальные джокеры; полный охват по нижнему плану остаётся открытым.
 
 ## Возобновление 13.10.2026 — П-05и
 

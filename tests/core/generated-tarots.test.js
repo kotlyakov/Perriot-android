@@ -51,9 +51,14 @@ test('High Priestess honours played-hand softlocks, banned centres and excludes 
 
 test('generator collisions reject atomically and legacy RNG is not substituted for native generation',()=>{
  for(const key of ['c_emperor','c_high_priestess']){
-  const state=run(key);state.consumables.push(owned('c_pluto','generated:creator:1'));state.apkShop.context=currentApkShopContext(state);const before=structuredClone(state),result=use(state);assert.equal(result.error?.code,'INVALID_STATE');assert.equal(result.state,state);assert.deepEqual(state,before);
+  const state=run(key);state.consumables.push(owned('c_pluto',`generated:${state.revision}:1`));state.apkShop.context=currentApkShopContext(state);const before=structuredClone(state),result=use(state);assert.equal(result.error?.code,'INVALID_STATE');assert.equal(result.state,state);assert.deepEqual(state,before);
   const legacy=createRun('legacy-create',{runId:'legacy-create',money:4n});legacy.consumables=[owned(key,'creator')];assert.equal(use(legacy).error?.code,'USE_UNAVAILABLE');
  }
+});
+
+test('generation from a long owned identity produces bounded save-safe identities',()=>{
+ const state=run('c_high_priestess');state.consumables[0].id='x'.repeat(119);state.apkShop.context=currentApkShopContext(state);assert.deepEqual(reload(state),state);
+ const result=dispatch(state,{type:'USE_CONSUMABLE',expectedRevision:state.revision,cardId:state.consumables[0].id});assert.equal(result.error,null);assert.ok(result.state.consumables.every(card=>card.id.length<=120));assert.deepEqual(reload(result.state),result.state);
 });
 
 test('generator Tarot descriptions advertise implemented creation',()=>{

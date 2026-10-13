@@ -1,6 +1,6 @@
 # STATUS.md — Пьеро
 
-13.10.2026. Активный этап П-05к, 0.4.25-preview/code38. Emperor/High Priestess реализованы в feat/generated-tarots: 413 core PASS, offline/config PASS; 33 Chromium и Android CI ожидаются. Negative self-slot / допустимое переполнение исправлены, включая прежний Fool. PR #21 Strength требует зелёного CI перед слиянием; новые UI fixture проверки устранены. Следующий шаг после интеграции — Wheel of Fortune и Polychrome, затем Judgement и полный каталог джокеров. Полная игра не готова.
+13.10.2026. Активный этап П-05к, 0.4.25-preview/code38. Emperor/High Priestess реализованы в feat/generated-tarots: 414 core PASS, offline/config PASS; 33 Chromium и Android CI ожидаются. Negative self-slot / допустимое переполнение исправлены, включая прежний Fool. PR #21 Strength требует зелёного CI перед слиянием; новые UI fixture проверки устранены. Следующий шаг после интеграции — Wheel of Fortune и Polychrome, затем Judgement и полный каталог джокеров. Полная игра не готова.
 
 П-05и, 0.4.24-preview/code37. Strength и четыре мастевых Tarot реализованы в feat/strength-suit-tarots; интеграция/CI ожидаются. Локально 405 core-тестов PASS, Android offline/config PASS. Chromium локально недоступен: загрузка браузера заблокирована сетью; 32 набора проверит Actions. Независимый QA нашёл Mark/save дефект; regression RED→GREEN и hiddenFaceRanks snapshot закрывают его. Полная игра не готова.
 
