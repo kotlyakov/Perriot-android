@@ -37,3 +37,5 @@ Devil/Gold Card: Devil атомарно усиливает ровно одну �
 
 
 Hanged Man/Death: Hanged Man удаляет 1–2 выбранные карты без немедленного добора и RNG; Death превращает визуально левую выбранную карту в копию правой независимо от порядка кликов, сохраняя физический ID и нативный creation-order shuffle key. Общий и Hanged-специфичный журналы разрушения строго сохраняют недобор, пустую колоду, Serpent-overdraw и применение после победной руки; debuff и Glass не могут подделать Hanged provenance. Mark сохраняет реально скрытую исходную лицевую карту после face-to-pip Death, но произвольные скрытые пипы отклоняются. Независимое ревью закрыто без Critical/Important. 397/397 core, 31/31 Chromium suites, offline assets, fresh Gradle, apksigner/zipalign и APK artifact PASS. PR #20 слит в 7076ef3aba8a8d305294049f697727363349f67e.
+
+13.10: финальный QA выявил частичный hiddenFaceRanks при новом доборе из legacy Mark save; исправлен RED→GREEN (MARK5). Объединённый core 415 PASS. Полные 32 браузерных набора предыдущего head PASS в Actions38410401537, включая touch→keyboard fix. Новому Mark fix требуется свежий зелёный CI до merge. PR #22 продолжает генераторные Tarot.
