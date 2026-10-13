@@ -289,7 +289,9 @@ function decode(payload) {
   for(const joker of state.jokers)decodeOffer(joker,jokerIds,true);
   if(Object.hasOwn(state,'consumableSlots'))integer(state.consumableSlots,0,10000);
   if(Object.hasOwn(state,'consumables')){
-    requireValue(Array.isArray(state.consumables)&&state.consumables.length<=(state.consumableSlots??2)+state.consumables.filter(c=>c.edition==='negative').length);
+    // Capacity limits acquisition, not persisted inventory: consuming a
+    // Negative generator can legally leave cards above the final limit.
+    requireValue(Array.isArray(state.consumables)&&state.consumables.length<=10000);
     for(const card of state.consumables)decodeOffer(card,jokerIds,true,true);
   }
   if(Object.hasOwn(state,'shop'))decodeShop(state.shop,jokerIds);

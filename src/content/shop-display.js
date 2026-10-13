@@ -38,6 +38,8 @@ descriptions.c_star='Меняет масть до 3 выбранных карт 
 descriptions.c_moon='Меняет масть до 3 выбранных карт на трефы.';
 descriptions.c_sun='Меняет масть до 3 выбранных карт на червы.';
 descriptions.c_world='Меняет масть до 3 выбранных карт на пики.';
+descriptions.c_emperor='Создаёт до 2 случайных карт Таро, если есть свободные места.';
+descriptions.c_high_priestess='Создаёт до 2 случайных карт Планет, если есть свободные места.';
 export function describeShopItem(offer){
  const key=originalJokerKey(offer.entityId);
  const base=descriptions[key]??'В этой предварительной версии доступен просмотр карты.';
