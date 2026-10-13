@@ -45,12 +45,12 @@ test('card modifier descriptions compose enhancement, edition and seal independe
  assert.deepEqual(module.describeCardModifiers({enhancement:'unknown',edition:'unknown',seal:'unknown'}),[]);
 });
 
-test('held Joker descriptions refer to remaining cards in hand without enabling unsupported Jokers',()=>{
+test('held Joker descriptions refer to remaining cards in hand and only implemented Raised Fist is buyable',()=>{
  const expected={j_baron:/король.*в руке.*×1,5/i,j_shoot_the_moon:/дама.*в руке.*\+13/i,j_mime:/эффекты карт в руке.*один раз/i,j_raised_fist:/младшей карты в руке/i};
  for(const [entityId,description] of Object.entries(expected)){
   const item=describeShopItem({entityId});
   assert.match(item.description,description);
-  assert.equal(item.canBuy,false);
+  assert.equal(item.canBuy,entityId==='j_raised_fist');
  }
 });
 
