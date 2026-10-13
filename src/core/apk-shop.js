@@ -159,3 +159,17 @@ export function generateApkFoolCard(rng,context,{centreId,instanceId}={}){
  s.unkeyed(); // used_tarot:juice_up after emplacing the copy
  return {card,rng:s.rng};
 }
+
+// Emperor/High Priestess create in the owned area: no soulable or shop flags.
+export function generateApkTarotConsumables(rng,context,{set,count,instancePrefix}={}){
+ context=createApkShopContext(context);
+ if(!['Tarot','Planet'].includes(set)||!Number.isInteger(count)||count<0||count>2||typeof instancePrefix!=='string'||!instancePrefix)throw new TypeError('Invalid generated consumables');
+ const s=session(rng,{...context,reducedMotion:false}),cards=[];
+ for(let index=0;index<count;index++){
+  const id=s.select(set,set==='Tarot'?'emp':'pri');
+  cards.push(s.construct(id,`${instancePrefix}:${index+1}`,{materialize:true}));
+  s.unkeyed(); // used_tarot:juice_up after each card is emplaced.
+ }
+ return {cards,rng:s.rng};
+}
+

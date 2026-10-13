@@ -55,9 +55,9 @@ test('native Fool copy advances constructor Math RNG and uses native pricing',()
  }
 });
 
-test('negative Fool at expanded capacity is consumed without overflowing remaining slots',()=>{
+test('negative Fool retains its slot during creation and can leave native overcapacity',()=>{
  const state=run('c_pluto',{edition:'negative'});state.consumables.push(card('c_hermit','one'),card('c_temperance','two'));
- const result=use(state);assert.equal(result.error,null);assert.deepEqual(result.state.consumables.map(c=>c.id),['one','two']);assert.equal(result.state.consumableUsage.c_fool.count,1);assert.equal(result.events.some(e=>e.type==='consumable_created'),false);assert.deepEqual(reload(result.state),result.state);
+ const result=use(state);assert.equal(result.error,null);assert.deepEqual(result.state.consumables.map(c=>c.id),['one','two','fool:fool-card']);assert.equal(result.state.consumableUsage.c_fool.count,1);assert.equal(result.events.some(e=>e.type==='consumable_created'),true);assert.deepEqual(reload(result.state),result.state);
 });
 
 test('banned previous centre does not silently create a forbidden forced copy',()=>{
@@ -78,3 +78,4 @@ test('malformed Fool shop context rejects atomically instead of throwing',()=>{
 test('native generated Planet pricing with Astronomer keeps minimum sell value',()=>{
  const state=createRun('FOOLPRICE',{runId:'fool-price',money:7n,referenceRng:true,referenceShop:true});const result=generateApkFoolCard(state.rng.apk,{...state.apkShop.context,ownedCentreIds:['j_astronomer']},{centreId:'c_pluto',instanceId:'copy'});assert.equal(result.card.cost,0n);assert.equal(result.card.sellCost,1n);
 });
+
