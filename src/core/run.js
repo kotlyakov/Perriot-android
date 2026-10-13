@@ -68,7 +68,7 @@ function drawToLimit(state, events,action='START_BLIND') {
     for(const id of ids){
       let hidden=boss.id==='bl_house'&&action==='START_BLIND'||boss.id==='bl_fish'&&action==='PLAY_HAND'||boss.id==='bl_mark'&&state.cards[id].enhancement!=='stone'&&state.cards[id].rank>=11&&state.cards[id].rank<=13;
       if(boss.id==='bl_wheel'){const draw=nextApkRandom(state.rng.apk,'wheel');state.rng.apk=draw.rng;hidden=draw.value<1/7;}
-      if(hidden)boss.hiddenCardIds.push(id);
+      if(hidden){boss.hiddenCardIds.push(id);if(boss.id==='bl_mark'){boss.hiddenFaceRanks??={};boss.hiddenFaceRanks[id]=state.cards[id].rank;}}
     }
   }
   state.hand.push(...ids);sortHand(state);
@@ -172,6 +172,7 @@ export function dispatch(state, action, shopOptions={}) {
   if(scoringState!==state){next.handLevels={...scoringState.handLevels};if(next.handLevels[score.handId]!==state.handLevels[score.handId])events.push({type:'hand_level_changed',handId:score.handId,levels:-1,level:next.handLevels[score.handId]});}
   next.hand=next.hand.filter(id=>!selected.has(id));next.discardPile.push(...playedIds);
   if(next.bossState?.hiddenCardIds)next.bossState.hiddenCardIds=next.bossState.hiddenCardIds.filter(id=>next.hand.includes(id));
+  if(next.bossState?.hiddenFaceRanks)next.bossState.hiddenFaceRanks=Object.fromEntries(Object.entries(next.bossState.hiddenFaceRanks).filter(([id])=>next.hand.includes(id)));
   if(score&&next.bossState?.id==='bl_hook'){
     let forced;try{forced=chooseHookDiscards(next.rng.apk,next.hand);}catch{return reject('UNSUPPORTED_BOSS_STATE','Invalid Hook card identities');}next.rng.apk=forced.rng;
     const discarded=next.hand.filter(id=>forced.cardIds.includes(id));
@@ -229,6 +230,7 @@ export function dispatch(state, action, shopOptions={}) {
   next.revision++;
   return {state:next,events,error:null};
 }
+
 
 
 

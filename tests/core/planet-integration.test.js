@@ -23,7 +23,7 @@ test('Black Hole upgrades all twelve hands and save corruption in usage is rejec
 });
 test('legacy state without usage fields migrates on first implemented use and unsupported Tarot remains unavailable',()=>{
  const s=createRun('legacy12',{runId:'legacy12',money:4n});delete s.consumableUsage;delete s.consumableUsageTotal;delete s.lastTarotPlanet;s.consumables=[card('c_mercury')];const saved=reload(s),r=act(saved,'USE_CONSUMABLE',{cardId:'c_mercury'});assert.equal(r.error,null);assert.equal(r.state.handLevels.pair,2);assert.deepEqual(reload(r.state),r.state);
- const native=shop();native.shop.main=[card('c_strength')];assert.equal(act(native,'BUY_SHOP_CARD',{offerId:'c_strength'}).error.code,'UNSUPPORTED_CONTENT');
+ const native=shop();native.shop.main=[card('c_emperor')];assert.equal(act(native,'BUY_SHOP_CARD',{offerId:'c_emperor'}).error.code,'UNSUPPORTED_CONTENT');
 });
 
 test('debuffed Planet and Black Hole are consumed and counted without changing levels',()=>{
@@ -32,3 +32,4 @@ test('debuffed Planet and Black Hole are consumed and counted without changing l
   const before=reload(s),r=act(before,'USE_CONSUMABLE',{cardId:key});assert.equal(r.error,null);assert.deepEqual(r.state.handLevels,before.handLevels);assert.equal(r.state.consumables.length,0);assert.equal(r.state.consumableUsage[key].count,1);assert.equal(r.state.consumableUsageTotal.all,1);assert.equal(r.events.filter(e=>e.type==='hand_level_changed').length,0);assert.deepEqual(reload(r.state),r.state);
  }
 });
+

@@ -33,11 +33,17 @@ descriptions.c_tower='Усиливает 1 выбранную карту до К
 descriptions.c_devil='Усиливает 1 выбранную карту до Золотой: она даёт $3, если остаётся в руке в конце раунда.';
 descriptions.c_hanged_man='Уничтожает до 2 выбранных карт из колоды.';
 descriptions.c_death='Превращает левую выбранную карту в точную копию правой выбранной карты.';
+descriptions.c_strength='Повышает ранг до 2 выбранных карт на один: туз становится двойкой.';
+descriptions.c_star='Меняет масть до 3 выбранных карт на бубны.';
+descriptions.c_moon='Меняет масть до 3 выбранных карт на трефы.';
+descriptions.c_sun='Меняет масть до 3 выбранных карт на червы.';
+descriptions.c_world='Меняет масть до 3 выбранных карт на пики.';
 export function describeShopItem(offer){
  const key=originalJokerKey(offer.entityId);
  const base=descriptions[key]??'В этой предварительной версии доступен просмотр карты.';
  const edition=offer.edition==='negative'?`Негатив: дополнительное место для ${supportsJoker(offer)?'этого джокера':'этой расходной карты'}.`:EDITION_DESCRIPTIONS[offer.edition];
  return {name:names[key]??russianNames[key]??'Карта',description:base+(edition?' '+edition:''),canBuy:supportsJoker(offer)||supportsConsumableEffect(offer)};
 }
+
 
 
