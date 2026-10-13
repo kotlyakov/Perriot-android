@@ -21,7 +21,7 @@ try{
   for(const id of state.hand.slice(0,rule.count))assert.deepEqual(saved.cards[id],{...state.cards[id],...(rule.suit?{suit:rule.suit}:{rank:state.cards[id].rank===14?2:state.cards[id].rank+1})});
   assert.equal(saved.cards[state.hand[0]].enhancement,'gold');assert.equal(saved.consumableUsage[key].count,1);
   await page.reload();await enterRun(page,{startBlind:false});assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),raw);
-  const changed=page.locator(`#hand [data-card-id=${state.hand[0]}]`);assert.match(await changed.getAttribute('aria-label'),key==='c_strength'?/^2 /:/^Туз /);
+  const changed=page.locator(`#hand [data-card-id=${state.hand[0]}]`);assert.match(await changed.getAttribute('aria-label'),key==='c_strength'?/^2 /:/^A /);
  }
  assert.deepEqual(errors,[]);console.log('Strength and four suit Tarots: selection limits, UI use, enhancements and reload PASS');
 }finally{await browser.close();}
