@@ -2,7 +2,7 @@ import {handRecognitionOptions} from '../content/jokers.js';
 import {applySkipBlind} from './skip-blind.js';
 import {applyConsumableAction} from './consumables.js';
 import {applyCelestialPackAction} from './celestial-pack.js';
-import {canEnterBoss,chooseHookDiscards,isBossCardDebuffed,resolveMostPlayedHand} from './boss-effects.js';
+import {canEnterBoss,chooseHookDiscards,chooseHeartJoker,isBossCardDebuffed,resolveMostPlayedHand} from './boss-effects.js';
 import {applyInventoryAction} from './inventory.js';
 import {chooseNextAnteBlinds} from './blind-progression.js';
 import {chooseApkBoss} from './apk-blinds.js';
@@ -77,6 +77,12 @@ function drawToLimit(state, events,action='START_BLIND') {
   }
   state.hand.push(...ids);sortHand(state);
   if (ids.length) events.push({type:'cards_drawn',cardIds:[...ids]});
+  if(boss&&!boss.disabled&&boss.id==='bl_final_heart'&&action!=='DISCARD'){
+    // Native drawn_to_hand collects candidates before clearing previous debuffs.
+    const choice=chooseHeartJoker(state.rng.apk,state.jokers);state.rng.apk=choice.rng;
+    for(const joker of state.jokers)joker.debuffed=joker.id===choice.jokerId;
+    boss.heartDebuffedJokerId=choice.jokerId;
+  }
 }
 
 export function dispatch(state, action, shopOptions={}) {
@@ -92,7 +98,7 @@ export function dispatch(state, action, shopOptions={}) {
   if(action.type==='CASH_OUT') {
     if(state.phase!=='round_won')return reject('INVALID_PHASE','Round has not been won');
     let quote;try{quote=getCashout(state);}catch{return reject('INVALID_STATE','Invalid cashout state');}
-    const next=structuredClone(state);if(next.bossState){next.round.handSize=next.bossState.baseHandSize;delete next.bossState;next.apkBlinds.playedCardIds=[];next.mostPlayedHand=resolveMostPlayedHand(next.apkShop.context.playedHands);}next.money+=quote.total;delete next.cashoutQuote;next.phase='shop';next.revision++;
+    const next=structuredClone(state);if(next.bossState){next.round.handSize=next.bossState.baseHandSize;if(next.bossState.id==='bl_final_heart')for(const joker of next.jokers)joker.debuffed=false;delete next.bossState;next.apkBlinds.playedCardIds=[];next.mostPlayedHand=resolveMostPlayedHand(next.apkShop.context.playedHands);}next.money+=quote.total;delete next.cashoutQuote;next.phase='shop';next.revision++;
     next.drawPile=Object.keys(next.cards);next.hand=[];next.discardPile=[];next.lastScore=null;if(state.hangedShortfallCardIds)next.hangedShortfallEpoch={...(state.hangedShortfallEpoch??{cardIds:[...state.hangedShortfallCardIds],revision:state.revision,ante:state.round.ante,blindId:state.round.blindId,handsRemaining:state.round.handsRemaining}),consumed:true,consumedBy:action.type};delete next.hangedShortfallCardIds;
     if(next.apkShop){
       try{
@@ -129,6 +135,7 @@ export function dispatch(state, action, shopOptions={}) {
       if(next.bossState.id==='bl_eye')next.bossState.playedHands=[];
       if(next.bossState.id==='bl_mouth')next.bossState.firstHand=null;
       if(next.bossState.id==='bl_ox')next.bossState.oxHand=next.mostPlayedHand;
+      if(next.bossState.id==='bl_final_heart')next.bossState.heartDebuffedJokerId=null;
     }
     if(next.rng.apk){
       const shuffled=shuffleApkDeck(next.drawPile.map(id=>next.cards[id]),next.rng.apk,'nr'+next.round.ante);next.drawPile=shuffled.cardIds;next.rng.apk=shuffled.rng;
@@ -173,6 +180,7 @@ export function dispatch(state, action, shopOptions={}) {
       score=scoreHand(scoringState,playedIds.map(id=>state.cards[id]));
       if(!state.bossState?.disabled&&state.bossState?.id==='bl_eye')score.bossHistory={playedHands:[...state.bossState.playedHands]};
       if(!state.bossState?.disabled&&state.bossState?.id==='bl_mouth')score.bossHistory={firstHand:state.bossState.firstHand};
+      if(!state.bossState?.disabled&&state.bossState?.id==='bl_final_heart')score.bossHistory={heartDebuffedJokerId:state.bossState.heartDebuffedJokerId,...(score.glassRngKind==='apk'?{heartRngBefore:state.rng.apk.streams.crimson_heart??null}:{})};
     }
     catch (error) { return reject('UNSUPPORTED_CONTENT',error.message); }
   }

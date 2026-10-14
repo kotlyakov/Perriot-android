@@ -7,14 +7,20 @@ import {APK_BOSSES,APK_BLINDS_BY_ID} from '../content/apk-blinds.js';
 import {APK_HAND_NAMES} from './apk-shop-state.js';
 import {isCardSuit} from './card-suits.js';
 export const FIRST_ANTE_BOSSES=Object.freeze(['bl_hook','bl_club','bl_manacle','bl_psychic','bl_goad','bl_window','bl_head','bl_pillar']);
-export const SUPPORTED_BOSSES=Object.freeze(APK_BOSSES.filter(boss=>!boss.showdown||['bl_final_leaf','bl_final_vessel'].includes(boss.id)).map(boss=>boss.id));
+export const SUPPORTED_BOSSES=Object.freeze(APK_BOSSES.filter(boss=>!boss.showdown||['bl_final_leaf','bl_final_vessel','bl_final_heart'].includes(boss.id)).map(boss=>boss.id));
 const suits={bl_club:'clubs',bl_goad:'spades',bl_window:'diamonds',bl_head:'hearts'};
 export function canEnterBoss(state){
  const ante=state.round?.ante,boss=APK_BLINDS_BY_ID[state.apkBlinds?.bossId],winAnte=state.winAnte??8;
  const showdown=ante>=2&&ante%winAnte===0;
  if(!Number.isSafeInteger(ante)||ante<1||ante>8||!boss||!SUPPORTED_BOSSES.includes(boss.id)||(boss.showdown!==showdown||!boss.showdown&&boss.minAnte>ante)||!Array.isArray(state.apkBlinds.playedCardIds)||!state.rng?.apk)return false;
  if(boss.id==='bl_ox'&&state.phase!=='shop'&&!Object.hasOwn(APK_HAND_NAMES,state.mostPlayedHand))return false;
- try{canonicalCards(state.cards);}catch{return false;}return true;
+ try{
+  canonicalCards(state.cards);
+  if(boss.id==='bl_final_heart'){
+   const jokers=canonicalJokers(state.jokers);
+   if(jokers.length>1&&jokers.every(joker=>joker.debuffed))return false;
+  }
+ }catch{return false;}return true;
 }
 export function bossTarget(state){
  const ante=state.round?.ante,boss=APK_BLINDS_BY_ID[state.apkBlinds?.bossId];
@@ -115,6 +121,7 @@ export function disableBoss(state,events){
  if(boss.hiddenFaceRanks)boss.hiddenFaceRanks={};
  if(boss.playedHands)boss.playedHands=[];
  if(Object.hasOwn(boss,'firstHand'))boss.firstHand=null;
+ if(boss.id==='bl_final_heart'){for(const joker of state.jokers)joker.debuffed=false;boss.heartDebuffedJokerId=null;}
  if(boss.id==='bl_manacle'){
   state.round.handSize=boss.baseHandSize;
   if(state.drawPile.length){

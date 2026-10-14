@@ -6,7 +6,7 @@ import {currentApkShopContext} from './apk-shop-state.js';
 const consumables=new Map(catalogue.centres.filter(c=>['Tarot','Planet','Spectral'].includes(c.set)).map(c=>[c.key,c.set]));
 export function supportsConsumable(card){return consumables.get(card?.entityId)===card?.set&&card.originalKey===card.entityId&&!card.rental&&!card.perishable;}
 export function canManageInventory(state){return ['blind_selection','playing','round_won','shop'].includes(state.phase);}
-export function canSellOwned(state,card,area){return canManageInventory(state)&&!card.eternal&&typeof card.sellCost==='bigint'&&card.sellCost>=0n&&(area==='jokers'?supportsJoker(card):area==='consumables'&&supportsConsumable(card));}
+export function canSellOwned(state,card,area){return canManageInventory(state)&&!card.eternal&&typeof card.sellCost==='bigint'&&card.sellCost>=0n&&(area==='jokers'?supportsJoker(card,{owned:true}):area==='consumables'&&supportsConsumable(card));}
 export function applyInventoryAction(state,action){
  const reject=(code,message)=>({state,events:[],error:{code,message}});
  if(!canManageInventory(state))return reject('INVALID_PHASE','Inventory is locked');
@@ -27,6 +27,7 @@ export function applyInventoryAction(state,action){
   next=structuredClone(state);if(state.phase==='round_won'&&!next.cashoutQuote)next.cashoutQuote=captureCashoutQuote(state);next[area]=next[area].filter(c=>c.id!==card.id);next.money+=card.sellCost;
   events=[{type:'owned_card_sold',area,cardId:card.id,sellCost:card.sellCost},{type:'money_changed',before:state.money,after:next.money,delta:card.sellCost}];
   if(area==='jokers'&&next.bossState?.id==='bl_final_leaf')disableBoss(next,events);
+  if(area==='jokers'&&next.bossState?.id==='bl_final_heart'&&next.bossState.heartDebuffedJokerId===card.id)next.bossState.heartDebuffedJokerId=null;
  }
  next.lastScore=null;next.revision++;
  if(next.apkShop)next.apkShop.context=currentApkShopContext(next);

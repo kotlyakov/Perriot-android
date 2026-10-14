@@ -31,7 +31,7 @@ test('Leaf and Vessel enter Ante8 despite min10; incomplete showdown bosses stay
   for(const ante of [1,2,7])assert.equal(effects.canEnterBoss(pending(id,ante)),false);
  }
  for(const b of APK_BOSSES.filter(b=>b.showdown)){
-  assert.equal(b.dollars,8);if(!['bl_final_leaf','bl_final_vessel'].includes(b.id))assert.equal(act(pending(b.id),'START_BLIND').error.code,'BOSS_UNAVAILABLE');
+  assert.equal(b.dollars,8);if(!['bl_final_leaf','bl_final_vessel','bl_final_heart'].includes(b.id))assert.equal(act(pending(b.id),'START_BLIND').error.code,'BOSS_UNAVAILABLE');
  }
 });
 test('Leaf suppresses card chips, enhancements, Lucky/Glass RNG and held Steel without suppressing base or independent Joker',()=>{

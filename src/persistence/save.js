@@ -1,7 +1,7 @@
 import {getCashout} from '../core/cashout.js';
 import {supportsConsumable} from '../core/inventory.js';
 import {validConsumableUsage} from '../core/consumables.js';
-import {canEnterBoss,bossTarget,isBossCardDebuffed,needleRestorationAfterEarning} from '../core/boss-effects.js';
+import {canEnterBoss,bossTarget,chooseHeartJoker,isBossCardDebuffed,needleRestorationAfterEarning} from '../core/boss-effects.js';
 import {APK_BOSSES,APK_BLINDS_BY_ID} from '../content/apk-blinds.js';
 import {createApkTagContext,getApkTagPool} from '../core/apk-tags.js';
 import { apkPseudoHash, validateApkRng } from '../core/apk-rng.js';
@@ -31,7 +31,7 @@ function optionalObject(value,required,optional=[]) {
 function decodeOffer(value,ids,owned=false,consumable=false) {
   optionalObject(value,owned?['id','entityId']:['id','entityId','cost','sellCost'],['cost','sellCost','edition','eternal','rental','perishable','debuffed','originalKey','set','frontKey','toDoPokerHand','creationOrdinal']);
   id(value.id);id(value.entityId);requireValue(!ids.has(value.id));ids.add(value.id);
-  if(owned)requireValue(consumable?supportsConsumable(value):supportsJoker(value));
+  if(owned)requireValue(consumable?supportsConsumable(value):supportsJoker(value,{owned:true}));
   for(const key of ['cost','sellCost'])if(Object.hasOwn(value,key))value[key]=decimal(value[key]);
   if(Object.hasOwn(value,'edition'))requireValue(['base','foil','holographic','polychrome','negative'].includes(value.edition));
   for(const key of ['eternal','rental','perishable','debuffed'])if(Object.hasOwn(value,key))requireValue(typeof value[key]==='boolean');
@@ -79,7 +79,7 @@ function cardList(ids,state){
  requireValue(Array.isArray(ids)&&ids.length<=Object.keys(state.cards).length&&new Set(ids).size===ids.length&&ids.every(id=>Object.hasOwn(state.cards,id)));
 }
 function decodeBoss(value,state){
- const extras={bl_house:['hiddenCardIds'],bl_wheel:['hiddenCardIds'],bl_fish:['hiddenCardIds'],bl_mark:['hiddenCardIds'],bl_eye:['playedHands'],bl_mouth:['firstHand'],bl_ox:['oxHand']};
+ const extras={bl_house:['hiddenCardIds'],bl_wheel:['hiddenCardIds'],bl_fish:['hiddenCardIds'],bl_mark:['hiddenCardIds'],bl_eye:['playedHands'],bl_mouth:['firstHand'],bl_ox:['oxHand'],bl_final_heart:['heartDebuffedJokerId']};
  optionalObject(value,['version','id','playedBeforeBoss','baseHandSize',...(extras[value.id]??[])],['disabled','disabledRevision',...(value.id==='bl_mark'?['hiddenFaceRanks']:[]),...(value.id==='bl_water'?['discardsSub']:[]),...(value.id==='bl_needle'?['handsSub','startedRevision','needleDisableOrigin']:[]),...(value.id==='bl_serpent'?['serpentInitialCardCount','serpentDisableOrigin','serpentTerminalUnfilledCardIds']:[])]);
  requireValue(value.version===1&&value.id===state.apkBlinds?.bossId&&canEnterBoss(state));
  requireValue(state.round.blindId==='boss'&&['playing','round_won','game_over'].includes(state.phase)&&state.roundNumber===state.round.ante*3&&value.baseHandSize===8);
@@ -104,6 +104,11 @@ function decodeBoss(value,state){
  if(value.id==='bl_eye')requireValue(Array.isArray(value.playedHands)&&new Set(value.playedHands).size===value.playedHands.length&&value.playedHands.every(id=>Object.hasOwn(HANDS,id)));
  if(value.id==='bl_mouth')requireValue(value.firstHand===null||Object.hasOwn(HANDS,value.firstHand));
  if(value.id==='bl_ox')requireValue(Object.hasOwn(HANDS,value.oxHand)&&value.oxHand===state.mostPlayedHand);
+ if(value.id==='bl_final_heart'){
+  const chosen=value.heartDebuffedJokerId;
+  requireValue(chosen===null||typeof chosen==='string'&&state.jokers.some(j=>j.id===chosen));
+  requireValue(state.jokers.every(j=>(j.debuffed===true)===(j.id===chosen))&&(!value.disabled||chosen===null));
+ }
  if(value.id==='bl_serpent'){
   if(Object.hasOwn(value,'serpentInitialCardCount')&&value.serpentInitialCardCount!==null)integer(value.serpentInitialCardCount,0,52);
   if(value.disabled){
@@ -264,6 +269,7 @@ function decodeScore(value,state) {
     else{randomInt(value.luckyRngBefore,1);randomInt(value.luckyRngAfter,1);requireValue(JSON.stringify(value.luckyRngAfter)===JSON.stringify(state.rng.effects));}
   }
   const glassFields=['glassRolls','glassRngKind','glassRngBefore','glassRngAfter','glassDestroyedCards'],hasGlass=glassFields.some(key=>Object.hasOwn(value,key));
+  const heartGlass=hasGlass&&value.glassRngKind==='apk'&&!state.bossState?.disabled&&state.bossState?.id==='bl_final_heart';
   requireValue(!hasGlass||glassFields.every(key=>Object.hasOwn(value,key)));
   if(hasGlass){
     requireValue(['apk','effects'].includes(value.glassRngKind)&&Array.isArray(value.glassRolls)&&value.glassRolls.length>=1&&value.glassRolls.length<=5&&new Set(value.glassRolls.map(roll=>roll.cardId)).size===value.glassRolls.length);
@@ -271,7 +277,8 @@ function decodeScore(value,state) {
     requireValue(JSON.stringify(glassDestroyedCards.map(card=>card.id))===JSON.stringify(value.glassRolls.filter(roll=>roll.destroyed).map(roll=>roll.cardId)));
     if(value.glassRngKind==='apk'){
       requireValue(state.rng.apk);object(value.glassRngBefore,['glass']);object(value.glassRngAfter,['glass','mathState']);for(const snapshot of [value.glassRngBefore,value.glassRngAfter])requireValue(snapshot.glass===null||Number.isFinite(snapshot.glass)&&snapshot.glass>=0&&snapshot.glass<=1);validateApkRng({...state.rng.apk,mathState:value.glassRngAfter.mathState});
-      requireValue(value.glassRngAfter.glass===(state.rng.apk.streams.glass??null)&&JSON.stringify(value.glassRngAfter.mathState)===JSON.stringify(state.rng.apk.mathState));
+      // Heart's later draw is authenticated below from this score-time state.
+      requireValue(value.glassRngAfter.glass===(state.rng.apk.streams.glass??null)&&(heartGlass||JSON.stringify(value.glassRngAfter.mathState)===JSON.stringify(state.rng.apk.mathState)));
     }else{randomInt(value.glassRngBefore,1);randomInt(value.glassRngAfter,1);requireValue(JSON.stringify(value.glassRngAfter)===JSON.stringify(state.rng.effects));}
   }else requireValue(glassDestroyedCards.length===0);
   const scoringMoneyBefore=Object.hasOwn(value,'scoringMoneyBefore')?decimal(value.scoringMoneyBefore,true):undefined;
@@ -339,6 +346,21 @@ function decodeScore(value,state) {
       requireValue(state.bossState.firstHand===(history.firstHand??value.handId));
     }
     scoringState={...scoringState,bossState:{...state.bossState,...history}};
+  }else if(!state.bossState?.disabled&&state.bossState?.id==='bl_final_heart'){
+    const history=value.bossHistory;object(history,heartGlass?['heartDebuffedJokerId','heartRngBefore']:['heartDebuffedJokerId']);
+    const chosen=history.heartDebuffedJokerId;
+    requireValue(chosen===null||typeof chosen==='string'&&state.jokers.some(j=>j.id===chosen));
+    const current=state.bossState.heartDebuffedJokerId;
+    if(state.phase==='playing')requireValue(state.jokers.length===0?current===null:current!==null&&(state.jokers.length===1||current!==chosen));
+    else requireValue(current===chosen);
+    scoringState={...scoringState,jokers:state.jokers.map(j=>({...j,debuffed:j.id===chosen})),bossState:{...state.bossState,...history}};
+    if(heartGlass){
+      const stream=history.heartRngBefore;requireValue(stream===null||Number.isFinite(stream)&&stream>=0&&stream<=1);
+      const beforeHeart={...state.rng.apk,streams:{...state.rng.apk.streams},mathState:[...value.glassRngAfter.mathState]};
+      if(stream===null)delete beforeHeart.streams.crimson_heart;else beforeHeart.streams.crimson_heart=stream;
+      const afterHeart=state.phase==='playing'?chooseHeartJoker(beforeHeart,scoringState.jokers):{jokerId:chosen,rng:beforeHeart};
+      requireValue(afterHeart.jokerId===current&&JSON.stringify(afterHeart.rng)===JSON.stringify(state.rng.apk));
+    }
   }else requireValue(value.bossHistory===undefined);
   if(value.scoringPilesBefore)scoringState={...scoringState,drawPile:[...value.scoringPilesBefore.drawPile],discardPile:[...value.scoringPilesBefore.discardPile],...(value.scoringPilesBefore.hangedShortfallCardIds?{hangedShortfallCardIds:[...value.scoringPilesBefore.hangedShortfallCardIds]}:{})};
   scoringState={...scoringState,cards:scoreCards};if(value.heldCardIds)scoringState={...scoringState,hand:[...value.heldCardIds]};

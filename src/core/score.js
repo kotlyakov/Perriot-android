@@ -18,7 +18,7 @@ export function scoreHand(state, playedCards) {
   const jokerIds = new Set();
   for (const joker of state.jokers) {
     if (!joker || typeof joker.id !== 'string' || !joker.id || jokerIds.has(joker.id) || !SUPPORTED_JOKERS.includes(joker.entityId)) throw new Error('Invalid or unsupported joker');
-    if (!supportsJoker(joker)) throw new Error('Unsupported joker modifier');
+    if (!supportsJoker(joker,{owned:true})) throw new Error('Unsupported joker modifier');
     jokerIds.add(joker.id);
   }
   if(isBossHandDebuffed(state,playedCards,hand.handId))return {...hand,playedCardIds:playedCards.map(c=>c.id),scoringCardIds:[],handDebuffed:true,chips:0n,mult:0n,score:0n,trace:[
@@ -35,7 +35,7 @@ export function scoreHand(state, playedCards) {
     if(mult<1n)mult=1n;
   }
   const trace = [{type:'score_step',phase:'base',sourceId:`hand:${hand.handId}`,operation:'base',before:{chips:0n,mult:0n},after:{chips,mult}}];
-  const splash=state.jokers.some(j=>originalJokerKey(j.entityId)==='j_splash'),nativeScoring=new Set(hand.scoringCardIds);
+  const splash=state.jokers.some(j=>!j.debuffed&&originalJokerKey(j.entityId)==='j_splash'),nativeScoring=new Set(hand.scoringCardIds);
   const scoringCardIds=playedCards.filter(card=>splash||nativeScoring.has(card.id)||card.enhancement==='stone').map(card=>card.id);
   const scoringSet = new Set(scoringCardIds);
   let luckyRng,luckyRngBefore,luckyKind;const luckyRolls=[];
@@ -82,11 +82,11 @@ export function scoreHand(state, playedCards) {
       luckyRolls.push({cardId:card.id,multRoll,moneyRoll,multTriggered,moneyTriggered});
     }
     if(card.enhancement==='glass')apply({operation:'multiply_mult',amount:2n},'scored_card',card.id);
-    for(const joker of state.jokers)for(const effect of scoredJokerEffects(joker.entityId,card))apply(effect,'scored_card',card.id,joker.id);
+    for(const joker of state.jokers)if(!joker.debuffed)for(const effect of scoredJokerEffects(joker.entityId,card))apply(effect,'scored_card',card.id,joker.id);
   }
   for(const card of heldCards)if(!isBossCardDebuffed(state,card)){
     if(card.enhancement==='steel')apply({operation:'multiply_mult',amount:{n:3n,d:2n}},'held_card',card.id);
-    for(const joker of state.jokers)for(const effect of heldJokerEffects(joker.entityId,card,heldCards))apply(effect,'held_card',card.id,joker.id);
+    for(const joker of state.jokers)if(!joker.debuffed)for(const effect of heldJokerEffects(joker.entityId,card,heldCards))apply(effect,'held_card',card.id,joker.id);
   }
   const moneyJokers=state.jokers.some(j=>['j_bull','j_bootstraps'].includes(originalJokerKey(j.entityId)));
   if(moneyJokers&&typeof state.money!=='bigint')throw new TypeError('Missing scoring money');
@@ -98,6 +98,7 @@ export function scoreHand(state, playedCards) {
   const rankCounts = new Map();
   for (const card of playedCards)if(card.enhancement!=='stone')rankCounts.set(card.rank,(rankCounts.get(card.rank)??0)+1);
   for (const joker of state.jokers) {
+    if(joker.debuffed)continue;
     if(joker.edition==='foil')apply({operation:'add_chips',amount:50n},'edition',joker.id);
     if(joker.edition==='holographic')apply({operation:'add_mult',amount:10n},'edition',joker.id);
     const effect=independentEffect(joker.entityId,[...rankCounts.values()],{playedCards,handId:hand.handId,jokerCount:state.jokers.length,
