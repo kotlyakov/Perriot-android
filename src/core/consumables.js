@@ -1,3 +1,4 @@
+import {captureCashoutQuote} from './cashout.js';
 import {generateApkFoolCard,generateApkTarotConsumables} from './apk-shop.js';
 import {quoteShopCard} from './shop-pricing.js';
 import catalogue from '../content/apk-shop-catalog.js';
@@ -128,6 +129,7 @@ export function applyConsumableAction(state,action){
  const capability=canUseConsumable(state,card,action.targetCardIds);
  if(!capability.available)return reject(capability.code,capability.reason);
  const centre=centres.get(card.entityId),next=structuredClone(state),events=[];
+ if(state.phase==='round_won'&&!next.cashoutQuote)next.cashoutQuote=captureCashoutQuote(state);
  const previousTarotPlanet=state.lastTarotPlanet??null;
  // Older Mark saves have no draw-time rank snapshot. Capture it before a
  // targeted transformation; current rank may cease to be a face afterwards.
@@ -151,6 +153,7 @@ export function applyConsumableAction(state,action){
   next.destroyedCardIds=[...priorDestroyed,...action.targetCardIds];
   next.hangedDestroyedCardIds=[...(next.hangedDestroyedCardIds??[]),...action.targetCardIds];
   next.hangedShortfallCardIds=[...(next.hangedShortfallCardIds??[]),...action.targetCardIds];
+  next.hangedShortfallEpoch={cardIds:[...next.hangedShortfallCardIds],revision:state.revision+1,ante:state.round.ante,blindId:state.round.blindId,handsRemaining:state.round.handsRemaining,consumed:false};
   for(const cardId of [...action.targetCardIds].reverse()){delete next.cards[cardId];events.push({type:'playing_card_destroyed',cardId,sourceId:card.id});}
   if(next.apkBlinds?.playedCardIds)next.apkBlinds.playedCardIds=next.apkBlinds.playedCardIds.filter(id=>!removed.has(id));
   if(next.bossState?.playedBeforeBoss)next.bossState.playedBeforeBoss=next.bossState.playedBeforeBoss.filter(id=>!removed.has(id));

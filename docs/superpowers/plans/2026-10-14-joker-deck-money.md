@@ -9,3 +9,5 @@
 5. Обновить STATUS, ROADMAP, docs/backlog/progress, manifest/parity для проверенной партии. Полноту игры и физическую Android приёмку не заявлять.
 
 Параллельно независимые подготовительные задачи: генератор Arcana (полный пул, не включать lifecycle преждевременно); точные спецификации финальных боссов/победы/Endless. Эти результаты не означают готовый пользовательский функционал.
+
+Уточнение итогового среза: сохранить ancestry PR25–27 и их Blue/Swashbuckler тесты; итог53/150. Подключить Four Fingers/Shortcut в score/Arm/save; Golden/Cloud в frozen end-round quote и scrollable payout UI. Критическая регрессия quote после sale/consumable: фиксировать до мутации, сохранять строго типизированные деньги и арифметику, legacy без snapshot мигрировать при первом изменении. Core и независимый native oracle, QA, затем36 browser/freshAndroid. Полный game/RNG parity не заявлять; Stone raw RNG отдельно открыт.

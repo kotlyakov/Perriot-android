@@ -1,3 +1,4 @@
+import {captureCashoutQuote} from './cashout.js';
 import {supportsJoker} from '../content/jokers.js';
 import catalogue from '../content/apk-shop-catalog.js';
 import {currentApkShopContext} from './apk-shop-state.js';
@@ -16,13 +17,13 @@ export function applyInventoryAction(state,action){
  if(action.type.startsWith('REORDER_')){
   const ids=action.cardIds;
   if(!Array.isArray(ids)||ids.length!==cards.length||new Set(ids).size!==ids.length||ids.some(id=>!cards.some(c=>c.id===id)))return reject('INVALID_SELECTION','Expected an exact inventory permutation');
-  next=structuredClone(state);next[area]=ids.map(id=>next[area].find(c=>c.id===id));events=[{type:'inventory_reordered',area,cardIds:[...ids]}];
+  next=structuredClone(state);if(state.phase==='round_won'&&!next.cashoutQuote)next.cashoutQuote=captureCashoutQuote(state);next[area]=ids.map(id=>next[area].find(c=>c.id===id));events=[{type:'inventory_reordered',area,cardIds:[...ids]}];
  }else{
   const card=cards.find(c=>c.id===action.cardId);
   if(!card)return reject('CARD_NOT_FOUND','Card is no longer owned');
   if(!canSellOwned(state,card,area))return reject('SALE_UNAVAILABLE','This card cannot be sold');
   if(typeof state.money!=='bigint')return reject('INVALID_STATE','Invalid money');
-  next=structuredClone(state);next[area]=next[area].filter(c=>c.id!==card.id);next.money+=card.sellCost;
+  next=structuredClone(state);if(state.phase==='round_won'&&!next.cashoutQuote)next.cashoutQuote=captureCashoutQuote(state);next[area]=next[area].filter(c=>c.id!==card.id);next.money+=card.sellCost;
   events=[{type:'owned_card_sold',area,cardId:card.id,sellCost:card.sellCost},{type:'money_changed',before:state.money,after:next.money,delta:card.sellCost}];
  }
  next.lastScore=null;next.revision++;

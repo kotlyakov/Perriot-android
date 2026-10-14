@@ -28,7 +28,7 @@ test('Black Hole levels all twelve hands and records Spectral usage without repl
  assert.deepEqual(r.state.consumableUsageTotal,{tarot:0,planet:0,spectral:1,tarot_planet:0,all:1});assert.deepEqual(r.state.discoveredHands,s.discoveredHands);
 });
 test('all ordinary inventory phases allow targetless use; unsupported effects and transient phases block it',()=>{
- for(const phase of ['blind_selection','playing','round_won','shop']){const s=fresh();s.phase=phase;assert.equal(use(s).error,null);}
+ for(const phase of ['blind_selection','playing','round_won','shop']){const s=fresh();s.phase=phase;if(phase==='round_won')s.round.score=s.round.target;assert.equal(use(s).error,null);}
  for(const phase of ['game_over','victory','scoring','pack']){const s=fresh();s.phase=phase;assert.equal(canUseConsumable(s,s.consumables[0]).available,false);assert.equal(use(s).error.code,'INVALID_PHASE');}
  for(const key of ['c_fool','c_ankh']){const s=fresh(key);assert.equal(canUseConsumable(s,s.consumables[0]).available,false);assert.equal(use(s).error.code,'USE_UNAVAILABLE');}
  const s=fresh();assert.equal(canUseConsumable(s,{...s.consumables[0],id:'foreign'}).available,false);assert.equal(use(s,{cardId:'foreign'}).error.code,'CARD_NOT_FOUND');

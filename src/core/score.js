@@ -1,13 +1,13 @@
 import {isBossCardDebuffed,isBossHandDebuffed} from './boss-effects.js';
 import { evaluateHand } from './hands.js';
 import { HANDS } from '../content/hands.js';
-import { SUPPORTED_JOKERS, heldJokerEffects, independentEffect, originalJokerKey, supportsJoker, scoredJokerEffects } from '../content/jokers.js';
+import { SUPPORTED_JOKERS, handRecognitionOptions, heldJokerEffects, independentEffect, originalJokerKey, supportsJoker, scoredJokerEffects } from '../content/jokers.js';
 import {nextApkRandom} from './apk-rng.js';
 import {randomInt} from './rng.js';
 import {addExact,floorExact,multiplyExact} from './numbers.js';
 
 export function scoreHand(state, playedCards) {
-  const hand = evaluateHand(playedCards,{isCardDebuffed:card=>isBossCardDebuffed(state,card)});
+  const hand = evaluateHand(playedCards,{isCardDebuffed:card=>isBossCardDebuffed(state,card),...handRecognitionOptions(state.jokers)});
   if (!state || !state.handLevels || typeof state.handLevels !== 'object' || !Array.isArray(state.jokers)) throw new TypeError('Invalid scoring state');
   const playedIds=new Set(playedCards.map(card=>card.id));
   const heldCards = state.hand === undefined ? [] : state.hand.filter(id=>!playedIds.has(id)).map(id=>state.cards[id]);
@@ -102,7 +102,8 @@ export function scoreHand(state, playedCards) {
     if(joker.edition==='holographic')apply({operation:'add_mult',amount:10n},'edition',joker.id);
     const effect=independentEffect(joker.entityId,[...rankCounts.values()],{playedCards,handId:hand.handId,jokerCount:state.jokers.length,
       handsRemaining:state.round?.handsRemaining,discardsRemaining:state.round?.discardsRemaining,heldCards,jokerSlots:state.jokerSlots??5,
-      scoringCards:playedCards.filter(card=>scoringSet.has(card.id)),isCardDebuffed:card=>isBossCardDebuffed(state,card),playingCards:Object.values(state.cards??{}),money:scoringMoney,
+      scoringCards:playedCards.filter(card=>scoringSet.has(card.id)),isCardDebuffed:card=>isBossCardDebuffed(state,card),playingCards:Object.values(state.cards??{}),money:scoringMoney,drawCount:state.drawPile?.length??0,
+      otherSellCost:originalJokerKey(joker.entityId)==='j_swashbuckler'?state.jokers.filter(other=>other!==joker).reduce((sum,other)=>{if(typeof other.sellCost!=='bigint'||other.sellCost<0n)throw new TypeError('Missing Joker sell value');return sum+other.sellCost;},0n):0n,
       negativeCount:state.jokers.filter(card=>card.edition==='negative').length,stencilCount:state.jokers.filter(card=>originalJokerKey(card.entityId)==='j_stencil').length});
     if(effect)apply(effect,'independent',joker.id);
     if(joker.edition==='polychrome')apply({operation:'multiply_mult',amount:{n:3n,d:2n}},'edition',joker.id);
@@ -112,7 +113,7 @@ export function scoreHand(state, playedCards) {
   }
   const score = floorExact(multiplyExact(chips,mult));
   trace.push({type:'score_total',phase:'total',chips,mult,score});
-  return {...hand,playedCardIds:playedCards.map(c=>c.id),scoringCardIds,chips,mult,score,trace,...(heldCards.some(card=>card.enhancement==='steel')||state.jokers.some(j=>['j_blackboard','j_raised_fist','j_baron','j_shoot_the_moon'].includes(originalJokerKey(j.entityId)))?{heldCardIds:heldCards.map(card=>card.id)}:{}),...(moneyJokers?{scoringMoneyBefore:state.money}:{}),...(state.round&&state.jokers.some(j=>['j_acrobat','j_banner','j_mystic_summit'].includes(originalJokerKey(j.entityId)))?{scoringRoundBefore:{handsRemaining:state.round.handsRemaining,discardsRemaining:state.round.discardsRemaining}}:{}),...(luckyRolls.length?{luckyRolls,luckyRngKind:luckyKind,luckyRngBefore,luckyRngAfter:luckyKind==='apk'?{...luckySnapshot(luckyRng),mathState:[...luckyRng.mathState]}:luckyRng}:{}),...(glassRolls.length?{glassRolls,glassRngKind:glassKind,glassRngBefore,glassRngAfter:glassKind==='apk'?{...glassSnapshot(glassRng),mathState:[...glassRng.mathState]}:glassRng,glassDestroyedCards:glassRolls.filter(roll=>roll.destroyed).map(roll=>structuredClone(playedCards.find(card=>card.id===roll.cardId)))}:{})};
+  return {...hand,playedCardIds:playedCards.map(c=>c.id),scoringCardIds,chips,mult,score,trace,...(heldCards.some(card=>card.enhancement==='steel')||state.jokers.some(j=>['j_blackboard','j_raised_fist','j_baron','j_shoot_the_moon','j_blue_joker'].includes(originalJokerKey(j.entityId)))?{heldCardIds:heldCards.map(card=>card.id)}:{}),...(state.jokers.some(j=>originalJokerKey(j.entityId)==='j_blue_joker')?{scoringPilesBefore:{drawPile:[...(state.drawPile??[])],discardPile:[...(state.discardPile??[])],...(state.hangedShortfallCardIds?{hangedShortfallCardIds:[...state.hangedShortfallCardIds],hangedShortfallRevision:state.hangedShortfallEpoch?.revision??state.revision}:{})}}:{}),...(moneyJokers?{scoringMoneyBefore:state.money}:{}),...(state.round&&state.jokers.some(j=>['j_acrobat','j_banner','j_mystic_summit','j_blue_joker'].includes(originalJokerKey(j.entityId)))?{scoringRoundBefore:{handsRemaining:state.round.handsRemaining,discardsRemaining:state.round.discardsRemaining}}:{}),...(luckyRolls.length?{luckyRolls,luckyRngKind:luckyKind,luckyRngBefore,luckyRngAfter:luckyKind==='apk'?{...luckySnapshot(luckyRng),mathState:[...luckyRng.mathState]}:luckyRng}:{}),...(glassRolls.length?{glassRolls,glassRngKind:glassKind,glassRngBefore,glassRngAfter:glassKind==='apk'?{...glassSnapshot(glassRng),mathState:[...glassRng.mathState]}:glassRng,glassDestroyedCards:glassRolls.filter(roll=>roll.destroyed).map(roll=>structuredClone(playedCards.find(card=>card.id===roll.cardId)))}:{})};
 }
 
 

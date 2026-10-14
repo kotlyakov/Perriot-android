@@ -41,3 +41,19 @@ npm test
 ```
 
 Final scoped core run: **16/16** new Joker tests passed; full shared suite **456/456** passed after integration of the Hook ordering correction. Scoped changed-code whitespace check passed.
+
+## Интеграция ранее открытого стека PR25–27
+
+Blue Joker и Swashbuckler сохранены из предыдущих изменений вместе с исходными тестами. Каталог стал 49/150: новый срез не отменяет прежние партии. Blue даёт +2 Chips на каждую карту drawPile перед добором (card.lua3890), Swashbuckler складывает sellCost других джокеров (card.lua3977,4243–4251). Blue сохраняет идентификаторы draw/discard/held перед подсчётом: загрузка проверяет полный раздел колоды, порядок draw после добора, префикс discard, разыгранный блок и последующие сбросы. Hook forced-discard попадает в discard до score, сыгранные карты после; Serpent сохраняет свой добор трёх карт. Полные границы: tests/core/joker-blue-swashbuckler.test.js. Старые непроверенные реализации Blue/moneyBefore из незавершённых PR не объявляются валидированным контрактом сохранения.
+
+## Blue Joker historical draw-count integrity (continuation)
+
+Blue Joker's pre-score pile snapshot now also preserves any live Hanged Man shortfall IDs. Replay checks those IDs against the exact suffix of `hangedDestroyedCardIds`, requires them to be absent from the surviving/reconstructed deck, and restores them only for historical score evaluation. This preserves legal short hands after Hanged Man even though the live shortfall marker is cleared after PLAY.
+
+When the historical draw pile is nonempty, an ordinary pre-PLAY hand must fill its configured size minus that verified shortfall. Hook's already-forced discards subtract up to two remaining cards; Serpent retains its supported overdraw exception. This lower-bound/fullness constraint complements the existing capacity and partition checks and rejects a coherent forged score that moves a held card into the historical draw pile to claim two extra Blue chips. Regressions cover both pop/splice draw directions, Hanged-before-Blue, later DISCARD, and forged Hanged provenance.
+
+Continuation targeted verification: `node --test tests/core/joker-blue-swashbuckler.test.js` passed **10/10**. The concurrent full suite exposed the separately owned `round evaluation fixes earned bonus and interest before a later inventory sale` regression while the cashout snapshot fix was still in progress; no full-suite success is claimed for that intermediate run.
+
+The Hanged provenance record also carries its creation revision and ante/blind/remaining-hand context, plus which operation consumed it. New Hanged uses create that optional record; PLAY, DISCARD and CASH_OUT mark it consumed when clearing the live shortfall. A Blue historical shortfall must match the same record and have been consumed by the exact PLAY hand being replayed. Thus an old destruction suffix cannot be reused after an earlier PLAY or DISCARD to justify a new shortened historical hand. This is internal persistence bookkeeping, not a change to native Hanged Man rules. Old saves with active shortfall IDs and no epoch are upgraded when their first clearing action executes.
+
+Epoch regression verification: **12/12** Blue/Swashbuckler tests and **13/13** Hanged/Death tests passed; fresh full shared suite **861/861** passed. The new regressions were observed failing before the epoch/action validation was added, including both draw directions after an earlier PLAY and reuse after DISCARD.

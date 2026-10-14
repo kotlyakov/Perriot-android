@@ -162,3 +162,12 @@
 
 | П-04-HOOK-PRE-SCORE | Критическое | Hook ошибочно давал эффекты уже принудительно сброшенных карт | Принудительный сброс и его RNG перед scoreHand, нет Steel/Fist/Baron от сброшенных; save/reload | Исправлено RED→GREEN, независимый QA и CI ожидаются | 0.4.28-preview |
 | П-06-CELESTIAL-MATERIALIZE | Некритическое · высокий | Отсутствующий сырой RNG-шаг materialize в Celestial меняет дальнейший генератор | 64 настоящих native fixtures, одинаковый шаг с reduced motion, синхронный RNG | Исправлено RED→GREEN; CI ожидается | 0.4.28-preview |
+
+| П-05-JOKERS-40 | Некритическое · высокий | Сохранить Blue Joker/Flower Pot из PR25 | Механики и оригинальные тесты интегрированы; исторический draw snapshot проверен | Реализовано, новый CI ожидается | 0.4.31 / PR28 |
+| П-05-JOKERS-42 | Некритическое · высокий | Сохранить Baron/Shoot the Moon из PR26 | Нативные held-фазы, Hook до подсчёта и replay | Реализовано, новый CI ожидается | 0.4.31 / PR28 |
+| П-05-JOKERS-47 | Некритическое · высокий | Сохранить state-derived партию PR27 | Bull/Bootstraps/Swashbuckler/Stone/Steel плюс новые эффекты без потери прежних | 49/150, Core468 PASS; новый CI ожидается | 0.4.31 / PR28 |
+
+| П-05-CASHOUT-FROZEN | Критическое | Продажа после победы меняла уже вычисленную выплату | Snapshot при победе/legacy первой мутации, save/reload, проценты до бонусов, однократная оплата | Исправлено RED→GREEN, QA/CI ожидаются | 0.4.33 / PR28 |
+| П-05-RECOGNITION | Некритическое · высокий | Four Fingers/Shortcut | Native независимые flush/straight union, multi-gap, scoring/Arm/save | 368 native fixtures, интеграция готова, QA/CI ожидаются | 0.4.33 / PR28 |
+| П-05-CASHOUT-JOKERS | Некритическое · высокий | Golden Joker/Cloud 9 | Native end-round bonus, whole-deck rank9/Stone, debuff, UI overflow/save/write-failure | Core PASS, QA/CI ожидаются | 0.4.33 / PR28 |
+| П-RNG-STONE | Некритическое · высокий | Полная parity Stone get_id raw RNG | Учесть native RNG при повторном распознавании/кадрах без скрытой зависимости от UI, независимый oracle | Открыто; результаты распознавания точны, полная seed/event parity не заявляется | Native card/functions |

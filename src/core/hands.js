@@ -2,10 +2,10 @@ import {isCardSuit} from './card-suits.js';
 
 const SUITS = new Set(['clubs', 'diamonds', 'hearts', 'spades']);
 
-// Base-card recognition. Effects that alter recognition are added separately.
-export function evaluateHand(cards, {isCardDebuffed = () => false} = {}) {
+export function evaluateHand(cards, {isCardDebuffed = () => false, fourFingers = false, shortcut = false} = {}) {
   if (!Array.isArray(cards) || cards.length < 1 || cards.length > 5) throw new RangeError('Select 1 to 5 cards');
   if (typeof isCardDebuffed !== 'function') throw new TypeError('Invalid card debuff predicate');
+  if (typeof fourFingers !== 'boolean' || typeof shortcut !== 'boolean') throw new TypeError('Invalid recognition modifiers');
   const ids = new Set();
   const ranks = new Map();
   for (const card of cards) {
@@ -24,9 +24,31 @@ export function evaluateHand(cards, {isCardDebuffed = () => false} = {}) {
   if(!rankedCards.length)return {handId:'high_card',scoringCardIds:[cards[0].id],isRoyal:false};
   const groups = [...ranks.values()].sort((a, b) => b.length - a.length);
   const unique = [...ranks.keys()].sort((a, b) => a - b);
-  const flush = cards.length === 5 && [...SUITS].some(suit => cards.every(card => isCardSuit(card,suit,{debuffed:isCardDebuffed(card),flushCalc:true})));
-  const straight = unique.length === 5 && (unique[4] - unique[0] === 4
-    || unique.join(',') === '2,3,4,5,14');
+  const required = fourFingers ? 4 : 5;
+  let flushCards = [], straightCards = [];
+  if (cards.length >= required) {
+    // Native get_flush returns the first qualifying suit, including all of its cards.
+    for (const suit of ['spades','hearts','clubs','diamonds']) {
+      const suited = cards.filter(card => isCardSuit(card,suit,{debuffed:isCardDebuffed(card),flushCalc:true}));
+      if (suited.length >= required) { flushCards = suited; break; }
+    }
+    let length = 0, found = false, skipped = false;
+    for (let rank = 1; rank <= 14; rank++) {
+      const group = ranks.get(rank === 1 ? 14 : rank);
+      if (group) {
+        length++; skipped = false; straightCards.push(...group);
+      } else if (shortcut && !skipped && rank !== 14) {
+        skipped = true;
+      } else {
+        length = 0; skipped = false;
+        if (found) break;
+        straightCards = [];
+      }
+      if (length >= required) found = true;
+    }
+    if (!found) straightCards = [];
+  }
+  const flush = flushCards.length > 0, straight = straightCards.length > 0;
   const five = groups[0].length === 5;
   const fullHouse = groups[0].length === 3 && groups[1]?.length === 2;
   let handId;
@@ -34,11 +56,11 @@ export function evaluateHand(cards, {isCardDebuffed = () => false} = {}) {
   if (flush && five) handId = 'flush_five';
   else if (flush && fullHouse) handId = 'flush_house';
   else if (five) handId = 'five_of_a_kind';
-  else if (flush && straight) handId = 'straight_flush';
+  else if (flush && straight) { handId = 'straight_flush'; scoring = [...flushCards, ...straightCards]; }
   else if (groups[0].length === 4) { handId = 'four_of_a_kind'; scoring = groups[0]; }
   else if (fullHouse) handId = 'full_house';
-  else if (flush) handId = 'flush';
-  else if (straight) handId = 'straight';
+  else if (flush) { handId = 'flush'; scoring = flushCards; }
+  else if (straight) { handId = 'straight'; scoring = straightCards; }
   else if (groups[0].length === 3) { handId = 'three_of_a_kind'; scoring = groups[0]; }
   else if (groups[0].length === 2 && groups[1]?.length === 2) { handId = 'two_pair'; scoring = [...groups[0], ...groups[1]]; }
   else if (groups[0].length === 2) { handId = 'pair'; scoring = groups[0]; }
@@ -47,7 +69,7 @@ export function evaluateHand(cards, {isCardDebuffed = () => false} = {}) {
   return {
     handId,
     scoringCardIds: cards.filter(card => scoredIds.has(card.id)).map(card => card.id),
-    isRoyal: handId === 'straight_flush' && unique[0] === 10 && unique[4] === 14,
+    isRoyal: handId === 'straight_flush' && scoring.every(card => card.rank >= 10),
   };
 }
 

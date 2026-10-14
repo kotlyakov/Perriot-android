@@ -1,12 +1,14 @@
 # STATUS.md — Пьеро
 
-14.10.2026. П-05н, 0.4.28-preview/code41, ветка feat/joker-deck-money от apk-reference 043d8bbe. В работе интеграция/независимое QA/CI; полная игра не готова.
+14.10.2026. П-05н, 0.4.33-preview/code46, ветка feat/joker-deck-money от apk-reference 043d8bbe. Независимое QA завершено без Critical/Important; финальный browser/Android CI ожидается; полная игра не готова.
 
-Добавлены девять джокеров (рабочий каталог 47/150): Baron, Shoot the Moon, Flower Pot, Seeing Double, Stone Joker, Steel Joker, Bull, Driver’s License, Bootstraps. Точные дроби, Wild/debuff, полная колода, деньги Tooth/Ox/Lucky проверены по native Card методам (89 fixtures). Подготовлен генератор восьми Arcana наборов (140 native cases), без преждевременного включения открытия/использования неподдержанных карт.
+Рабочий каталог 53/150: девять эффектов денег/колоды/held, Blue Joker и Swashbuckler из прежних PR25–27, Four Fingers/Shortcut, Golden Joker/Cloud 9. Точные фазы, Wild/debuff, рациональные множители, draw history и независимое native распознавание проверены. Генератор восьми Arcana наборов (140 native cases) подготовлен без включения lifecycle.
 
-Критические ошибки базы: потеря воспроизводимости сохранений Raised Fist/Blackboard/Acrobat и неверные held эффекты до принудительного сброса Hook. Исправляются историческим контекстом и порядком Hook перед scoreHand. Исправлен пропущенный materialize RNG шаг Celestial (64 регенерированных native fixtures). Совместимые старые сохранения мигрируют, подмены контекста проверяются. Актуальный результат полного core прогона до финального QA: 453/453 PASS. Offline assets/config PASS. Локальный Chromium отсутствует; browser35/fresh Android/signature/alignment проверяет GitHub Actions после публикации. Физический Android не проверен.
+Критические ошибки базы исправлены: историческое сохранение Raised Fist/Blackboard/Acrobat; Hook перед scoring; изменение заработанной выплаты при продаже после победы. Выплата фиксируется до изменения инвентаря, сохраняется и оплачивается один раз; проценты не включают бонусы джокеров. Blue snapshot отвергает согласованную подмену draw/held и сохраняет Hanged shortfall. Celestial materialize RNG исправлен в 64 native cases.
 
-База apk-reference 043d8bbe уже прошла Actions38437073053 SUCCESS. Приложенные файлы от 09.10 устарели; использовать репозиторий. Следующие задачи: полный пул джокеров/Judgement, Arcana lifecycle, финальные боссы/победа/Endless по docs/apk-findings/showdown-win-lifecycle.md. Остальные режимы, ваучеры, теги и профиль остаются открытыми.
+Текущий полный core: 864/864 PASS после независимого QA. Первый срез 951858b прошёл Actions38558257199: 35 Chromium suites, fresh Android, подпись и zipalign. Это не проверка последующих изменений: новый срез требует 36 suites и fresh Android CI. Локальный Chromium недоступен, физический Android не проверен. Native Stone get_id потребляет math RNG во время распознавания/кадров; полная seed/event/RNG parity ещё открыта.
+
+PR28 объединяет историю PR25–27 дополнительным merge parent, не заменяет прежнюю работу. Следующие задачи: остальные 97 джокеров/Judgement, Arcana lifecycle, финальные боссы/победа/Endless (docs/apk-findings/showdown-win-lifecycle.md), остальные наборы/ваучеры/теги/режимы/профиль. Приложенные файлы от09.10 устарели; актуальные инструкции/код в репозитории.
 
 ---
 Предыдущий статус (история):

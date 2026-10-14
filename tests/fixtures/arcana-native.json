@@ -1,0 +1,3192 @@
+{
+  "runtime": "LuaJIT 2.1.1700008891 -- Copyright (C) 2005-2023 Mike Pall. https://luajit.org/",
+  "scope": "Original APK get_current_pool/create_card and full Card:open pack loop. Card adapter registers centre names, consumes three init draws and one synchronous start_materialize juice draw. Queued audio/render/statistics omitted. Native math.randomseed(17), ante2. Exact identities, keyed streams and four following raw math draws.",
+  "sourceSha256": {
+    "game.lua": "15ef486aa017ed99c31d2bacdb17846e77e6698d658182964bf7143e2e189e51",
+    "card.lua": "a3a613f90eca3e39042d28a70b129ece292644cbe79970e127e27c49bf4dee53",
+    "functions/common_events.lua": "6db2e23935413ff53c558a3b4674deff668603f695fd02b8de663d75bee0a4cd",
+    "functions/misc_functions.lua": "59f6c7e1ac7a9609eb99fbed1c00619a0ed103e8c647780cc9f9f7e5333c636c"
+  },
+  "cases": [
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 3,
+      "mode": "base",
+      "ids": [
+        "c_chariot",
+        "c_moon",
+        "c_tower"
+      ],
+      "streams": {
+        "Tarotar12": 0.5235889541879,
+        "soul_Tarot2": 0.6522005016232
+      },
+      "followingMath": [
+        0.020743604825022244,
+        0.6085809172389594,
+        0.01902403405490305,
+        0.7199955090165799
+      ]
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 3,
+      "mode": "owned",
+      "ids": [
+        "c_chariot",
+        "c_moon",
+        "c_tower"
+      ],
+      "streams": {
+        "Tarotar12": 0.5235889541879
+      },
+      "followingMath": [
+        0.020743604825022244,
+        0.6085809172389594,
+        0.01902403405490305,
+        0.7199955090165799
+      ]
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 3,
+      "mode": "owned_showman",
+      "ids": [
+        "c_chariot",
+        "c_moon",
+        "c_tower"
+      ],
+      "streams": {
+        "Tarotar12": 0.5235889541879,
+        "soul_Tarot2": 0.6522005016232
+      },
+      "followingMath": [
+        0.020743604825022244,
+        0.6085809172389594,
+        0.01902403405490305,
+        0.7199955090165799
+      ]
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 3,
+      "mode": "omen",
+      "ids": [
+        "c_sigil",
+        "c_chariot",
+        "c_deja_vu"
+      ],
+      "streams": {
+        "Spectralar22": 0.2634634890674,
+        "Tarotar12": 0.3892355612412,
+        "omen_globe": 0.3869311932283,
+        "soul_Spectral2": 0.4554730325924,
+        "soul_Tarot2": 0.0961597822478
+      },
+      "followingMath": [
+        0.04843625888355518,
+        0.5923652769888554,
+        0.4409415621462798,
+        0.14518881454224464
+      ]
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 3,
+      "mode": "omen_owned",
+      "ids": [
+        "c_sigil",
+        "c_chariot",
+        "c_deja_vu"
+      ],
+      "streams": {
+        "Spectralar22": 0.2634634890674,
+        "Tarotar12": 0.3892355612412,
+        "omen_globe": 0.3869311932283
+      },
+      "followingMath": [
+        0.04843625888355518,
+        0.5923652769888554,
+        0.4409415621462798,
+        0.14518881454224464
+      ]
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 3,
+      "mode": "omen_owned_showman",
+      "ids": [
+        "c_sigil",
+        "c_chariot",
+        "c_deja_vu"
+      ],
+      "streams": {
+        "Spectralar22": 0.2634634890674,
+        "Tarotar12": 0.3892355612412,
+        "omen_globe": 0.3869311932283,
+        "soul_Spectral2": 0.4554730325924,
+        "soul_Tarot2": 0.0961597822478
+      },
+      "followingMath": [
+        0.04843625888355518,
+        0.5923652769888554,
+        0.4409415621462798,
+        0.14518881454224464
+      ]
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 3,
+      "mode": "ban_soul",
+      "ids": [
+        "c_chariot",
+        "c_moon",
+        "c_tower"
+      ],
+      "streams": {
+        "Tarotar12": 0.5235889541879
+      },
+      "followingMath": [
+        0.020743604825022244,
+        0.6085809172389594,
+        0.01902403405490305,
+        0.7199955090165799
+      ]
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 3,
+      "mode": "ban_soul_omen",
+      "ids": [
+        "c_sigil",
+        "c_chariot",
+        "c_deja_vu"
+      ],
+      "streams": {
+        "Spectralar22": 0.2634634890674,
+        "Tarotar12": 0.3892355612412,
+        "omen_globe": 0.3869311932283
+      },
+      "followingMath": [
+        0.04843625888355518,
+        0.5923652769888554,
+        0.4409415621462798,
+        0.14518881454224464
+      ]
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 3,
+      "mode": "ban_hole_omen",
+      "ids": [
+        "c_sigil",
+        "c_chariot",
+        "c_deja_vu"
+      ],
+      "streams": {
+        "Spectralar22": 0.2634634890674,
+        "Tarotar12": 0.3892355612412,
+        "omen_globe": 0.3869311932283,
+        "soul_Spectral2": 0.4554730325924,
+        "soul_Tarot2": 0.0961597822478
+      },
+      "followingMath": [
+        0.04843625888355518,
+        0.5923652769888554,
+        0.4409415621462798,
+        0.14518881454224464
+      ]
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 3,
+      "mode": "empty",
+      "ids": [
+        "c_strength",
+        "c_strength",
+        "c_strength"
+      ],
+      "streams": {
+        "Tarotar12": 0.5235889541879,
+        "soul_Tarot2": 0.6522005016232
+      },
+      "followingMath": [
+        0.020743604825022244,
+        0.6085809172389594,
+        0.01902403405490305,
+        0.7199955090165799
+      ]
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 5,
+      "mode": "base",
+      "ids": [
+        "c_chariot",
+        "c_moon",
+        "c_tower",
+        "c_devil",
+        "c_judgement"
+      ],
+      "streams": {
+        "Tarotar12": 0.1987432489905,
+        "soul_Tarot2": 0.5811379241374
+      },
+      "followingMath": [
+        0.009347338093325774,
+        0.7805249560456147,
+        0.6604795457716504,
+        0.11653275590653855
+      ]
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 5,
+      "mode": "owned",
+      "ids": [
+        "c_chariot",
+        "c_moon",
+        "c_tower",
+        "c_devil",
+        "c_judgement"
+      ],
+      "streams": {
+        "Tarotar12": 0.1987432489905
+      },
+      "followingMath": [
+        0.009347338093325774,
+        0.7805249560456147,
+        0.6604795457716504,
+        0.11653275590653855
+      ]
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 5,
+      "mode": "owned_showman",
+      "ids": [
+        "c_chariot",
+        "c_moon",
+        "c_tower",
+        "c_devil",
+        "c_judgement"
+      ],
+      "streams": {
+        "Tarotar12": 0.1987432489905,
+        "soul_Tarot2": 0.5811379241374
+      },
+      "followingMath": [
+        0.009347338093325774,
+        0.7805249560456147,
+        0.6604795457716504,
+        0.11653275590653855
+      ]
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 5,
+      "mode": "omen",
+      "ids": [
+        "c_sigil",
+        "c_chariot",
+        "c_deja_vu",
+        "c_moon",
+        "c_tower"
+      ],
+      "streams": {
+        "Spectralar22": 0.2634634890674,
+        "Tarotar12": 0.5235889541879,
+        "omen_globe": 0.5167374849748,
+        "soul_Spectral2": 0.4554730325924,
+        "soul_Tarot2": 0.6522005016232
+      },
+      "followingMath": [
+        0.020743604825022244,
+        0.6085809172389594,
+        0.01902403405490305,
+        0.7199955090165799
+      ]
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 5,
+      "mode": "omen_owned",
+      "ids": [
+        "c_sigil",
+        "c_chariot",
+        "c_deja_vu",
+        "c_moon",
+        "c_tower"
+      ],
+      "streams": {
+        "Spectralar22": 0.2634634890674,
+        "Tarotar12": 0.5235889541879,
+        "omen_globe": 0.5167374849748
+      },
+      "followingMath": [
+        0.020743604825022244,
+        0.6085809172389594,
+        0.01902403405490305,
+        0.7199955090165799
+      ]
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 5,
+      "mode": "omen_owned_showman",
+      "ids": [
+        "c_sigil",
+        "c_chariot",
+        "c_deja_vu",
+        "c_moon",
+        "c_tower"
+      ],
+      "streams": {
+        "Spectralar22": 0.2634634890674,
+        "Tarotar12": 0.5235889541879,
+        "omen_globe": 0.5167374849748,
+        "soul_Spectral2": 0.4554730325924,
+        "soul_Tarot2": 0.6522005016232
+      },
+      "followingMath": [
+        0.020743604825022244,
+        0.6085809172389594,
+        0.01902403405490305,
+        0.7199955090165799
+      ]
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 5,
+      "mode": "ban_soul",
+      "ids": [
+        "c_chariot",
+        "c_moon",
+        "c_tower",
+        "c_devil",
+        "c_judgement"
+      ],
+      "streams": {
+        "Tarotar12": 0.1987432489905
+      },
+      "followingMath": [
+        0.009347338093325774,
+        0.7805249560456147,
+        0.6604795457716504,
+        0.11653275590653855
+      ]
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 5,
+      "mode": "ban_soul_omen",
+      "ids": [
+        "c_sigil",
+        "c_chariot",
+        "c_deja_vu",
+        "c_moon",
+        "c_tower"
+      ],
+      "streams": {
+        "Spectralar22": 0.2634634890674,
+        "Tarotar12": 0.5235889541879,
+        "omen_globe": 0.5167374849748
+      },
+      "followingMath": [
+        0.020743604825022244,
+        0.6085809172389594,
+        0.01902403405490305,
+        0.7199955090165799
+      ]
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 5,
+      "mode": "ban_hole_omen",
+      "ids": [
+        "c_sigil",
+        "c_chariot",
+        "c_deja_vu",
+        "c_moon",
+        "c_tower"
+      ],
+      "streams": {
+        "Spectralar22": 0.2634634890674,
+        "Tarotar12": 0.5235889541879,
+        "omen_globe": 0.5167374849748,
+        "soul_Spectral2": 0.4554730325924,
+        "soul_Tarot2": 0.6522005016232
+      },
+      "followingMath": [
+        0.020743604825022244,
+        0.6085809172389594,
+        0.01902403405490305,
+        0.7199955090165799
+      ]
+    },
+    {
+      "seed": "AAAAAAA1",
+      "ante": 2,
+      "size": 5,
+      "mode": "empty",
+      "ids": [
+        "c_strength",
+        "c_strength",
+        "c_strength",
+        "c_strength",
+        "c_strength"
+      ],
+      "streams": {
+        "Tarotar12": 0.1987432489905,
+        "soul_Tarot2": 0.5811379241374
+      },
+      "followingMath": [
+        0.009347338093325774,
+        0.7805249560456147,
+        0.6604795457716504,
+        0.11653275590653855
+      ]
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 3,
+      "mode": "base",
+      "ids": [
+        "c_tower",
+        "c_emperor",
+        "c_lovers"
+      ],
+      "streams": {
+        "Tarotar12": 0.2742413745573,
+        "soul_Tarot2": 0.7928157032064
+      },
+      "followingMath": [
+        0.47577708076140257,
+        0.8751537548662043,
+        0.39583553946809147,
+        0.10086929703825209
+      ]
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 3,
+      "mode": "owned",
+      "ids": [
+        "c_tower",
+        "c_emperor",
+        "c_lovers"
+      ],
+      "streams": {
+        "Tarotar12": 0.2742413745573
+      },
+      "followingMath": [
+        0.47577708076140257,
+        0.8751537548662043,
+        0.39583553946809147,
+        0.10086929703825209
+      ]
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 3,
+      "mode": "owned_showman",
+      "ids": [
+        "c_tower",
+        "c_emperor",
+        "c_lovers"
+      ],
+      "streams": {
+        "Tarotar12": 0.2742413745573,
+        "soul_Tarot2": 0.7928157032064
+      },
+      "followingMath": [
+        0.47577708076140257,
+        0.8751537548662043,
+        0.39583553946809147,
+        0.10086929703825209
+      ]
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 3,
+      "mode": "omen",
+      "ids": [
+        "c_aura",
+        "c_tower",
+        "c_emperor"
+      ],
+      "streams": {
+        "Spectralar22": 0.5637842140249,
+        "Tarotar12": 0.6610101424063,
+        "omen_globe": 0.6351921849699,
+        "soul_Spectral2": 0.4070668116857,
+        "soul_Tarot2": 0.3818114959761
+      },
+      "followingMath": [
+        0.3290376849265624,
+        0.4511668848095476,
+        0.7613126146292348,
+        0.5903129147210755
+      ]
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 3,
+      "mode": "omen_owned",
+      "ids": [
+        "c_aura",
+        "c_tower",
+        "c_emperor"
+      ],
+      "streams": {
+        "Spectralar22": 0.5637842140249,
+        "Tarotar12": 0.6610101424063,
+        "omen_globe": 0.6351921849699
+      },
+      "followingMath": [
+        0.3290376849265624,
+        0.4511668848095476,
+        0.7613126146292348,
+        0.5903129147210755
+      ]
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 3,
+      "mode": "omen_owned_showman",
+      "ids": [
+        "c_aura",
+        "c_tower",
+        "c_emperor"
+      ],
+      "streams": {
+        "Spectralar22": 0.5637842140249,
+        "Tarotar12": 0.6610101424063,
+        "omen_globe": 0.6351921849699,
+        "soul_Spectral2": 0.4070668116857,
+        "soul_Tarot2": 0.3818114959761
+      },
+      "followingMath": [
+        0.3290376849265624,
+        0.4511668848095476,
+        0.7613126146292348,
+        0.5903129147210755
+      ]
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 3,
+      "mode": "ban_soul",
+      "ids": [
+        "c_tower",
+        "c_emperor",
+        "c_lovers"
+      ],
+      "streams": {
+        "Tarotar12": 0.2742413745573
+      },
+      "followingMath": [
+        0.47577708076140257,
+        0.8751537548662043,
+        0.39583553946809147,
+        0.10086929703825209
+      ]
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 3,
+      "mode": "ban_soul_omen",
+      "ids": [
+        "c_aura",
+        "c_tower",
+        "c_emperor"
+      ],
+      "streams": {
+        "Spectralar22": 0.5637842140249,
+        "Tarotar12": 0.6610101424063,
+        "omen_globe": 0.6351921849699
+      },
+      "followingMath": [
+        0.3290376849265624,
+        0.4511668848095476,
+        0.7613126146292348,
+        0.5903129147210755
+      ]
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 3,
+      "mode": "ban_hole_omen",
+      "ids": [
+        "c_aura",
+        "c_tower",
+        "c_emperor"
+      ],
+      "streams": {
+        "Spectralar22": 0.5637842140249,
+        "Tarotar12": 0.6610101424063,
+        "omen_globe": 0.6351921849699,
+        "soul_Spectral2": 0.4070668116857,
+        "soul_Tarot2": 0.3818114959761
+      },
+      "followingMath": [
+        0.3290376849265624,
+        0.4511668848095476,
+        0.7613126146292348,
+        0.5903129147210755
+      ]
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 3,
+      "mode": "empty",
+      "ids": [
+        "c_strength",
+        "c_strength",
+        "c_strength"
+      ],
+      "streams": {
+        "Tarotar12": 0.2742413745573,
+        "soul_Tarot2": 0.7928157032064
+      },
+      "followingMath": [
+        0.47577708076140257,
+        0.8751537548662043,
+        0.39583553946809147,
+        0.10086929703825209
+      ]
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 5,
+      "mode": "base",
+      "ids": [
+        "c_tower",
+        "c_emperor",
+        "c_lovers",
+        "c_empress",
+        "c_world"
+      ],
+      "streams": {
+        "Tarotar12": 0.1816821383719,
+        "soul_Tarot2": 0.9992225005412
+      },
+      "followingMath": [
+        0.892522046231824,
+        0.7639842394557299,
+        0.8921326113422958,
+        0.4286152119001916
+      ]
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 5,
+      "mode": "owned",
+      "ids": [
+        "c_tower",
+        "c_emperor",
+        "c_lovers",
+        "c_empress",
+        "c_world"
+      ],
+      "streams": {
+        "Tarotar12": 0.1816821383719
+      },
+      "followingMath": [
+        0.892522046231824,
+        0.7639842394557299,
+        0.8921326113422958,
+        0.4286152119001916
+      ]
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 5,
+      "mode": "owned_showman",
+      "ids": [
+        "c_tower",
+        "c_emperor",
+        "c_lovers",
+        "c_empress",
+        "c_world"
+      ],
+      "streams": {
+        "Tarotar12": 0.1816821383719,
+        "soul_Tarot2": 0.9992225005412
+      },
+      "followingMath": [
+        0.892522046231824,
+        0.7639842394557299,
+        0.8921326113422958,
+        0.4286152119001916
+      ]
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 5,
+      "mode": "omen",
+      "ids": [
+        "c_aura",
+        "c_tower",
+        "c_emperor",
+        "c_lovers",
+        "c_familiar"
+      ],
+      "streams": {
+        "Spectralar22": 0.1065935064813,
+        "Tarotar12": 0.2742413745573,
+        "omen_globe": 0.5305678948428,
+        "soul_Spectral2": 0.5766057738838,
+        "soul_Tarot2": 0.7928157032064
+      },
+      "followingMath": [
+        0.7785316344905344,
+        0.13088003772230916,
+        0.9506670360345228,
+        0.7706095478602775
+      ]
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 5,
+      "mode": "omen_owned",
+      "ids": [
+        "c_aura",
+        "c_tower",
+        "c_emperor",
+        "c_lovers",
+        "c_familiar"
+      ],
+      "streams": {
+        "Spectralar22": 0.1065935064813,
+        "Tarotar12": 0.2742413745573,
+        "omen_globe": 0.5305678948428
+      },
+      "followingMath": [
+        0.7785316344905344,
+        0.13088003772230916,
+        0.9506670360345228,
+        0.7706095478602775
+      ]
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 5,
+      "mode": "omen_owned_showman",
+      "ids": [
+        "c_aura",
+        "c_tower",
+        "c_emperor",
+        "c_lovers",
+        "c_familiar"
+      ],
+      "streams": {
+        "Spectralar22": 0.1065935064813,
+        "Tarotar12": 0.2742413745573,
+        "omen_globe": 0.5305678948428,
+        "soul_Spectral2": 0.5766057738838,
+        "soul_Tarot2": 0.7928157032064
+      },
+      "followingMath": [
+        0.7785316344905344,
+        0.13088003772230916,
+        0.9506670360345228,
+        0.7706095478602775
+      ]
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 5,
+      "mode": "ban_soul",
+      "ids": [
+        "c_tower",
+        "c_emperor",
+        "c_lovers",
+        "c_empress",
+        "c_world"
+      ],
+      "streams": {
+        "Tarotar12": 0.1816821383719
+      },
+      "followingMath": [
+        0.892522046231824,
+        0.7639842394557299,
+        0.8921326113422958,
+        0.4286152119001916
+      ]
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 5,
+      "mode": "ban_soul_omen",
+      "ids": [
+        "c_aura",
+        "c_tower",
+        "c_emperor",
+        "c_lovers",
+        "c_familiar"
+      ],
+      "streams": {
+        "Spectralar22": 0.1065935064813,
+        "Tarotar12": 0.2742413745573,
+        "omen_globe": 0.5305678948428
+      },
+      "followingMath": [
+        0.7785316344905344,
+        0.13088003772230916,
+        0.9506670360345228,
+        0.7706095478602775
+      ]
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 5,
+      "mode": "ban_hole_omen",
+      "ids": [
+        "c_aura",
+        "c_tower",
+        "c_emperor",
+        "c_lovers",
+        "c_familiar"
+      ],
+      "streams": {
+        "Spectralar22": 0.1065935064813,
+        "Tarotar12": 0.2742413745573,
+        "omen_globe": 0.5305678948428,
+        "soul_Spectral2": 0.5766057738838,
+        "soul_Tarot2": 0.7928157032064
+      },
+      "followingMath": [
+        0.7785316344905344,
+        0.13088003772230916,
+        0.9506670360345228,
+        0.7706095478602775
+      ]
+    },
+    {
+      "seed": "PIERROT1",
+      "ante": 2,
+      "size": 5,
+      "mode": "empty",
+      "ids": [
+        "c_strength",
+        "c_strength",
+        "c_strength",
+        "c_strength",
+        "c_strength"
+      ],
+      "streams": {
+        "Tarotar12": 0.1816821383719,
+        "soul_Tarot2": 0.9992225005412
+      },
+      "followingMath": [
+        0.892522046231824,
+        0.7639842394557299,
+        0.8921326113422958,
+        0.4286152119001916
+      ]
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 3,
+      "mode": "base",
+      "ids": [
+        "c_lovers",
+        "c_sun",
+        "c_empress"
+      ],
+      "streams": {
+        "Tarotar12": 0.2665780709995,
+        "soul_Tarot2": 0.7798578264179
+      },
+      "followingMath": [
+        0.6510876094679143,
+        0.5733394224631305,
+        0.25912954633164054,
+        0.23058653478394042
+      ]
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 3,
+      "mode": "owned",
+      "ids": [
+        "c_lovers",
+        "c_sun",
+        "c_empress"
+      ],
+      "streams": {
+        "Tarotar12": 0.2665780709995
+      },
+      "followingMath": [
+        0.6510876094679143,
+        0.5733394224631305,
+        0.25912954633164054,
+        0.23058653478394042
+      ]
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 3,
+      "mode": "owned_showman",
+      "ids": [
+        "c_lovers",
+        "c_sun",
+        "c_empress"
+      ],
+      "streams": {
+        "Tarotar12": 0.2665780709995,
+        "soul_Tarot2": 0.7798578264179
+      },
+      "followingMath": [
+        0.6510876094679143,
+        0.5733394224631305,
+        0.25912954633164054,
+        0.23058653478394042
+      ]
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 3,
+      "mode": "omen",
+      "ids": [
+        "c_ectoplasm",
+        "c_lovers",
+        "c_sun"
+      ],
+      "streams": {
+        "Spectralar22": 0.7417130028616,
+        "Tarotar12": 0.6565658759123,
+        "omen_globe": 0.9201381078056,
+        "soul_Spectral2": 0.1969472614699,
+        "soul_Tarot2": 0.3742966876157
+      },
+      "followingMath": [
+        0.2144164951795211,
+        0.510991264186532,
+        0.7091494731462369,
+        0.18046187874132014
+      ]
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 3,
+      "mode": "omen_owned",
+      "ids": [
+        "c_ectoplasm",
+        "c_lovers",
+        "c_sun"
+      ],
+      "streams": {
+        "Spectralar22": 0.7417130028616,
+        "Tarotar12": 0.6565658759123,
+        "omen_globe": 0.9201381078056
+      },
+      "followingMath": [
+        0.2144164951795211,
+        0.510991264186532,
+        0.7091494731462369,
+        0.18046187874132014
+      ]
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 3,
+      "mode": "omen_owned_showman",
+      "ids": [
+        "c_ectoplasm",
+        "c_lovers",
+        "c_sun"
+      ],
+      "streams": {
+        "Spectralar22": 0.7417130028616,
+        "Tarotar12": 0.6565658759123,
+        "omen_globe": 0.9201381078056,
+        "soul_Spectral2": 0.1969472614699,
+        "soul_Tarot2": 0.3742966876157
+      },
+      "followingMath": [
+        0.2144164951795211,
+        0.510991264186532,
+        0.7091494731462369,
+        0.18046187874132014
+      ]
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 3,
+      "mode": "ban_soul",
+      "ids": [
+        "c_lovers",
+        "c_sun",
+        "c_empress"
+      ],
+      "streams": {
+        "Tarotar12": 0.2665780709995
+      },
+      "followingMath": [
+        0.6510876094679143,
+        0.5733394224631305,
+        0.25912954633164054,
+        0.23058653478394042
+      ]
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 3,
+      "mode": "ban_soul_omen",
+      "ids": [
+        "c_ectoplasm",
+        "c_lovers",
+        "c_sun"
+      ],
+      "streams": {
+        "Spectralar22": 0.7417130028616,
+        "Tarotar12": 0.6565658759123,
+        "omen_globe": 0.9201381078056
+      },
+      "followingMath": [
+        0.2144164951795211,
+        0.510991264186532,
+        0.7091494731462369,
+        0.18046187874132014
+      ]
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 3,
+      "mode": "ban_hole_omen",
+      "ids": [
+        "c_ectoplasm",
+        "c_lovers",
+        "c_sun"
+      ],
+      "streams": {
+        "Spectralar22": 0.7417130028616,
+        "Tarotar12": 0.6565658759123,
+        "omen_globe": 0.9201381078056,
+        "soul_Spectral2": 0.1969472614699,
+        "soul_Tarot2": 0.3742966876157
+      },
+      "followingMath": [
+        0.2144164951795211,
+        0.510991264186532,
+        0.7091494731462369,
+        0.18046187874132014
+      ]
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 3,
+      "mode": "empty",
+      "ids": [
+        "c_strength",
+        "c_strength",
+        "c_strength"
+      ],
+      "streams": {
+        "Tarotar12": 0.2665780709995,
+        "soul_Tarot2": 0.7798578264179
+      },
+      "followingMath": [
+        0.6510876094679143,
+        0.5733394224631305,
+        0.25912954633164054,
+        0.23058653478394042
+      ]
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 5,
+      "mode": "base",
+      "ids": [
+        "c_lovers",
+        "c_sun",
+        "c_empress",
+        "c_devil",
+        "c_emperor"
+      ],
+      "streams": {
+        "Tarotar12": 0.1588971977272,
+        "Tarotar12_resample2": 0.0052870540856,
+        "soul_Tarot2": 0.9606954539117
+      },
+      "followingMath": [
+        0.18752296190393825,
+        0.5308832889612445,
+        0.2152283610176493,
+        0.622124849828233
+      ]
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 5,
+      "mode": "owned",
+      "ids": [
+        "c_lovers",
+        "c_sun",
+        "c_empress",
+        "c_devil",
+        "c_emperor"
+      ],
+      "streams": {
+        "Tarotar12": 0.1588971977272,
+        "Tarotar12_resample2": 0.0052870540856
+      },
+      "followingMath": [
+        0.18752296190393825,
+        0.5308832889612445,
+        0.2152283610176493,
+        0.622124849828233
+      ]
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 5,
+      "mode": "owned_showman",
+      "ids": [
+        "c_lovers",
+        "c_sun",
+        "c_empress",
+        "c_devil",
+        "c_devil"
+      ],
+      "streams": {
+        "Tarotar12": 0.1588971977272,
+        "soul_Tarot2": 0.9606954539117
+      },
+      "followingMath": [
+        0.4655943348458953,
+        0.8864256545450728,
+        0.36869082516391427,
+        0.11418221421496533
+      ]
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 5,
+      "mode": "omen",
+      "ids": [
+        "c_ectoplasm",
+        "c_lovers",
+        "c_sun",
+        "c_empress",
+        "c_devil"
+      ],
+      "streams": {
+        "Spectralar22": 0.7417130028616,
+        "Tarotar12": 0.5941172865388,
+        "omen_globe": 0.3777842278239,
+        "soul_Spectral2": 0.1969472614699,
+        "soul_Tarot2": 0.479171902679
+      },
+      "followingMath": [
+        0.8040124641276971,
+        0.8386130660254552,
+        0.7692431616602553,
+        0.7398486065000749
+      ]
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 5,
+      "mode": "omen_owned",
+      "ids": [
+        "c_ectoplasm",
+        "c_lovers",
+        "c_sun",
+        "c_empress",
+        "c_devil"
+      ],
+      "streams": {
+        "Spectralar22": 0.7417130028616,
+        "Tarotar12": 0.5941172865388,
+        "omen_globe": 0.3777842278239
+      },
+      "followingMath": [
+        0.8040124641276971,
+        0.8386130660254552,
+        0.7692431616602553,
+        0.7398486065000749
+      ]
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 5,
+      "mode": "omen_owned_showman",
+      "ids": [
+        "c_ectoplasm",
+        "c_lovers",
+        "c_sun",
+        "c_empress",
+        "c_devil"
+      ],
+      "streams": {
+        "Spectralar22": 0.7417130028616,
+        "Tarotar12": 0.5941172865388,
+        "omen_globe": 0.3777842278239,
+        "soul_Spectral2": 0.1969472614699,
+        "soul_Tarot2": 0.479171902679
+      },
+      "followingMath": [
+        0.8040124641276971,
+        0.8386130660254552,
+        0.7692431616602553,
+        0.7398486065000749
+      ]
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 5,
+      "mode": "ban_soul",
+      "ids": [
+        "c_lovers",
+        "c_sun",
+        "c_empress",
+        "c_devil",
+        "c_emperor"
+      ],
+      "streams": {
+        "Tarotar12": 0.1588971977272,
+        "Tarotar12_resample2": 0.0052870540856
+      },
+      "followingMath": [
+        0.18752296190393825,
+        0.5308832889612445,
+        0.2152283610176493,
+        0.622124849828233
+      ]
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 5,
+      "mode": "ban_soul_omen",
+      "ids": [
+        "c_ectoplasm",
+        "c_lovers",
+        "c_sun",
+        "c_empress",
+        "c_devil"
+      ],
+      "streams": {
+        "Spectralar22": 0.7417130028616,
+        "Tarotar12": 0.5941172865388,
+        "omen_globe": 0.3777842278239
+      },
+      "followingMath": [
+        0.8040124641276971,
+        0.8386130660254552,
+        0.7692431616602553,
+        0.7398486065000749
+      ]
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 5,
+      "mode": "ban_hole_omen",
+      "ids": [
+        "c_ectoplasm",
+        "c_lovers",
+        "c_sun",
+        "c_empress",
+        "c_devil"
+      ],
+      "streams": {
+        "Spectralar22": 0.7417130028616,
+        "Tarotar12": 0.5941172865388,
+        "omen_globe": 0.3777842278239,
+        "soul_Spectral2": 0.1969472614699,
+        "soul_Tarot2": 0.479171902679
+      },
+      "followingMath": [
+        0.8040124641276971,
+        0.8386130660254552,
+        0.7692431616602553,
+        0.7398486065000749
+      ]
+    },
+    {
+      "seed": "12345678",
+      "ante": 2,
+      "size": 5,
+      "mode": "empty",
+      "ids": [
+        "c_strength",
+        "c_strength",
+        "c_strength",
+        "c_strength",
+        "c_strength"
+      ],
+      "streams": {
+        "Tarotar12": 0.1588971977272,
+        "soul_Tarot2": 0.9606954539117
+      },
+      "followingMath": [
+        0.4655943348458953,
+        0.8864256545450728,
+        0.36869082516391427,
+        0.11418221421496533
+      ]
+    },
+    {
+      "seed": "ARCANA42",
+      "ante": 2,
+      "size": 3,
+      "mode": "base",
+      "ids": [
+        "c_lovers",
+        "c_chariot",
+        "c_heirophant"
+      ],
+      "streams": {
+        "Tarotar12": 0.8821911093613,
+        "soul_Tarot2": 0.9077531913715
+      },
+      "followingMath": [
+        0.8990782083846345,
+        0.05157314915936673,
+        0.9961874284470018,
+        0.18329573850449288
+      ]
+    },
+    {
+      "seed": "ARCANA42",
+      "ante": 2,
+      "size": 3,
+      "mode": "owned",
+      "ids": [
+        "c_lovers",
+        "c_chariot",
+        "c_heirophant"
+      ],
+      "streams": {
+        "Tarotar12": 0.8821911093613
+      },
+      "followingMath": [
+        0.8990782083846345,
+        0.05157314915936673,
+        0.9961874284470018,
+        0.18329573850449288
+      ]
+    },
+    {
+      "seed": "ARCANA42",
+      "ante": 2,
+      "size": 3,
+      "mode": "owned_showman",
+      "ids": [
+        "c_lovers",
+        "c_chariot",
+        "c_heirophant"
+      ],
+      "streams": {
+        "Tarotar12": 0.8821911093613,
+        "soul_Tarot2": 0.9077531913715
+      },
+      "followingMath": [
+        0.8990782083846345,
+        0.05157314915936673,
+        0.9961874284470018,
+        0.18329573850449288
+      ]
+    },
+    {
+      "seed": "ARCANA42",
+      "ante": 2,
+      "size": 3,
+      "mode": "omen",
+      "ids": [
+        "c_lovers",
+        "c_chariot",
+        "c_heirophant"
+      ],
+      "streams": {
+        "Tarotar12": 0.8821911093613,
+        "omen_globe": 0.9706174087829,
+        "soul_Tarot2": 0.9077531913715
+      },
+      "followingMath": [
+        0.8990782083846345,
+        0.05157314915936673,
+        0.9961874284470018,
+        0.18329573850449288
+      ]
+    },
+    {
+      "seed": "ARCANA42",
+      "ante": 2,
+      "size": 3,
+      "mode": "omen_owned",
+      "ids": [
+        "c_lovers",
+        "c_chariot",
+        "c_heirophant"
+      ],
+      "streams": {
+        "Tarotar12": 0.8821911093613,
+        "omen_globe": 0.9706174087829
+      },
+      "followingMath": [
+        0.8990782083846345,
+        0.05157314915936673,
+        0.9961874284470018,
+        0.18329573850449288
+      ]
+    },
+    {
+      "seed": "ARCANA42",
+      "ante": 2,
+      "size": 3,
+      "mode": "omen_owned_showman",
+      "ids": [
+        "c_lovers",
+        "c_chariot",
+        "c_heirophant"
+      ],
+      "streams": {
+        "Tarotar12": 0.8821911093613,
+        "omen_globe": 0.9706174087829,
+        "soul_Tarot2": 0.9077531913715
+      },
+      "followingMath": [
+        0.8990782083846345,
+        0.05157314915936673,
+        0.9961874284470018,
+        0.18329573850449288
+      ]
+    },
+    {
+      "seed": "ARCANA42",
+      "ante": 2,
+      "size": 3,
+      "mode": "ban_soul",
+      "ids": [
+        "c_lovers",
+        "c_chariot",
+        "c_heirophant"
+      ],
+      "streams": {
+        "Tarotar12": 0.8821911093613
+      },
+      "followingMath": [
+        0.8990782083846345,
+        0.05157314915936673,
+        0.9961874284470018,
+        0.18329573850449288
+      ]
+    },
+    {
+      "seed": "ARCANA42",
+      "ante": 2,
+      "size": 3,
+      "mode": "ban_soul_omen",
+      "ids": [
+        "c_lovers",
+        "c_chariot",
+        "c_heirophant"
+      ],
+      "streams": {
+        "Tarotar12": 0.8821911093613,
+        "omen_globe": 0.9706174087829
+      },
+      "followingMath": [
+        0.8990782083846345,
+        0.05157314915936673,
+        0.9961874284470018,
+        0.18329573850449288
+      ]
+    },
+    {
+      "seed": "ARCANA42",
+      "ante": 2,
+      "size": 3,
+      "mode": "ban_hole_omen",
+      "ids": [
+        "c_lovers",
+        "c_chariot",
+        "c_heirophant"
+      ],
+      "streams": {
+        "Tarotar12": 0.8821911093613,
+        "omen_globe": 0.9706174087829,
+        "soul_Tarot2": 0.9077531913715
+      },
+      "followingMath": [
+        0.8990782083846345,
+        0.05157314915936673,
+        0.9961874284470018,
+        0.18329573850449288
+      ]
+    },
+    {
+      "seed": "ARCANA42",
+      "ante": 2,
+      "size": 3,
+      "mode": "empty",
+      "ids": [
+        "c_strength",
+        "c_strength",
+        "c_strength"
+      ],
+      "streams": {
+        "Tarotar12": 0.8821911093613,
+        "soul_Tarot2": 0.9077531913715
+      },
+      "followingMath": [
+        0.8990782083846345,
+        0.05157314915936673,
+        0.9961874284470018,
+        0.18329573850449288
+      ]
+    },
+    {
+      "seed": "ARCANA42",
+      "ante": 2,
+      "size": 5,
+      "mode": "base",
+      "ids": [
+        "c_lovers",
+        "c_chariot",
+        "c_heirophant",
+        "c_high_priestess",
+        "c_hermit"
+      ],
+      "streams": {
+        "Tarotar12": 0.2649581991176,
+        "Tarotar12_resample2": 0.790250792245,
+        "soul_Tarot2": 0.3409607373134
+      },
+      "followingMath": [
+        0.9675206565431154,
+        0.07212525551933013,
+        0.8946110610590472,
+        0.25382733141668457
+      ]
+    },
+    {
+      "seed": "ARCANA42",
+      "ante": 2,
+      "size": 5,
+      "mode": "owned",
+      "ids": [
+        "c_lovers",
+        "c_chariot",
+        "c_heirophant",
+        "c_high_priestess",
+        "c_hermit"
+      ],
+      "streams": {
+        "Tarotar12": 0.2649581991176,
+        "Tarotar12_resample2": 0.790250792245
+      },
+      "followingMath": [
+        0.9675206565431154,
+        0.07212525551933013,
+        0.8946110610590472,
+        0.25382733141668457
+      ]
+    },
+    {
+      "seed": "ARCANA42",
+      "ante": 2,
+      "size": 5,
+      "mode": "owned_showman",
+      "ids": [
+        "c_lovers",
+        "c_chariot",
+        "c_heirophant",
+        "c_chariot",
+        "c_hermit"
+      ],
+      "streams": {
+        "Tarotar12": 0.2649581991176,
+        "soul_Tarot2": 0.3409607373134
+      },
+      "followingMath": [
+        0.9675206565431154,
+        0.07212525551933013,
+        0.8946110610590472,
+        0.25382733141668457
+      ]
+    },
+    {
+      "seed": "ARCANA42",
+      "ante": 2,
+      "size": 5,
+      "mode": "omen",
+      "ids": [
+        "c_lovers",
+        "c_chariot",
+        "c_heirophant",
+        "c_aura",
+        "c_trance"
+      ],
+      "streams": {
+        "Spectralar22": 0.2534412164567,
+        "Tarotar12": 0.8821911093613,
+        "omen_globe": 0.5278719632085,
+        "soul_Spectral2": 0.5881976828266,
+        "soul_Tarot2": 0.9077531913715
+      },
+      "followingMath": [
+        0.6985552306280625,
+        0.4334037579012542,
+        0.530065706416085,
+        0.9898592890839706
+      ]
+    },
+    {
+      "seed": "ARCANA42",
+      "ante": 2,
+      "size": 5,
+      "mode": "omen_owned",
+      "ids": [
+        "c_lovers",
+        "c_chariot",
+        "c_heirophant",
+        "c_aura",
+        "c_trance"
+      ],
+      "streams": {
+        "Spectralar22": 0.2534412164567,
+        "Tarotar12": 0.8821911093613,
+        "omen_globe": 0.5278719632085
+      },
+      "followingMath": [
+        0.6985552306280625,
+        0.4334037579012542,
+        0.530065706416085,
+        0.9898592890839706
+      ]
+    },
+    {
+      "seed": "ARCANA42",
+      "ante": 2,
+      "size": 5,
+      "mode": "omen_owned_showman",
+      "ids": [
+        "c_lovers",
+        "c_chariot",
+        "c_heirophant",
+        "c_aura",
+        "c_trance"
+      ],
+      "streams": {
+        "Spectralar22": 0.2534412164567,
+        "Tarotar12": 0.8821911093613,
+        "omen_globe": 0.5278719632085,
+        "soul_Spectral2": 0.5881976828266,
+        "soul_Tarot2": 0.9077531913715
+      },
+      "followingMath": [
+        0.6985552306280625,
+        0.4334037579012542,
+        0.530065706416085,
+        0.9898592890839706
+      ]
+    },
+    {
+      "seed": "ARCANA42",
+      "ante": 2,
+      "size": 5,
+      "mode": "ban_soul",
+      "ids": [
+        "c_lovers",
+        "c_chariot",
+        "c_heirophant",
+        "c_high_priestess",
+        "c_hermit"
+      ],
+      "streams": {
+        "Tarotar12": 0.2649581991176,
+        "Tarotar12_resample2": 0.790250792245
+      },
+      "followingMath": [
+        0.9675206565431154,
+        0.07212525551933013,
+        0.8946110610590472,
+        0.25382733141668457
+      ]
+    },
+    {
+      "seed": "ARCANA42",
+      "ante": 2,
+      "size": 5,
+      "mode": "ban_soul_omen",
+      "ids": [
+        "c_lovers",
+        "c_chariot",
+        "c_heirophant",
+        "c_aura",
+        "c_trance"
+      ],
+      "streams": {
+        "Spectralar22": 0.2534412164567,
+        "Tarotar12": 0.8821911093613,
+        "omen_globe": 0.5278719632085
+      },
+      "followingMath": [
+        0.6985552306280625,
+        0.4334037579012542,
+        0.530065706416085,
+        0.9898592890839706
+      ]
+    },
+    {
+      "seed": "ARCANA42",
+      "ante": 2,
+      "size": 5,
+      "mode": "ban_hole_omen",
+      "ids": [
+        "c_lovers",
+        "c_chariot",
+        "c_heirophant",
+        "c_aura",
+        "c_trance"
+      ],
+      "streams": {
+        "Spectralar22": 0.2534412164567,
+        "Tarotar12": 0.8821911093613,
+        "omen_globe": 0.5278719632085,
+        "soul_Spectral2": 0.5881976828266,
+        "soul_Tarot2": 0.9077531913715
+      },
+      "followingMath": [
+        0.6985552306280625,
+        0.4334037579012542,
+        0.530065706416085,
+        0.9898592890839706
+      ]
+    },
+    {
+      "seed": "ARCANA42",
+      "ante": 2,
+      "size": 5,
+      "mode": "empty",
+      "ids": [
+        "c_strength",
+        "c_strength",
+        "c_strength",
+        "c_strength",
+        "c_strength"
+      ],
+      "streams": {
+        "Tarotar12": 0.2649581991176,
+        "soul_Tarot2": 0.3409607373134
+      },
+      "followingMath": [
+        0.9675206565431154,
+        0.07212525551933013,
+        0.8946110610590472,
+        0.25382733141668457
+      ]
+    },
+    {
+      "seed": "ARC291",
+      "ante": 2,
+      "size": 3,
+      "mode": "base",
+      "ids": [
+        "c_soul",
+        "c_moon",
+        "c_sun"
+      ],
+      "streams": {
+        "Tarotar12": 0.658361972384,
+        "soul_Tarot2": 0.834721525446
+      },
+      "followingMath": [
+        0.4834342696658198,
+        0.6299509435579898,
+        0.741442969300879,
+        0.3577124998981658
+      ]
+    },
+    {
+      "seed": "ARC291",
+      "ante": 2,
+      "size": 3,
+      "mode": "owned",
+      "ids": [
+        "c_moon",
+        "c_sun",
+        "c_hanged_man"
+      ],
+      "streams": {
+        "Tarotar12": 0.2696751023095
+      },
+      "followingMath": [
+        0.40599456128582445,
+        0.4066648749083597,
+        0.13838590143618767,
+        0.5077766451436074
+      ]
+    },
+    {
+      "seed": "ARC291",
+      "ante": 2,
+      "size": 3,
+      "mode": "owned_showman",
+      "ids": [
+        "c_soul",
+        "c_moon",
+        "c_sun"
+      ],
+      "streams": {
+        "Tarotar12": 0.658361972384,
+        "soul_Tarot2": 0.123819114155
+      },
+      "followingMath": [
+        0.4834342696658198,
+        0.6299509435579898,
+        0.741442969300879,
+        0.3577124998981658
+      ]
+    },
+    {
+      "seed": "ARC291",
+      "ante": 2,
+      "size": 3,
+      "mode": "omen",
+      "ids": [
+        "c_soul",
+        "c_moon",
+        "c_sun"
+      ],
+      "streams": {
+        "Tarotar12": 0.658361972384,
+        "omen_globe": 0.5028765406762,
+        "soul_Tarot2": 0.834721525446
+      },
+      "followingMath": [
+        0.4834342696658198,
+        0.6299509435579898,
+        0.741442969300879,
+        0.3577124998981658
+      ]
+    },
+    {
+      "seed": "ARC291",
+      "ante": 2,
+      "size": 3,
+      "mode": "omen_owned",
+      "ids": [
+        "c_moon",
+        "c_sun",
+        "c_hanged_man"
+      ],
+      "streams": {
+        "Tarotar12": 0.2696751023095,
+        "omen_globe": 0.5028765406762
+      },
+      "followingMath": [
+        0.40599456128582445,
+        0.4066648749083597,
+        0.13838590143618767,
+        0.5077766451436074
+      ]
+    },
+    {
+      "seed": "ARC291",
+      "ante": 2,
+      "size": 3,
+      "mode": "omen_owned_showman",
+      "ids": [
+        "c_soul",
+        "c_moon",
+        "c_sun"
+      ],
+      "streams": {
+        "Tarotar12": 0.658361972384,
+        "omen_globe": 0.5028765406762,
+        "soul_Tarot2": 0.123819114155
+      },
+      "followingMath": [
+        0.4834342696658198,
+        0.6299509435579898,
+        0.741442969300879,
+        0.3577124998981658
+      ]
+    },
+    {
+      "seed": "ARC291",
+      "ante": 2,
+      "size": 3,
+      "mode": "ban_soul",
+      "ids": [
+        "c_moon",
+        "c_sun",
+        "c_hanged_man"
+      ],
+      "streams": {
+        "Tarotar12": 0.2696751023095
+      },
+      "followingMath": [
+        0.40599456128582445,
+        0.4066648749083597,
+        0.13838590143618767,
+        0.5077766451436074
+      ]
+    },
+    {
+      "seed": "ARC291",
+      "ante": 2,
+      "size": 3,
+      "mode": "ban_soul_omen",
+      "ids": [
+        "c_moon",
+        "c_sun",
+        "c_hanged_man"
+      ],
+      "streams": {
+        "Tarotar12": 0.2696751023095,
+        "omen_globe": 0.5028765406762
+      },
+      "followingMath": [
+        0.40599456128582445,
+        0.4066648749083597,
+        0.13838590143618767,
+        0.5077766451436074
+      ]
+    },
+    {
+      "seed": "ARC291",
+      "ante": 2,
+      "size": 3,
+      "mode": "ban_hole_omen",
+      "ids": [
+        "c_soul",
+        "c_moon",
+        "c_sun"
+      ],
+      "streams": {
+        "Tarotar12": 0.658361972384,
+        "omen_globe": 0.5028765406762,
+        "soul_Tarot2": 0.834721525446
+      },
+      "followingMath": [
+        0.4834342696658198,
+        0.6299509435579898,
+        0.741442969300879,
+        0.3577124998981658
+      ]
+    },
+    {
+      "seed": "ARC291",
+      "ante": 2,
+      "size": 3,
+      "mode": "empty",
+      "ids": [
+        "c_soul",
+        "c_strength",
+        "c_strength"
+      ],
+      "streams": {
+        "Tarotar12": 0.658361972384,
+        "soul_Tarot2": 0.834721525446
+      },
+      "followingMath": [
+        0.4834342696658198,
+        0.6299509435579898,
+        0.741442969300879,
+        0.3577124998981658
+      ]
+    },
+    {
+      "seed": "ARC291",
+      "ante": 2,
+      "size": 5,
+      "mode": "base",
+      "ids": [
+        "c_soul",
+        "c_moon",
+        "c_sun",
+        "c_hanged_man",
+        "c_world"
+      ],
+      "streams": {
+        "Tarotar12": 0.599457535844,
+        "soul_Tarot2": 0.834721525446
+      },
+      "followingMath": [
+        0.468667125304711,
+        0.39162278394575023,
+        0.29369528045157356,
+        0.16426513317219915
+      ]
+    },
+    {
+      "seed": "ARC291",
+      "ante": 2,
+      "size": 5,
+      "mode": "owned",
+      "ids": [
+        "c_moon",
+        "c_sun",
+        "c_hanged_man",
+        "c_world",
+        "c_heirophant"
+      ],
+      "streams": {
+        "Tarotar12": 0.1681054555028
+      },
+      "followingMath": [
+        0.5555615647449281,
+        0.25416148010221007,
+        0.3885575002874051,
+        0.37301972864963506
+      ]
+    },
+    {
+      "seed": "ARC291",
+      "ante": 2,
+      "size": 5,
+      "mode": "owned_showman",
+      "ids": [
+        "c_soul",
+        "c_moon",
+        "c_sun",
+        "c_hanged_man",
+        "c_world"
+      ],
+      "streams": {
+        "Tarotar12": 0.599457535844,
+        "soul_Tarot2": 0.7344386944631
+      },
+      "followingMath": [
+        0.468667125304711,
+        0.39162278394575023,
+        0.29369528045157356,
+        0.16426513317219915
+      ]
+    },
+    {
+      "seed": "ARC291",
+      "ante": 2,
+      "size": 5,
+      "mode": "omen",
+      "ids": [
+        "c_soul",
+        "c_moon",
+        "c_sun",
+        "c_hanged_man",
+        "c_world"
+      ],
+      "streams": {
+        "Tarotar12": 0.599457535844,
+        "omen_globe": 0.1371600024294,
+        "soul_Tarot2": 0.834721525446
+      },
+      "followingMath": [
+        0.468667125304711,
+        0.39162278394575023,
+        0.29369528045157356,
+        0.16426513317219915
+      ]
+    },
+    {
+      "seed": "ARC291",
+      "ante": 2,
+      "size": 5,
+      "mode": "omen_owned",
+      "ids": [
+        "c_moon",
+        "c_sun",
+        "c_hanged_man",
+        "c_world",
+        "c_heirophant"
+      ],
+      "streams": {
+        "Tarotar12": 0.1681054555028,
+        "omen_globe": 0.1371600024294
+      },
+      "followingMath": [
+        0.5555615647449281,
+        0.25416148010221007,
+        0.3885575002874051,
+        0.37301972864963506
+      ]
+    },
+    {
+      "seed": "ARC291",
+      "ante": 2,
+      "size": 5,
+      "mode": "omen_owned_showman",
+      "ids": [
+        "c_soul",
+        "c_moon",
+        "c_sun",
+        "c_hanged_man",
+        "c_world"
+      ],
+      "streams": {
+        "Tarotar12": 0.599457535844,
+        "omen_globe": 0.1371600024294,
+        "soul_Tarot2": 0.7344386944631
+      },
+      "followingMath": [
+        0.468667125304711,
+        0.39162278394575023,
+        0.29369528045157356,
+        0.16426513317219915
+      ]
+    },
+    {
+      "seed": "ARC291",
+      "ante": 2,
+      "size": 5,
+      "mode": "ban_soul",
+      "ids": [
+        "c_moon",
+        "c_sun",
+        "c_hanged_man",
+        "c_world",
+        "c_heirophant"
+      ],
+      "streams": {
+        "Tarotar12": 0.1681054555028
+      },
+      "followingMath": [
+        0.5555615647449281,
+        0.25416148010221007,
+        0.3885575002874051,
+        0.37301972864963506
+      ]
+    },
+    {
+      "seed": "ARC291",
+      "ante": 2,
+      "size": 5,
+      "mode": "ban_soul_omen",
+      "ids": [
+        "c_moon",
+        "c_sun",
+        "c_hanged_man",
+        "c_world",
+        "c_heirophant"
+      ],
+      "streams": {
+        "Tarotar12": 0.1681054555028,
+        "omen_globe": 0.1371600024294
+      },
+      "followingMath": [
+        0.5555615647449281,
+        0.25416148010221007,
+        0.3885575002874051,
+        0.37301972864963506
+      ]
+    },
+    {
+      "seed": "ARC291",
+      "ante": 2,
+      "size": 5,
+      "mode": "ban_hole_omen",
+      "ids": [
+        "c_soul",
+        "c_moon",
+        "c_sun",
+        "c_hanged_man",
+        "c_world"
+      ],
+      "streams": {
+        "Tarotar12": 0.599457535844,
+        "omen_globe": 0.1371600024294,
+        "soul_Tarot2": 0.834721525446
+      },
+      "followingMath": [
+        0.468667125304711,
+        0.39162278394575023,
+        0.29369528045157356,
+        0.16426513317219915
+      ]
+    },
+    {
+      "seed": "ARC291",
+      "ante": 2,
+      "size": 5,
+      "mode": "empty",
+      "ids": [
+        "c_soul",
+        "c_strength",
+        "c_strength",
+        "c_strength",
+        "c_strength"
+      ],
+      "streams": {
+        "Tarotar12": 0.599457535844,
+        "soul_Tarot2": 0.834721525446
+      },
+      "followingMath": [
+        0.468667125304711,
+        0.39162278394575023,
+        0.29369528045157356,
+        0.16426513317219915
+      ]
+    },
+    {
+      "seed": "ARC1746",
+      "ante": 2,
+      "size": 3,
+      "mode": "base",
+      "ids": [
+        "c_lovers",
+        "c_devil",
+        "c_strength"
+      ],
+      "streams": {
+        "Tarotar12": 0.9522867741446,
+        "soul_Tarot2": 0.7958392182299
+      },
+      "followingMath": [
+        0.3883407886362884,
+        0.6267072363226402,
+        0.9641014156729875,
+        0.27620289272742693
+      ]
+    },
+    {
+      "seed": "ARC1746",
+      "ante": 2,
+      "size": 3,
+      "mode": "owned",
+      "ids": [
+        "c_lovers",
+        "c_devil",
+        "c_strength"
+      ],
+      "streams": {
+        "Tarotar12": 0.9522867741446
+      },
+      "followingMath": [
+        0.3883407886362884,
+        0.6267072363226402,
+        0.9641014156729875,
+        0.27620289272742693
+      ]
+    },
+    {
+      "seed": "ARC1746",
+      "ante": 2,
+      "size": 3,
+      "mode": "owned_showman",
+      "ids": [
+        "c_lovers",
+        "c_devil",
+        "c_strength"
+      ],
+      "streams": {
+        "Tarotar12": 0.9522867741446,
+        "soul_Tarot2": 0.7958392182299
+      },
+      "followingMath": [
+        0.3883407886362884,
+        0.6267072363226402,
+        0.9641014156729875,
+        0.27620289272742693
+      ]
+    },
+    {
+      "seed": "ARC1746",
+      "ante": 2,
+      "size": 3,
+      "mode": "omen",
+      "ids": [
+        "c_soul",
+        "c_lovers",
+        "c_devil"
+      ],
+      "streams": {
+        "Tarotar12": 0.4742953617113,
+        "omen_globe": 0.9594952968041,
+        "soul_Spectral2": 0.639375784703
+      },
+      "followingMath": [
+        0.8128630624982882,
+        0.9940190279883441,
+        0.8849830730449304,
+        0.19856100635509177
+      ]
+    },
+    {
+      "seed": "ARC1746",
+      "ante": 2,
+      "size": 3,
+      "mode": "omen_owned",
+      "ids": [
+        "c_wraith",
+        "c_lovers",
+        "c_devil"
+      ],
+      "streams": {
+        "Spectralar22": 0.3906765048526,
+        "Tarotar12": 0.4742953617113,
+        "omen_globe": 0.9594952968041
+      },
+      "followingMath": [
+        0.8128630624982882,
+        0.9940190279883441,
+        0.8849830730449304,
+        0.19856100635509177
+      ]
+    },
+    {
+      "seed": "ARC1746",
+      "ante": 2,
+      "size": 3,
+      "mode": "omen_owned_showman",
+      "ids": [
+        "c_soul",
+        "c_lovers",
+        "c_devil"
+      ],
+      "streams": {
+        "Tarotar12": 0.4742953617113,
+        "omen_globe": 0.9594952968041,
+        "soul_Spectral2": 0.639375784703,
+        "soul_Tarot2": 0.9635062920729
+      },
+      "followingMath": [
+        0.8128630624982882,
+        0.9940190279883441,
+        0.8849830730449304,
+        0.19856100635509177
+      ]
+    },
+    {
+      "seed": "ARC1746",
+      "ante": 2,
+      "size": 3,
+      "mode": "ban_soul",
+      "ids": [
+        "c_lovers",
+        "c_devil",
+        "c_strength"
+      ],
+      "streams": {
+        "Tarotar12": 0.9522867741446
+      },
+      "followingMath": [
+        0.3883407886362884,
+        0.6267072363226402,
+        0.9641014156729875,
+        0.27620289272742693
+      ]
+    },
+    {
+      "seed": "ARC1746",
+      "ante": 2,
+      "size": 3,
+      "mode": "ban_soul_omen",
+      "ids": [
+        "c_wraith",
+        "c_lovers",
+        "c_devil"
+      ],
+      "streams": {
+        "Spectralar22": 0.3906765048526,
+        "Tarotar12": 0.4742953617113,
+        "omen_globe": 0.9594952968041
+      },
+      "followingMath": [
+        0.8128630624982882,
+        0.9940190279883441,
+        0.8849830730449304,
+        0.19856100635509177
+      ]
+    },
+    {
+      "seed": "ARC1746",
+      "ante": 2,
+      "size": 3,
+      "mode": "ban_hole_omen",
+      "ids": [
+        "c_soul",
+        "c_lovers",
+        "c_devil"
+      ],
+      "streams": {
+        "Tarotar12": 0.4742953617113,
+        "omen_globe": 0.9594952968041,
+        "soul_Spectral2": 0.639375784703
+      },
+      "followingMath": [
+        0.8128630624982882,
+        0.9940190279883441,
+        0.8849830730449304,
+        0.19856100635509177
+      ]
+    },
+    {
+      "seed": "ARC1746",
+      "ante": 2,
+      "size": 3,
+      "mode": "empty",
+      "ids": [
+        "c_strength",
+        "c_strength",
+        "c_strength"
+      ],
+      "streams": {
+        "Tarotar12": 0.9522867741446,
+        "soul_Tarot2": 0.7958392182299
+      },
+      "followingMath": [
+        0.3883407886362884,
+        0.6267072363226402,
+        0.9641014156729875,
+        0.27620289272742693
+      ]
+    },
+    {
+      "seed": "ARC1746",
+      "ante": 2,
+      "size": 5,
+      "mode": "base",
+      "ids": [
+        "c_lovers",
+        "c_devil",
+        "c_strength",
+        "c_tower",
+        "c_judgement"
+      ],
+      "streams": {
+        "Tarotar12": 0.4733703479372,
+        "soul_Tarot2": 0.008212175794
+      },
+      "followingMath": [
+        0.056466952867272324,
+        0.721136224034181,
+        0.05638988882706153,
+        0.3110646124683498
+      ]
+    },
+    {
+      "seed": "ARC1746",
+      "ante": 2,
+      "size": 5,
+      "mode": "owned",
+      "ids": [
+        "c_lovers",
+        "c_devil",
+        "c_strength",
+        "c_tower",
+        "c_judgement"
+      ],
+      "streams": {
+        "Tarotar12": 0.4733703479372
+      },
+      "followingMath": [
+        0.056466952867272324,
+        0.721136224034181,
+        0.05638988882706153,
+        0.3110646124683498
+      ]
+    },
+    {
+      "seed": "ARC1746",
+      "ante": 2,
+      "size": 5,
+      "mode": "owned_showman",
+      "ids": [
+        "c_lovers",
+        "c_devil",
+        "c_strength",
+        "c_tower",
+        "c_judgement"
+      ],
+      "streams": {
+        "Tarotar12": 0.4733703479372,
+        "soul_Tarot2": 0.008212175794
+      },
+      "followingMath": [
+        0.056466952867272324,
+        0.721136224034181,
+        0.05638988882706153,
+        0.3110646124683498
+      ]
+    },
+    {
+      "seed": "ARC1746",
+      "ante": 2,
+      "size": 5,
+      "mode": "omen",
+      "ids": [
+        "c_soul",
+        "c_lovers",
+        "c_devil",
+        "c_strength",
+        "c_tower"
+      ],
+      "streams": {
+        "Tarotar12": 0.7764932650173,
+        "omen_globe": 0.4948031098909,
+        "soul_Spectral2": 0.639375784703
+      },
+      "followingMath": [
+        0.2045107458566684,
+        0.13287647987814033,
+        0.548236514596367,
+        0.45429372241483157
+      ]
+    },
+    {
+      "seed": "ARC1746",
+      "ante": 2,
+      "size": 5,
+      "mode": "omen_owned",
+      "ids": [
+        "c_wraith",
+        "c_lovers",
+        "c_devil",
+        "c_strength",
+        "c_tower"
+      ],
+      "streams": {
+        "Spectralar22": 0.3906765048526,
+        "Tarotar12": 0.7764932650173,
+        "omen_globe": 0.4948031098909
+      },
+      "followingMath": [
+        0.2045107458566684,
+        0.13287647987814033,
+        0.548236514596367,
+        0.45429372241483157
+      ]
+    },
+    {
+      "seed": "ARC1746",
+      "ante": 2,
+      "size": 5,
+      "mode": "omen_owned_showman",
+      "ids": [
+        "c_soul",
+        "c_lovers",
+        "c_devil",
+        "c_strength",
+        "c_tower"
+      ],
+      "streams": {
+        "Tarotar12": 0.7764932650173,
+        "omen_globe": 0.4948031098909,
+        "soul_Spectral2": 0.639375784703,
+        "soul_Tarot2": 0.5067288137908
+      },
+      "followingMath": [
+        0.2045107458566684,
+        0.13287647987814033,
+        0.548236514596367,
+        0.45429372241483157
+      ]
+    },
+    {
+      "seed": "ARC1746",
+      "ante": 2,
+      "size": 5,
+      "mode": "ban_soul",
+      "ids": [
+        "c_lovers",
+        "c_devil",
+        "c_strength",
+        "c_tower",
+        "c_judgement"
+      ],
+      "streams": {
+        "Tarotar12": 0.4733703479372
+      },
+      "followingMath": [
+        0.056466952867272324,
+        0.721136224034181,
+        0.05638988882706153,
+        0.3110646124683498
+      ]
+    },
+    {
+      "seed": "ARC1746",
+      "ante": 2,
+      "size": 5,
+      "mode": "ban_soul_omen",
+      "ids": [
+        "c_wraith",
+        "c_lovers",
+        "c_devil",
+        "c_strength",
+        "c_tower"
+      ],
+      "streams": {
+        "Spectralar22": 0.3906765048526,
+        "Tarotar12": 0.7764932650173,
+        "omen_globe": 0.4948031098909
+      },
+      "followingMath": [
+        0.2045107458566684,
+        0.13287647987814033,
+        0.548236514596367,
+        0.45429372241483157
+      ]
+    },
+    {
+      "seed": "ARC1746",
+      "ante": 2,
+      "size": 5,
+      "mode": "ban_hole_omen",
+      "ids": [
+        "c_soul",
+        "c_lovers",
+        "c_devil",
+        "c_strength",
+        "c_tower"
+      ],
+      "streams": {
+        "Tarotar12": 0.7764932650173,
+        "omen_globe": 0.4948031098909,
+        "soul_Spectral2": 0.639375784703
+      },
+      "followingMath": [
+        0.2045107458566684,
+        0.13287647987814033,
+        0.548236514596367,
+        0.45429372241483157
+      ]
+    },
+    {
+      "seed": "ARC1746",
+      "ante": 2,
+      "size": 5,
+      "mode": "empty",
+      "ids": [
+        "c_strength",
+        "c_strength",
+        "c_strength",
+        "c_strength",
+        "c_strength"
+      ],
+      "streams": {
+        "Tarotar12": 0.4733703479372,
+        "soul_Tarot2": 0.008212175794
+      },
+      "followingMath": [
+        0.056466952867272324,
+        0.721136224034181,
+        0.05638988882706153,
+        0.3110646124683498
+      ]
+    },
+    {
+      "seed": "ARC1618",
+      "ante": 2,
+      "size": 3,
+      "mode": "base",
+      "ids": [
+        "c_temperance",
+        "c_empress",
+        "c_sun"
+      ],
+      "streams": {
+        "Tarotar12": 0.4021596075005,
+        "soul_Tarot2": 0.1313933830692
+      },
+      "followingMath": [
+        0.014294095507479065,
+        0.3655597908331427,
+        0.9348245615383521,
+        0.15202127891338124
+      ]
+    },
+    {
+      "seed": "ARC1618",
+      "ante": 2,
+      "size": 3,
+      "mode": "owned",
+      "ids": [
+        "c_temperance",
+        "c_empress",
+        "c_sun"
+      ],
+      "streams": {
+        "Tarotar12": 0.4021596075005
+      },
+      "followingMath": [
+        0.014294095507479065,
+        0.3655597908331427,
+        0.9348245615383521,
+        0.15202127891338124
+      ]
+    },
+    {
+      "seed": "ARC1618",
+      "ante": 2,
+      "size": 3,
+      "mode": "owned_showman",
+      "ids": [
+        "c_temperance",
+        "c_empress",
+        "c_sun"
+      ],
+      "streams": {
+        "Tarotar12": 0.4021596075005,
+        "soul_Tarot2": 0.1313933830692
+      },
+      "followingMath": [
+        0.014294095507479065,
+        0.3655597908331427,
+        0.9348245615383521,
+        0.15202127891338124
+      ]
+    },
+    {
+      "seed": "ARC1618",
+      "ante": 2,
+      "size": 3,
+      "mode": "omen",
+      "ids": [
+        "c_black_hole",
+        "c_temperance",
+        "c_empress"
+      ],
+      "streams": {
+        "Tarotar12": 0.1552538784009,
+        "omen_globe": 0.5498710854101,
+        "soul_Spectral2": 0.4203318337813,
+        "soul_Tarot2": 0.5781666875551
+      },
+      "followingMath": [
+        0.4891052113070822,
+        0.4264006346215512,
+        0.7900711148517194,
+        0.377261100038931
+      ]
+    },
+    {
+      "seed": "ARC1618",
+      "ante": 2,
+      "size": 3,
+      "mode": "omen_owned",
+      "ids": [
+        "c_hex",
+        "c_temperance",
+        "c_empress"
+      ],
+      "streams": {
+        "Spectralar22": 0.2074981155199,
+        "Spectralar22_resample2": 0.2442346621293,
+        "Tarotar12": 0.1552538784009,
+        "omen_globe": 0.5498710854101
+      },
+      "followingMath": [
+        0.4891052113070822,
+        0.4264006346215512,
+        0.7900711148517194,
+        0.377261100038931
+      ]
+    },
+    {
+      "seed": "ARC1618",
+      "ante": 2,
+      "size": 3,
+      "mode": "omen_owned_showman",
+      "ids": [
+        "c_black_hole",
+        "c_temperance",
+        "c_empress"
+      ],
+      "streams": {
+        "Tarotar12": 0.1552538784009,
+        "omen_globe": 0.5498710854101,
+        "soul_Spectral2": 0.4203318337813,
+        "soul_Tarot2": 0.5781666875551
+      },
+      "followingMath": [
+        0.4891052113070822,
+        0.4264006346215512,
+        0.7900711148517194,
+        0.377261100038931
+      ]
+    },
+    {
+      "seed": "ARC1618",
+      "ante": 2,
+      "size": 3,
+      "mode": "ban_soul",
+      "ids": [
+        "c_temperance",
+        "c_empress",
+        "c_sun"
+      ],
+      "streams": {
+        "Tarotar12": 0.4021596075005
+      },
+      "followingMath": [
+        0.014294095507479065,
+        0.3655597908331427,
+        0.9348245615383521,
+        0.15202127891338124
+      ]
+    },
+    {
+      "seed": "ARC1618",
+      "ante": 2,
+      "size": 3,
+      "mode": "ban_soul_omen",
+      "ids": [
+        "c_hex",
+        "c_temperance",
+        "c_empress"
+      ],
+      "streams": {
+        "Spectralar22": 0.2074981155199,
+        "Spectralar22_resample2": 0.2442346621293,
+        "Tarotar12": 0.1552538784009,
+        "omen_globe": 0.5498710854101
+      },
+      "followingMath": [
+        0.4891052113070822,
+        0.4264006346215512,
+        0.7900711148517194,
+        0.377261100038931
+      ]
+    },
+    {
+      "seed": "ARC1618",
+      "ante": 2,
+      "size": 3,
+      "mode": "ban_hole_omen",
+      "ids": [
+        "c_hex",
+        "c_temperance",
+        "c_empress"
+      ],
+      "streams": {
+        "Spectralar22": 0.2074981155199,
+        "Spectralar22_resample2": 0.2442346621293,
+        "Tarotar12": 0.1552538784009,
+        "omen_globe": 0.5498710854101,
+        "soul_Spectral2": 0.4203318337813,
+        "soul_Tarot2": 0.5781666875551
+      },
+      "followingMath": [
+        0.4891052113070822,
+        0.4264006346215512,
+        0.7900711148517194,
+        0.377261100038931
+      ]
+    },
+    {
+      "seed": "ARC1618",
+      "ante": 2,
+      "size": 3,
+      "mode": "empty",
+      "ids": [
+        "c_strength",
+        "c_strength",
+        "c_strength"
+      ],
+      "streams": {
+        "Tarotar12": 0.4021596075005,
+        "soul_Tarot2": 0.1313933830692
+      },
+      "followingMath": [
+        0.014294095507479065,
+        0.3655597908331427,
+        0.9348245615383521,
+        0.15202127891338124
+      ]
+    },
+    {
+      "seed": "ARC1618",
+      "ante": 2,
+      "size": 5,
+      "mode": "base",
+      "ids": [
+        "c_temperance",
+        "c_empress",
+        "c_sun",
+        "c_lovers",
+        "c_star"
+      ],
+      "streams": {
+        "Tarotar12": 0.5620154140935,
+        "soul_Tarot2": 0.7569589125827
+      },
+      "followingMath": [
+        0.9304580243633915,
+        0.4428776969420345,
+        0.05311968838773584,
+        0.5844291063647544
+      ]
+    },
+    {
+      "seed": "ARC1618",
+      "ante": 2,
+      "size": 5,
+      "mode": "owned",
+      "ids": [
+        "c_temperance",
+        "c_empress",
+        "c_sun",
+        "c_lovers",
+        "c_star"
+      ],
+      "streams": {
+        "Tarotar12": 0.5620154140935
+      },
+      "followingMath": [
+        0.9304580243633915,
+        0.4428776969420345,
+        0.05311968838773584,
+        0.5844291063647544
+      ]
+    },
+    {
+      "seed": "ARC1618",
+      "ante": 2,
+      "size": 5,
+      "mode": "owned_showman",
+      "ids": [
+        "c_temperance",
+        "c_empress",
+        "c_sun",
+        "c_lovers",
+        "c_star"
+      ],
+      "streams": {
+        "Tarotar12": 0.5620154140935,
+        "soul_Tarot2": 0.7569589125827
+      },
+      "followingMath": [
+        0.9304580243633915,
+        0.4428776969420345,
+        0.05311968838773584,
+        0.5844291063647544
+      ]
+    },
+    {
+      "seed": "ARC1618",
+      "ante": 2,
+      "size": 5,
+      "mode": "omen",
+      "ids": [
+        "c_black_hole",
+        "c_temperance",
+        "c_empress",
+        "c_sun",
+        "c_lovers"
+      ],
+      "streams": {
+        "Tarotar12": 0.8279022030037,
+        "omen_globe": 0.276886675699,
+        "soul_Spectral2": 0.4203318337813,
+        "soul_Tarot2": 0.3610166609616
+      },
+      "followingMath": [
+        0.3158265495965591,
+        0.5851620692003763,
+        0.3895790352059878,
+        0.10693536008856896
+      ]
+    },
+    {
+      "seed": "ARC1618",
+      "ante": 2,
+      "size": 5,
+      "mode": "omen_owned",
+      "ids": [
+        "c_hex",
+        "c_temperance",
+        "c_empress",
+        "c_sun",
+        "c_lovers"
+      ],
+      "streams": {
+        "Spectralar22": 0.2074981155199,
+        "Spectralar22_resample2": 0.2442346621293,
+        "Tarotar12": 0.8279022030037,
+        "omen_globe": 0.276886675699
+      },
+      "followingMath": [
+        0.3158265495965591,
+        0.5851620692003763,
+        0.3895790352059878,
+        0.10693536008856896
+      ]
+    },
+    {
+      "seed": "ARC1618",
+      "ante": 2,
+      "size": 5,
+      "mode": "omen_owned_showman",
+      "ids": [
+        "c_black_hole",
+        "c_temperance",
+        "c_empress",
+        "c_sun",
+        "c_lovers"
+      ],
+      "streams": {
+        "Tarotar12": 0.8279022030037,
+        "omen_globe": 0.276886675699,
+        "soul_Spectral2": 0.4203318337813,
+        "soul_Tarot2": 0.3610166609616
+      },
+      "followingMath": [
+        0.3158265495965591,
+        0.5851620692003763,
+        0.3895790352059878,
+        0.10693536008856896
+      ]
+    },
+    {
+      "seed": "ARC1618",
+      "ante": 2,
+      "size": 5,
+      "mode": "ban_soul",
+      "ids": [
+        "c_temperance",
+        "c_empress",
+        "c_sun",
+        "c_lovers",
+        "c_star"
+      ],
+      "streams": {
+        "Tarotar12": 0.5620154140935
+      },
+      "followingMath": [
+        0.9304580243633915,
+        0.4428776969420345,
+        0.05311968838773584,
+        0.5844291063647544
+      ]
+    },
+    {
+      "seed": "ARC1618",
+      "ante": 2,
+      "size": 5,
+      "mode": "ban_soul_omen",
+      "ids": [
+        "c_hex",
+        "c_temperance",
+        "c_empress",
+        "c_sun",
+        "c_lovers"
+      ],
+      "streams": {
+        "Spectralar22": 0.2074981155199,
+        "Spectralar22_resample2": 0.2442346621293,
+        "Tarotar12": 0.8279022030037,
+        "omen_globe": 0.276886675699
+      },
+      "followingMath": [
+        0.3158265495965591,
+        0.5851620692003763,
+        0.3895790352059878,
+        0.10693536008856896
+      ]
+    },
+    {
+      "seed": "ARC1618",
+      "ante": 2,
+      "size": 5,
+      "mode": "ban_hole_omen",
+      "ids": [
+        "c_hex",
+        "c_temperance",
+        "c_empress",
+        "c_sun",
+        "c_lovers"
+      ],
+      "streams": {
+        "Spectralar22": 0.2074981155199,
+        "Spectralar22_resample2": 0.2442346621293,
+        "Tarotar12": 0.8279022030037,
+        "omen_globe": 0.276886675699,
+        "soul_Spectral2": 0.4203318337813,
+        "soul_Tarot2": 0.3610166609616
+      },
+      "followingMath": [
+        0.3158265495965591,
+        0.5851620692003763,
+        0.3895790352059878,
+        0.10693536008856896
+      ]
+    },
+    {
+      "seed": "ARC1618",
+      "ante": 2,
+      "size": 5,
+      "mode": "empty",
+      "ids": [
+        "c_strength",
+        "c_strength",
+        "c_strength",
+        "c_strength",
+        "c_strength"
+      ],
+      "streams": {
+        "Tarotar12": 0.5620154140935,
+        "soul_Tarot2": 0.7569589125827
+      },
+      "followingMath": [
+        0.9304580243633915,
+        0.4428776969420345,
+        0.05311968838773584,
+        0.5844291063647544
+      ]
+    }
+  ]
+}
