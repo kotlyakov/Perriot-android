@@ -1,11 +1,11 @@
 import {canonicalCards} from './apk-deck.js';
-import {nextApkRandom,validateApkRng} from './apk-rng.js';
+import {nativeBlindTarget} from './blind-progression.js';
+import {nextApkRandom,nextApkSeed,createApkMathState,nextApkMathRandom,validateApkRng} from './apk-rng.js';
 import {APK_BOSSES,APK_BLINDS_BY_ID} from '../content/apk-blinds.js';
 import {APK_HAND_NAMES} from './apk-shop-state.js';
 import {isCardSuit} from './card-suits.js';
 export const FIRST_ANTE_BOSSES=Object.freeze(['bl_hook','bl_club','bl_manacle','bl_psychic','bl_goad','bl_window','bl_head','bl_pillar']);
 export const SUPPORTED_BOSSES=Object.freeze(APK_BOSSES.filter(boss=>!boss.showdown).map(boss=>boss.id));
-const anteBases=[300n,800n,2000n,5000n,11000n,20000n,35000n,50000n];
 const suits={bl_club:'clubs',bl_goad:'spades',bl_window:'diamonds',bl_head:'hearts'};
 export function canEnterBoss(state){
  const ante=state.round?.ante,boss=APK_BLINDS_BY_ID[state.apkBlinds?.bossId];
@@ -15,8 +15,45 @@ export function canEnterBoss(state){
 }
 export function bossTarget(state){
  const ante=state.round?.ante,boss=APK_BLINDS_BY_ID[state.apkBlinds?.bossId];
- if(!Number.isSafeInteger(ante)||ante<1||ante>8||!boss||!SUPPORTED_BOSSES.includes(boss.id))throw new RangeError('Unsupported boss target');
- return anteBases[ante-1]*BigInt(boss.mult);
+ if(!boss||!APK_BOSSES.includes(boss))throw new RangeError('Unsupported boss target');
+ return nativeBlindTarget(ante,boss.id==='bl_final_vessel'&&state.bossState?.disabled?2:boss.mult);
+}
+// Creation ordinals persist through reorder/sale; display order is never an RNG key.
+function canonicalJokers(jokers){
+ if(!Array.isArray(jokers)||jokers.some(joker=>!joker||typeof joker.id!=='string'||!joker.id||!Number.isSafeInteger(joker.creationOrdinal)||joker.creationOrdinal<1)||
+  new Set(jokers.map(joker=>joker.id)).size!==jokers.length||new Set(jokers.map(joker=>joker.creationOrdinal)).size!==jokers.length)throw new TypeError('Invalid Joker creation identities');
+ return [...jokers].sort((a,b)=>a.creationOrdinal-b.creationOrdinal);
+}
+export function chooseBellCard(rng,cards){
+ validateApkRng(rng);
+ const pool=canonicalCards(cards);
+ if(!pool.length)throw new RangeError('Empty Cerulean Bell hand');
+ const draw=nextApkRandom(rng,'cerulean_bell',1,pool.length);
+ return {cardId:pool[draw.value-1],rng:draw.rng};
+}
+export function chooseHeartJoker(rng,jokers){
+ validateApkRng(rng);
+ const ordered=canonicalJokers(jokers);
+ if(!ordered.length)return {jokerId:null,rng};
+ const pool=ordered.filter(joker=>!joker.debuffed||ordered.length===1);
+ if(!pool.length)throw new RangeError('Empty Crimson Heart candidate pool');
+ const draw=nextApkRandom(rng,'crimson_heart',1,pool.length);
+ return {jokerId:pool[draw.value-1].id,rng:draw.rng};
+}
+export function shuffleAcornJokers(rng,jokers){
+ validateApkRng(rng);
+ const canonical=canonicalJokers(jokers).map(joker=>joker.id);
+ let jokerIds=jokers.map(joker=>joker.id),current=rng;
+ if(jokerIds.length>1)for(let shuffle=0;shuffle<3;shuffle++){
+  jokerIds=[...canonical];
+  const seed=nextApkSeed(current,'aajk');let mathState=createApkMathState(seed.value);
+  for(let count=jokerIds.length;count>1;count--){
+   const draw=nextApkMathRandom(mathState,count);mathState=draw.state;
+   [jokerIds[count-1],jokerIds[draw.value-1]]=[jokerIds[draw.value-1],jokerIds[count-1]];
+  }
+  current={...seed.rng,mathState};
+ }
+ return {jokerIds,rng:current};
 }
 // Native pairs order depends on the runtime's string hash seed; tied maxima
 // cannot be inferred from hand strength, JS insertion order, or the run seed.

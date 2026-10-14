@@ -21,8 +21,8 @@ test('boss targets use ante base and individual APK multipliers',()=>{
  assert.equal(effects.bossTarget(state('bl_wall',2)),3200n);
  assert.equal(effects.bossTarget(state('bl_needle',8)),50000n);
  assert.equal(effects.bossTarget(state('bl_plant',4)),10000n);
- assert.throws(()=>effects.bossTarget(state('bl_final_vessel',8)));
- assert.throws(()=>effects.bossTarget(state('bl_wall',9)));
+ assert.equal(effects.bossTarget(state('bl_final_vessel',8)),300000n);
+ assert.equal(effects.bossTarget(state('bl_wall',9)),440000n);
 });
 test('Plant debuffs only J Q K; recognition and independent jokers remain active',()=>{
  const s=state('bl_plant');s.jokers=[{id:'ind',entityId:'j_joker'}];
