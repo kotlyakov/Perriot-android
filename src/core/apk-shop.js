@@ -145,6 +145,8 @@ export function generateApkCelestialPack(rng,context,{size,instancePrefix='celes
   }
   if(!id||context.bannedCentreIds.includes(id))id=s.select('Planet','pl1');
   cards.push(s.construct(id,`${instancePrefix}_${index+1}`));
+  // Card:open materializes every pack card; native juice_up always draws raw RNG.
+  s.unkeyed();
  }
  return {cards,rng:s.rng};
 }

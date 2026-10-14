@@ -76,10 +76,10 @@ test('Steel score replay roundtrips and rejects forged or non-normalized fractio
  for(const mutate of [p=>p.state.lastScore.mult={n:'6',d:'4'},p=>p.state.lastScore.trace.find(e=>e.phase==='held_card').after.mult={n:'5',d:'2'},p=>p.state.lastScore.mult={n:'3',d:'0'}]){const copy=structuredClone(payload);mutate(copy);assert.throws(()=>deserializeState(JSON.stringify(copy)));}
 });
 
-test('Steel replay survives Hook discarding its held source after scoring',()=>{
+test('Hook discards a held Steel source before scoring and replay omits its effect',()=>{
  let state=createRun('HOOKSTEEL5',{runId:'steel-hook',money:4n,referenceRng:true,referenceShop:true});state.round.ante=3;state.round.blindId='boss';state.round.target=blindBase(3)*BigInt(APK_BOSSES.find(b=>b.id==='bl_hook').mult);state.apkShop.context.ante=3;state.apkBlinds.ante=3;state.apkBlinds.tagContext.ante=3;state.apkBlinds.bossId='bl_hook';state.apkBlinds.bossesUsed.bl_hook=1;state=dispatch(state,{type:'START_BLIND',expectedRevision:state.revision}).state;
  const [steelId,playedId]=state.hand;state.cards[steelId].enhancement='steel';state.apkShop.context.enhancementIds=['m_steel'];state=dispatch(state,{type:'PLAY_HAND',expectedRevision:state.revision,cardIds:[playedId]}).state;
- assert.equal(state.lastScore.trace.some(event=>event.phase==='held_card'&&event.sourceId===steelId),true);assert.equal(state.discardPile.includes(steelId),true);assert.deepEqual(reload(state),state);
+ assert.equal(state.lastScore.trace.some(event=>event.phase==='held_card'&&event.sourceId===steelId),false);assert.equal(state.discardPile.includes(steelId),true);assert.deepEqual(reload(state),state);
 });
 
 test('Chariot shop copy describes the implemented held Steel effect',()=>{

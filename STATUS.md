@@ -1,5 +1,16 @@
 # STATUS.md — Пьеро
 
+14.10.2026. П-05н, 0.4.28-preview/code41, ветка feat/joker-deck-money от apk-reference 043d8bbe. В работе интеграция/независимое QA/CI; полная игра не готова.
+
+Добавлены девять джокеров (рабочий каталог 47/150): Baron, Shoot the Moon, Flower Pot, Seeing Double, Stone Joker, Steel Joker, Bull, Driver’s License, Bootstraps. Точные дроби, Wild/debuff, полная колода, деньги Tooth/Ox/Lucky проверены по native Card методам (89 fixtures). Подготовлен генератор восьми Arcana наборов (140 native cases), без преждевременного включения открытия/использования неподдержанных карт.
+
+Критические ошибки базы: потеря воспроизводимости сохранений Raised Fist/Blackboard/Acrobat и неверные held эффекты до принудительного сброса Hook. Исправляются историческим контекстом и порядком Hook перед scoreHand. Исправлен пропущенный materialize RNG шаг Celestial (64 регенерированных native fixtures). Совместимые старые сохранения мигрируют, подмены контекста проверяются. Актуальный результат полного core прогона до финального QA: 453/453 PASS. Offline assets/config PASS. Локальный Chromium отсутствует; browser35/fresh Android/signature/alignment проверяет GitHub Actions после публикации. Физический Android не проверен.
+
+База apk-reference 043d8bbe уже прошла Actions38437073053 SUCCESS. Приложенные файлы от 09.10 устарели; использовать репозиторий. Следующие задачи: полный пул джокеров/Judgement, Arcana lifecycle, финальные боссы/победа/Endless по docs/apk-findings/showdown-win-lifecycle.md. Остальные режимы, ваучеры, теги и профиль остаются открытыми.
+
+---
+Предыдущий статус (история):
+
 13.10.2026. Активный этап П-05м, 0.4.27-preview/code40. Wheel of Fortune/Polychrome опубликованы в PR #23 на проверенном локально срезе 421/421; GitHub Actions38433312892 проверяет 34 Chromium-набора, fresh Android, подпись и alignment. PR #21 Strength и PR #22 Emperor/High Priestess уже слиты в apk-reference. Следующий локальный срез расширяет рабочий каталог с 32 до 38 джокеров: Acrobat, Banner, Blackboard, Mystic Summit, Raised Fist и Joker Stencil реализованы по независимому Lua oracle, включая нулевую/полную ёмкость, Negative-слоты, held Stone/debuff и счётчики последней руки/сбросов. 424/424 core, offline assets/config и diff-check PASS; Chromium/Android CI обязателен после публикации. Далее остальные джокеры и Judgement. Полная игра не готова.
 
 П-05к, 0.4.25-preview/code38. Emperor/High Priestess реализованы в feat/generated-tarots: 415 core PASS; предыдущий head прошёл 33 Chromium, fresh Android compile, подпись/zipalign и APK artifact в Actions38412480619. После технической синхронизации с уже слитым PR #21 запущена повторная обязательная проверка. Negative self-slot / допустимое переполнение исправлены, включая прежний Fool.

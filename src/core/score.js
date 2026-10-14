@@ -88,6 +88,13 @@ export function scoreHand(state, playedCards) {
     if(card.enhancement==='steel')apply({operation:'multiply_mult',amount:{n:3n,d:2n}},'held_card',card.id);
     for(const joker of state.jokers)for(const effect of heldJokerEffects(joker.entityId,card,heldCards))apply(effect,'held_card',card.id,joker.id);
   }
+  const moneyJokers=state.jokers.some(j=>['j_bull','j_bootstraps'].includes(originalJokerKey(j.entityId)));
+  if(moneyJokers&&typeof state.money!=='bigint')throw new TypeError('Missing scoring money');
+  // Native get_p_dollars buffers Lucky income before independent Joker evaluation.
+  let moneyBeforeCards=state.money??0n;
+  if(state.bossState?.id==='bl_tooth')moneyBeforeCards-=BigInt(playedCards.length);
+  if(state.bossState?.id==='bl_ox'&&state.bossState.oxHand===hand.handId)moneyBeforeCards=0n;
+  const scoringMoney=moneyBeforeCards+trace.reduce((sum,event)=>sum+(event.type==='score_money'?event.amount:0n),0n);
   const rankCounts = new Map();
   for (const card of playedCards)if(card.enhancement!=='stone')rankCounts.set(card.rank,(rankCounts.get(card.rank)??0)+1);
   for (const joker of state.jokers) {
@@ -95,6 +102,7 @@ export function scoreHand(state, playedCards) {
     if(joker.edition==='holographic')apply({operation:'add_mult',amount:10n},'edition',joker.id);
     const effect=independentEffect(joker.entityId,[...rankCounts.values()],{playedCards,handId:hand.handId,jokerCount:state.jokers.length,
       handsRemaining:state.round?.handsRemaining,discardsRemaining:state.round?.discardsRemaining,heldCards,jokerSlots:state.jokerSlots??5,
+      scoringCards:playedCards.filter(card=>scoringSet.has(card.id)),isCardDebuffed:card=>isBossCardDebuffed(state,card),playingCards:Object.values(state.cards??{}),money:scoringMoney,
       negativeCount:state.jokers.filter(card=>card.edition==='negative').length,stencilCount:state.jokers.filter(card=>originalJokerKey(card.entityId)==='j_stencil').length});
     if(effect)apply(effect,'independent',joker.id);
     if(joker.edition==='polychrome')apply({operation:'multiply_mult',amount:{n:3n,d:2n}},'edition',joker.id);
@@ -104,7 +112,7 @@ export function scoreHand(state, playedCards) {
   }
   const score = floorExact(multiplyExact(chips,mult));
   trace.push({type:'score_total',phase:'total',chips,mult,score});
-  return {...hand,playedCardIds:playedCards.map(c=>c.id),scoringCardIds,chips,mult,score,trace,...(heldCards.some(card=>card.enhancement==='steel')?{heldCardIds:heldCards.map(card=>card.id)}:{}),...(luckyRolls.length?{luckyRolls,luckyRngKind:luckyKind,luckyRngBefore,luckyRngAfter:luckyKind==='apk'?{...luckySnapshot(luckyRng),mathState:[...luckyRng.mathState]}:luckyRng}:{}),...(glassRolls.length?{glassRolls,glassRngKind:glassKind,glassRngBefore,glassRngAfter:glassKind==='apk'?{...glassSnapshot(glassRng),mathState:[...glassRng.mathState]}:glassRng,glassDestroyedCards:glassRolls.filter(roll=>roll.destroyed).map(roll=>structuredClone(playedCards.find(card=>card.id===roll.cardId)))}:{})};
+  return {...hand,playedCardIds:playedCards.map(c=>c.id),scoringCardIds,chips,mult,score,trace,...(heldCards.some(card=>card.enhancement==='steel')||state.jokers.some(j=>['j_blackboard','j_raised_fist','j_baron','j_shoot_the_moon'].includes(originalJokerKey(j.entityId)))?{heldCardIds:heldCards.map(card=>card.id)}:{}),...(moneyJokers?{scoringMoneyBefore:state.money}:{}),...(state.round&&state.jokers.some(j=>['j_acrobat','j_banner','j_mystic_summit'].includes(originalJokerKey(j.entityId)))?{scoringRoundBefore:{handsRemaining:state.round.handsRemaining,discardsRemaining:state.round.discardsRemaining}}:{}),...(luckyRolls.length?{luckyRolls,luckyRngKind:luckyKind,luckyRngBefore,luckyRngAfter:luckyKind==='apk'?{...luckySnapshot(luckyRng),mathState:[...luckyRng.mathState]}:luckyRng}:{}),...(glassRolls.length?{glassRolls,glassRngKind:glassKind,glassRngBefore,glassRngAfter:glassKind==='apk'?{...glassSnapshot(glassRng),mathState:[...glassRng.mathState]}:glassRng,glassDestroyedCards:glassRolls.filter(roll=>roll.destroyed).map(roll=>structuredClone(playedCards.find(card=>card.id===roll.cardId)))}:{})};
 }
 
 

@@ -1,6 +1,6 @@
 import {supportsConsumable} from '../core/inventory.js';
 import {validConsumableUsage} from '../core/consumables.js';
-import {canEnterBoss,bossTarget} from '../core/boss-effects.js';
+import {canEnterBoss,bossTarget,isBossCardDebuffed} from '../core/boss-effects.js';
 import {APK_BOSSES,APK_BLINDS_BY_ID} from '../content/apk-blinds.js';
 import {createApkTagContext,getApkTagPool} from '../core/apk-tags.js';
 import { apkPseudoHash, validateApkRng } from '../core/apk-rng.js';
@@ -146,19 +146,19 @@ function decodeExact(value){
 function exactPair(value){object(value,['chips','mult']);return {chips:decimal(value.chips),mult:decodeExact(value.mult)};}
 function encodeScore(score) {
   if(score===null)return null;
-  return {...score,chips:score.chips.toString(),mult:encodeExact(score.mult),score:score.score.toString(),trace:score.trace.map(event=>event.type==='score_money'?{...event,amount:event.amount.toString()}:event.type==='score_total'
+  return {...score,...(Object.hasOwn(score,'scoringMoneyBefore')?{scoringMoneyBefore:score.scoringMoneyBefore.toString()}:{}),chips:score.chips.toString(),mult:encodeExact(score.mult),score:score.score.toString(),trace:score.trace.map(event=>event.type==='score_money'?{...event,amount:event.amount.toString()}:event.type==='score_total'
     ? {...event,chips:event.chips.toString(),mult:encodeExact(event.mult),score:event.score.toString()}
     : {...event,before:{chips:event.before.chips.toString(),mult:encodeExact(event.before.mult)},after:{chips:event.after.chips.toString(),mult:encodeExact(event.after.mult)}})};
 }
 function decodeScore(value,state) {
   if(value===null)return null;
-  optionalObject(value,['handId','isRoyal','scoringCardIds','chips','mult','score','trace'],['playedCardIds','heldCardIds','handDebuffed','bossHistory','luckyRolls','luckyRngKind','luckyRngBefore','luckyRngAfter','glassRolls','glassRngKind','glassRngBefore','glassRngAfter','glassDestroyedCards']);
+  optionalObject(value,['handId','isRoyal','scoringCardIds','chips','mult','score','trace'],['playedCardIds','heldCardIds','scoringMoneyBefore','scoringRoundBefore','handDebuffed','bossHistory','luckyRolls','luckyRngKind','luckyRngBefore','luckyRngAfter','glassRolls','glassRngKind','glassRngBefore','glassRngAfter','glassDestroyedCards']);
   if(Object.hasOwn(value,'handDebuffed'))requireValue(value.handDebuffed===true);
   const glassDestroyedCards=value.glassDestroyedCards??[];requireValue(Array.isArray(glassDestroyedCards)&&glassDestroyedCards.length<=5);
   const destroyedById=new Map();for(const card of glassDestroyedCards){object(card,['id','rank','suit','enhancement']);id(card.id);requireValue(card.enhancement==='glass'&&!Object.hasOwn(state.cards,card.id)&&!destroyedById.has(card.id));evaluateHand([card]);destroyedById.set(card.id,card);}
   const scoreCards={...state.cards,...Object.fromEntries(destroyedById)};
   if(value.playedCardIds)requireValue(Array.isArray(value.playedCardIds)&&value.playedCardIds.length>=1&&value.playedCardIds.length<=5&&new Set(value.playedCardIds).size===value.playedCardIds.length&&value.playedCardIds.every(id=>Object.hasOwn(scoreCards,id)));
-  if(value.heldCardIds){cardList(value.heldCardIds,state);requireValue(value.heldCardIds.length>=1&&value.heldCardIds.every(id=>!value.playedCardIds?.includes(id)));}
+  if(value.heldCardIds){cardList(value.heldCardIds,state);requireValue(value.heldCardIds.every(id=>!value.playedCardIds?.includes(id)&&!state.drawPile.includes(id))&&(state.bossState?.id==='bl_serpent'||value.heldCardIds.length<=state.round.handSize-(value.playedCardIds?.length??value.scoringCardIds.length)));}
   requireValue(Object.hasOwn(HANDS,value.handId) && typeof value.isRoyal==='boolean');
   requireValue(!value.isRoyal || value.handId==='straight_flush');
   requireValue(Array.isArray(value.scoringCardIds) && value.scoringCardIds.length>=0 && value.scoringCardIds.length<=5);
@@ -211,12 +211,23 @@ function decodeScore(value,state) {
       requireValue(value.glassRngAfter.glass===(state.rng.apk.streams.glass??null)&&JSON.stringify(value.glassRngAfter.mathState)===JSON.stringify(state.rng.apk.mathState));
     }else{randomInt(value.glassRngBefore,1);randomInt(value.glassRngAfter,1);requireValue(JSON.stringify(value.glassRngAfter)===JSON.stringify(state.rng.effects));}
   }else requireValue(glassDestroyedCards.length===0);
-  let scoringState=state;
+  const scoringMoneyBefore=Object.hasOwn(value,'scoringMoneyBefore')?decimal(value.scoringMoneyBefore,true):undefined;
+  if(value.scoringRoundBefore){object(value.scoringRoundBefore,['handsRemaining','discardsRemaining']);integer(value.scoringRoundBefore.handsRemaining,1,5);integer(value.scoringRoundBefore.discardsRemaining,0,4);requireValue(value.scoringRoundBefore.handsRemaining===state.round.handsRemaining+1&&value.scoringRoundBefore.discardsRemaining>=state.round.discardsRemaining);}
+  if(scoringMoneyBefore!==undefined){
+    let committedMoney=scoringMoneyBefore;
+    if(state.bossState?.id==='bl_tooth')committedMoney-=BigInt(value.playedCardIds?.length??value.scoringCardIds.length);
+    if(state.bossState?.id==='bl_ox'&&state.bossState.oxHand===value.handId)committedMoney=0n;
+    committedMoney+=trace.reduce((sum,event)=>sum+(event.type==='score_money'?event.amount:0n),0n);
+    if(state.phase==='round_won')for(const key of state.hand)if(state.cards[key].enhancement==='gold'&&!isBossCardDebuffed(state,state.cards[key]))committedMoney+=3n;
+    requireValue(committedMoney===state.money);
+  }
+  const replayRound=value.scoringRoundBefore??{handsRemaining:state.round.handsRemaining+1,discardsRemaining:state.round.discardsRemaining};
+  let scoringState={...state,round:{...state.round,...replayRound},...(scoringMoneyBefore!==undefined?{money:scoringMoneyBefore}:{})};
   if(hasLucky){
     if(value.luckyRngKind==='apk'){
       const apk=structuredClone(state.rng.apk);for(const key of ['lucky_mult','lucky_money']){const stream=value.luckyRngBefore[key];if(stream===null)delete apk.streams[key];else apk.streams[key]=stream;}
-      scoringState={...state,rng:{...state.rng,apk}};
-    }else scoringState={...state,rng:{...state.rng,effects:structuredClone(value.luckyRngBefore)}};
+      scoringState={...scoringState,rng:{...state.rng,apk}};
+    }else scoringState={...scoringState,rng:{...state.rng,effects:structuredClone(value.luckyRngBefore)}};
   }
   if(hasGlass){
     if(value.glassRngKind==='apk'){
@@ -240,7 +251,7 @@ function decodeScore(value,state) {
   const expected=scoreHand(scoringState,(value.playedCardIds??value.scoringCardIds).map(key=>scoreCards[key]));
   requireValue(expected.handDebuffed===value.handDebuffed && expected.handId===value.handId && expected.isRoyal===value.isRoyal && expected.chips===chips && equalExact(expected.mult,mult) && expected.score===score);
   requireValue(expected.scoringCardIds.length===value.scoringCardIds.length && expected.scoringCardIds.every((key,i)=>key===value.scoringCardIds[i]));
-  requireValue((expected.heldCardIds===undefined)===(value.heldCardIds===undefined)&&(!value.heldCardIds||expected.heldCardIds.every((key,i)=>key===value.heldCardIds[i])&&expected.heldCardIds.length===value.heldCardIds.length));
+  requireValue(!value.heldCardIds||expected.heldCardIds?.every((key,i)=>key===value.heldCardIds[i])&&expected.heldCardIds.length===value.heldCardIds.length);
   requireValue(expected.trace.length===trace.length && expected.trace.every((event,i)=>{
     const actual=trace[i];
     if(event.phase!==actual.phase||event.type!==actual.type)return false;
@@ -250,7 +261,8 @@ function decodeScore(value,state) {
   }));
   requireValue(!hasLucky||JSON.stringify({rolls:expected.luckyRolls,kind:expected.luckyRngKind,before:expected.luckyRngBefore,after:expected.luckyRngAfter})===JSON.stringify({rolls:value.luckyRolls,kind:value.luckyRngKind,before:value.luckyRngBefore,after:value.luckyRngAfter}));
   requireValue(!hasGlass||JSON.stringify({rolls:expected.glassRolls,kind:expected.glassRngKind,before:expected.glassRngBefore,after:expected.glassRngAfter,destroyed:expected.glassDestroyedCards})===JSON.stringify({rolls:value.glassRolls,kind:value.glassRngKind,before:value.glassRngBefore,after:value.glassRngAfter,destroyed:glassDestroyedCards}));
-  return {...value,chips,mult,score,trace};
+  requireValue(expected.scoringMoneyBefore===scoringMoneyBefore&&(!value.scoringRoundBefore||JSON.stringify(expected.scoringRoundBefore)===JSON.stringify(value.scoringRoundBefore)));
+  return {...value,...(scoringMoneyBefore!==undefined?{scoringMoneyBefore}:{}),chips,mult,score,trace};
 }
 function decode(payload) {
   object(payload,['format','version','state']);requireValue(payload.format==='card-cascade-save' && payload.version===1);

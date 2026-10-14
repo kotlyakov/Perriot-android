@@ -5,7 +5,7 @@ import {NATIVE_JOKERS,independentEffect,scoredJokerEffects} from '../../src/cont
 import {evaluateHand} from '../../src/core/hands.js';
 const fixture=JSON.parse(readFileSync(new URL('../../scripts/reference-rng/joker-score-fixtures.json',import.meta.url)));
 const suits={Spades:'spades',Hearts:'hearts',Clubs:'clubs',Diamonds:'diamonds'};
-const convert=(c,i)=>({id:'c'+i,rank:c.rank,suit:suits[c.suit],...(c.stone?{enhancement:'stone'}:c.wild?{enhancement:'wild'}:{})});
+const convert=(c,i)=>({id:'c'+i,rank:c.rank,suit:suits[c.suit],...(c.debuff?{debuffed:true}:{}),...(c.stone?{enhancement:'stone'}:c.wild?{enhancement:'wild'}:{})});
 test('supported Joker branches match independent original Lua method outputs',()=>{
  let checked=0;
  for(const c of fixture.cases){

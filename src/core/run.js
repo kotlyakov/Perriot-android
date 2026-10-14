@@ -157,9 +157,13 @@ export function dispatch(state, action, shopOptions={}) {
   if (action.type==='PLAY_HAND' && state.round.handsRemaining<=0 || action.type==='DISCARD' && state.round.discardsRemaining<=0) return reject('NO_ACTIONS_LEFT','Counter exhausted');
   const selected=new Set(ids);
   const playedIds=state.hand.filter(id=>selected.has(id));
-  let score=null,scoringState=state;
+  let score=null,scoringState=state,hookDiscards=null;
   if (action.type==='PLAY_HAND') {
     try {
+      if(state.bossState?.id==='bl_hook'){
+        try{hookDiscards=chooseHookDiscards(state.rng.apk,state.hand.filter(id=>!selected.has(id)));}catch{return reject('UNSUPPORTED_BOSS_STATE','Invalid Hook card identities');}
+        scoringState={...state,hand:state.hand.filter(id=>!hookDiscards.cardIds.includes(id)),rng:{...state.rng,apk:hookDiscards.rng}};
+      }
       if(state.bossState?.id==='bl_arm'){
         const handId=evaluateHand(playedIds.map(id=>state.cards[id])).handId;
         scoringState={...state,handLevels:{...state.handLevels,[handId]:Math.max(1,state.handLevels[handId]-1)}};
@@ -172,14 +176,14 @@ export function dispatch(state, action, shopOptions={}) {
   }
   if(state.runStats && action.type==='PLAY_HAND' && (state.runStats.handsPlayed>=Number.MAX_SAFE_INTEGER || state.runStats.unusedDiscards>Number.MAX_SAFE_INTEGER-state.round.discardsRemaining))return reject('INVALID_STATE','Run counters exhausted');
   const next=structuredClone(state);const events=[];
-  if(scoringState!==state){next.handLevels={...scoringState.handLevels};if(next.handLevels[score.handId]!==state.handLevels[score.handId])events.push({type:'hand_level_changed',handId:score.handId,levels:-1,level:next.handLevels[score.handId]});}
+  if(state.bossState?.id==='bl_arm'&&scoringState!==state){next.handLevels={...scoringState.handLevels};if(next.handLevels[score.handId]!==state.handLevels[score.handId])events.push({type:'hand_level_changed',handId:score.handId,levels:-1,level:next.handLevels[score.handId]});}
   next.hand=next.hand.filter(id=>!selected.has(id));next.discardPile.push(...playedIds);
   if(next.bossState?.hiddenCardIds)next.bossState.hiddenCardIds=next.bossState.hiddenCardIds.filter(id=>next.hand.includes(id));
   if(next.bossState?.hiddenFaceRanks)next.bossState.hiddenFaceRanks=Object.fromEntries(Object.entries(next.bossState.hiddenFaceRanks).filter(([id])=>next.hand.includes(id)));
   if(score&&next.bossState?.id==='bl_hook'){
-    let forced;try{forced=chooseHookDiscards(next.rng.apk,next.hand);}catch{return reject('UNSUPPORTED_BOSS_STATE','Invalid Hook card identities');}next.rng.apk=forced.rng;
-    const discarded=next.hand.filter(id=>forced.cardIds.includes(id));
-    next.hand=next.hand.filter(id=>!forced.cardIds.includes(id));next.discardPile.push(...discarded);
+    next.rng.apk=hookDiscards.rng;
+    const discarded=next.hand.filter(id=>hookDiscards.cardIds.includes(id));
+    next.hand=next.hand.filter(id=>!hookDiscards.cardIds.includes(id));next.discardPile.push(...discarded);
     if(discarded.length)events.push({type:'cards_forced_discarded',cardIds:discarded});
   }
   if (score) {
