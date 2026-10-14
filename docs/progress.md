@@ -206,3 +206,9 @@ The save codec records generic and Hanged-specific destruction ledgers and ties 
 ## Продолжение 14.10.2026 — П-05н
 
 База043d8bbe. Каталог53/150: эффекты денег/колоды/held, сохранённая история PR25–27, Four Fingers/Shortcut и Golden/Cloud. Критические Hook/score snapshot/frozen cashout исправлены; Blue согласованная подмена и Hanged shortfall покрыты. Генератор Arcana140 native cases подготовлен, Celestial materialize RNG исправлен. Core864 PASS после независимого QA. Первый срез951858b: Actions38558257199 SUCCESS, 35browser/freshAndroid/signature/alignment; новый0.4.33/code46 требует36browser/freshAndroid CI. Full seed/event RNG (Stone), retriggers, прочие97джокеров/Judgement, Arcana lifecycle и финальные боссы/победа/Endless остаются открытыми. Полная игра и физическая приёмка не заявляются.
+
+## Проверка 0.4.33 и следующий этап — 14.10.2026
+
+PR28 слит в f37712f после Actions 38565975326/38565984439 SUCCESS: 36 браузерных сценариев, fresh Android, подпись и alignment. История PR25–27 сохранена; Blue Joker/Swashbuckler интегрированы, каталог 53/150. 864 теста ядра PASS с приватным нативным оракулом; в CI этот необязательный тест пропускается. APK debug без гарантии обновления, физическое устройство не проверено.
+
+Активная ветка feat/showdown-lifecycle, checkpoint 7d07564. Task 1: нативные callbacks и finite target helpers выполнены, проверки соответствия и качества завершены. Task 2: Leaf/Vessel в работе. План: docs/superpowers/plans/2026-10-14-showdown-lifecycle.md. Подготовка helpers не означает готовую победу/Endless. Остальные 97 джокеров, полные пулы и профиль остаются открытыми.

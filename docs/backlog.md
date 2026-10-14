@@ -171,3 +171,7 @@
 | П-05-RECOGNITION | Некритическое · высокий | Four Fingers/Shortcut | Native независимые flush/straight union, multi-gap, scoring/Arm/save | 368 native fixtures, интеграция готова, QA/CI ожидаются | 0.4.33 / PR28 |
 | П-05-CASHOUT-JOKERS | Некритическое · высокий | Golden Joker/Cloud 9 | Native end-round bonus, whole-deck rank9/Stone, debuff, UI overflow/save/write-failure | Core PASS, QA/CI ожидаются | 0.4.33 / PR28 |
 | П-RNG-STONE | Некритическое · высокий | Полная parity Stone get_id raw RNG | Учесть native RNG при повторном распознавании/кадрах без скрытой зависимости от UI, независимый oracle | Открыто; результаты распознавания точны, полная seed/event parity не заявляется | Native card/functions |
+
+| П-05-GATE-053 | Некритическое · высокий | Итог 53/150 и критические snapshot/payout исправления | QA/Core/36 browser/fresh Android/signature/alignment | Завершено, PR28 и PR25–27 merged f37712f; физический Android отдельно | 0.4.33/code46 |
+| П-04-SHOWDOWN-T1 | Некритическое · высокий | Нативные выборы/Acorn callback order и finite targets | Независимый original EventManager/RNG oracle, source helper tests, spec+quality review | Выполнено в sourcecheckpoint; lifecycle далее | feat/showdown-lifecycle /7d07564 |
+| П-04-SHOWDOWN-T2 | Некритическое · высокий | Leaf/Vessel иdisable/save | Полные фазы/sale/Gold dollars/strict persistence/independent review | В работе по Task 2 плана | feat/showdown-lifecycle |
