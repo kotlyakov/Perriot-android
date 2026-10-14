@@ -8,7 +8,7 @@ import {chooseNextAnteBlinds} from './blind-progression.js';
 import {chooseApkBoss} from './apk-blinds.js';
 import {createApkTagContext,chooseApkTag,chooseApkOrbitalHand} from './apk-tags.js';
 import {sortHand,SORT_MODES} from './sort.js';
-import {getCashout,captureCashoutQuote} from './cashout.js';
+import {getCashout,settleRoundSuccess} from './cashout.js';
 import { createRng, randomInt } from './rng.js';
 import { scoreHand } from './score.js';
 import { HANDS } from '../content/hands.js';
@@ -60,11 +60,11 @@ export function createRun(seed, {runId,deckId='red',money,referenceRng=false,ref
 }
 
 function drawToLimit(state, events,action='START_BLIND') {
-  const serpent=state.bossState?.id==='bl_serpent'&&action!=='START_BLIND';
+  const serpent=!state.bossState?.disabled&&state.bossState?.id==='bl_serpent'&&action!=='START_BLIND';
   const count=Math.min(serpent?3:Math.max(0,state.round.handSize-state.hand.length),state.drawPile.length);
   const ids=state.rng.apk?Array.from({length:count},()=>state.drawPile.pop()):state.drawPile.splice(0,count);
   const boss=state.bossState;
-  if(boss && ['bl_house','bl_wheel','bl_fish','bl_mark'].includes(boss.id)){
+  if(boss && !boss.disabled && ['bl_house','bl_wheel','bl_fish','bl_mark'].includes(boss.id)){
     boss.hiddenCardIds??=[];
     if(boss.id==='bl_mark'&&!boss.hiddenFaceRanks)boss.hiddenFaceRanks=Object.fromEntries(boss.hiddenCardIds.map(id=>{
       const rank=state.cards[id].rank;return [id,rank>=11&&rank<=13?rank:Number(id.match(/_(\d+)$/)?.[1])];
@@ -120,10 +120,11 @@ export function dispatch(state, action, shopOptions={}) {
     if(state.round.blindId==='boss'&&!canEnterBoss(state))return reject('BOSS_UNAVAILABLE','Boss lifecycle is unavailable');
     const next=structuredClone(state);const events=[];
     if(next.round.blindId==='boss'){
-      next.bossState={version:1,id:next.apkBlinds.bossId,playedBeforeBoss:[...next.apkBlinds.playedCardIds],baseHandSize:next.round.handSize};
+      next.bossState={version:1,disabled:false,id:next.apkBlinds.bossId,playedBeforeBoss:[...next.apkBlinds.playedCardIds],baseHandSize:next.round.handSize};
       if(next.bossState.id==='bl_manacle')next.round.handSize--;
-      if(next.bossState.id==='bl_water')next.round.discardsRemaining=0;
-      if(next.bossState.id==='bl_needle')next.round.handsRemaining=1;
+      if(next.bossState.id==='bl_serpent')next.bossState.serpentInitialCardCount=next.drawPile.length;
+      if(next.bossState.id==='bl_water'){next.bossState.discardsSub=next.round.discardsRemaining;next.round.discardsRemaining=0;}
+      if(next.bossState.id==='bl_needle'){next.bossState.startedRevision=next.revision+1;next.bossState.handsSub=next.round.handsRemaining-1;next.round.handsRemaining=1;}
       if(['bl_house','bl_wheel','bl_fish','bl_mark'].includes(next.bossState.id))next.bossState.hiddenCardIds=[];
       if(next.bossState.id==='bl_eye')next.bossState.playedHands=[];
       if(next.bossState.id==='bl_mouth')next.bossState.firstHand=null;
@@ -161,27 +162,27 @@ export function dispatch(state, action, shopOptions={}) {
   let score=null,scoringState=state,hookDiscards=null;
   if (action.type==='PLAY_HAND') {
     try {
-      if(state.bossState?.id==='bl_hook'){
+      if(!state.bossState?.disabled&&state.bossState?.id==='bl_hook'){
         try{hookDiscards=chooseHookDiscards(state.rng.apk,state.hand.filter(id=>!selected.has(id)));}catch{return reject('UNSUPPORTED_BOSS_STATE','Invalid Hook card identities');}
         scoringState={...state,hand:state.hand.filter(id=>!hookDiscards.cardIds.includes(id)),discardPile:[...state.discardPile,...state.hand.filter(id=>hookDiscards.cardIds.includes(id))],rng:{...state.rng,apk:hookDiscards.rng}};
       }
-      if(state.bossState?.id==='bl_arm'){
+      if(!state.bossState?.disabled&&state.bossState?.id==='bl_arm'){
         const handId=evaluateHand(playedIds.map(id=>state.cards[id]),{isCardDebuffed:card=>isBossCardDebuffed(state,card),...handRecognitionOptions(state.jokers)}).handId;
         scoringState={...state,handLevels:{...state.handLevels,[handId]:Math.max(1,state.handLevels[handId]-1)}};
       }
       score=scoreHand(scoringState,playedIds.map(id=>state.cards[id]));
-      if(state.bossState?.id==='bl_eye')score.bossHistory={playedHands:[...state.bossState.playedHands]};
-      if(state.bossState?.id==='bl_mouth')score.bossHistory={firstHand:state.bossState.firstHand};
+      if(!state.bossState?.disabled&&state.bossState?.id==='bl_eye')score.bossHistory={playedHands:[...state.bossState.playedHands]};
+      if(!state.bossState?.disabled&&state.bossState?.id==='bl_mouth')score.bossHistory={firstHand:state.bossState.firstHand};
     }
     catch (error) { return reject('UNSUPPORTED_CONTENT',error.message); }
   }
   if(state.runStats && action.type==='PLAY_HAND' && (state.runStats.handsPlayed>=Number.MAX_SAFE_INTEGER || state.runStats.unusedDiscards>Number.MAX_SAFE_INTEGER-state.round.discardsRemaining))return reject('INVALID_STATE','Run counters exhausted');
   const next=structuredClone(state);const events=[];
-  if(state.bossState?.id==='bl_arm'&&scoringState!==state){next.handLevels={...scoringState.handLevels};if(next.handLevels[score.handId]!==state.handLevels[score.handId])events.push({type:'hand_level_changed',handId:score.handId,levels:-1,level:next.handLevels[score.handId]});}
+  if(!state.bossState?.disabled&&state.bossState?.id==='bl_arm'&&scoringState!==state){next.handLevels={...scoringState.handLevels};if(next.handLevels[score.handId]!==state.handLevels[score.handId])events.push({type:'hand_level_changed',handId:score.handId,levels:-1,level:next.handLevels[score.handId]});}
   next.hand=next.hand.filter(id=>!selected.has(id));
   if(next.bossState?.hiddenCardIds)next.bossState.hiddenCardIds=next.bossState.hiddenCardIds.filter(id=>next.hand.includes(id));
   if(next.bossState?.hiddenFaceRanks)next.bossState.hiddenFaceRanks=Object.fromEntries(Object.entries(next.bossState.hiddenFaceRanks).filter(([id])=>next.hand.includes(id)));
-  if(score&&next.bossState?.id==='bl_hook'){
+  if(score&&!next.bossState?.disabled&&next.bossState?.id==='bl_hook'){
     next.rng.apk=hookDiscards.rng;
     const discarded=next.hand.filter(id=>hookDiscards.cardIds.includes(id));
     next.hand=next.hand.filter(id=>!hookDiscards.cardIds.includes(id));next.discardPile.push(...discarded);
@@ -210,11 +211,11 @@ export function dispatch(state, action, shopOptions={}) {
       if(next.bossState?.hiddenCardIds)next.bossState.hiddenCardIds=next.bossState.hiddenCardIds.filter(id=>!removed.has(id));
       if(next.apkShop)next.apkShop.context=currentApkShopContext(next);
     }
-    if(next.bossState?.id==='bl_eye'&&!next.bossState.playedHands.includes(score.handId))next.bossState.playedHands.push(score.handId);
-    if(next.bossState?.id==='bl_mouth'&&!next.bossState.firstHand)next.bossState.firstHand=score.handId;
+    if(!next.bossState?.disabled&&next.bossState?.id==='bl_eye'&&!next.bossState.playedHands.includes(score.handId))next.bossState.playedHands.push(score.handId);
+    if(!next.bossState?.disabled&&next.bossState?.id==='bl_mouth'&&!next.bossState.firstHand)next.bossState.firstHand=score.handId;
     const beforeMoney=next.money;
-    if(next.bossState?.id==='bl_tooth')next.money-=BigInt(playedIds.length);
-    if(next.bossState?.id==='bl_ox'&&score.handId===next.bossState.oxHand)next.money=0n;
+    if(!next.bossState?.disabled&&next.bossState?.id==='bl_tooth')next.money-=BigInt(playedIds.length);
+    if(!next.bossState?.disabled&&next.bossState?.id==='bl_ox'&&score.handId===next.bossState.oxHand)next.money=0n;
     next.money+=score.trace.reduce((sum,event)=>sum+(event.type==='score_money'?event.amount:0n),0n);
     if(next.money!==beforeMoney)events.push({type:'money_changed',before:beforeMoney,after:next.money,delta:next.money-beforeMoney});
     if(next.apkBlinds?.playedCardIds)for(const id of playedIds)if(Object.hasOwn(next.cards,id)&&!next.apkBlinds.playedCardIds.includes(id))next.apkBlinds.playedCardIds.push(id);
@@ -223,14 +224,8 @@ export function dispatch(state, action, shopOptions={}) {
     if (!next.discoveredHands.includes(score.handId)) next.discoveredHands.push(score.handId);
     if(next.apkShop){const name=APK_HAND_NAMES[score.handId];next.apkShop.context.playedHands[name]=(next.apkShop.context.playedHands[name]??0)+1;}
     events.push({type:'hand_played',cardIds:[...playedIds]},...structuredClone(score.trace));
-    if (next.round.score>=next.round.target) {
-      if(next.runStats)next.runStats.unusedDiscards+=next.round.discardsRemaining;
-      const beforeGold=next.money;
-      for(const cardId of next.hand){const card=next.cards[cardId];if(card.enhancement==='gold'&&!isBossCardDebuffed(next,card)){next.money+=3n;events.push({type:'gold_card_paid',cardId,amount:3n});}}
-      if(next.money!==beforeGold)events.push({type:'money_changed',before:beforeGold,after:next.money,delta:next.money-beforeGold});
-      next.phase='round_won';next.cashoutQuote=captureCashoutQuote(next,next.revision+1);events.push({type:'round_won',score:next.round.score});
-    }
-    else if (next.round.handsRemaining===0) { next.phase='game_over';events.push({type:'round_lost',score:next.round.score}); }
+    if(!settleRoundSuccess(next,events)&&next.round.handsRemaining===0){next.phase='game_over';events.push({type:'round_lost',score:next.round.score});}
+    if(next.phase!=='playing'&&next.bossState?.id==='bl_serpent'&&next.bossState.disabled)next.bossState.serpentTerminalUnfilledCardIds=[...playedIds,...(state.hangedShortfallCardIds??[])];
   } else {
     next.round.discardsRemaining--;events.push({type:'cards_discarded',cardIds:[...playedIds]});
   }

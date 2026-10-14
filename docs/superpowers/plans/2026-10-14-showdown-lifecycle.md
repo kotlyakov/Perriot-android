@@ -119,3 +119,16 @@ Do not require owned debuffed joker identity to exist in a score snapshot after 
 The five effects can be delivered as a correct intermediate Ante8 slice before complete Endless overflow work. Full native parity additionally requires: reliable integrated event ordering including setup-joker callbacks; persistent card creation order for added/duplicated playing cards beyond current plain52 support; native Stone unkeyed RNG consumption if integrated random parity depends on it; complete end-of-round Joker/rental/perishable/profile progression; native overflow presentation/save behavior and loss-at-win-ante quirk decision. These are concrete open requirements, not permission requests. No new UI or rule approximation should conceal them.
 
 Self-review: spec sections map to Tasks1–6; every new field/helper/action is defined above; high-risk reload, hidden identity, direct selection omission, score-time Heart and high-ante inputs have owning tests. This plan intentionally schedules implementation after the current Joker slice stabilizes and does not alter product code.
+
+### Task 7: Restore standalone preview for cyclic ES modules
+
+**Files:** Modify `scripts/export-preview.mjs`; add a meaningful focused exporter regression test to existing core test discovery if needed; extend existing offline startup browser check only for a concrete uncovered case. Do not change gameplay to avoid legitimate ES module cycles.
+
+**Evidence:** Source-only checkpoint45815fa CI38568496507/38568490947 fails offline startup `tests/ui/start-screen-check.mjs:72`, waiting for `#start_new`. Root independently executed the exporter's recursive module resolver and reproduced `RangeError: Maximum call stack size exceeded`. Native module graph now has boss-effects→blind-progression→boss-effects and boss-effects→cashout→boss-effects. Regular served browser startup passed earlier checks; native ESM supports these function-only cycles. Exporter caches URLs only after recursively resolving children.
+
+- [ ] Reproduce the recursion failure before edits with a meaningful regression covering reachable cyclic modules.
+- [ ] Resolve every exported module with stable identities before traversing imports; keep one self-contained offline HTML and existing CSS/font embedding, with no new runtime dependency or gameplay-rule changes. Choose the smallest reliable native-browser approach compatible with existing module syntax and Chromium CI.
+- [ ] Verify regular export plus offline startup/save/reload, including current game graph and shared dependency identity. Do not weaken or skip the existing portable offline browser test. Source may not depend on a server, external package/CDN, or external asset.
+- [ ] Run targeted/full core tests and exporter checks. Local Chromium binary is currently absent; report this explicit boundary. Root owns full browser/Android CI validation and source publication.
+
+Execution order ruling: perform Task7 immediately after reviewed Task2 and before Task3, because it restores an existing release gate broken by legitimate new module relationships. Tasks3–6 continue afterward. This fixes an integration regression, not a scope substitute for final-game completion.

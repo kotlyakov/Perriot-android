@@ -29,7 +29,7 @@ export function scoreHand(state, playedCards) {
   const definition = HANDS[hand.handId];
   let chips = BigInt(definition.chips) + BigInt(level-1)*BigInt(definition.chipGain);
   let mult = BigInt(definition.mult) + BigInt(level-1)*BigInt(definition.multGain);
-  if(state.bossState?.id==='bl_flint'){
+  if(!state.bossState?.disabled&&state.bossState?.id==='bl_flint'){
     chips=(chips+1n)/2n;
     mult=(mult+1n)/2n;
     if(mult<1n)mult=1n;
@@ -92,8 +92,8 @@ export function scoreHand(state, playedCards) {
   if(moneyJokers&&typeof state.money!=='bigint')throw new TypeError('Missing scoring money');
   // Native get_p_dollars buffers Lucky income before independent Joker evaluation.
   let moneyBeforeCards=state.money??0n;
-  if(state.bossState?.id==='bl_tooth')moneyBeforeCards-=BigInt(playedCards.length);
-  if(state.bossState?.id==='bl_ox'&&state.bossState.oxHand===hand.handId)moneyBeforeCards=0n;
+  if(!state.bossState?.disabled&&state.bossState?.id==='bl_tooth')moneyBeforeCards-=BigInt(playedCards.length);
+  if(!state.bossState?.disabled&&state.bossState?.id==='bl_ox'&&state.bossState.oxHand===hand.handId)moneyBeforeCards=0n;
   const scoringMoney=moneyBeforeCards+trace.reduce((sum,event)=>sum+(event.type==='score_money'?event.amount:0n),0n);
   const rankCounts = new Map();
   for (const card of playedCards)if(card.enhancement!=='stone')rankCounts.set(card.rank,(rankCounts.get(card.rank)??0)+1);

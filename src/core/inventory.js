@@ -1,3 +1,4 @@
+import {disableBoss} from './boss-effects.js';
 import {captureCashoutQuote} from './cashout.js';
 import {supportsJoker} from '../content/jokers.js';
 import catalogue from '../content/apk-shop-catalog.js';
@@ -25,6 +26,7 @@ export function applyInventoryAction(state,action){
   if(typeof state.money!=='bigint')return reject('INVALID_STATE','Invalid money');
   next=structuredClone(state);if(state.phase==='round_won'&&!next.cashoutQuote)next.cashoutQuote=captureCashoutQuote(state);next[area]=next[area].filter(c=>c.id!==card.id);next.money+=card.sellCost;
   events=[{type:'owned_card_sold',area,cardId:card.id,sellCost:card.sellCost},{type:'money_changed',before:state.money,after:next.money,delta:card.sellCost}];
+  if(area==='jokers'&&next.bossState?.id==='bl_final_leaf')disableBoss(next,events);
  }
  next.lastScore=null;next.revision++;
  if(next.apkShop)next.apkShop.context=currentApkShopContext(next);
