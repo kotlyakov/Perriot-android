@@ -104,3 +104,5 @@ button{font-weight:700}.title{font-weight:800;font-size:26px}.token{font-weight:
 .playing-card.hidden-card.selected{border-color:#e8bb66;box-shadow:0 6px #0c251ba6,0 0 0 2px #dcb260}
 .playing-card.hidden-card:disabled{background:#ca3d2a!important;background-image:repeating-linear-gradient(45deg,transparent 0 7px,#f0e5c850 7px 8px,transparent 8px 14px),repeating-linear-gradient(-45deg,transparent 0 7px,#f0e5c850 7px 8px,transparent 8px 14px)!important}
 .playing-card.hidden-card[data-deck=blue]:disabled{background-color:#087bad!important}
+
+.payout-bonus-list{position:absolute;left:16px;right:18px;top:191px;bottom:14px;overflow:auto}.payout-bonus-list .payout-row{position:static;min-height:45px;margin-bottom:4px}.payout-bonus-list .payout-joker>strong:first-child{color:#f6c35d}

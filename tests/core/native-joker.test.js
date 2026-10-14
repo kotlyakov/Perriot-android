@@ -50,6 +50,45 @@ test('Raised Fist uses the lowest non-Stone held rank and a debuffed tie stays s
  const tied={...state,hand:['low','tie'],cards:{low:state.cards.low,tie:{id:'tie',rank:4,suit:'spades'}}};
  r=scoreHand({...tied,bossState:{id:'bl_goad'}},cards([10]));assert.equal(r.trace.some(e=>e.effectSourceId==='fist'),false);
 });
+test('Baron and Shoot the Moon trigger per held card in card then Joker order',()=>{
+ const held={queen:{id:'queen',rank:12,suit:'hearts'},king:{id:'king',rank:13,suit:'clubs',enhancement:'steel'}};
+ const state={handLevels:{},hand:Object.keys(held),cards:held,jokerSlots:5,round:{handsRemaining:2,discardsRemaining:2},drawPile:[],
+  jokers:[{id:'moon',entityId:'j_shoot_the_moon'},{id:'baron',entityId:'j_baron'}]};
+ let r=scoreHand(state,cards([10]));
+ assert.deepEqual(r.trace.filter(e=>e.phase==='held_card').map(e=>[e.sourceId,e.effectSourceId??'card',e.operation]),[
+  ['queen','moon','add_mult'],['king','card','multiply_mult'],['king','baron','multiply_mult'],
+ ]);
+ assert.deepEqual(r.mult,{n:63n,d:2n});
+ r=scoreHand({...state,bossState:{id:'bl_plant'}},cards([10]));assert.equal(r.trace.some(e=>e.phase==='held_card'),false);
+});
+test('Blue Joker uses the pre-draw deck and Flower Pot uses only scoring-card suit coverage',()=>{
+ const base={handLevels:{},hand:[],cards:{},jokerSlots:5,round:{handsRemaining:2,discardsRemaining:2}};
+ let r=scoreHand({...base,drawPile:['a','b','c'],jokers:[{id:'blue',entityId:'j_blue_joker'}]},cards([14]));
+ assert.equal(r.trace.find(e=>e.sourceId==='blue').after.chips-r.trace.find(e=>e.sourceId==='blue').before.chips,6n);
+ const fourSuits=suits.map((suit,i)=>({id:'p'+i,rank:8,suit}));
+ r=scoreHand({...base,drawPile:[],jokers:[{id:'pot',entityId:'j_flower_pot'}]},fourSuits);assert.equal(r.trace.find(e=>e.sourceId==='pot').operation,'multiply_mult');
+ r=scoreHand({...base,drawPile:[],bossState:{id:'bl_goad'},jokers:[{id:'pot',entityId:'j_flower_pot'}]},fourSuits);assert.equal(r.trace.find(e=>e.sourceId==='pot').operation,'multiply_mult');
+ const wild=[...fourSuits.slice(0,3),{...fourSuits[3],suit:'diamonds',enhancement:'wild'}];
+ r=scoreHand({...base,drawPile:[],jokers:[{id:'pot',entityId:'j_flower_pot'}]},wild);assert.equal(r.trace.find(e=>e.sourceId==='pot').operation,'multiply_mult');
+ r=scoreHand({...base,drawPile:[],bossState:{id:'bl_goad'},jokers:[{id:'pot',entityId:'j_flower_pot'}]},wild);assert.equal(r.trace.some(e=>e.sourceId==='pot'),false);
+});
+test('money, sell-value and full-deck Jokers derive their values from pre-score state',()=>{
+ const deckCards={stone1:{id:'stone1',rank:2,suit:'clubs',enhancement:'stone'},stone2:{id:'stone2',rank:3,suit:'hearts',enhancement:'stone'},steel1:{id:'steel1',rank:4,suit:'clubs',enhancement:'steel'},steel2:{id:'steel2',rank:5,suit:'hearts',enhancement:'steel'},steel3:{id:'steel3',rank:6,suit:'spades',enhancement:'steel'}};
+ const base={handLevels:{},hand:[],cards:deckCards,drawPile:[],jokerSlots:5,round:{handsRemaining:2,discardsRemaining:2},money:12n};
+ let r=scoreHand({...base,jokers:[{id:'bull',entityId:'j_bull'}]},cards([14]));assert.equal(r.trace.find(e=>e.sourceId==='bull').after.chips-r.trace.find(e=>e.sourceId==='bull').before.chips,24n);
+ r=scoreHand({...base,jokers:[{id:'boots',entityId:'j_bootstraps'}]},cards([14]));assert.equal(r.trace.find(e=>e.sourceId==='boots').after.mult-r.trace.find(e=>e.sourceId==='boots').before.mult,4n);
+ r=scoreHand({...base,jokers:[{id:'stone',entityId:'j_stone'}]},cards([14]));assert.equal(r.trace.find(e=>e.sourceId==='stone').after.chips-r.trace.find(e=>e.sourceId==='stone').before.chips,50n);
+ r=scoreHand({...base,jokers:[{id:'steel',entityId:'j_steel_joker'}]},cards([14]));assert.deepEqual(r.trace.find(e=>e.sourceId==='steel').after.mult,{n:8n,d:5n});
+ r=scoreHand({...base,jokers:[{id:'swash',entityId:'j_swashbuckler',sellCost:2n},{id:'left',entityId:'j_joker',sellCost:3n},{id:'right',entityId:'j_joker',sellCost:4n}]},cards([14]));assert.equal(r.trace.find(e=>e.sourceId==='swash').after.mult-r.trace.find(e=>e.sourceId==='swash').before.mult,7n);
+ for(const key of ['j_bull','j_bootstraps']){r=scoreHand({...base,money:-2n,jokers:[{id:'money',entityId:key}]},cards([14]));assert.equal(r.trace.some(e=>e.sourceId==='money'),false);}
+});
+test('money-dependent Joker score stores a strict pre-score balance for save replay',()=>{
+ let s=createRun('bull-save',{runId:'bull-save',money:12n});s=act(s,'START_BLIND').state;s.jokers=[{id:'bull',entityId:'j_bull',cost:6n,sellCost:3n}];
+ const r=act(s,'PLAY_HAND',{cardIds:[s.hand[0]]});assert.equal(r.error,null);assert.equal(r.state.lastScore.scoringMoneyBefore,12n);assert.deepEqual(deserializeState(serializeState(r.state)),r.state);
+ r.state.lastScore.scoringMoneyBefore=13n;assert.throws(()=>serializeState(r.state));
+ s=createRun('bull-gold',{runId:'bull-gold',money:12n});s=act(s,'START_BLIND').state;s.jokers=[{id:'bull',entityId:'j_bull',cost:6n,sellCost:3n}];s.cards[s.hand[1]].enhancement='gold';s.round.target=1n;
+ const won=act(s,'PLAY_HAND',{cardIds:[s.hand[0]]});assert.equal(won.state.phase,'round_won');assert.equal(won.state.money,15n);assert.equal(won.state.lastScore.scoringMoneyBefore,12n);assert.deepEqual(deserializeState(serializeState(won.state)),won.state);
+});
 test('native suit and face effects do not score kickers without Splash',()=>{
  for(const [key,suit,operation,amount] of [['j_greedy_joker','diamonds','add_mult',3n],['j_lusty_joker','hearts','add_mult',3n],['j_wrathful_joker','spades','add_mult',3n],['j_gluttenous_joker','clubs','add_mult',3n],['j_arrowhead','spades','add_chips',50n],['j_onyx_agate','clubs','add_mult',7n]]){
  const s={handLevels:{},jokers:[{id:'j',entityId:key}]};const r=scoreHand(s,[{id:'a',rank:14,suit}]);const e=r.trace.find(e=>e.effectSourceId);assert.equal(e.operation,operation);const target=operation.includes('mult')?'mult':'chips';assert.equal(e.after[target]-e.before[target],amount);

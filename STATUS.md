@@ -1,5 +1,18 @@
 # STATUS.md — Пьеро
 
+14.10.2026. П-05н, 0.4.33-preview/code46, ветка feat/joker-deck-money от apk-reference 043d8bbe. Независимое QA завершено без Critical/Important; финальный browser/Android CI ожидается; полная игра не готова.
+
+Рабочий каталог 53/150: девять эффектов денег/колоды/held, Blue Joker и Swashbuckler из прежних PR25–27, Four Fingers/Shortcut, Golden Joker/Cloud 9. Точные фазы, Wild/debuff, рациональные множители, draw history и независимое native распознавание проверены. Генератор восьми Arcana наборов (140 native cases) подготовлен без включения lifecycle.
+
+Критические ошибки базы исправлены: историческое сохранение Raised Fist/Blackboard/Acrobat; Hook перед scoring; изменение заработанной выплаты при продаже после победы. Выплата фиксируется до изменения инвентаря, сохраняется и оплачивается один раз; проценты не включают бонусы джокеров. Blue snapshot отвергает согласованную подмену draw/held и сохраняет Hanged shortfall. Celestial materialize RNG исправлен в 64 native cases.
+
+Текущий полный core: 864/864 PASS после независимого QA. Первый срез 951858b прошёл Actions38558257199: 35 Chromium suites, fresh Android, подпись и zipalign. Это не проверка последующих изменений: новый срез требует 36 suites и fresh Android CI. Локальный Chromium недоступен, физический Android не проверен. Native Stone get_id потребляет math RNG во время распознавания/кадров; полная seed/event/RNG parity ещё открыта.
+
+PR28 объединяет историю PR25–27 дополнительным merge parent, не заменяет прежнюю работу. Следующие задачи: остальные 97 джокеров/Judgement, Arcana lifecycle, финальные боссы/победа/Endless (docs/apk-findings/showdown-win-lifecycle.md), остальные наборы/ваучеры/теги/режимы/профиль. Приложенные файлы от09.10 устарели; актуальные инструкции/код в репозитории.
+
+---
+Предыдущий статус (история):
+
 13.10.2026. Активный этап П-05м, 0.4.27-preview/code40. Wheel of Fortune/Polychrome опубликованы в PR #23 на проверенном локально срезе 421/421; GitHub Actions38433312892 проверяет 34 Chromium-набора, fresh Android, подпись и alignment. PR #21 Strength и PR #22 Emperor/High Priestess уже слиты в apk-reference. Следующий локальный срез расширяет рабочий каталог с 32 до 38 джокеров: Acrobat, Banner, Blackboard, Mystic Summit, Raised Fist и Joker Stencil реализованы по независимому Lua oracle, включая нулевую/полную ёмкость, Negative-слоты, held Stone/debuff и счётчики последней руки/сбросов. 424/424 core, offline assets/config и diff-check PASS; Chromium/Android CI обязателен после публикации. Далее остальные джокеры и Judgement. Полная игра не готова.
 
 П-05к, 0.4.25-preview/code38. Emperor/High Priestess реализованы в feat/generated-tarots: 415 core PASS; предыдущий head прошёл 33 Chromium, fresh Android compile, подпись/zipalign и APK artifact в Actions38412480619. После технической синхронизации с уже слитым PR #21 запущена повторная обязательная проверка. Negative self-slot / допустимое переполнение исправлены, включая прежний Fool.

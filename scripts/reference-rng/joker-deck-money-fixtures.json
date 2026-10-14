@@ -1,0 +1,1068 @@
+{
+  "cases": [
+    {
+      "debuff": false,
+      "expected": {},
+      "key": "j_baron",
+      "phase": "held",
+      "rank": 2,
+      "stone": false
+    },
+    {
+      "debuff": true,
+      "expected": {},
+      "key": "j_baron",
+      "phase": "held",
+      "rank": 2,
+      "stone": false
+    },
+    {
+      "debuff": false,
+      "expected": {},
+      "key": "j_baron",
+      "phase": "held",
+      "rank": 2,
+      "stone": true
+    },
+    {
+      "debuff": true,
+      "expected": {},
+      "key": "j_baron",
+      "phase": "held",
+      "rank": 2,
+      "stone": true
+    },
+    {
+      "debuff": false,
+      "expected": {},
+      "key": "j_baron",
+      "phase": "held",
+      "rank": 12,
+      "stone": false
+    },
+    {
+      "debuff": true,
+      "expected": {},
+      "key": "j_baron",
+      "phase": "held",
+      "rank": 12,
+      "stone": false
+    },
+    {
+      "debuff": false,
+      "expected": {},
+      "key": "j_baron",
+      "phase": "held",
+      "rank": 12,
+      "stone": true
+    },
+    {
+      "debuff": true,
+      "expected": {},
+      "key": "j_baron",
+      "phase": "held",
+      "rank": 12,
+      "stone": true
+    },
+    {
+      "debuff": false,
+      "expected": {
+        "x_mult": 1.5
+      },
+      "key": "j_baron",
+      "phase": "held",
+      "rank": 13,
+      "stone": false
+    },
+    {
+      "debuff": true,
+      "expected": {},
+      "key": "j_baron",
+      "phase": "held",
+      "rank": 13,
+      "stone": false
+    },
+    {
+      "debuff": false,
+      "expected": {},
+      "key": "j_baron",
+      "phase": "held",
+      "rank": 13,
+      "stone": true
+    },
+    {
+      "debuff": true,
+      "expected": {},
+      "key": "j_baron",
+      "phase": "held",
+      "rank": 13,
+      "stone": true
+    },
+    {
+      "debuff": false,
+      "expected": {},
+      "key": "j_baron",
+      "phase": "held",
+      "rank": 14,
+      "stone": false
+    },
+    {
+      "debuff": true,
+      "expected": {},
+      "key": "j_baron",
+      "phase": "held",
+      "rank": 14,
+      "stone": false
+    },
+    {
+      "debuff": false,
+      "expected": {},
+      "key": "j_baron",
+      "phase": "held",
+      "rank": 14,
+      "stone": true
+    },
+    {
+      "debuff": true,
+      "expected": {},
+      "key": "j_baron",
+      "phase": "held",
+      "rank": 14,
+      "stone": true
+    },
+    {
+      "debuff": false,
+      "expected": {},
+      "key": "j_shoot_the_moon",
+      "phase": "held",
+      "rank": 2,
+      "stone": false
+    },
+    {
+      "debuff": true,
+      "expected": {},
+      "key": "j_shoot_the_moon",
+      "phase": "held",
+      "rank": 2,
+      "stone": false
+    },
+    {
+      "debuff": false,
+      "expected": {},
+      "key": "j_shoot_the_moon",
+      "phase": "held",
+      "rank": 2,
+      "stone": true
+    },
+    {
+      "debuff": true,
+      "expected": {},
+      "key": "j_shoot_the_moon",
+      "phase": "held",
+      "rank": 2,
+      "stone": true
+    },
+    {
+      "debuff": false,
+      "expected": {
+        "h_mult": 13
+      },
+      "key": "j_shoot_the_moon",
+      "phase": "held",
+      "rank": 12,
+      "stone": false
+    },
+    {
+      "debuff": true,
+      "expected": {},
+      "key": "j_shoot_the_moon",
+      "phase": "held",
+      "rank": 12,
+      "stone": false
+    },
+    {
+      "debuff": false,
+      "expected": {},
+      "key": "j_shoot_the_moon",
+      "phase": "held",
+      "rank": 12,
+      "stone": true
+    },
+    {
+      "debuff": true,
+      "expected": {},
+      "key": "j_shoot_the_moon",
+      "phase": "held",
+      "rank": 12,
+      "stone": true
+    },
+    {
+      "debuff": false,
+      "expected": {},
+      "key": "j_shoot_the_moon",
+      "phase": "held",
+      "rank": 13,
+      "stone": false
+    },
+    {
+      "debuff": true,
+      "expected": {},
+      "key": "j_shoot_the_moon",
+      "phase": "held",
+      "rank": 13,
+      "stone": false
+    },
+    {
+      "debuff": false,
+      "expected": {},
+      "key": "j_shoot_the_moon",
+      "phase": "held",
+      "rank": 13,
+      "stone": true
+    },
+    {
+      "debuff": true,
+      "expected": {},
+      "key": "j_shoot_the_moon",
+      "phase": "held",
+      "rank": 13,
+      "stone": true
+    },
+    {
+      "debuff": false,
+      "expected": {},
+      "key": "j_shoot_the_moon",
+      "phase": "held",
+      "rank": 14,
+      "stone": false
+    },
+    {
+      "debuff": true,
+      "expected": {},
+      "key": "j_shoot_the_moon",
+      "phase": "held",
+      "rank": 14,
+      "stone": false
+    },
+    {
+      "debuff": false,
+      "expected": {},
+      "key": "j_shoot_the_moon",
+      "phase": "held",
+      "rank": 14,
+      "stone": true
+    },
+    {
+      "debuff": true,
+      "expected": {},
+      "key": "j_shoot_the_moon",
+      "phase": "held",
+      "rank": 14,
+      "stone": true
+    },
+    {
+      "count": 0,
+      "expected": {},
+      "key": "j_stone",
+      "phase": "independent"
+    },
+    {
+      "count": 1,
+      "expected": {
+        "chip_mod": 25
+      },
+      "key": "j_stone",
+      "phase": "independent"
+    },
+    {
+      "count": 15,
+      "expected": {
+        "chip_mod": 375
+      },
+      "key": "j_stone",
+      "phase": "independent"
+    },
+    {
+      "count": 16,
+      "expected": {
+        "chip_mod": 400
+      },
+      "key": "j_stone",
+      "phase": "independent"
+    },
+    {
+      "count": 17,
+      "expected": {
+        "chip_mod": 425
+      },
+      "key": "j_stone",
+      "phase": "independent"
+    },
+    {
+      "count": 0,
+      "expected": {},
+      "key": "j_steel_joker",
+      "phase": "independent"
+    },
+    {
+      "count": 1,
+      "expected": {
+        "Xmult_mod": 1.2
+      },
+      "key": "j_steel_joker",
+      "phase": "independent"
+    },
+    {
+      "count": 15,
+      "expected": {
+        "Xmult_mod": 4
+      },
+      "key": "j_steel_joker",
+      "phase": "independent"
+    },
+    {
+      "count": 16,
+      "expected": {
+        "Xmult_mod": 4.2
+      },
+      "key": "j_steel_joker",
+      "phase": "independent"
+    },
+    {
+      "count": 17,
+      "expected": {
+        "Xmult_mod": 4.4
+      },
+      "key": "j_steel_joker",
+      "phase": "independent"
+    },
+    {
+      "count": 0,
+      "expected": {},
+      "key": "j_drivers_license",
+      "phase": "independent"
+    },
+    {
+      "count": 1,
+      "expected": {},
+      "key": "j_drivers_license",
+      "phase": "independent"
+    },
+    {
+      "count": 15,
+      "expected": {},
+      "key": "j_drivers_license",
+      "phase": "independent"
+    },
+    {
+      "count": 16,
+      "expected": {
+        "Xmult_mod": 3
+      },
+      "key": "j_drivers_license",
+      "phase": "independent"
+    },
+    {
+      "count": 17,
+      "expected": {
+        "Xmult_mod": 3
+      },
+      "key": "j_drivers_license",
+      "phase": "independent"
+    },
+    {
+      "buffer": 0,
+      "expected": {},
+      "key": "j_bull",
+      "money": -5,
+      "phase": "independent"
+    },
+    {
+      "buffer": 20,
+      "expected": {
+        "chip_mod": 30
+      },
+      "key": "j_bull",
+      "money": -5,
+      "phase": "independent"
+    },
+    {
+      "buffer": 0,
+      "expected": {},
+      "key": "j_bull",
+      "money": 0,
+      "phase": "independent"
+    },
+    {
+      "buffer": 20,
+      "expected": {
+        "chip_mod": 40
+      },
+      "key": "j_bull",
+      "money": 0,
+      "phase": "independent"
+    },
+    {
+      "buffer": 0,
+      "expected": {
+        "chip_mod": 8
+      },
+      "key": "j_bull",
+      "money": 4,
+      "phase": "independent"
+    },
+    {
+      "buffer": 20,
+      "expected": {
+        "chip_mod": 48
+      },
+      "key": "j_bull",
+      "money": 4,
+      "phase": "independent"
+    },
+    {
+      "buffer": 0,
+      "expected": {
+        "chip_mod": 10
+      },
+      "key": "j_bull",
+      "money": 5,
+      "phase": "independent"
+    },
+    {
+      "buffer": 20,
+      "expected": {
+        "chip_mod": 50
+      },
+      "key": "j_bull",
+      "money": 5,
+      "phase": "independent"
+    },
+    {
+      "buffer": 0,
+      "expected": {
+        "chip_mod": 18
+      },
+      "key": "j_bull",
+      "money": 9,
+      "phase": "independent"
+    },
+    {
+      "buffer": 20,
+      "expected": {
+        "chip_mod": 58
+      },
+      "key": "j_bull",
+      "money": 9,
+      "phase": "independent"
+    },
+    {
+      "buffer": 0,
+      "expected": {
+        "chip_mod": 20
+      },
+      "key": "j_bull",
+      "money": 10,
+      "phase": "independent"
+    },
+    {
+      "buffer": 20,
+      "expected": {
+        "chip_mod": 60
+      },
+      "key": "j_bull",
+      "money": 10,
+      "phase": "independent"
+    },
+    {
+      "buffer": 0,
+      "expected": {
+        "chip_mod": 198
+      },
+      "key": "j_bull",
+      "money": 99,
+      "phase": "independent"
+    },
+    {
+      "buffer": 20,
+      "expected": {
+        "chip_mod": 238
+      },
+      "key": "j_bull",
+      "money": 99,
+      "phase": "independent"
+    },
+    {
+      "buffer": 0,
+      "expected": {},
+      "key": "j_bootstraps",
+      "money": -5,
+      "phase": "independent"
+    },
+    {
+      "buffer": 20,
+      "expected": {
+        "mult_mod": 6
+      },
+      "key": "j_bootstraps",
+      "money": -5,
+      "phase": "independent"
+    },
+    {
+      "buffer": 0,
+      "expected": {},
+      "key": "j_bootstraps",
+      "money": 0,
+      "phase": "independent"
+    },
+    {
+      "buffer": 20,
+      "expected": {
+        "mult_mod": 8
+      },
+      "key": "j_bootstraps",
+      "money": 0,
+      "phase": "independent"
+    },
+    {
+      "buffer": 0,
+      "expected": {},
+      "key": "j_bootstraps",
+      "money": 4,
+      "phase": "independent"
+    },
+    {
+      "buffer": 20,
+      "expected": {
+        "mult_mod": 8
+      },
+      "key": "j_bootstraps",
+      "money": 4,
+      "phase": "independent"
+    },
+    {
+      "buffer": 0,
+      "expected": {
+        "mult_mod": 2
+      },
+      "key": "j_bootstraps",
+      "money": 5,
+      "phase": "independent"
+    },
+    {
+      "buffer": 20,
+      "expected": {
+        "mult_mod": 10
+      },
+      "key": "j_bootstraps",
+      "money": 5,
+      "phase": "independent"
+    },
+    {
+      "buffer": 0,
+      "expected": {
+        "mult_mod": 2
+      },
+      "key": "j_bootstraps",
+      "money": 9,
+      "phase": "independent"
+    },
+    {
+      "buffer": 20,
+      "expected": {
+        "mult_mod": 10
+      },
+      "key": "j_bootstraps",
+      "money": 9,
+      "phase": "independent"
+    },
+    {
+      "buffer": 0,
+      "expected": {
+        "mult_mod": 4
+      },
+      "key": "j_bootstraps",
+      "money": 10,
+      "phase": "independent"
+    },
+    {
+      "buffer": 20,
+      "expected": {
+        "mult_mod": 12
+      },
+      "key": "j_bootstraps",
+      "money": 10,
+      "phase": "independent"
+    },
+    {
+      "buffer": 0,
+      "expected": {
+        "mult_mod": 38
+      },
+      "key": "j_bootstraps",
+      "money": 99,
+      "phase": "independent"
+    },
+    {
+      "buffer": 20,
+      "expected": {
+        "mult_mod": 46
+      },
+      "key": "j_bootstraps",
+      "money": 99,
+      "phase": "independent"
+    },
+    {
+      "case": "plain",
+      "expected": {
+        "Xmult_mod": 3
+      },
+      "key": "j_flower_pot",
+      "phase": "independent",
+      "scoring": [
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Diamonds",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Clubs",
+          "wild": false
+        }
+      ]
+    },
+    {
+      "case": "single-wild",
+      "expected": {},
+      "key": "j_flower_pot",
+      "phase": "independent",
+      "scoring": [
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": true
+        }
+      ]
+    },
+    {
+      "case": "club-and-wild",
+      "expected": {},
+      "key": "j_flower_pot",
+      "phase": "independent",
+      "scoring": [
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Clubs",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": true
+        }
+      ]
+    },
+    {
+      "case": "four-wilds",
+      "expected": {
+        "Xmult_mod": 3
+      },
+      "key": "j_flower_pot",
+      "phase": "independent",
+      "scoring": [
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": true
+        },
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": true
+        },
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": true
+        },
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": true
+        }
+      ]
+    },
+    {
+      "case": "debuff-plain",
+      "expected": {
+        "Xmult_mod": 3
+      },
+      "key": "j_flower_pot",
+      "phase": "independent",
+      "scoring": [
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Diamonds",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": true,
+          "rank": 8,
+          "stone": false,
+          "suit": "Clubs",
+          "wild": false
+        }
+      ]
+    },
+    {
+      "case": "debuff-wild",
+      "expected": {},
+      "key": "j_flower_pot",
+      "phase": "independent",
+      "scoring": [
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Diamonds",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": true,
+          "rank": 8,
+          "stone": false,
+          "suit": "Clubs",
+          "wild": true
+        }
+      ]
+    },
+    {
+      "case": "stone-club",
+      "expected": {},
+      "key": "j_flower_pot",
+      "phase": "independent",
+      "scoring": [
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Diamonds",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": true,
+          "suit": "Clubs",
+          "wild": false
+        }
+      ]
+    },
+    {
+      "case": "plain",
+      "expected": {
+        "Xmult_mod": 2
+      },
+      "key": "j_seeing_double",
+      "phase": "independent",
+      "scoring": [
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Diamonds",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Clubs",
+          "wild": false
+        }
+      ]
+    },
+    {
+      "case": "single-wild",
+      "expected": {},
+      "key": "j_seeing_double",
+      "phase": "independent",
+      "scoring": [
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": true
+        }
+      ]
+    },
+    {
+      "case": "club-and-wild",
+      "expected": {
+        "Xmult_mod": 2
+      },
+      "key": "j_seeing_double",
+      "phase": "independent",
+      "scoring": [
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Clubs",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": true
+        }
+      ]
+    },
+    {
+      "case": "four-wilds",
+      "expected": {
+        "Xmult_mod": 2
+      },
+      "key": "j_seeing_double",
+      "phase": "independent",
+      "scoring": [
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": true
+        },
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": true
+        },
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": true
+        },
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": true
+        }
+      ]
+    },
+    {
+      "case": "debuff-plain",
+      "expected": {},
+      "key": "j_seeing_double",
+      "phase": "independent",
+      "scoring": [
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Diamonds",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": true,
+          "rank": 8,
+          "stone": false,
+          "suit": "Clubs",
+          "wild": false
+        }
+      ]
+    },
+    {
+      "case": "debuff-wild",
+      "expected": {},
+      "key": "j_seeing_double",
+      "phase": "independent",
+      "scoring": [
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Diamonds",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": true,
+          "rank": 8,
+          "stone": false,
+          "suit": "Clubs",
+          "wild": true
+        }
+      ]
+    },
+    {
+      "case": "stone-club",
+      "expected": {},
+      "key": "j_seeing_double",
+      "phase": "independent",
+      "scoring": [
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Diamonds",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 8,
+          "stone": true,
+          "suit": "Clubs",
+          "wild": false
+        }
+      ]
+    }
+  ],
+  "source": {
+    "apkSha256": "6236dc68a312d04295839cfbfd2699d4751877bdf162c3a4ce425481d28397bd",
+    "runtime": "luajit",
+    "method": "Original Card:set_ability and Card:calculate_joker methods. Native tally refresh supplied explicitly.",
+    "limits": "Deterministic method adapter only; not whole APK, RNG, event manager or Card:update execution."
+  }
+}

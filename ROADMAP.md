@@ -503,3 +503,8 @@ Actions37812813108 SUCCESS на f90446d94d921fe7a26afb71c24168fcf15ba34e (merge 
 
 
 
+
+
+## Продолжение 14.10.2026 — П-05н
+
+База043d8bbe. Каталог53/150: эффекты денег/колоды/held, сохранённая история PR25–27, Four Fingers/Shortcut и Golden/Cloud. Критические Hook/score snapshot/frozen cashout исправлены; Blue согласованная подмена и Hanged shortfall покрыты. Генератор Arcana140 native cases подготовлен, Celestial materialize RNG исправлен. Core864 PASS после независимого QA. Первый срез951858b: Actions38558257199 SUCCESS, 35browser/freshAndroid/signature/alignment; новый0.4.33/code46 требует36browser/freshAndroid CI. Full seed/event RNG (Stone), retriggers, прочие97джокеров/Judgement, Arcana lifecycle и финальные боссы/победа/Endless остаются открытыми. Полная игра и физическая приёмка не заявляются.

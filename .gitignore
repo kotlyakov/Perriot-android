@@ -8,3 +8,6 @@ android/app/src/main/assets/
 artifacts/
 
 android/.kotlin/
+
+__pycache__/
+*.pyc
