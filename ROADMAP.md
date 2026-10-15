@@ -60,7 +60,7 @@ Emperor/High Priestess реализованы: до двух карт из по�
 
 ## Выбранная задача15.10
 
-Режим пользователя — только выбранный номер. №1 завершён: П-04-VICTORY-CI-034, локально967PASS, scoped review PASS, victory-endless desktop/mobile PASS в CI38761923466. Полная актуальная таблица1–12 — docs/progress.md. №2 (whole-branch review) завершён:83a2a4f..1555314, no Critical/Important found,104 целевых PASS0skip, native fixture reproducibility PASS. Отчёт docs/qa/2026-10-15-showdown-final-review.md. Предложен№3, ждать выбора. №3 пока блокируется typography-check null.getBoundingClientRect, Android CI пропущен; также исправить устаревшие справочные надписи П-04-PREVIEW-COPY-034. Не начинать№3 автоматически.
+№3 завершён 15.10.2026: typography race и справочные надписи исправлены; PR29 слит в apk-reference (e8319950daee34a3cd304e057e7fe68337b893e7). PR CI38775578432 и post-merge CI38777249132 SUCCESS: 966 core PASS/1 private-oracle skip,38 Chromium suites, fresh Android, apksigner и zipalign PASS. Полный локальный прогон:967 PASS/0skip. APK artifact11994353537, SHA256 cadf68db3ec92dcdfcdec3a9a894e1134626c3fd76ea159fcc8c335c28666202, debug без гарантии обновления. Выборочная визуальная QA15PNG пройдена. Физическое устройство/установка не проверены. Полная игра не готова:53/150 джокеров. Предложен№4; ждать выбора пользователя.
 
 ## Как используем этот файл
 
