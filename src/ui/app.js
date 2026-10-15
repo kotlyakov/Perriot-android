@@ -25,6 +25,8 @@ function closeDialog(){if(busy||state?.winPending){if(!busy&&dialog.dataset.view
 function dismissDialog(){if(dialog.open){dialogMotion?.cancel();dialogMotion=null;dialog.close();dialog.classList.remove('deck-dialog');return true;}return false;}
 dialog.addEventListener('close',()=>{if(dialog.open)return;dialogMotion?.cancel();dialogMotion=null;dialog.classList.remove('deck-dialog');});
 dialog.addEventListener('cancel',e=>{if(busy||state?.winPending){e.preventDefault();if(!busy&&dialog.dataset.view==='victory-confirm')showVictory();}});
+// Native dialog cancel may be noncancelable; consume Escape before its close request.
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&dialog.open&&(busy||state?.winPending)){e.preventDefault();closeDialog();}});
 globalThis.cardGameBack=closeDialog;
 function openDialog(title,body,actions=[['Закрыть',closeDialog]]) {
  dismissCardTip();dialog.dataset.view='';
