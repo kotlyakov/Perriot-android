@@ -98,14 +98,14 @@ async function perform(type,ids,mode,fields={}) {
    await Promise.all([expand(),arrive()]);
  }
  await moneyMotion;busy=false;render();
- if(state.phase==='game_over')openDialog('Партия окончена',`<p>Набрано ${state.round.score} из ${displayBlindTarget(state.round.target)} очков.</p><p>Предварительная версия: обычные боссы и переходы анте, магазин и 32 вида джокеров. Финальные боссы, остальные товары и часть наград ещё в разработке.</p>`,[['Новый забег',()=>confirmNew()],['Закрыть',closeDialog]]);
+ if(state.phase==='game_over')openDialog('Партия окончена',`<p>Набрано ${state.round.score} из ${displayBlindTarget(state.round.target)} очков.</p><p>Предварительная версия: доступны переходы анте, финальные боссы, победа и бесконечный режим. Полный профиль и часть контента ещё в разработке.</p>`,[['Новый забег',()=>confirmNew()],['Закрыть',closeDialog]]);
 }
 function confirmNew(options){if(busy)return;openDialog('Новый забег','<p>Начать заново? Текущий забег останется в резервной записи.</p>',[['Начать',()=>startFresh(options)],['Отмена',()=>{if(state?.winPending)showVictory();else closeDialog();}]]);if(state?.winPending)dialog.dataset.view='victory-confirm';}
 document.getElementById('play_hand').onclick=()=>perform('PLAY_HAND',[...selected]);
 document.getElementById('discard').onclick=()=>perform('DISCARD',[...selected]);
 function sort(mode){if(busy || state?.phase!=='playing')return;perform('SET_SORT',undefined,mode);}
 document.getElementById('sort_rank').onclick=()=>sort('rank');document.getElementById('sort_suit').onclick=()=>sort('suit');
-function showSettings(){if(busy||state?.winPending)return;openDialog('Настройки','<p>Пьеро · промежуточная сборка 0.4.22</p><p>Переходы анте и обычные боссы, скрытые карты, магазин, 32 эффекта джокеров, Планеты, Небесные наборы и реализованные карты Таро. Доступны Счастливая, Дикая, Стальная, Стеклянная, Каменная и Золотая карты. Финальные боссы и остальной контент ещё недоступны. Продолжение сохраняется после каждого действия.</p>',[['Продолжить',closeDialog],['Новый забег',()=>confirmNew()],['Главное меню',showMenu]]);}
+function showSettings(){if(busy||state?.winPending)return;openDialog('Настройки','<p>Пьеро · предварительная сборка 0.4.34-preview</p><p>Переходы анте, обычные и финальные боссы, победа и бесконечный режим. Доступны магазин, 53 из 150 эффектов джокеров, Планеты, Небесные наборы и реализованные карты Таро. Полный профиль и остальной контент ещё в разработке. Продолжение сохраняется после каждого действия.</p>',[['Продолжить',closeDialog],['Новый забег',()=>confirmNew()],['Главное меню',showMenu]]);}
 document.getElementById('options').onclick=showSettings;
 document.getElementById('run_info').onclick=()=>{
  if(busy||!state||state.winPending)return;const table=document.createElement('table');
