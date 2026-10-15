@@ -135,3 +135,15 @@ Self-review: spec sections map to Tasks1–6; every new field/helper/action is d
 - [ ] Run targeted/full core tests and exporter checks. Local Chromium binary is currently absent; report this explicit boundary. Root owns full browser/Android CI validation and source publication.
 
 Execution order ruling: perform Task7 immediately after reviewed Task2 and before Task3, because it restores an existing release gate broken by legitimate new module relationships. Tasks3–6 continue afterward. This fixes an integration regression, not a scope substitute for final-game completion.
+
+### Task 8: Avoid duplicate full Android CI for feature pushes
+
+**File:** `.github/workflows/android.yml` only.
+
+**Evidence:** every source checkpoint has two identical full Android/browser runs, one feature push and one pull_request (for example38638274403/38638281353). Existing main bootstrap workflow already identifies `main`; integration base is `apk-reference`. No billing allowance or balance is known; do not claim monetary savings.
+
+- [ ] Change only the push trigger to `push: {branches: [main, apk-reference]}` using normal YAML block syntax. Preserve unrestricted `pull_request` and `workflow_dispatch` triggers. Preserve every job, check, permission, concurrency setting, timeout, artifact and build/signature step. Do not weaken tests, add event guards or delete the bootstrap workflow.
+- [ ] Check the event matrix: main push runs, apk-reference push runs, feature push alone does not run the full Android workflow, feature PR opened/synchronized/reopened runs, manual dispatch runs. Feature branches without a PR can use manual dispatch. Record this workflow coverage decision.
+- [ ] Validate YAML with available tooling and diff-check without adding dependencies or tests that just mirror this two-line configuration. Root will validate the next actual reviewed checkpoint: one full PR pipeline and all37 suites/build gates.
+
+Execution ruling: implement while Task4 is under read-only review, before Task5; files and interfaces are independent, only one implementer active. Publish together with reviewed Task4 so already-verified old source is not rebuilt just for this metadata/configuration change.

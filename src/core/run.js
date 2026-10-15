@@ -2,7 +2,7 @@ import {handRecognitionOptions} from '../content/jokers.js';
 import {applySkipBlind} from './skip-blind.js';
 import {applyConsumableAction} from './consumables.js';
 import {applyCelestialPackAction} from './celestial-pack.js';
-import {canEnterBoss,chooseHookDiscards,chooseHeartJoker,isBossCardDebuffed,resolveMostPlayedHand} from './boss-effects.js';
+import {canEnterBoss,chooseHookDiscards,chooseHeartJoker,chooseBellCard,shuffleAcornJokers,isBossCardDebuffed,resolveMostPlayedHand} from './boss-effects.js';
 import {applyInventoryAction} from './inventory.js';
 import {chooseNextAnteBlinds} from './blind-progression.js';
 import {chooseApkBoss} from './apk-blinds.js';
@@ -77,6 +77,10 @@ function drawToLimit(state, events,action='START_BLIND') {
   }
   state.hand.push(...ids);sortHand(state);
   if (ids.length) events.push({type:'cards_drawn',cardIds:[...ids]});
+  if(boss&&!boss.disabled&&boss.id==='bl_final_bell'&&!state.hand.includes(boss.forcedCardId)){
+    boss.bellChoice={cardIds:[...state.hand],streamBefore:state.rng.apk.streams.cerulean_bell??null,revision:state.revision+(action==='START_BLIND'?0:1)};
+    const choice=chooseBellCard(state.rng.apk,state.hand.map(id=>state.cards[id]));state.rng.apk=choice.rng;boss.forcedCardId=choice.cardId;
+  }
   if(boss&&!boss.disabled&&boss.id==='bl_final_heart'&&action!=='DISCARD'){
     // Native drawn_to_hand collects candidates before clearing previous debuffs.
     const choice=chooseHeartJoker(state.rng.apk,state.jokers);state.rng.apk=choice.rng;
@@ -136,6 +140,8 @@ export function dispatch(state, action, shopOptions={}) {
       if(next.bossState.id==='bl_mouth')next.bossState.firstHand=null;
       if(next.bossState.id==='bl_ox')next.bossState.oxHand=next.mostPlayedHand;
       if(next.bossState.id==='bl_final_heart')next.bossState.heartDebuffedJokerId=null;
+      if(next.bossState.id==='bl_final_bell'){next.bossState.forcedCardId=null;next.bossState.bellChoice=null;}
+      if(next.bossState.id==='bl_final_acorn')next.bossState.hiddenJokerIds=next.jokers.map(j=>j.id);
     }
     if(next.rng.apk){
       const shuffled=shuffleApkDeck(next.drawPile.map(id=>next.cards[id]),next.rng.apk,'nr'+next.round.ante);next.drawPile=shuffled.cardIds;next.rng.apk=shuffled.rng;
@@ -143,10 +149,13 @@ export function dispatch(state, action, shopOptions={}) {
       const draw=randomInt(next.rng.deck,i+1);next.rng.deck=draw.rng;
       [next.drawPile[i],next.drawPile[draw.value]]=[next.drawPile[draw.value],next.drawPile[i]];
     }
+    if(next.bossState?.id==='bl_final_acorn'){
+      const shuffled=shuffleAcornJokers(next.rng.apk,next.jokers);next.jokers=shuffled.jokerIds.map(id=>next.jokers.find(j=>j.id===id));next.rng.apk=shuffled.rng;
+    }
     if(next.apkShop)next.roundNumber=(next.round.ante-1)*3+({small:1,big:2,boss:3}[next.round.blindId]);
     next.phase='playing';next.revision++;
     events.push({type:'round_started',blindId:next.round.blindId,target:next.round.target});
-    drawToLimit(next,events);
+    try{drawToLimit(next,events);}catch(error){return reject('UNSUPPORTED_BOSS_STATE',error.message);}
     return {state:next,events,error:null};
   }
   if (!['PLAY_HAND','DISCARD','REORDER_HAND','SET_SORT'].includes(action.type)) return reject('UNKNOWN_ACTION','Unsupported action');
@@ -164,6 +173,7 @@ export function dispatch(state, action, shopOptions={}) {
   }
   if (!Array.isArray(ids) || ids.length<1 || ids.length>5 || new Set(ids).size!==ids.length || ids.some(id=>typeof id!=='string' || !state.hand.includes(id))) return reject('INVALID_SELECTION','Select 1 to 5 distinct held cards');
   if (action.type==='PLAY_HAND' && state.round.handsRemaining<=0 || action.type==='DISCARD' && state.round.discardsRemaining<=0) return reject('NO_ACTIONS_LEFT','Counter exhausted');
+  if(!state.bossState?.disabled&&state.bossState?.id==='bl_final_bell'&&state.bossState.forcedCardId&&!ids.includes(state.bossState.forcedCardId))return reject('FORCED_SELECTION','Include the forced Bell card');
   const selected=new Set(ids);
   const playedIds=state.hand.filter(id=>selected.has(id));
   let score=null,scoringState=state,hookDiscards=null;
@@ -180,6 +190,7 @@ export function dispatch(state, action, shopOptions={}) {
       score=scoreHand(scoringState,playedIds.map(id=>state.cards[id]));
       if(!state.bossState?.disabled&&state.bossState?.id==='bl_eye')score.bossHistory={playedHands:[...state.bossState.playedHands]};
       if(!state.bossState?.disabled&&state.bossState?.id==='bl_mouth')score.bossHistory={firstHand:state.bossState.firstHand};
+      if(!state.bossState?.disabled&&state.bossState?.id==='bl_final_bell'&&score.glassRngKind==='apk')score.bossHistory={bellRngBefore:state.rng.apk.streams.cerulean_bell??null};
       if(!state.bossState?.disabled&&state.bossState?.id==='bl_final_heart')score.bossHistory={heartDebuffedJokerId:state.bossState.heartDebuffedJokerId,...(score.glassRngKind==='apk'?{heartRngBefore:state.rng.apk.streams.crimson_heart??null}:{})};
     }
     catch (error) { return reject('UNSUPPORTED_CONTENT',error.message); }
@@ -187,6 +198,7 @@ export function dispatch(state, action, shopOptions={}) {
   if(state.runStats && action.type==='PLAY_HAND' && (state.runStats.handsPlayed>=Number.MAX_SAFE_INTEGER || state.runStats.unusedDiscards>Number.MAX_SAFE_INTEGER-state.round.discardsRemaining))return reject('INVALID_STATE','Run counters exhausted');
   const next=structuredClone(state);const events=[];
   if(!state.bossState?.disabled&&state.bossState?.id==='bl_arm'&&scoringState!==state){next.handLevels={...scoringState.handLevels};if(next.handLevels[score.handId]!==state.handLevels[score.handId])events.push({type:'hand_level_changed',handId:score.handId,levels:-1,level:next.handLevels[score.handId]});}
+  if(next.bossState?.id==='bl_final_bell'){next.bossState.forcedCardId=null;next.bossState.bellChoice=null;}
   next.hand=next.hand.filter(id=>!selected.has(id));
   if(next.bossState?.hiddenCardIds)next.bossState.hiddenCardIds=next.bossState.hiddenCardIds.filter(id=>next.hand.includes(id));
   if(next.bossState?.hiddenFaceRanks)next.bossState.hiddenFaceRanks=Object.fromEntries(Object.entries(next.bossState.hiddenFaceRanks).filter(([id])=>next.hand.includes(id)));
@@ -237,7 +249,10 @@ export function dispatch(state, action, shopOptions={}) {
   } else {
     next.round.discardsRemaining--;events.push({type:'cards_discarded',cardIds:[...playedIds]});
   }
-  if (next.phase==='playing') drawToLimit(next,events,action.type);
+  if(next.phase==='round_won'&&next.bossState?.id==='bl_final_acorn')next.bossState.hiddenJokerIds=[];
+  // Native empty Bell pool errors. Convert at the dispatcher boundary so the
+  // accepted clone, counters and RNG are never committed on that error.
+  if(next.phase==='playing')try{drawToLimit(next,events,action.type);}catch(error){return reject('UNSUPPORTED_BOSS_STATE',error.message);}
   if(state.hangedShortfallCardIds)next.hangedShortfallEpoch={...(state.hangedShortfallEpoch??{cardIds:[...state.hangedShortfallCardIds],revision:state.revision,ante:state.round.ante,blindId:state.round.blindId,handsRemaining:state.round.handsRemaining}),consumed:true,consumedBy:action.type};delete next.hangedShortfallCardIds;
   next.revision++;
   return {state:next,events,error:null};

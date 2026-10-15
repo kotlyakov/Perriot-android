@@ -2,6 +2,9 @@ name: Android build and tests
 
 on:
   push:
+    branches:
+      - main
+      - apk-reference
   pull_request:
   workflow_dispatch:
 

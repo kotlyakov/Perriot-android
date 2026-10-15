@@ -60,11 +60,11 @@ descriptions.c_world='Меняет масть до 3 выбранных карт
 descriptions.c_emperor='Создаёт до 2 случайных карт Таро, если есть свободные места.';
 descriptions.c_high_priestess='Создаёт до 2 случайных карт Планет, если есть свободные места.';
 descriptions.c_wheel_of_fortune='Шанс 1 из 4 добавить случайному джокеру без издания фольгу, голографию или полихромию.';
-export function describeShopItem(offer){
+export function describeShopItem(offer,{owned=false}={}){
  const key=originalJokerKey(offer.entityId);
  const base=descriptions[key]??'В этой предварительной версии доступен просмотр карты.';
- const edition=offer.edition==='negative'?`Негатив: дополнительное место для ${supportsJoker(offer)?'этого джокера':'этой расходной карты'}.`:EDITION_DESCRIPTIONS[offer.edition];
- return {name:names[key]??russianNames[key]??'Карта',description:base+(edition?' '+edition:''),canBuy:supportsJoker(offer)||supportsConsumableEffect(offer)};
+ const edition=offer.edition==='negative'?`Негатив: дополнительное место для ${supportsJoker(offer,{owned})?'этого джокера':'этой расходной карты'}.`:EDITION_DESCRIPTIONS[offer.edition];
+ return {name:names[key]??russianNames[key]??'Карта',description:base+(edition?' '+edition:''),canBuy:supportsJoker(offer,{owned})||supportsConsumableEffect(offer)};
 }
 
 

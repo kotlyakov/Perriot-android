@@ -7,7 +7,7 @@ import {APK_BOSSES,APK_BLINDS_BY_ID} from '../content/apk-blinds.js';
 import {APK_HAND_NAMES} from './apk-shop-state.js';
 import {isCardSuit} from './card-suits.js';
 export const FIRST_ANTE_BOSSES=Object.freeze(['bl_hook','bl_club','bl_manacle','bl_psychic','bl_goad','bl_window','bl_head','bl_pillar']);
-export const SUPPORTED_BOSSES=Object.freeze(APK_BOSSES.filter(boss=>!boss.showdown||['bl_final_leaf','bl_final_vessel','bl_final_heart'].includes(boss.id)).map(boss=>boss.id));
+export const SUPPORTED_BOSSES=Object.freeze(APK_BOSSES.map(boss=>boss.id));
 const suits={bl_club:'clubs',bl_goad:'spades',bl_window:'diamonds',bl_head:'hearts'};
 export function canEnterBoss(state){
  const ante=state.round?.ante,boss=APK_BLINDS_BY_ID[state.apkBlinds?.bossId],winAnte=state.winAnte??8;
@@ -16,9 +16,9 @@ export function canEnterBoss(state){
  if(boss.id==='bl_ox'&&state.phase!=='shop'&&!Object.hasOwn(APK_HAND_NAMES,state.mostPlayedHand))return false;
  try{
   canonicalCards(state.cards);
-  if(boss.id==='bl_final_heart'){
+  if(['bl_final_heart','bl_final_acorn'].includes(boss.id)){
    const jokers=canonicalJokers(state.jokers);
-   if(jokers.length>1&&jokers.every(joker=>joker.debuffed))return false;
+   if(boss.id==='bl_final_heart'&&jokers.length>1&&jokers.every(joker=>joker.debuffed))return false;
   }
  }catch{return false;}return true;
 }
@@ -118,6 +118,8 @@ export function disableBoss(state,events){
  if(boss.id==='bl_wall')state.round.target/=2n;
  if(boss.id==='bl_final_vessel')state.round.target/=3n;
  if(boss.hiddenCardIds)boss.hiddenCardIds=[];
+ if(boss.hiddenJokerIds)boss.hiddenJokerIds=[];
+ if(Object.hasOwn(boss,'forcedCardId')){boss.forcedCardId=null;boss.bellChoice=null;}
  if(boss.hiddenFaceRanks)boss.hiddenFaceRanks={};
  if(boss.playedHands)boss.playedHands=[];
  if(Object.hasOwn(boss,'firstHand'))boss.firstHand=null;

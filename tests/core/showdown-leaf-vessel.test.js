@@ -24,14 +24,14 @@ function held(s,ids){s.hand=ids;s.discardPile=[];s.drawPile=Object.keys(s.cards)
 function sync(s){s.apkShop.context=currentApkShopContext(s);return s;}
 function disable(s){const events=[];assert.equal(typeof effects.disableBoss,'function');effects.disableBoss(s,events);s.revision++;return events;}
 
-test('Leaf and Vessel enter Ante8 despite min10; incomplete showdown bosses stay blocked',()=>{
+test('Leaf and Vessel enter Ante8 despite min10; all five showdown bosses are admitted',()=>{
  assert.equal(effects.bossTarget(pending()),100000n);assert.equal(effects.bossTarget(pending('bl_final_vessel')),300000n);
  for(const id of ['bl_final_leaf','bl_final_vessel']){
   const s=active(id);assert.equal(s.bossState.disabled,false);assert.deepEqual(reload(s),s);
   for(const ante of [1,2,7])assert.equal(effects.canEnterBoss(pending(id,ante)),false);
  }
  for(const b of APK_BOSSES.filter(b=>b.showdown)){
-  assert.equal(b.dollars,8);if(!['bl_final_leaf','bl_final_vessel','bl_final_heart'].includes(b.id))assert.equal(act(pending(b.id),'START_BLIND').error.code,'BOSS_UNAVAILABLE');
+  assert.equal(b.dollars,8);const s=pending(b.id);s.jokers=[];assert.equal(act(s,'START_BLIND').error,null);
  }
 });
 test('Leaf suppresses card chips, enhancements, Lucky/Glass RNG and held Steel without suppressing base or independent Joker',()=>{

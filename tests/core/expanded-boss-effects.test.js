@@ -7,8 +7,8 @@ const effects=await import('../../src/core/boss-effects.js');
 const state=(id,ante=2)=>{const s=createRun('AAAAAAA1',{runId:'expanded_boss',money:4n,referenceRng:true,referenceShop:true});s.apkBlinds.bossId=id;s.mostPlayedHand='high_card';s.round.ante=ante;s.bossState={id,playedBeforeBoss:[],playedHands:[],firstHand:null};return s;};
 const cards=(s,...ranks)=>ranks.map((rank,i)=>s.cards[`card_${['clubs','hearts','spades','diamonds'][i%4]}_${rank}`]);
 
-test('ordinary bosses enter eligible non-showdown antes; Leaf/Vessel/Heart are the admitted showdowns',()=>{
- assert.deepEqual(effects.SUPPORTED_BOSSES,APK_BOSSES.filter(b=>!b.showdown||['bl_final_leaf','bl_final_vessel','bl_final_heart'].includes(b.id)).map(b=>b.id));
+test('ordinary bosses enter eligible non-showdown antes; all five showdown lifecycles are admitted',()=>{
+ assert.deepEqual(effects.SUPPORTED_BOSSES,APK_BOSSES.map(b=>b.id));
  for(const boss of APK_BOSSES.filter(b=>!b.showdown))for(const ante of [1,2,8])assert.equal(effects.canEnterBoss(state(boss.id,ante)),boss.minAnte<=ante&&ante!==8);
  for(const ante of [0,9,1.5])assert.equal(effects.canEnterBoss(state('bl_wall',ante)),false);
  for(const boss of APK_BOSSES.filter(b=>b.showdown))assert.equal(effects.canEnterBoss(state(boss.id)),false);
