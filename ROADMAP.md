@@ -60,7 +60,7 @@ Emperor/High Priestess реализованы: до двух карт из по�
 
 ## Выбранная задача15.10
 
-Режим пользователя — только выбранный номер. Сейчас№1: устранить П-04-VICTORY-CI-034, браузерный timeout возврата к победе. После результата обновить таблицу1–12 и предложить№2; автоматически не переходить.
+Режим пользователя — только выбранный номер. №1 завершён: П-04-VICTORY-CI-034, локально967PASS, scoped review PASS, victory-endless desktop/mobile PASS в CI38761923466. Полная актуальная таблица1–12 — docs/progress.md. №2 (whole-branch review) завершён:83a2a4f..1555314, no Critical/Important found,104 целевых PASS0skip, native fixture reproducibility PASS. Отчёт docs/qa/2026-10-15-showdown-final-review.md. Предложен№3, ждать выбора. №3 пока блокируется typography-check null.getBoundingClientRect, Android CI пропущен; также исправить устаревшие справочные надписи П-04-PREVIEW-COPY-034. Не начинать№3 автоматически.
 
 ## Как используем этот файл
 
