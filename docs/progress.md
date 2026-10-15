@@ -1,3 +1,11 @@
+# Выбранный пункт15.10.2026
+
+Пользователь перевёл работу в режим выбора номера1–12, без автоматического перехода дальше. Выбран №1: П-04-VICTORY-CI-034, диагностика и исправление браузерного сбоя victory_retry после ошибки сохранения/ESC/Back. Исполнитель victory_retry_fix, base108e1eb; фактическая браузерная проверка и scoped review обязательны. №2whole-branch review/№3интеграцию не начинать до выбора пользователя. После№1 обновить всю таблицу и предложить№2.
+
+# Актуальный блокер15.10.2026
+
+0.4.34 source опубликован275cadbc, PR29draft. Локально967/967PASS0skip. CI38714363200: corePASS, browserFAIL — victory_retry невидима после сценария ошибки сохранения/ESC/Back; причинаUI/тест пока не определена. Android этап пропущен, новыйAPK не получен. Финальное whole-branch ревью остановлено лимитом модели. Следующий порядок: воспроизведение/исправление→scoped review→38browser+Android+визуальнаяQA→завершитьwholebranchreview→интеграция. Далее Stone/RNG и план scored-retrigger.
+
 # Showdown — 15.10.2026
 
 Bell/Acorn, Heart и Leaf/Vessel прошли независимые ревью; 944 локальных теста PASS с исполненным нативным оракулом. Source checkpointcd40efc в draft PR29 прошёл Actions38688716888:37 Chromium/offline-наборов, fresh Android, подпись/alignment PASS. APK11951311260, debug без гарантии обновления; физическое устройство не проверено. Победа прошла scoped ревью; Endless4faa624 локально967/967PASS, native fixture reproducibility PASS, независимые task/scoped ревью пройдены;38-suite браузер+Android и whole-branch review впереди.53/150 джокеров, полная игра не готова. Источник числового поведения высокого Endless записан в docs/apk-findings/endless-numeric-observations.md, реализацию/проверку он не заменяет. Детали и артефакты — STATUS.md.

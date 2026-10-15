@@ -175,3 +175,10 @@
 | П-05-GATE-053 | Некритическое · высокий | Итог 53/150 и критические snapshot/payout исправления | QA/Core/36 browser/fresh Android/signature/alignment | Завершено, PR28 и PR25–27 merged f37712f; физический Android отдельно | 0.4.33/code46 |
 | П-04-SHOWDOWN-T1 | Некритическое · высокий | Нативные выборы/Acorn callback order и finite targets | Независимый original EventManager/RNG oracle, source helper tests, spec+quality review | Выполнено в sourcecheckpoint; lifecycle далее | feat/showdown-lifecycle /7d07564 |
 | П-04-SHOWDOWN-T2 | Некритическое · высокий | Leaf/Vessel иdisable/save | Полные фазы/sale/Gold dollars/strict persistence/independent review | В работе по Task 2 плана | feat/showdown-lifecycle |
+
+
+## Проверочный срез15.10.2026 — 0.4.34-preview
+
+| ID | Категория | Наблюдение / ожидаемое поведение | Статус и проверка | Связь |
+| --- | --- | --- | --- | --- |
+| П-04-VICTORY-CI-034 | Некритическое · высокий; блокер приёмки, влияние на игру уточняется | CI38714363200: victory_retry невидима после имитации ошибки сохранения и ESC/Back; восстановление pending victory должно оставлять доступное действие | В работе по выбранному пользователем№1. Диагностический29e6ecf сохраняет modal events/geometry/failure PNG; production пока без изменений. Затем подтверждённое исправление+scoped review+браузерныйGREEN. Потеря данных не доказана | 0.4.34/code47; PR29; tests/ui/victory-endless-check.mjs:69 |

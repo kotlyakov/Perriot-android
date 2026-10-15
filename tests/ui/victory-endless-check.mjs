@@ -64,9 +64,25 @@ try{
   await enterRun(page,{startBlind:false});await page.locator('#victory_endless').waitFor();
   // Neither failed primary nor backup writes may close or acknowledge victory.
   for(const failSlot of ['backup','current']){
+   await page.evaluate(()=>{
+    const dialog=document.getElementById('dialog');
+    window.victoryRetryTrace=[];
+    window.traceVictoryRetry=(label,event)=>{
+     const style=getComputedStyle(dialog),rect=dialog.getBoundingClientRect();
+     window.victoryRetryTrace.push({label,event:event?.type,prevented:event?.defaultPrevented,open:dialog.open,view:dialog.dataset.view,title:document.getElementById('dialog-title').textContent,display:style.display,visibility:style.visibility,translate:style.translate,rect:{x:rect.x,y:rect.y,width:rect.width,height:rect.height},buttons:[...dialog.querySelectorAll('button')].map(b=>({id:b.id,disabled:b.disabled})),animations:dialog.getAnimations().map(a=>({state:a.playState,time:a.currentTime}))});
+    };
+    if(!window.victoryRetryTracing){
+     window.victoryRetryTracing=true;
+     for(const type of ['cancel','close','click','keydown','keyup'])dialog.addEventListener(type,event=>queueMicrotask(()=>window.traceVictoryRetry('event',event)));
+     new MutationObserver(()=>window.traceVictoryRetry('open mutation')).observe(dialog,{attributes:true,attributeFilter:['open']});
+    }
+    window.traceVictoryRetry('before failed save');
+   });
    await page.evaluate(slot=>{window.originalSetItem=Storage.prototype.setItem;Storage.prototype.setItem=function(key,value){if(key==='card-cascade.'+slot)throw Error('full');return window.originalSetItem.call(this,key,value);};},failSlot);
    await page.locator('#victory_endless').click();await page.locator('#victory_retry').waitFor();assert.deepEqual(await saved(page),s);await page.keyboard.press('Escape');assert.equal(await page.evaluate(()=>cardGameBack()),true);
-   await page.evaluate(()=>Storage.prototype.setItem=window.originalSetItem);await page.locator('#victory_retry').click();await page.locator('#victory_endless').waitFor();
+   await page.evaluate(()=>{Storage.prototype.setItem=window.originalSetItem;window.traceVictoryRetry('after Escape and Back');});
+   try{await page.locator('#victory_retry').click();await page.locator('#victory_endless').waitFor();}
+   catch(error){console.error('Victory retry diagnostics '+JSON.stringify({mobile,failSlot,trace:await page.evaluate(()=>{window.traceVictoryRetry('failure');return window.victoryRetryTrace;})}));await page.screenshot({path:'artifacts/victory-retry-failure-'+(mobile?'mobile':'desktop')+'-'+failSlot+'.png'});throw error;}
   }
   await page.evaluate(()=>{window.closedAfterSave=[];document.getElementById('dialog').addEventListener('close',()=>window.closedAfterSave.push(JSON.parse(localStorage.getItem('card-cascade.current')).state.winPending));});
   await page.locator('#victory_endless').click();await page.locator('#dialog').waitFor({state:'hidden'});const acknowledged=await saved(page);
