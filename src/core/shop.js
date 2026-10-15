@@ -1,5 +1,5 @@
 import {canEnterBoss,bossTarget} from './boss-effects.js';
-import {blindBase,canLeaveApkShop,chooseNextAnteBlinds} from './blind-progression.js';
+import {nativeBlindTarget,blindBase,canLeaveApkShop,chooseNextAnteBlinds} from './blind-progression.js';
 import {chooseApkOrbitalHand} from './apk-tags.js';
 import {SUPPORTED_JOKERS,supportsJoker} from '../content/jokers.js';
 import {canAfford} from './shop-pricing.js';
@@ -137,7 +137,8 @@ export function applyShopAction(state,action,{refill,nextRound}={}) {
           }
         }catch{return reject('NEXT_BLIND_UNAVAILABLE','Invalid next ante selection');}
       }
-      next.round={...next.round,ante,blindId:newAnte?'small':boss?'boss':'big',target:newAnte?blindBase(ante):boss?bossTarget(next):blindBase(ante)*3n/2n,score:0n,handsRemaining:next.deckId==='blue'?5:4,discardsRemaining:next.deckId==='red'?4:3};
+      next.round={...next.round,ante,blindId:newAnte?'small':boss?'boss':'big',target:newAnte?blindBase(ante):boss?bossTarget(next):nativeBlindTarget(ante,1.5),score:0n,handsRemaining:next.deckId==='blue'?5:4,discardsRemaining:next.deckId==='red'?4:3};
+      delete next.round.bossDisabled;
       next.hand=[];next.discardPile=[];next.apkShop.context=currentApkShopContext(next);
       return finish(next,[{type:'shop_left',nextBlindId:next.round.blindId}]);
     }

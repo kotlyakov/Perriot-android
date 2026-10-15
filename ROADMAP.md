@@ -58,6 +58,10 @@ Emperor/High Priestess реализованы: до двух карт из по�
 
 Дата: 08.10.2026. Редакция: 26. Это основной рабочий роадмап нового проекта.
 
+## Выбранная задача15.10
+
+Режим пользователя — только выбранный номер. №1 завершён: П-04-VICTORY-CI-034, локально967PASS, scoped review PASS, victory-endless desktop/mobile PASS в CI38761923466. Полная актуальная таблица1–12 — docs/progress.md. №2 (whole-branch review) завершён:83a2a4f..1555314, no Critical/Important found,104 целевых PASS0skip, native fixture reproducibility PASS. Отчёт docs/qa/2026-10-15-showdown-final-review.md. Предложен№3, ждать выбора. №3 пока блокируется typography-check null.getBoundingClientRect, Android CI пропущен; также исправить устаревшие справочные надписи П-04-PREVIEW-COPY-034. Не начинать№3 автоматически.
+
 ## Как используем этот файл
 
 - Перед каждой задачей читать этот план и спецификацию её системы.
@@ -89,6 +93,8 @@ Emperor/High Priestess реализованы: до двух карт из по�
 5. Большие числа Endless и повреждённый импорт: нет тихого переполнения или перезаписи исправного сохранения — этапы 2, 6, 7.
 
 ## Текущий статус
+
+Актуальный срез15.10: STATUS.md и docs/progress.md приоритетнее исторической таблицы ниже. Showdown Bell/Acorn/Heart/Leaf/Vessel проверены на cd40efc (37 Chromium и Android PASS); победа/Endless ещё в работе, каталог53/150. После завершения и whole-branch review этого блока подготовлен source-derived план docs/superpowers/plans/2026-10-15-scored-retrigger-jokers.md, пока без реализации.
 
 | Область | Фактическое состояние |
 | --- | --- |
@@ -508,3 +514,9 @@ Actions37812813108 SUCCESS на f90446d94d921fe7a26afb71c24168fcf15ba34e (merge 
 ## Продолжение 14.10.2026 — П-05н
 
 База043d8bbe. Каталог53/150: эффекты денег/колоды/held, сохранённая история PR25–27, Four Fingers/Shortcut и Golden/Cloud. Критические Hook/score snapshot/frozen cashout исправлены; Blue согласованная подмена и Hanged shortfall покрыты. Генератор Arcana140 native cases подготовлен, Celestial materialize RNG исправлен. Core864 PASS после независимого QA. Первый срез951858b: Actions38558257199 SUCCESS, 35browser/freshAndroid/signature/alignment; новый0.4.33/code46 требует36browser/freshAndroid CI. Full seed/event RNG (Stone), retriggers, прочие97джокеров/Judgement, Arcana lifecycle и финальные боссы/победа/Endless остаются открытыми. Полная игра и физическая приёмка не заявляются.
+
+## Проверка 0.4.33 и следующий этап — 14.10.2026
+
+PR28 слит в f37712f после Actions 38565975326/38565984439 SUCCESS: 36 браузерных сценариев, fresh Android, подпись и alignment. История PR25–27 сохранена; Blue Joker/Swashbuckler интегрированы, каталог 53/150. 864 теста ядра PASS с приватным нативным оракулом; в CI этот необязательный тест пропускается. APK debug без гарантии обновления, физическое устройство не проверено.
+
+Активная ветка feat/showdown-lifecycle, checkpoint 7d07564. Task 1: нативные callbacks и finite target helpers выполнены, проверки соответствия и качества завершены. Task 2: Leaf/Vessel в работе. План: docs/superpowers/plans/2026-10-14-showdown-lifecycle.md. Подготовка helpers не означает готовую победу/Endless. Остальные 97 джокеров, полные пулы и профиль остаются открытыми.

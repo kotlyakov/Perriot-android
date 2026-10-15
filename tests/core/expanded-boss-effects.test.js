@@ -7,11 +7,12 @@ const effects=await import('../../src/core/boss-effects.js');
 const state=(id,ante=2)=>{const s=createRun('AAAAAAA1',{runId:'expanded_boss',money:4n,referenceRng:true,referenceShop:true});s.apkBlinds.bossId=id;s.mostPlayedHand='high_card';s.round.ante=ante;s.bossState={id,playedBeforeBoss:[],playedHands:[],firstHand:null};return s;};
 const cards=(s,...ranks)=>ranks.map((rank,i)=>s.cards[`card_${['clubs','hearts','spades','diamonds'][i%4]}_${rank}`]);
 
-test('all 23 ordinary bosses enter supported antes, showdown and invalid identities remain excluded',()=>{
- assert.deepEqual(effects.SUPPORTED_BOSSES,APK_BOSSES.filter(b=>!b.showdown).map(b=>b.id));
- for(const boss of APK_BOSSES.filter(b=>!b.showdown))for(const ante of [1,2,8])assert.equal(effects.canEnterBoss(state(boss.id,ante)),boss.minAnte<=ante);
- for(const ante of [0,9,1.5])assert.equal(effects.canEnterBoss(state('bl_wall',ante)),false);
- for(const boss of APK_BOSSES.filter(b=>b.showdown))assert.equal(effects.canEnterBoss(state(boss.id)),false);
+test('ordinary bosses enter eligible non-showdown antes; all five showdown lifecycles are admitted',()=>{
+ assert.deepEqual(effects.SUPPORTED_BOSSES,APK_BOSSES.map(b=>b.id));
+ for(const boss of APK_BOSSES.filter(b=>!b.showdown))for(const ante of [1,2,8,9,16,39])assert.equal(effects.canEnterBoss(state(boss.id,ante)),boss.minAnte<=ante&&ante%8!==0);
+ for(const ante of [0,-1,1.5])assert.equal(effects.canEnterBoss(state('bl_wall',ante)),false);
+ for(const boss of APK_BOSSES.filter(b=>b.showdown))for(const ante of [2,8,16,39,40])assert.equal(effects.canEnterBoss(state(boss.id,ante)),ante%8===0);
+ const custom=state('bl_final_vessel',16);custom.winAnte=4;assert.equal(effects.canEnterBoss(custom),false);
  const s=state('bl_plant');s.cards.card_clubs_2.id='other';assert.equal(effects.canEnterBoss(s),false);
  assert.equal(effects.canEnterFirstAnteBoss(state('bl_wall',1)),false);
  assert.equal(effects.canEnterFirstAnteBoss(state('bl_hook',1)),true);
@@ -21,8 +22,8 @@ test('boss targets use ante base and individual APK multipliers',()=>{
  assert.equal(effects.bossTarget(state('bl_wall',2)),3200n);
  assert.equal(effects.bossTarget(state('bl_needle',8)),50000n);
  assert.equal(effects.bossTarget(state('bl_plant',4)),10000n);
- assert.throws(()=>effects.bossTarget(state('bl_final_vessel',8)));
- assert.throws(()=>effects.bossTarget(state('bl_wall',9)));
+ assert.equal(effects.bossTarget(state('bl_final_vessel',8)),300000n);
+ assert.equal(effects.bossTarget(state('bl_wall',9)),440000n);
 });
 test('Plant debuffs only J Q K; recognition and independent jokers remain active',()=>{
  const s=state('bl_plant');s.jokers=[{id:'ind',entityId:'j_joker'}];

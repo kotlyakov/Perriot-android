@@ -1,3 +1,39 @@
+# Выбранный пункт15.10.2026
+
+№2 завершён: независимое итоговое ревью83a2a4f..1555314, source28cdbf93,42 code/test/config blobs совпали. No Critical/Important found;104/104 целевых тестов PASS0skip, native fixtures byte-identical (JIT/interpreter equal). Отчёт docs/qa/2026-10-15-showdown-final-review.md. Runtime не менялся. Предложен№3; исправление typography/справочного текста и интеграцию не начинать до выбора.
+
+15.10: №1 завершён — П-04-VICTORY-CI-034 исправлен и проверен. Escape перехватывается до native close request; повторные Escape/Back после ошибки primary/backup записи сохраняют видимый retry и неизменное сохранение. Успешное подтверждение записано до beforetoggle/close; тест ждёт реальное queued close. Source28cdbf935dc50525b9505ec4d63424a6b39f363d соответствует локальному1555314 по изменённым blob SHA. Локально967/967PASS0skip; CI38761923466 core966PASS/1private-oracle skip, victory-endless desktop/mobile PASS. Независимые scoped review и re-review PASS. Общий CI позднее FAIL в typography-check.mjs:12/18 (null.getBoundingClientRect), Android пропущен; это отдельный блокер№3, не исправляется в№1. №2 source-review завершён отдельной проверкой выше. Следующий предложен№3, ждать выбора пользователя; PR29 остаётся draft, слияния нет. Полная игра не готова,53/150 джокеров.
+
+Проверка: https://github.com/kotlyakov/Perriot-android/actions/runs/38761923466
+
+
+## Очередь по номерам — 15.10.2026
+
+| № | Этап | Сделано | Осталось / блоки |
+|---|---|---|---|
+| 1 | Сбой повтора сохранения победы | Завершён:967 локальных PASS, независимое ревью, actual Chromium desktop/mobile PASS | Пользовательская приёмка отдельно |
+| 2 | Итоговое ревью всей ветки | Завершено: no Critical/Important found;104 целевых PASS0skip, native fixture reproducibility PASS | Платформенные/визуальные проверки остаются в№3; это не полный релиз |
+| 3 | Проверка и интеграция0.4.34 | Draft PR29, автоматический CI настроен | Новый блокер: typography-check null.getBoundingClientRect в CI38761923466; Android пропущен. Устаревшие надписи П-04-PREVIEW-COPY-034; затем полный CI/визуальная QA/слияние,№2 завершён |
+| 4 | RNG и идентичность карт | Базовые seeded/save механизмы работают | Stone raw RNG, ID создаваемых/копируемых карт, миграция старых сохранений |
+| 5 | Четыре scored-retrigger Joker | Исследование и план готовы | Dusk, Hack, Sock and Buskin, Hanging Chad; зависит от№4 |
+| 6 | Остальные механизмы эффектов | Базовые эффекты и модификаторы работают | Печати, издания игральных карт, создание/копирование, lifecycle triggers |
+| 7 | Полный каталог Joker и Judgement | 53/150 джокеров работают | 97 оставшихся, включая№5; затем Judgement на полном пуле |
+| 8 | Расходники и паки | Большинство Tarot,12Planet/Black Hole, Celestial; Arcana generator140cases подготовлен | Arcana lifecycle, остальные паки и Spectral |
+| 9 | Ваучеры и теги | 6/24 тегов работают | 18 тегов и оставшиеся эффекты ваучеров |
+| 10 | Колоды, сложности, профиль, испытания | Red/Blue, seed и продолжение | Остальные колоды/ставки, полный профиль и испытания |
+| 11 | Финальные UX, графика и звук | Базовый стиль и интерфейс реализованы | Полировка; открыто З-03: инерционная остановка карт |
+| 12 | Полная приёмка и финальный APK | Проверки выполняются на промежуточных срезах | Весь каталог/взаимодействия, совместимость сохранений, установка/обновление, физический Android |
+
+Полная игра не готова. Следующий номер выбирает пользователь; автоматическое продолжение запрещено.
+
+# Предыдущий блокер15.10.2026 — история
+
+0.4.34 source опубликован275cadbc, PR29draft. Локально967/967PASS0skip. CI38714363200: corePASS, browserFAIL — victory_retry невидима после сценария ошибки сохранения/ESC/Back; причинаUI/тест пока не определена. Android этап пропущен, новыйAPK не получен. Финальное whole-branch ревью остановлено лимитом модели. Следующий порядок: воспроизведение/исправление→scoped review→38browser+Android+визуальнаяQA→завершитьwholebranchreview→интеграция. Далее Stone/RNG и план scored-retrigger.
+
+# Showdown — 15.10.2026
+
+Bell/Acorn, Heart и Leaf/Vessel прошли независимые ревью; 944 локальных теста PASS с исполненным нативным оракулом. Source checkpointcd40efc в draft PR29 прошёл Actions38688716888:37 Chromium/offline-наборов, fresh Android, подпись/alignment PASS. APK11951311260, debug без гарантии обновления; физическое устройство не проверено. Победа прошла scoped ревью; Endless4faa624 локально967/967PASS, native fixture reproducibility PASS, независимые task/scoped ревью пройдены;38-suite браузер+Android и whole-branch review впереди.53/150 джокеров, полная игра не готова. Источник числового поведения высокого Endless записан в docs/apk-findings/endless-numeric-observations.md, реализацию/проверку он не заменяет. Детали и артефакты — STATUS.md.
+
 # П-05а — планеты и Чёрная дыра, 09.10.2026
 
 Точное повышение 12 комбинаций, атомарное использование и покупка в отдельные слоты, нативные счётчики, совместимые сохранения. Debuff расходует карту/учитывает использование без эффекта. Локальные проверки и независимое ревью выполнены; отдельная ветка feat/planet-consumables-012 зависит от boss PR #8. Android CI и итоговый результат записывать в STATUS. Остальные расходники, наборы, профиль и анимация использования остаются открыты.
@@ -206,3 +242,21 @@ The save codec records generic and Hanged-specific destruction ledgers and ties 
 ## Продолжение 14.10.2026 — П-05н
 
 База043d8bbe. Каталог53/150: эффекты денег/колоды/held, сохранённая история PR25–27, Four Fingers/Shortcut и Golden/Cloud. Критические Hook/score snapshot/frozen cashout исправлены; Blue согласованная подмена и Hanged shortfall покрыты. Генератор Arcana140 native cases подготовлен, Celestial materialize RNG исправлен. Core864 PASS после независимого QA. Первый срез951858b: Actions38558257199 SUCCESS, 35browser/freshAndroid/signature/alignment; новый0.4.33/code46 требует36browser/freshAndroid CI. Full seed/event RNG (Stone), retriggers, прочие97джокеров/Judgement, Arcana lifecycle и финальные боссы/победа/Endless остаются открытыми. Полная игра и физическая приёмка не заявляются.
+
+## Проверка 0.4.33 и следующий этап — 14.10.2026
+
+PR28 слит в f37712f после Actions 38565975326/38565984439 SUCCESS: 36 браузерных сценариев, fresh Android, подпись и alignment. История PR25–27 сохранена; Blue Joker/Swashbuckler интегрированы, каталог 53/150. 864 теста ядра PASS с приватным нативным оракулом; в CI этот необязательный тест пропускается. APK debug без гарантии обновления, физическое устройство не проверено.
+
+Активная ветка feat/showdown-lifecycle, checkpoint 7d07564. Task 1: нативные callbacks и finite target helpers выполнены, проверки соответствия и качества завершены. Task 2: Leaf/Vessel в работе. План: docs/superpowers/plans/2026-10-14-showdown-lifecycle.md. Подготовка helpers не означает готовую победу/Endless. Остальные 97 джокеров, полные пулы и профиль остаются открытыми.
+
+## 14.10.2026 — финальные боссы, source checkpoint
+
+Leaf/Vessel и общий нативный disable реализованы и прошли независимое ревью после двух циклов исправлений. Проверены старые включённые боссы, сохранения после победы, исторический добор Serpent/Blue Joker, восстановление рук Needle и фиксированная выплата. 83 целевых и910 полных тестов PASS; нативная проверка Golden/Cloud9 исполнена на восстановленном pinned LuaJIT, без SKIP. Полная Android-приёмка этого этапа пока не выполнена.
+
+Следующий блок — исправление автономного HTML-exporter: source-only CI38568496507/38568490947 упал на offline startup, собственное воспроизведение подтвердило рекурсивный обход циклических ES modules. После него продолжаются Heart, Bell/Acorn, победа и Endless; базовый каталог остаётся53/150. Ни новая финальная игра, ни APK-релиз этим checkpoint не заявляются.
+
+Автономный exporter исправлен нативной import map со стабильными встроенными data-module identities. Регрессия stack overflow воспроизведена до изменения, циклический ESM и shared dependency identity проверены; 56 целевых и911 полных тестов PASS. Независимое ревью без замечаний,50 модулей/162 зависимостей и UTF-8 проверены. Реальный Chromium offline startup/reload и Android CI ожидаются; локальный браузер отсутствует. Далее Heart.
+
+Checkpoint a9caf28 проверен CI38634841041/38634851227 SUCCESS:36 Chromium suites, настоящий portable HTML offline/reload, fresh Android, подпись/alignment. APK artifact11927439793 ZIPsha2560bd8f0b56925e5c8d7dcb04949f23470c2b2b90acdfd0048bbe186f74e88ec4c; preview debug, без гарантии обновления и без physical-device проверки. Heart в этот checkpoint не включён: локальное ревью требует исправить Glass→Heart raw RNG save validation. PR29 остаётся draft.
+
+Heart завершён в core/save: initial/PLAY выбор по native creation order, DISCARD без poll, отключённое владение отдельно от магазина/эффектов, score-time replay и frozen bonuses. Ревью исправления Glass→Heart прошло: точный выбор и полный post-poll RNG проверяются при сохранении, no-poll controls сохранены. 62 целевых/929 полных тестов PASS,0skip; mixed Glass/Lucky независимо проверены. UI-представление и Ante8→9 ещё принадлежат Task4/6. Подготовлен фактический source index97 оставшихся Joker centres, без копирования исходного кода и без заявления новых эффектов.

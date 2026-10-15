@@ -2,7 +2,7 @@ import {APK_TAGS_BY_ID} from '../content/apk-tags.js';
 import {APK_HAND_NAMES} from './apk-shop-state.js';
 import {canEnterBoss,bossTarget} from './boss-effects.js';
 import {chooseApkBoss} from './apk-blinds.js';
-import {blindBase} from './blind-progression.js';
+import {nativeBlindTarget} from './blind-progression.js';
 
 const handIds=Object.fromEntries(Object.entries(APK_HAND_NAMES).map(([id,name])=>[name,id]));
 const immediate=new Set(['tag_handy','tag_garbage','tag_skip','tag_economy','tag_orbital','tag_boss']);
@@ -63,7 +63,7 @@ export function applySkipBlind(state,action){
  next.money+=delta;
  if(delta)events.push({type:'money_changed',before:state.money,after:next.money,delta});
  const blindId=skipped==='small'?'big':'boss';
- next.round={...next.round,blindId,target:blindId==='boss'?bossTarget(next):blindBase(next.round.ante)*3n/2n,score:0n,handsRemaining:next.deckId==='blue'?5:4,discardsRemaining:next.deckId==='red'?4:3};
+ next.round={...next.round,blindId,target:blindId==='boss'?bossTarget(next):nativeBlindTarget(next.round.ante,1.5),score:0n,handsRemaining:next.deckId==='blue'?5:4,discardsRemaining:next.deckId==='red'?4:3};
  next.lastScore=null;next.revision++;
  events.unshift({type:'blind_skipped',blindId:skipped,nextBlindId:blindId,tagId});
  return {state:next,events,error:null};

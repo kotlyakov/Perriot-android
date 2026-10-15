@@ -1,3 +1,4 @@
+import {displayBlindTarget} from './field.js';
 import {describeShopItem} from '../content/shop-display.js';
 import {APK_BLINDS_BY_ID} from '../content/apk-blinds.js';
 import {getCashout} from '../core/cashout.js';
@@ -10,17 +11,17 @@ export function renderPostRound(state,busy,cashout){
  const visible=phase==='round_won'||phase==='shop';
  for(const id of hiddenIds)document.getElementById(id).hidden=visible;
  if(phase==='shop'&&state.shop){currentPhase=phase;motion?.cancel();document.getElementById('post_round')?.remove();return;}
- const quoteKey=phase==='round_won'?JSON.stringify(getCashout(state),(_key,value)=>typeof value==='bigint'?value.toString():value):null;
+ const quoteKey=phase==='round_won'?JSON.stringify({quote:getCashout(state),winPending:!!state.winPending},(_key,value)=>typeof value==='bigint'?value.toString():value):null;
  if(phase===currentPhase&&quoteKey===currentQuote)return;
  const entering=phase!==currentPhase;currentQuote=quoteKey;
  currentPhase=phase;motion?.cancel();document.getElementById('post_round')?.remove();
  if(!visible)return;
  const panel=document.createElement('section');panel.id='post_round';panel.className='panel fixed';panel.setAttribute('aria-label',phase==='shop'?'Магазин':'Награда за блайнд');
  if(phase==='round_won'){
-  const quote=getCashout(state),button=document.createElement('button');button.id='cashout';button.className='orange';button.textContent='Обналичить: $'+quote.total;button.onclick=cashout;panel.append(button);
+  const quote=getCashout(state),button=document.createElement('button');button.id='cashout';button.className='orange';button.textContent='Обналичить: $'+quote.total;button.onclick=cashout;button.disabled=!!state.winPending;panel.append(button);
   const reward=document.createElement('div');reward.className='payout-blind';
   const token=document.createElement('div');token.className='token';token.textContent=state.round.blindId==='boss'?APK_BLINDS_BY_ID[state.apkBlinds.bossId].name:state.round.blindId==='big'?'БОЛЬШОЙ\nБЛАЙНД':'МАЛЫЙ\nБЛАЙНД';
-  const target=document.createElement('div');target.className='payout-target';target.textContent='Минимум очков';const score=document.createElement('strong');score.className='scarlet';score.textContent=state.round.target;target.append(score);
+  const target=document.createElement('div');target.className='payout-target';target.textContent='Минимум очков';const score=document.createElement('strong');score.className='scarlet';score.textContent=displayBlindTarget(state.round.target);target.append(score);
   const amount=document.createElement('strong');amount.className='gold';amount.textContent='$'.repeat(Number(quote.reward));reward.append(token,target,amount);panel.append(reward);
   const rowContainer=quote.jokerBonuses?document.createElement('div'):panel;if(quote.jokerBonuses){rowContainer.className='payout-bonus-list';panel.append(rowContainer);}
   function row(className,value,label,total){const item=document.createElement('div');item.className='payout-row '+className;const n=document.createElement('strong');n.textContent=value;const text=document.createElement('span');text.textContent=label;const dollars=document.createElement('strong');dollars.className='gold';dollars.textContent='$'+total;item.append(n,text,dollars);rowContainer.append(item);return item;}

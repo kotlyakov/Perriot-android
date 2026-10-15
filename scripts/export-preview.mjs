@@ -7,11 +7,14 @@ let css=(await Promise.all(['styles','start-screen','blind-select','shop-screen'
 css=css.replaceAll('/web/fonts/Rubik.ttf','data:font/ttf;base64,'+(await readFile(new URL('web/fonts/Rubik.ttf',root))).toString('base64'));
 html=html.replace('<link rel="stylesheet" href="/web/styles.css">',()=>'<style>'+css+'</style>');
 html=html.replace('<link rel="stylesheet" href="/web/start-screen.css">','').replace('<link rel="stylesheet" href="/web/blind-select.css">','').replace('<link rel="stylesheet" href="/web/shop-screen.css">','');
-const safe=JSON.stringify(sources).replaceAll('<','\\u003c');
-const loader=`<script type="module">
-const sources=${safe},urls=new Map();
-function moduleURL(id){if(urls.has(id))return urls.get(id);const code=sources[id].replace(/(from\\s*['"])([^'"]+)(['"])/g,(all,a,rel,b)=>a+moduleURL(new URL(rel,'https://local'+id).pathname)+b);const url=URL.createObjectURL(new Blob([code],{type:'text/javascript'}));urls.set(id,url);return url;}
-import(moduleURL('/src/ui/app.js')).catch(error=>{document.getElementById('notice').textContent='Не удалось запустить предпросмотр: '+error.message;console.error(error);});
+// Stable specifiers let native ESM link cycles and share dependencies without recursion.
+const imports=Object.fromEntries(Object.entries(sources).map(([id,source])=>{
+ const code=source.replace(/(from\s*['"])([^'"]+)(['"])/g,(all,a,rel,b)=>a+'preview:'+new URL(rel,'https://local'+id).pathname+b);
+ return ['preview:'+id,'data:text/javascript;base64,'+Buffer.from(code).toString('base64')+'#'+id];
+}));
+const loader=`<script type="importmap">${JSON.stringify({imports}).replaceAll('<','\\u003c')}</script>
+<script type="module">
+import('preview:/src/ui/app.js').catch(error=>{document.getElementById('notice').textContent='Не удалось запустить предпросмотр: '+error.message;console.error(error);});
 </script>`;
 html=html.replace('<script type="module" src="/src/ui/app.js"></script>',()=>loader);
 await mkdir(new URL('artifacts/',root),{recursive:true});

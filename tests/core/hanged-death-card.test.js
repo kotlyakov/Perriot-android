@@ -57,7 +57,7 @@ test('Serpent overdraw can persist more Hanged deletions than the normal hand si
 });
 
 test('Hanged Man persists after a winning hand already shortened the round-won hand',()=>{
- let state=run('c_hanged_man');state.round.target=1n;state=dispatch(state,{type:'PLAY_HAND',expectedRevision:state.revision,cardIds:[state.hand[0]]}).state;assert.equal(state.phase,'round_won');assert.equal(state.hand.length,7);
+ let state=run('c_hanged_man');state.round.score=state.round.target-1n;state=dispatch(state,{type:'PLAY_HAND',expectedRevision:state.revision,cardIds:[state.hand[0]]}).state;assert.equal(state.phase,'round_won');assert.equal(state.hand.length,7);
  const result=use(state,state.hand.slice(0,2));assert.equal(result.error,null);assert.equal(result.state.hand.length,5);assert.deepEqual(reload(result.state),result.state);
 });
 

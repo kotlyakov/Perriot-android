@@ -158,6 +158,7 @@ export function applyConsumableAction(state,action){
   if(next.apkBlinds?.playedCardIds)next.apkBlinds.playedCardIds=next.apkBlinds.playedCardIds.filter(id=>!removed.has(id));
   if(next.bossState?.playedBeforeBoss)next.bossState.playedBeforeBoss=next.bossState.playedBeforeBoss.filter(id=>!removed.has(id));
   if(next.bossState?.hiddenCardIds)next.bossState.hiddenCardIds=next.bossState.hiddenCardIds.filter(id=>!removed.has(id));
+  if(removed.has(next.bossState?.forcedCardId))next.bossState.forcedCardId=null;
   if(next.bossState?.hiddenFaceRanks)for(const id of removed)delete next.bossState.hiddenFaceRanks[id];
  }
  if(!card.debuffed&&centre.key==='c_death'){

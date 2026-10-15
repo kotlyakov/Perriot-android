@@ -21,6 +21,16 @@ export function cardMarkup(card) {
  return `<span class="corner" style="color:${color}">${rank}<span>${suitSvg(card.suit)}</span></span>${inside}<span class="corner bottom" style="color:${color}">${rank}<span>${suitSvg(card.suit)}</span></span>`;
 }
 function text(id,value){document.getElementById(id).textContent=String(value);}
+// Display only: conversion reconstructs native binary64 for scientific formatting;
+// the exact stored target is never replaced by the shortened text.
+export function displayBlindTarget(value){
+ if(Number.isNaN(value))return 'nan';
+ if(value>=100000000000n){
+  const rounded=Number(Number(value).toPrecision(4)),exponent=Math.floor(Math.log10(rounded));
+  return (rounded/10**exponent).toFixed(3)+'e'+exponent;
+ }
+ return String(value).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+}
 export function displayInteger(value){const s=exactText(value);return !s.includes('.')&&s.length>10?s.slice(0,3)+'e'+(s.length-3):s;}
 export function showNumbers(chips,mult,animate=false){
  for(const [id,value] of [['chips_value',chips],['mult_value',mult]]){
@@ -34,7 +44,7 @@ export function dismissCardTip(){document.querySelector('.card-tip')?.remove();}
 export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=null) {
  document.getElementById('deck').dataset.deck=state.deckId;
  const boss=state.round.blindId==='boss'?APK_BLINDS_BY_ID[state.apkBlinds?.bossId]:null;
- text('target_value',state.round.target);text('blind_title',boss?boss.name:state.round.blindId==='big'?'Большой блайнд':'Малый блайнд');document.querySelector('#blind_token span').textContent=boss?boss.name:state.round.blindId==='big'?'БОЛЬШОЙ\nБЛАЙНД':'МАЛЫЙ\nБЛАЙНД';document.querySelector('#blind_target b').textContent=boss?'$'.repeat(boss.dollars):state.round.blindId==='big'?'$$$$':'$$$';document.querySelector('#round strong').textContent=state.roundNumber??1;animateNumber(document.getElementById('round_score_value'),state.round.score,{format:displayInteger});animateNumber(document.getElementById('hands_value'),state.round.handsRemaining);animateNumber(document.getElementById('discards_value'),state.round.discardsRemaining);text('money_value','$'+state.money);
+ text('target_value',displayBlindTarget(state.round.target));text('blind_title',boss?boss.name:state.round.blindId==='big'?'Большой блайнд':'Малый блайнд');document.querySelector('#blind_token span').textContent=boss?boss.name:state.round.blindId==='big'?'БОЛЬШОЙ\nБЛАЙНД':'МАЛЫЙ\nБЛАЙНД';document.querySelector('#blind_target b').textContent=boss?'$'.repeat(boss.dollars):state.round.blindId==='big'?'$$$$':'$$$';document.querySelector('#round strong').textContent=state.roundNumber??1;animateNumber(document.getElementById('round_score_value'),state.round.score,{format:displayInteger});animateNumber(document.getElementById('hands_value'),state.round.handsRemaining);animateNumber(document.getElementById('discards_value'),state.round.discardsRemaining);text('money_value','$'+state.money);
  document.querySelector('#ante strong').firstChild.textContent=String(state.phase==='shop'&&state.round.blindId==='boss'?state.apkShop.context.ante:state.round.ante);
  text('hand_count',state.hand.length+'/'+state.round.handSize);text('deck_count',state.drawPile.length+'/'+Object.keys(state.cards).length);text('joker_count',state.jokers.length+'/5');
  const hiddenCardIds=new Set(state.bossState?.hiddenCardIds??[]);
@@ -59,7 +69,7 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
  const start=478+(fanWidth-115-gap*(state.hand.length-1))/2;
  state.hand.forEach((id,i)=>{
    const card=state.cards[id],b=document.createElement('button'),middle=(state.hand.length-1)/2,tilt=state.hand.length>1?(i-middle)*1.35:0;
-   const hidden=hiddenCardIds.has(id),debuffed=!hidden&&isBossCardDebuffed(state,card);b.className='playing-card'+(hidden?' hidden-card deck-back':'')+(selected.has(id)?' selected':'')+(debuffed?' boss-debuffed':'');b.dataset.cardId=id;if(!hidden&&card.enhancement&&card.enhancement!=='base')b.dataset.enhancement=card.enhancement;
+   const hidden=hiddenCardIds.has(id),debuffed=!hidden&&state.phase==='playing'&&isBossCardDebuffed(state,card);b.className='playing-card'+(hidden?' hidden-card deck-back':'')+(selected.has(id)?' selected':'')+(debuffed?' boss-debuffed':'')+(!state.bossState?.disabled&&state.bossState?.forcedCardId===id?' bell-forced':'');b.dataset.cardId=id;if(!hidden&&card.enhancement&&card.enhancement!=='base')b.dataset.enhancement=card.enhancement;
    if(hidden)b.dataset.deck=state.deckId;
    b.setAttribute('aria-label',hidden?'Скрытая карта':`${card.enhancement==='stone'?'Каменная карта':`${rankLabel(card.rank)} ${({clubs:'трефы',diamonds:'бубны',hearts:'червы',spades:'пики'})[card.suit]}`}${debuffed?' — ослаблена':''}`);b.setAttribute('aria-pressed',selected.has(id));
    const left=start+i*gap,top=388+Math.abs(i-middle)*2.5-(selected.has(id)?28:0);

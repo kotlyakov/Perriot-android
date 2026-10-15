@@ -1,5 +1,5 @@
 export function logBigInt(value){if(value<=0n)return -Infinity;const s=value.toString(),n=Math.min(15,s.length);return Math.log10(Number(s.slice(0,n)))+s.length-n;}
-export function flameHeight(score,target){if(score<=target || target<=0n)return 0;const log=logBigInt(score)-logBigInt(target);return 10+52*log/(log+2);}
+export function flameHeight(score,target){if(!(score>target) || target<=0n)return 0;const log=logBigInt(score)-logBigInt(target);return 10+52*log/(log+2);}
 let height=0,canvas=null,running=false;
 export function showFlame(score,target){height=flameHeight(score,target);if(!canvas){canvas=document.createElement('canvas');canvas.id='score_flame';canvas.width=274;canvas.height=68;document.getElementById('calculation_panel').prepend(canvas);}canvas.hidden=!height;canvas.dataset.height=String(height);if(height && !running){running=true;requestAnimationFrame(draw);}}
 

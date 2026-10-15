@@ -171,3 +171,16 @@
 | П-05-RECOGNITION | Некритическое · высокий | Four Fingers/Shortcut | Native независимые flush/straight union, multi-gap, scoring/Arm/save | 368 native fixtures, интеграция готова, QA/CI ожидаются | 0.4.33 / PR28 |
 | П-05-CASHOUT-JOKERS | Некритическое · высокий | Golden Joker/Cloud 9 | Native end-round bonus, whole-deck rank9/Stone, debuff, UI overflow/save/write-failure | Core PASS, QA/CI ожидаются | 0.4.33 / PR28 |
 | П-RNG-STONE | Некритическое · высокий | Полная parity Stone get_id raw RNG | Учесть native RNG при повторном распознавании/кадрах без скрытой зависимости от UI, независимый oracle | Открыто; результаты распознавания точны, полная seed/event parity не заявляется | Native card/functions |
+
+| П-05-GATE-053 | Некритическое · высокий | Итог 53/150 и критические snapshot/payout исправления | QA/Core/36 browser/fresh Android/signature/alignment | Завершено, PR28 и PR25–27 merged f37712f; физический Android отдельно | 0.4.33/code46 |
+| П-04-SHOWDOWN-T1 | Некритическое · высокий | Нативные выборы/Acorn callback order и finite targets | Независимый original EventManager/RNG oracle, source helper tests, spec+quality review | Выполнено в sourcecheckpoint; lifecycle далее | feat/showdown-lifecycle /7d07564 |
+| П-04-SHOWDOWN-T2 | Некритическое · высокий | Leaf/Vessel иdisable/save | Полные фазы/sale/Gold dollars/strict persistence/independent review | В работе по Task 2 плана | feat/showdown-lifecycle |
+
+
+## Проверочный срез15.10.2026 — 0.4.34-preview
+
+| ID | Категория | Наблюдение / ожидаемое поведение | Статус и проверка | Связь |
+| --- | --- | --- | --- | --- |
+| П-04-VICTORY-CI-034 | Критическое · блокировка продолжения после ошибки записи | CI38714363200: victory_retry невидима после ошибки сохранения и ESC/Back; pending victory должна оставлять доступное действие | Исправлено/проверено по№1, пользовательская приёмка отдельно. Diagnostic CI38759940510 подтвердил native cancel close без потери данных; cbdd847 перехватывает Escape до close request. Test1555314 ждёт queued close и проверяет persistedfalse на beforetoggle/close. Scoped review/re-review PASS;967 локальных PASS; CI38761923466 victory-endless desktop/mobile PASS. Последующий typography FAIL относится к№3 | 0.4.34/code47; PR29; source28cdbf935dc50525b9505ec4d63424a6b39f363d |
+| П-04-TYPOGRAPHY-CI-034 | Некритическое · высокий приоритет, блокер CI/интеграции | CI38761923466 после успешного victory-endless падает в typography-check.mjs:12/18: null.getBoundingClientRect | Открыто, отнесено к№3. Причина (UI/fixture/ожидание) не установлена; Android шаги пропущены. Не расширять завершённый№1; диагностика/исправление после выбора соответствующего пункта | 15.10.2026;0.4.34/code47; PR29; source28cdbf93 |
+| П-04-PREVIEW-COPY-034 | Некритическое · обычный приоритет | В0.4.34 окна поражения/настроек говорят о32 джокерах,0.4.22 и недоступных финальных боссах | Запланировано в№3, найдено итоговым ревью№2. Обновить две справочные строки под фактический preview53/150 и доступные showdown, сохранив ограничения полноты. Проверка: открыть оба окна; механики не затрагивать | 15.10.2026; src/ui/app.js:101,108; source28cdbf93 |

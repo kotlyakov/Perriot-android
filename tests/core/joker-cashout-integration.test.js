@@ -34,7 +34,7 @@ const moneyTarot=entityId=>({id:'money-tarot',entityId,originalKey:entityId,set:
 
 test('an actual winning PLAY_HAND freezes earned rows and original interest before sales',()=>{
  const s=actualWin(),q=getCashout(s);
- assert.deepEqual(s.cashoutQuote,{moneyBefore:4n,earnedRevision:s.revision,bonusContext:{sources:[{id:'golden',entityId:'j_golden'},{id:'cloud',entityId:'j_cloud_9'}],nineCardIds:Object.values(s.cards).filter(c=>c.rank===9&&c.enhancement!=='stone').map(c=>c.id).sort()},quote:{reward:3n,hands:1n,interest:0n,total:12n,jokerBonuses:[
+ assert.deepEqual(s.cashoutQuote,{moneyBefore:4n,handsRemainingBefore:1,earnedRevision:s.revision,bonusContext:{sources:[{id:'golden',entityId:'j_golden'},{id:'cloud',entityId:'j_cloud_9'}],nineCardIds:Object.values(s.cards).filter(c=>c.rank===9&&c.enhancement!=='stone').map(c=>c.id).sort()},quote:{reward:3n,hands:1n,interest:0n,total:12n,jokerBonuses:[
   {sourceId:'golden',entityId:'j_golden',amount:4n},{sourceId:'cloud',entityId:'j_cloud_9',amount:4n}
  ]}});
  assert.equal(s.money,4n);
