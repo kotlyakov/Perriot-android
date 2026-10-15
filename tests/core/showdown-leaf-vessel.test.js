@@ -76,7 +76,8 @@ test('Vessel disable divides target by3 and settles Gold and frozen cashout once
  const rng=structuredClone(s.rng),events=disable(s);assert.equal(s.round.target,100000n);assert.equal(s.bossState.disabled,true);assert.equal(s.phase,'round_won');assert.equal(s.money,13n);assert.deepEqual(s.rng,rng);
  assert.equal(events.filter(e=>e.type==='round_won').length,1);assert.equal(events.filter(e=>e.type==='gold_card_paid').length,1);assert.equal(getCashout(s).reward,8n);assert.deepEqual(reload(s),s);
  const snapshot=structuredClone(s),again=[];effects.disableBoss(s,again);assert.deepEqual(s,snapshot);assert.deepEqual(again,[]);
- const sold=act(s,'SELL_OWNED_CARD',{area:'jokers',cardId:'sale'});assert.equal(sold.error,null);assert.deepEqual(getCashout(sold.state),getCashout(s));assert.deepEqual(reload(sold.state),sold.state);
+ const continued=act(s,'CONTINUE_ENDLESS');assert.equal(continued.error,null);
+ const sold=act(continued.state,'SELL_OWNED_CARD',{area:'jokers',cardId:'sale'});assert.equal(sold.error,null);assert.deepEqual(getCashout(sold.state),getCashout(s));assert.deepEqual(reload(sold.state),sold.state);
  const below=active('bl_final_vessel');below.round.score=99999n;disable(below);assert.equal(below.phase,'playing');assert.deepEqual(reload(below),below);
 });
 test('enabled Leaf win suppresses held Gold while paying native $8 reward',()=>{
@@ -142,7 +143,8 @@ test('Leaf sale after settlement preserves captured Golden/Cloud9 sources and do
  const s=active();s.jokers=[joker('golden','j_golden'),joker('cloud','j_cloud_9')];s.round.score=99995n;s.cards[s.hand[1]].enhancement='gold';sync(s);
  const won=act(s,'PLAY_HAND',{cardIds:[s.hand[0]]});assert.equal(won.error,null);assert.equal(won.state.phase,'round_won');assert.equal(won.state.money,10n);
  const quote=getCashout(won.state);assert.deepEqual(quote.jokerBonuses.map(row=>row.amount),[4n,4n]);
- const sold=act(won.state,'SELL_OWNED_CARD',{area:'jokers',cardId:'golden'});assert.equal(sold.error,null);assert.equal(sold.state.money,12n);assert.equal(sold.state.bossState.disabled,true);assert.equal(sold.events.some(e=>e.type==='gold_card_paid'||e.type==='round_won'),false);assert.deepEqual(getCashout(sold.state),quote);assert.deepEqual(reload(sold.state),sold.state);
+ const continued=act(won.state,'CONTINUE_ENDLESS');assert.equal(continued.error,null);
+ const sold=act(continued.state,'SELL_OWNED_CARD',{area:'jokers',cardId:'golden'});assert.equal(sold.error,null);assert.equal(sold.state.money,12n);assert.equal(sold.state.bossState.disabled,true);assert.equal(sold.events.some(e=>e.type==='gold_card_paid'||e.type==='round_won'),false);assert.deepEqual(getCashout(sold.state),quote);assert.deepEqual(reload(sold.state),sold.state);
 });
 test('post-win Needle/Water disable returns resources while preserving already earned cashout and Gold',()=>{
  for(const id of ['bl_needle','bl_water']){

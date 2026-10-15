@@ -29,9 +29,15 @@ test('Swashbucklers count each other and use current values without mutating the
 });
 const act=(s,type,fields={})=>dispatch(s,{type,expectedRevision:s.revision,...fields});
 function run(seed='blue-before',referenceRng=false){let s=act(createRun(seed,{runId:'blue-save',money:10n,referenceRng,referenceShop:referenceRng}),'START_BLIND').state;s.jokers=[{id:'blue',entityId:'j_blue_joker',sellCost:2n,cost:5n},{id:'swash',entityId:'j_swashbuckler',sellCost:2n,cost:4n}];return s;}
+// A real Ante7 target leaves room for multiple scoring actions without forging
+// native Small Blind identity. The synthetic fixture retains its dealt cards.
+function setReplayTarget(s){
+ s.round.target=35000n;
+ if(s.apkShop){s.round.ante=7;s.roundNumber=19;s.apkShop.context.ante=7;s.apkBlinds.ante=7;s.apkBlinds.tagContext.ante=7;}
+}
 test('Blue score replay survives redraw, later DISCARD, second PLAY, and duplicate stale action rejection',()=>{
  for(const reference of [false,true]){
-  let s=run('blue-before',reference);s.round.target=100000n;const drawCount=s.drawPile.length,action={type:'PLAY_HAND',expectedRevision:s.revision,cardIds:s.hand.slice(0,2)};
+  let s=run('blue-before',reference);setReplayTarget(s);const drawCount=s.drawPile.length,action={type:'PLAY_HAND',expectedRevision:s.revision,cardIds:s.hand.slice(0,2)};
   let r=dispatch(s,action);assert.equal(r.error,null);assert.equal(independent(r.state.lastScore)[0].after.chips-independent(r.state.lastScore)[0].before.chips,2n*BigInt(drawCount));
   assert.deepEqual(deserializeState(serializeState(r.state)),r.state);
   assert.equal(dispatch(r.state,action).error.code,'STALE_ACTION');
@@ -81,7 +87,7 @@ test('Blue rejects a coherent held-to-draw overcount in both draw directions',()
 });
 test('Blue preserves exact Hanged shortfall provenance through PLAY and later DISCARD',()=>{
  for(const reference of [false,true]){
-  let s=run('blue-hanged',reference);s.round.target=100000n;
+  let s=run('blue-hanged',reference);setReplayTarget(s);
   s.consumables=[{id:'hanged',entityId:'c_hanged_man',originalKey:'c_hanged_man',set:'Tarot',edition:'base',cost:3n,sellCost:1n}];
   const targets=s.hand.slice(0,2),used=act(s,'USE_CONSUMABLE',{cardId:'hanged',targetCardIds:targets});assert.equal(used.error,null);
   const r=act(used.state,'PLAY_HAND',{cardIds:[used.state.hand[0]]});assert.equal(r.error,null);
@@ -95,7 +101,7 @@ test('Blue preserves exact Hanged shortfall provenance through PLAY and later DI
 });
 test('Blue rejects reuse of an already consumed Hanged shortfall on the next PLAY',()=>{
  for(const reference of [false,true]){
-  let s=run('blue-consumed-hanged',reference);s.round.target=100000n;
+  let s=run('blue-consumed-hanged',reference);setReplayTarget(s);
   s.consumables=[{id:'hanged',entityId:'c_hanged_man',originalKey:'c_hanged_man',set:'Tarot',edition:'base',cost:3n,sellCost:1n}];
   const targets=s.hand.slice(0,1);s=act(s,'USE_CONSUMABLE',{cardId:'hanged',targetCardIds:targets}).state;
   s=act(s,'PLAY_HAND',{cardIds:[s.hand[0]]}).state;
@@ -107,7 +113,7 @@ test('Blue rejects reuse of an already consumed Hanged shortfall on the next PLA
  }
 });
 test('Blue cannot reuse a shortfall consumed by DISCARD instead of PLAY and migrates old active markers',()=>{
- let s=run('blue-discard-hanged',true);s.round.target=100000n;
+ let s=run('blue-discard-hanged',true);setReplayTarget(s);
  s.consumables=[{id:'hanged',entityId:'c_hanged_man',originalKey:'c_hanged_man',set:'Tarot',edition:'base',cost:3n,sellCost:1n}];
  const targets=s.hand.slice(0,1);s=act(s,'USE_CONSUMABLE',{cardId:'hanged',targetCardIds:targets}).state;
  const legacy=JSON.parse(serializeState(s));delete legacy.state.hangedShortfallEpoch;
@@ -137,7 +143,7 @@ test('Serpent Blue uses no refill on a winning/losing PLAY and caps a short refi
  }
 });
 test('Blue binds the current Hanged epoch to its exact active IDs, excluding earlier consumed IDs',()=>{
- let s=run('blue-hanged-identity',true);s.round.target=100000n;const destroyed=[];
+ let s=run('blue-hanged-identity',true);setReplayTarget(s);const destroyed=[];
  for(let i=0;i<2;i++){
   s.consumables=[{id:'hanged'+i,entityId:'c_hanged_man',originalKey:'c_hanged_man',set:'Tarot',edition:'base',cost:3n,sellCost:1n}];
   const target=s.hand[0];destroyed.push(target);s=act(s,'USE_CONSUMABLE',{cardId:'hanged'+i,targetCardIds:[target]}).state;

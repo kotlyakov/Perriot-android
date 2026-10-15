@@ -15,14 +15,21 @@ export function nativeBlindTarget(ante,multiplier=1){
   amount-=amount%(10**Math.floor(Math.log10(amount)-1));
  }
  const target=amount*multiplier;
- // Ante39 is native NaN: the durable non-finite lifecycle is a separate task.
+ // Native overflow/modulo yields NaN at Ante39; preserve its unordered comparisons.
+ if(Number.isNaN(target))return NaN;
  if(!Number.isFinite(target)||!Number.isInteger(target))throw new RangeError('Non-finite or non-integer native blind target');
  return BigInt(target);
+}
+// Reconstruct the binary64 target before native division; BigInt division truncates
+// differently at high antes. A NaN target stays unordered and unwinnable.
+export function divideNativeBlindTarget(target,divisor){
+ const divided=Number(target)/divisor;
+ return Number.isNaN(divided)?NaN:BigInt(divided);
 }
 export function blindBase(ante){return nativeBlindTarget(ante);}
 export function canLeaveApkShop(state){
  return !!state.apkShop && state.phase==='shop' && (
-  state.round.blindId==='small'&&state.round.ante>=1&&state.round.ante<=8 ||
+  state.round.blindId==='small'&&Number.isSafeInteger(state.round.ante)&&state.round.ante>=1 ||
   state.round.blindId==='big'&&canEnterBoss({...state,phase:'blind_selection'}) ||
   state.round.blindId==='boss'&&canEnterBoss(state));
 }

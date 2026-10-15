@@ -90,6 +90,8 @@ Emperor/High Priestess реализованы: до двух карт из по�
 
 ## Текущий статус
 
+Актуальный срез15.10: STATUS.md и docs/progress.md приоритетнее исторической таблицы ниже. Showdown Bell/Acorn/Heart/Leaf/Vessel проверены на cd40efc (37 Chromium и Android PASS); победа/Endless ещё в работе, каталог53/150. После завершения и whole-branch review этого блока подготовлен source-derived план docs/superpowers/plans/2026-10-15-scored-retrigger-jokers.md, пока без реализации.
+
 | Область | Фактическое состояние |
 | --- | --- |
 | Новый проект | Подсчёт/трасса, 4 простых джокера, колода, действия раунда и схема сохранения; старый код не использован |

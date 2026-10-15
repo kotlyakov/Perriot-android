@@ -1,7 +1,7 @@
 import {settleRoundSuccess,captureCashoutQuote} from './cashout.js';
 import {sortHand} from './sort.js';
 import {canonicalCards} from './apk-deck.js';
-import {nativeBlindTarget} from './blind-progression.js';
+import {nativeBlindTarget,divideNativeBlindTarget} from './blind-progression.js';
 import {nextApkRandom,nextApkSeed,createApkMathState,nextApkMathRandom,validateApkRng} from './apk-rng.js';
 import {APK_BOSSES,APK_BLINDS_BY_ID} from '../content/apk-blinds.js';
 import {APK_HAND_NAMES} from './apk-shop-state.js';
@@ -12,7 +12,7 @@ const suits={bl_club:'clubs',bl_goad:'spades',bl_window:'diamonds',bl_head:'hear
 export function canEnterBoss(state){
  const ante=state.round?.ante,boss=APK_BLINDS_BY_ID[state.apkBlinds?.bossId],winAnte=state.winAnte??8;
  const showdown=ante>=2&&ante%winAnte===0;
- if(!Number.isSafeInteger(ante)||ante<1||ante>8||!boss||!SUPPORTED_BOSSES.includes(boss.id)||(boss.showdown!==showdown||!boss.showdown&&boss.minAnte>ante)||!Array.isArray(state.apkBlinds.playedCardIds)||!state.rng?.apk)return false;
+ if(!Number.isSafeInteger(ante)||ante<1||winAnte!==8||!boss||!SUPPORTED_BOSSES.includes(boss.id)||(boss.showdown!==showdown||!boss.showdown&&boss.minAnte>ante)||!Array.isArray(state.apkBlinds.playedCardIds)||!state.rng?.apk)return false;
  if(boss.id==='bl_ox'&&state.phase!=='shop'&&!Object.hasOwn(APK_HAND_NAMES,state.mostPlayedHand))return false;
  try{
   canonicalCards(state.cards);
@@ -25,7 +25,8 @@ export function canEnterBoss(state){
 export function bossTarget(state){
  const ante=state.round?.ante,boss=APK_BLINDS_BY_ID[state.apkBlinds?.bossId];
  if(!boss||!APK_BOSSES.includes(boss))throw new RangeError('Unsupported boss target');
- return nativeBlindTarget(ante,state.bossState?.disabled&&['bl_wall','bl_final_vessel'].includes(boss.id)?2:boss.mult);
+ const target=nativeBlindTarget(ante,boss.mult);
+ return (state.bossState?.disabled||state.round.bossDisabled)&&['bl_wall','bl_final_vessel'].includes(boss.id)?divideNativeBlindTarget(target,boss.id==='bl_wall'?2:3):target;
 }
 // Creation ordinals persist through reorder/sale; display order is never an RNG key.
 function canonicalJokers(jokers){
@@ -115,8 +116,8 @@ export function disableBoss(state,events){
  boss.disabled=true;boss.disabledRevision=state.revision+1;state.lastScore=null;
  if(boss.id==='bl_water')state.round.discardsRemaining+=boss.discardsSub??(state.deckId==='red'?4:3);
  if(boss.id==='bl_needle')state.round.handsRemaining+=boss.handsSub??(state.deckId==='blue'?4:3);
- if(boss.id==='bl_wall')state.round.target/=2n;
- if(boss.id==='bl_final_vessel')state.round.target/=3n;
+ if(boss.id==='bl_wall')state.round.target=divideNativeBlindTarget(state.round.target,2);
+ if(boss.id==='bl_final_vessel')state.round.target=divideNativeBlindTarget(state.round.target,3);
  if(boss.hiddenCardIds)boss.hiddenCardIds=[];
  if(boss.hiddenJokerIds)boss.hiddenJokerIds=[];
  if(Object.hasOwn(boss,'forcedCardId')){boss.forcedCardId=null;boss.bellChoice=null;}

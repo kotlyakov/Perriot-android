@@ -19,8 +19,11 @@ export function getCashout(state) {
   if(state.bossState?.id==='bl_needle'&&state.bossState.disabled)expectedHands-=needleRestorationAfterEarning(state,snapshot.earnedRevision);
   if(earnedHands!==expectedHands)throw new TypeError('Invalid earned hand provenance');
   const expectedRows=context.sources.map(row=>({sourceId:row.id,entityId:row.entityId,amount:row.entityId==='j_golden'?4n:BigInt(context.nineCardIds.length)})).filter(row=>row.amount>0n);
-  if(state.lastScore&&snapshot.earnedRevision!==state.revision)throw new TypeError('Invalid earning revision');
-  if(state.revision===snapshot.earnedRevision){
+  // Acknowledgement adds one revision while retaining the completed score and quote.
+  const acknowledged=state.winNotified&&!state.winPending&&state.round.blindId==='boss'&&state.round.ante===(state.winAnte??8);
+  if(acknowledged&&snapshot.earnedRevision===state.revision)throw new TypeError('Missing acknowledgement revision');
+  if(state.lastScore&&snapshot.earnedRevision!==state.revision-(acknowledged?1:0))throw new TypeError('Invalid earning revision');
+  if(state.revision===snapshot.earnedRevision||acknowledged&&state.revision===snapshot.earnedRevision+1){
    const current=cashoutBonusContext(state);
    if(state.round.handsRemaining!==earnedHands||state.money!==snapshot.moneyBefore||context.sources.length!==current.sources.length||context.sources.some((row,i)=>row.id!==current.sources[i].id||row.entityId!==current.sources[i].entityId)||context.nineCardIds.length!==current.nineCardIds.length||context.nineCardIds.some((id,i)=>id!==current.nineCardIds[i]))throw new TypeError('Invalid fresh cashout context');
   }
@@ -45,11 +48,15 @@ export function captureCashoutQuote(state,earnedRevision=state.revision){return 
 
 // Both scoring and a lowered disabled-boss target settle through the same path.
 export function settleRoundSuccess(state,events){
- if(state.phase!=='playing'||state.round.score<state.round.target)return false;
+ if(state.phase!=='playing'||!(state.round.score>=state.round.target))return false;
  if(state.runStats)state.runStats.unusedDiscards+=state.round.discardsRemaining;
  const beforeGold=state.money;
  for(const cardId of state.hand){const card=state.cards[cardId];if(card.enhancement==='gold'&&!isBossCardDebuffed(state,card)){state.money+=3n;events.push({type:'gold_card_paid',cardId,amount:3n});}}
  if(state.money!==beforeGold)events.push({type:'money_changed',before:beforeGold,after:state.money,delta:state.money-beforeGold});
  state.phase='round_won';state.cashoutQuote=captureCashoutQuote(state,state.revision+1);events.push({type:'round_won',score:state.round.score});
+ if(state.round.blindId==='boss'&&state.round.ante===(state.winAnte??8)){
+  state.won=true;
+  if(!state.winNotified){state.winNotified=true;state.winPending=true;events.push({type:'victory_pending'});}
+ }
  return true;
 }

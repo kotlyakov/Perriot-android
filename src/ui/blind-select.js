@@ -1,9 +1,9 @@
 import {getSkipAvailability} from '../core/skip-blind.js';
 import {APK_BLINDS_BY_ID} from '../content/apk-blinds.js';
-import {blindBase} from '../core/blind-progression.js';
+import {nativeBlindTarget} from '../core/blind-progression.js';
 import {APK_TAGS_BY_ID} from '../content/apk-tags.js';
 import {APK_HAND_NAMES} from '../core/apk-shop-state.js';
-import {HAND_NAMES} from './field.js';
+import {HAND_NAMES,displayBlindTarget} from './field.js';
 import {appendTooltipContents} from './tooltip-text.js';
 let overlay,controller;
 const russianHands=Object.fromEntries(Object.entries(APK_HAND_NAMES).map(([id,name])=>[name,HAND_NAMES[id]]));
@@ -12,7 +12,7 @@ function node(tag,className,text){const el=document.createElement(tag);if(classN
 export function renderBlindSelect(state,busy,onSelect,onSkip){
  if(state.phase!=='blind_selection'){removeBlindSelect();return;}
  if(overlay&&(overlay.dataset.blindId!==state.round.blindId || overlay.dataset.selection!==JSON.stringify(state.apkBlinds??null)))removeBlindSelect();
- if(overlay){for(const id of ['small','big']){const button=overlay.querySelector('#skip_'+id);if(button){const skip=getSkipAvailability(state,id);button.disabled=busy||!skip.available;button.title=skip.reason??'Получить награду и перейти к следующему блайнду';button.onclick=()=>{if(!button.disabled)onSkip?.(id);};}}const select=overlay.querySelector('#select_'+state.round.blindId);select.disabled=Boolean(busy);select.onclick=()=>{if(!select.disabled)onSelect?.();};overlay.querySelector('#select_'+state.round.blindId+'_target').textContent=String(state.round.target);return overlay;}
+ if(overlay){for(const id of ['small','big']){const button=overlay.querySelector('#skip_'+id);if(button){const skip=getSkipAvailability(state,id);button.disabled=busy||!skip.available;button.title=skip.reason??'Получить награду и перейти к следующему блайнду';button.onclick=()=>{if(!button.disabled)onSkip?.(id);};}}const select=overlay.querySelector('#select_'+state.round.blindId);select.disabled=Boolean(busy);select.onclick=()=>{if(!select.disabled)onSelect?.();};overlay.querySelector('#select_'+state.round.blindId+'_target').textContent=displayBlindTarget(state.round.target);return overlay;}
  overlay=node('section','blind-selection');overlay.id='blind_selection';overlay.dataset.blindId=state.round.blindId;overlay.dataset.selection=JSON.stringify(state.apkBlinds??null);
  controller=new AbortController();
  const closeTip=()=>{overlay?.querySelector('#blind_tag_tooltip')?.remove();overlay?.querySelectorAll('.blind-tag').forEach(b=>b.setAttribute('aria-expanded','false'));};
@@ -26,7 +26,7 @@ export function renderBlindSelect(state,busy,onSelect,onSkip){
   if(current || state.apkBlinds && !passed){
    const boss=id==='boss'?APK_BLINDS_BY_ID[state.apkBlinds.bossId]:null;
    const token=node('div','blind-choice-token',boss?boss.name:id==='big'?'БОЛЬШОЙ\nБЛАЙНД':'МАЛЫЙ\nБЛАЙНД');token.setAttribute('aria-hidden','true');card.append(token);
-   const base=blindBase(state.round.ante),target=node('div','blind-choice-target');target.append(node('span','','Минимум очков'));const score=node('strong','scarlet',String(current?state.round.target:id==='big'?base*3n/2n:base*BigInt(boss.mult)));score.id='select_'+id+'_target';target.append(score);const reward=node('span');reward.append(node('span','','Награда: '),node('strong','gold',id==='big'?'$$$$':boss?'$'.repeat(boss.dollars):'$$$'));target.append(reward);card.append(target);
+   const target=node('div','blind-choice-target');target.append(node('span','','Минимум очков'));const score=node('strong','scarlet',displayBlindTarget(current?state.round.target:nativeBlindTarget(state.round.ante,id==='big'?1.5:boss.mult)));score.id='select_'+id+'_target';target.append(score);const reward=node('span');reward.append(node('span','','Награда: '),node('strong','gold',id==='big'?'$$$$':boss?'$'.repeat(boss.dollars):'$$$'));target.append(reward);card.append(target);
    if(boss)card.append(node('p','blind-boss-description',boss.description));
    else{
     const lower=node('div','blind-choice-skip');lower.append(node('span','','ИЛИ'));

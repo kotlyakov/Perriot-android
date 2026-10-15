@@ -15,7 +15,7 @@ function fixture(id,count=3,start=true){
  s.jokers=Array.from({length:count},(_,i)=>({id:'joker_'+(i+1),entityId:i?'j_joker':'j_golden',creationOrdinal:i+1,sellCost:BigInt(i+2)}));s.nextJokerCreationOrdinal=count+1;
  if(!start)return s;const r=act(s,'START_BLIND');assert.equal(r.error,null);return r.state;
 }
-async function install(page,s){await page.evaluate(raw=>localStorage.setItem('card-cascade.current',raw),serializeState(s));await page.reload();await enterRun(page,{startBlind:false});}
+async function install(page,s){if(s.winPending){const continued=act(s,'CONTINUE_ENDLESS');assert.equal(continued.error,null);s=continued.state;}await page.evaluate(raw=>localStorage.setItem('card-cascade.current',raw),serializeState(s));await page.reload();await enterRun(page,{startBlind:false});}
 async function saved(page){return deserializeState(await page.evaluate(()=>localStorage.getItem('card-cascade.current')));}
 async function settled(page){await page.waitForFunction(()=>!document.getElementById('sort_rank').disabled||document.getElementById('cashout'));}
 async function drag(page,locator,point,inspect){

@@ -178,7 +178,7 @@ test('disabled Golden and Cloud9 never enter earned bonus context and cleanup/sa
   let s=active(1);s.jokers[0].entityId=entityId;sync(s);assert.deepEqual(getJokerCashoutBonuses(s),[]);
   s.round.score=s.round.target-1n;s=act(s,'PLAY_HAND',{cardIds:[s.hand[0]]}).state;assert.equal(s.phase,'round_won');
   const quote=getCashout(s),snapshot=structuredClone(s.cashoutQuote);assert.deepEqual(snapshot.bonusContext.sources,[]);assert.equal(quote.jokerBonuses,undefined);assert.deepEqual(reload(s),s);
-  const cleaned=structuredClone(s);disableBoss(cleaned,[]);cleaned.revision++;assert.deepEqual(getCashout(cleaned),quote);assert.deepEqual(cleaned.cashoutQuote,snapshot);assert.deepEqual(reload(cleaned),cleaned);
+  const cleaned=act(s,'CONTINUE_ENDLESS').state;disableBoss(cleaned,[]);cleaned.revision++;assert.deepEqual(getCashout(cleaned),quote);assert.deepEqual(cleaned.cashoutQuote,snapshot);assert.deepEqual(reload(cleaned),cleaned);
   const sold=act(cleaned,'SELL_OWNED_CARD',{area:'jokers',cardId:cleaned.jokers[0].id});assert.equal(sold.error,null);
   assert.deepEqual(getCashout(sold.state),quote);assert.deepEqual(sold.state.cashoutQuote,snapshot);assert.deepEqual(reload(sold.state),sold.state);
   const fresh=structuredClone(s),sourceId=fresh.jokers[0].id;fresh.cashoutQuote.bonusContext.sources.push({id:sourceId,entityId});

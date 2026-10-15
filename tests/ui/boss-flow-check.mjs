@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';import {createRequire} from 'node:module
 import {createRun,dispatch} from '../../src/core/run.js';import {serializeState,deserializeState} from '../../src/persistence/save.js';import {enterRun} from './enter-run.mjs';
 const {chromium}=createRequire(import.meta.url)(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');
 const browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_PATH});
-function shop(){let s=createRun('AAAAAAA1',{runId:'boss-ui',money:4n,referenceRng:true,referenceShop:true});s.round.blindId='big';s.phase='round_won';s.round.score=450n;return dispatch(s,{type:'CASH_OUT',expectedRevision:s.revision}).state;}
+function shop(){let s=createRun('AAAAAAA1',{runId:'boss-ui',money:4n,referenceRng:true,referenceShop:true});s.round.blindId='big';s.round.target=450n;s.phase='round_won';s.round.score=450n;return dispatch(s,{type:'CASH_OUT',expectedRevision:s.revision}).state;}
 try{for(const [width,height] of [[1536,688],[915,412],[360,800]]){
  const page=await browser.newPage({viewport:{width,height},reducedMotion:'reduce'}),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(process.env.PREVIEW_URL);await enterRun(page);
  await page.evaluate(s=>localStorage.setItem('card-cascade.current',s),serializeState(shop()));await page.reload();await enterRun(page);

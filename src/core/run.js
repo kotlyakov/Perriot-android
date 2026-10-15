@@ -31,6 +31,7 @@ export function createRun(seed, {runId,deckId='red',money,referenceRng=false,ref
   }
   const state={
     schemaVersion:1,runId,seed,revision:0,phase:'blind_selection',deckId,cards,
+    winAnte:8,won:false,winNotified:false,winPending:false,
     hand:[],drawPile:Object.keys(cards),discardPile:[],jokers:[],
     handLevels:Object.fromEntries(Object.keys(HANDS).map(id=>[id,1])),
     discoveredHands:Object.keys(HANDS).slice(0,9),
@@ -94,6 +95,12 @@ export function dispatch(state, action, shopOptions={}) {
   if (!action || typeof action.type!=='string' || !Number.isSafeInteger(action.expectedRevision)) return reject('INVALID_ACTION','Malformed action');
   if (action.expectedRevision!==state.revision) return reject('STALE_ACTION','State revision has changed');
   if (!Number.isSafeInteger(state.revision) || state.revision<0 || state.revision===Number.MAX_SAFE_INTEGER) return reject('INVALID_STATE','Invalid revision');
+  if(state.winPending&&action.type!=='CONTINUE_ENDLESS')return reject('VICTORY_PENDING','Acknowledge victory first');
+  if(action.type==='CONTINUE_ENDLESS'){
+    if(state.phase!=='round_won'||!state.winPending)return reject('INVALID_PHASE','No victory acknowledgement pending');
+    const next=structuredClone(state);next.winPending=false;next.revision++;
+    return {state:next,events:[{type:'endless_continued'}],error:null};
+  }
   if(['REORDER_JOKERS','REORDER_CONSUMABLES','SELL_OWNED_CARD'].includes(action.type))return applyInventoryAction(state,action);
   if(action.type==='USE_CONSUMABLE')return applyConsumableAction(state,action);
   if(['OPEN_BOOSTER','USE_PACK_CARD','SKIP_PACK'].includes(action.type))return applyCelestialPackAction(state,action);
@@ -102,7 +109,10 @@ export function dispatch(state, action, shopOptions={}) {
   if(action.type==='CASH_OUT') {
     if(state.phase!=='round_won')return reject('INVALID_PHASE','Round has not been won');
     let quote;try{quote=getCashout(state);}catch{return reject('INVALID_STATE','Invalid cashout state');}
-    const next=structuredClone(state);if(next.bossState){next.round.handSize=next.bossState.baseHandSize;if(next.bossState.id==='bl_final_heart')for(const joker of next.jokers)joker.debuffed=false;delete next.bossState;next.apkBlinds.playedCardIds=[];next.mostPlayedHand=resolveMostPlayedHand(next.apkShop.context.playedHands);}next.money+=quote.total;delete next.cashoutQuote;next.phase='shop';next.revision++;
+    const next=structuredClone(state);
+    // Preserve the earned target's native disable provenance after active boss cleanup.
+    if(next.bossState?.disabled&&['bl_wall','bl_final_vessel'].includes(next.bossState.id))next.round.bossDisabled=true;
+    if(next.bossState){next.round.handSize=next.bossState.baseHandSize;if(next.bossState.id==='bl_final_heart')for(const joker of next.jokers)joker.debuffed=false;delete next.bossState;next.apkBlinds.playedCardIds=[];next.mostPlayedHand=resolveMostPlayedHand(next.apkShop.context.playedHands);}next.money+=quote.total;delete next.cashoutQuote;next.phase='shop';next.revision++;
     next.drawPile=Object.keys(next.cards);next.hand=[];next.discardPile=[];next.lastScore=null;if(state.hangedShortfallCardIds)next.hangedShortfallEpoch={...(state.hangedShortfallEpoch??{cardIds:[...state.hangedShortfallCardIds],revision:state.revision,ante:state.round.ante,blindId:state.round.blindId,handsRemaining:state.round.handsRemaining}),consumed:true,consumedBy:action.type};delete next.hangedShortfallCardIds;
     if(next.apkShop){
       try{
@@ -244,7 +254,10 @@ export function dispatch(state, action, shopOptions={}) {
     if (!next.discoveredHands.includes(score.handId)) next.discoveredHands.push(score.handId);
     if(next.apkShop){const name=APK_HAND_NAMES[score.handId];next.apkShop.context.playedHands[name]=(next.apkShop.context.playedHands[name]??0)+1;}
     events.push({type:'hand_played',cardIds:[...playedIds]},...structuredClone(score.trace));
-    if(!settleRoundSuccess(next,events)&&next.round.handsRemaining===0){next.phase='game_over';events.push({type:'round_lost',score:next.round.score});}
+    if(!settleRoundSuccess(next,events)&&next.round.handsRemaining===0){next.phase='game_over';
+      // APK state_events.lua:112-124 sets won even on a losing win-Ante Boss.
+      if(next.round.blindId==='boss'&&next.round.ante===(next.winAnte??8))next.won=true;
+      events.push({type:'round_lost',score:next.round.score});}
     if(next.phase!=='playing'&&next.bossState?.id==='bl_serpent'&&next.bossState.disabled)next.bossState.serpentTerminalUnfilledCardIds=[...playedIds,...(state.hangedShortfallCardIds??[])];
   } else {
     next.round.discardsRemaining--;events.push({type:'cards_discarded',cardIds:[...playedIds]});

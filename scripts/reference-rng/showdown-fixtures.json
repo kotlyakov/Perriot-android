@@ -3514,6 +3514,24 @@
       "name": "Violet Vessel"
     }
   ],
+  "format": [
+    {
+      "display": "99,999,999,999",
+      "value": "99999999999"
+    },
+    {
+      "display": "1.000e11",
+      "value": "100000000000"
+    },
+    {
+      "display": "1.000e11",
+      "value": "100049999999"
+    },
+    {
+      "display": "1.000e12",
+      "value": "999950000000"
+    }
+  ],
   "heart": [
     {
       "count": 0,
@@ -5388,6 +5406,424 @@
     ],
     "seed": "PIERROT1"
   },
+  "numeric": [
+    {
+      "ante": 8,
+      "display": "50,000",
+      "largeGte": true,
+      "multiplier": 1,
+      "packed": "return {[\"chips\"]=50000,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "number",
+      "unpackedValue": "50000",
+      "value": "50000",
+      "zeroGte": false
+    },
+    {
+      "ante": 8,
+      "display": "75,000",
+      "largeGte": true,
+      "multiplier": 1.5,
+      "packed": "return {[\"chips\"]=75000,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "number",
+      "unpackedValue": "75000",
+      "value": "75000",
+      "zeroGte": false
+    },
+    {
+      "ante": 8,
+      "display": "100,000",
+      "largeGte": true,
+      "multiplier": 2,
+      "packed": "return {[\"chips\"]=100000,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "number",
+      "unpackedValue": "100000",
+      "value": "100000",
+      "zeroGte": false
+    },
+    {
+      "ante": 8,
+      "display": "300,000",
+      "largeGte": true,
+      "multiplier": 6,
+      "packed": "return {[\"chips\"]=300000,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "number",
+      "unpackedValue": "300000",
+      "value": "300000",
+      "zeroGte": false
+    },
+    {
+      "ante": 9,
+      "display": "110,000",
+      "largeGte": true,
+      "multiplier": 1,
+      "packed": "return {[\"chips\"]=110000,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "number",
+      "unpackedValue": "110000",
+      "value": "110000",
+      "zeroGte": false
+    },
+    {
+      "ante": 9,
+      "display": "165,000",
+      "largeGte": true,
+      "multiplier": 1.5,
+      "packed": "return {[\"chips\"]=165000,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "number",
+      "unpackedValue": "165000",
+      "value": "165000",
+      "zeroGte": false
+    },
+    {
+      "ante": 9,
+      "display": "220,000",
+      "largeGte": true,
+      "multiplier": 2,
+      "packed": "return {[\"chips\"]=220000,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "number",
+      "unpackedValue": "220000",
+      "value": "220000",
+      "zeroGte": false
+    },
+    {
+      "ante": 9,
+      "display": "660,000",
+      "largeGte": true,
+      "multiplier": 6,
+      "packed": "return {[\"chips\"]=660000,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "number",
+      "unpackedValue": "660000",
+      "value": "660000",
+      "zeroGte": false
+    },
+    {
+      "ante": 16,
+      "display": "8.600e20",
+      "largeGte": true,
+      "multiplier": 1,
+      "packed": "return {[\"chips\"]=8.6e+20,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "number",
+      "unpackedValue": "8.6e+20",
+      "value": "8.6e+20",
+      "zeroGte": false
+    },
+    {
+      "ante": 16,
+      "display": "1.290e21",
+      "largeGte": true,
+      "multiplier": 1.5,
+      "packed": "return {[\"chips\"]=1.29e+21,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "number",
+      "unpackedValue": "1.29e+21",
+      "value": "1.29e+21",
+      "zeroGte": false
+    },
+    {
+      "ante": 16,
+      "display": "1.720e21",
+      "largeGte": true,
+      "multiplier": 2,
+      "packed": "return {[\"chips\"]=1.72e+21,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "number",
+      "unpackedValue": "1.72e+21",
+      "value": "1.72e+21",
+      "zeroGte": false
+    },
+    {
+      "ante": 16,
+      "display": "5.160e21",
+      "largeGte": true,
+      "multiplier": 6,
+      "packed": "return {[\"chips\"]=5.16e+21,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "number",
+      "unpackedValue": "5.16e+21",
+      "value": "5.16e+21",
+      "zeroGte": false
+    },
+    {
+      "ante": 32,
+      "display": "2.700e179",
+      "largeGte": true,
+      "multiplier": 1,
+      "packed": "return {[\"chips\"]=2.7e+179,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "number",
+      "unpackedValue": "2.6999999999999998e+179",
+      "value": "2.7000000000000004e+179",
+      "zeroGte": false
+    },
+    {
+      "ante": 32,
+      "display": "4.050e179",
+      "largeGte": true,
+      "multiplier": 1.5,
+      "packed": "return {[\"chips\"]=4.05e+179,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "number",
+      "unpackedValue": "4.05e+179",
+      "value": "4.0500000000000006e+179",
+      "zeroGte": false
+    },
+    {
+      "ante": 32,
+      "display": "5.400e179",
+      "largeGte": true,
+      "multiplier": 2,
+      "packed": "return {[\"chips\"]=5.4e+179,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "number",
+      "unpackedValue": "5.3999999999999996e+179",
+      "value": "5.4000000000000008e+179",
+      "zeroGte": false
+    },
+    {
+      "ante": 32,
+      "display": "1.620e180",
+      "largeGte": true,
+      "multiplier": 6,
+      "packed": "return {[\"chips\"]=1.62e+180,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "number",
+      "unpackedValue": "1.62e+180",
+      "value": "1.6200000000000002e+180",
+      "zeroGte": false
+    },
+    {
+      "ante": 38,
+      "display": "4.500e288",
+      "largeGte": true,
+      "multiplier": 1,
+      "packed": "return {[\"chips\"]=4.5e+288,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "number",
+      "unpackedValue": "4.5000000000000002e+288",
+      "value": "4.5000000000000002e+288",
+      "zeroGte": false
+    },
+    {
+      "ante": 38,
+      "display": "6.750e288",
+      "largeGte": true,
+      "multiplier": 1.5,
+      "packed": "return {[\"chips\"]=6.75e+288,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "number",
+      "unpackedValue": "6.75e+288",
+      "value": "6.75e+288",
+      "zeroGte": false
+    },
+    {
+      "ante": 38,
+      "display": "9.000e288",
+      "largeGte": true,
+      "multiplier": 2,
+      "packed": "return {[\"chips\"]=9e+288,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "number",
+      "unpackedValue": "9.0000000000000003e+288",
+      "value": "9.0000000000000003e+288",
+      "zeroGte": false
+    },
+    {
+      "ante": 38,
+      "display": "2.700e289",
+      "largeGte": true,
+      "multiplier": 6,
+      "packed": "return {[\"chips\"]=2.7e+289,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "number",
+      "unpackedValue": "2.7e+289",
+      "value": "2.7e+289",
+      "zeroGte": false
+    },
+    {
+      "ante": 39,
+      "display": "nan",
+      "largeGte": false,
+      "multiplier": 1,
+      "packed": "return {[\"chips\"]=nan,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "nil",
+      "unpackedValue": "nil",
+      "value": "NaN",
+      "zeroGte": false
+    },
+    {
+      "ante": 39,
+      "display": "nan",
+      "largeGte": false,
+      "multiplier": 1.5,
+      "packed": "return {[\"chips\"]=nan,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "nil",
+      "unpackedValue": "nil",
+      "value": "NaN",
+      "zeroGte": false
+    },
+    {
+      "ante": 39,
+      "display": "nan",
+      "largeGte": false,
+      "multiplier": 2,
+      "packed": "return {[\"chips\"]=nan,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "nil",
+      "unpackedValue": "nil",
+      "value": "NaN",
+      "zeroGte": false
+    },
+    {
+      "ante": 39,
+      "display": "nan",
+      "largeGte": false,
+      "multiplier": 6,
+      "packed": "return {[\"chips\"]=nan,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "nil",
+      "unpackedValue": "nil",
+      "value": "NaN",
+      "zeroGte": false
+    },
+    {
+      "ante": 40,
+      "display": "nan",
+      "largeGte": false,
+      "multiplier": 1,
+      "packed": "return {[\"chips\"]=nan,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "nil",
+      "unpackedValue": "nil",
+      "value": "NaN",
+      "zeroGte": false
+    },
+    {
+      "ante": 40,
+      "display": "nan",
+      "largeGte": false,
+      "multiplier": 1.5,
+      "packed": "return {[\"chips\"]=nan,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "nil",
+      "unpackedValue": "nil",
+      "value": "NaN",
+      "zeroGte": false
+    },
+    {
+      "ante": 40,
+      "display": "nan",
+      "largeGte": false,
+      "multiplier": 2,
+      "packed": "return {[\"chips\"]=nan,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "nil",
+      "unpackedValue": "nil",
+      "value": "NaN",
+      "zeroGte": false
+    },
+    {
+      "ante": 40,
+      "display": "nan",
+      "largeGte": false,
+      "multiplier": 6,
+      "packed": "return {[\"chips\"]=nan,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "nil",
+      "unpackedValue": "nil",
+      "value": "NaN",
+      "zeroGte": false
+    },
+    {
+      "ante": 1000,
+      "display": "nan",
+      "largeGte": false,
+      "multiplier": 1,
+      "packed": "return {[\"chips\"]=nan,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "nil",
+      "unpackedValue": "nil",
+      "value": "NaN",
+      "zeroGte": false
+    },
+    {
+      "ante": 1000,
+      "display": "nan",
+      "largeGte": false,
+      "multiplier": 1.5,
+      "packed": "return {[\"chips\"]=nan,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "nil",
+      "unpackedValue": "nil",
+      "value": "NaN",
+      "zeroGte": false
+    },
+    {
+      "ante": 1000,
+      "display": "nan",
+      "largeGte": false,
+      "multiplier": 2,
+      "packed": "return {[\"chips\"]=nan,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "nil",
+      "unpackedValue": "nil",
+      "value": "NaN",
+      "zeroGte": false
+    },
+    {
+      "ante": 1000,
+      "display": "nan",
+      "largeGte": false,
+      "multiplier": 6,
+      "packed": "return {[\"chips\"]=nan,}",
+      "subtractGte": false,
+      "unpackOk": true,
+      "unpackedType": "nil",
+      "unpackedValue": "nil",
+      "value": "NaN",
+      "zeroGte": false
+    }
+  ],
   "targets": [
     {
       "ante": 1,
@@ -5624,6 +6060,288 @@
       "six": "NaN"
     }
   ],
+  "vesselDivision": [
+    {
+      "ante": 1,
+      "before": "1800",
+      "disabled": "600",
+      "display": "600",
+      "freshDouble": "600"
+    },
+    {
+      "ante": 2,
+      "before": "4800",
+      "disabled": "1600",
+      "display": "1,600",
+      "freshDouble": "1600"
+    },
+    {
+      "ante": 3,
+      "before": "12000",
+      "disabled": "4000",
+      "display": "4,000",
+      "freshDouble": "4000"
+    },
+    {
+      "ante": 4,
+      "before": "30000",
+      "disabled": "10000",
+      "display": "10,000",
+      "freshDouble": "10000"
+    },
+    {
+      "ante": 5,
+      "before": "66000",
+      "disabled": "22000",
+      "display": "22,000",
+      "freshDouble": "22000"
+    },
+    {
+      "ante": 6,
+      "before": "120000",
+      "disabled": "40000",
+      "display": "40,000",
+      "freshDouble": "40000"
+    },
+    {
+      "ante": 7,
+      "before": "210000",
+      "disabled": "70000",
+      "display": "70,000",
+      "freshDouble": "70000"
+    },
+    {
+      "ante": 8,
+      "before": "300000",
+      "disabled": "100000",
+      "display": "100,000",
+      "freshDouble": "100000"
+    },
+    {
+      "ante": 9,
+      "before": "660000",
+      "disabled": "220000",
+      "display": "220,000",
+      "freshDouble": "220000"
+    },
+    {
+      "ante": 10,
+      "before": "3360000",
+      "disabled": "1120000",
+      "display": "1,120,000",
+      "freshDouble": "1120000"
+    },
+    {
+      "ante": 11,
+      "before": "43200000",
+      "disabled": "14400000",
+      "display": "14,400,000",
+      "freshDouble": "14400000"
+    },
+    {
+      "ante": 12,
+      "before": "1800000000",
+      "disabled": "600000000",
+      "display": "600,000,000",
+      "freshDouble": "600000000"
+    },
+    {
+      "ante": 13,
+      "before": "282000000000",
+      "disabled": "94000000000",
+      "display": "94,000,000,000",
+      "freshDouble": "94000000000"
+    },
+    {
+      "ante": 14,
+      "before": "174000000000000",
+      "disabled": "58000000000000",
+      "display": "5.800e13",
+      "freshDouble": "58000000000000"
+    },
+    {
+      "ante": 15,
+      "before": "4.62e+17",
+      "disabled": "1.54e+17",
+      "display": "1.540e17",
+      "freshDouble": "1.54e+17"
+    },
+    {
+      "ante": 16,
+      "before": "5.16e+21",
+      "disabled": "1.72e+21",
+      "display": "1.720e21",
+      "freshDouble": "1.72e+21"
+    },
+    {
+      "ante": 17,
+      "before": "2.5199999999999999e+26",
+      "disabled": "8.3999999999999996e+25",
+      "display": "8.400e25",
+      "freshDouble": "8.3999999999999996e+25"
+    },
+    {
+      "ante": 18,
+      "before": "5.519999999999999e+31",
+      "disabled": "1.8399999999999997e+31",
+      "display": "1.840e31",
+      "freshDouble": "1.8399999999999997e+31"
+    },
+    {
+      "ante": 19,
+      "before": "5.5199999999999997e+37",
+      "disabled": "1.84e+37",
+      "display": "1.840e37",
+      "freshDouble": "1.84e+37"
+    },
+    {
+      "ante": 20,
+      "before": "2.5800000000000002e+44",
+      "disabled": "8.600000000000001e+43",
+      "display": "8.600e43",
+      "freshDouble": "8.6e+43"
+    },
+    {
+      "ante": 21,
+      "before": "5.8199999999999993e+51",
+      "disabled": "1.9399999999999998e+51",
+      "display": "1.940e51",
+      "freshDouble": "1.9399999999999998e+51"
+    },
+    {
+      "ante": 22,
+      "before": "6.0000000000000001e+59",
+      "disabled": "1.9999999999999999e+59",
+      "display": "2.000e59",
+      "freshDouble": "1.9999999999999999e+59"
+    },
+    {
+      "ante": 23,
+      "before": "3.4799999999999996e+68",
+      "disabled": "1.1599999999999999e+68",
+      "display": "1.160e68",
+      "freshDouble": "1.1599999999999999e+68"
+    },
+    {
+      "ante": 24,
+      "before": "9.5999999999999994e+77",
+      "disabled": "3.1999999999999996e+77",
+      "display": "3.200e77",
+      "freshDouble": "3.2000000000000002e+77"
+    },
+    {
+      "ante": 25,
+      "before": "1.4400000000000002e+88",
+      "disabled": "4.8000000000000005e+87",
+      "display": "4.800e87",
+      "freshDouble": "4.8000000000000005e+87"
+    },
+    {
+      "ante": 26,
+      "before": "1.1400000000000002e+99",
+      "disabled": "3.8000000000000005e+98",
+      "display": "3.800e98",
+      "freshDouble": "3.8000000000000005e+98"
+    },
+    {
+      "ante": 27,
+      "before": "5.0400000000000004e+110",
+      "disabled": "1.6800000000000001e+110",
+      "display": "1.680e110",
+      "freshDouble": "1.6800000000000001e+110"
+    },
+    {
+      "ante": 28,
+      "before": "1.2000000000000001e+123",
+      "disabled": "4.0000000000000001e+122",
+      "display": "4.000e122",
+      "freshDouble": "4.0000000000000001e+122"
+    },
+    {
+      "ante": 29,
+      "before": "1.6199999999999998e+136",
+      "disabled": "5.3999999999999997e+135",
+      "display": "5.400e135",
+      "freshDouble": "5.3999999999999997e+135"
+    },
+    {
+      "ante": 30,
+      "before": "1.2600000000000001e+150",
+      "disabled": "4.2000000000000003e+149",
+      "display": "4.200e149",
+      "freshDouble": "4.2000000000000003e+149"
+    },
+    {
+      "ante": 31,
+      "before": "5.9399999999999994e+164",
+      "disabled": "1.9799999999999997e+164",
+      "display": "1.980e164",
+      "freshDouble": "1.98e+164"
+    },
+    {
+      "ante": 32,
+      "before": "1.6200000000000002e+180",
+      "disabled": "5.4000000000000008e+179",
+      "display": "5.400e179",
+      "freshDouble": "5.4000000000000008e+179"
+    },
+    {
+      "ante": 33,
+      "before": "2.64e+196",
+      "disabled": "8.7999999999999999e+195",
+      "display": "8.800e195",
+      "freshDouble": "8.7999999999999999e+195"
+    },
+    {
+      "ante": 34,
+      "before": "2.6400000000000001e+213",
+      "disabled": "8.7999999999999998e+212",
+      "display": "8.800e212",
+      "freshDouble": "8.7999999999999998e+212"
+    },
+    {
+      "ante": 35,
+      "before": "1.6800000000000003e+231",
+      "disabled": "5.6000000000000012e+230",
+      "display": "5.600e230",
+      "freshDouble": "5.6000000000000004e+230"
+    },
+    {
+      "ante": 36,
+      "before": "6.6000000000000011e+249",
+      "disabled": "2.2000000000000002e+249",
+      "display": "2.200e249",
+      "freshDouble": "2.2000000000000002e+249"
+    },
+    {
+      "ante": 37,
+      "before": "1.6199999999999997e+269",
+      "disabled": "5.3999999999999988e+268",
+      "display": "5.400e268",
+      "freshDouble": "5.3999999999999995e+268"
+    },
+    {
+      "ante": 38,
+      "before": "2.7e+289",
+      "disabled": "9.0000000000000003e+288",
+      "display": "9.000e288",
+      "freshDouble": "9.0000000000000003e+288"
+    },
+    {
+      "ante": 39,
+      "before": "NaN",
+      "disabled": "NaN",
+      "display": "nan",
+      "freshDouble": "NaN"
+    },
+    {
+      "ante": 40,
+      "before": "NaN",
+      "disabled": "NaN",
+      "display": "nan",
+      "freshDouble": "NaN"
+    }
+  ],
   "source": {
     "runtimeCommit": "43d0a19158ceabaa51b0462c1ebc97612b420a2e",
     "jitInterpreterEqual": true,
@@ -5633,8 +6351,9 @@
       "functions/state_events.lua": "8ea653623e2c9b6aaa606750e1b0e90eeb215ee18d36676e5a3627f14ce9e4ac",
       "cardarea.lua": "35ba69d271f7017ca9c47cf4432f0ac5a0da379b256472d1f4edde92c9450f0f",
       "engine/event.lua": "98d4e954397b9ddc81c6ec8eadae257960d1cc0ba10e9993f4b241c5dd15159e",
-      "functions/common_events.lua": "6db2e23935413ff53c558a3b4674deff668603f695fd02b8de663d75bee0a4cd"
+      "functions/common_events.lua": "6db2e23935413ff53c558a3b4674deff668603f695fd02b8de663d75bee0a4cd",
+      "engine/string_packer.lua": "f4ccbc5ec0cf68742d245882eeb5091b9d4308e921c4f2be847340dbb2d53469"
     },
-    "scope": "Extracted native showdown hooks, Acorn and new_round setup callbacks, RNG and default get_blind_amount; original Event/EventManager/delay with own clock/Object/CardArea/debuff/creation-ID adapters. Stochastic setting_blind probe is adapter-owned. Not Android/full event-manager parity."
+    "scope": "Extracted native showdown hooks, Acorn and new_round setup callbacks, RNG, default get_blind_amount, number_format, STR_PACK/STR_UNPACK and native Vessel disable division; original Event/EventManager/delay with own clock/Object/CardArea/debuff/creation-ID adapters. Stochastic setting_blind probe is adapter-owned. Not Android/full event-manager parity."
   }
 }

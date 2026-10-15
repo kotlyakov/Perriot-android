@@ -23,7 +23,8 @@ extracted = '\n'.join([
     region(misc, 'function pseudohash(str)', '\nfunction tprint('),
     region(misc, 'function pseudoshuffle(list, seed)', '\nfunction generate_starting_seed()'),
     region(misc, 'function pseudorandom_element(_t, seed)', '\nfunction random_string('),
-    region(misc, 'function get_blind_amount(ante)', '\nfunction number_format('),
+    region(misc, 'function get_blind_amount(ante)', '\nfunction score_number_scale('),
+    region(source('engine/string_packer.lua'), 'function STR_PACK(', '\nfunction load_local_file('),
     region(blind, 'function Blind:press_play()', '\nfunction Blind:modify_hand('),
     region(blind, 'function Blind:drawn_to_hand()', '\nfunction Blind:stay_flipped('),
     region(blind, 'function Blind:disable()', '\nfunction Blind:wiggle('),
@@ -52,7 +53,6 @@ end
 local function ids(cards)local out=setmetatable({},{array=true});for _,c in ipairs(cards)do out[#out+1]=c.id end;return out end
 local trace
 function play_sound()end
-function number_format(n)return tostring(n)end
 function CardArea:set_ranks()end
 function CardArea:hard_set_T()end
 function CardArea:unhighlight_all()self.highlighted={}end
@@ -147,10 +147,26 @@ for _,name in ipairs({'Amber Acorn','Cerulean Bell','Crimson Heart','Verdant Lea
  G.hand.cards={G.playing_cards[1]};G.hand.cards[1].ability.forced_selection=true
  b:disable();drain();results.disable[#results.disable+1]={name=name,disabled=b.disabled,chips=b.chips,after=snapshot()}
 end
+local function numeric(x)if x~=x then return 'NaN' elseif x==math.huge then return 'Infinity'end;return string.format('%.17g',x)end
+results.numeric={}
+for _,ante in ipairs({8,9,16,32,38,39,40,1000})do
+ for _,mult in ipairs({1,1.5,2,6})do
+  local n=get_blind_amount(ante)*mult
+  local packed=STR_PACK({chips=n});local ok,unpacked=pcall(STR_UNPACK,packed)
+  results.numeric[#results.numeric+1]={ante=ante,multiplier=mult,value=numeric(n),display=number_format(n),zeroGte=0>=n,largeGte=1e300>=n,subtractGte=0-n>=0,packed=packed,unpackOk=ok,unpackedType=type(unpacked.chips),unpackedValue=unpacked.chips and numeric(unpacked.chips) or 'nil'}
+ end
+end
+results.format={}
+for _,n in ipairs({99999999999,100000000000,100049999999,999950000000})do results.format[#results.format+1]={value=numeric(n),display=number_format(n)}end
+results.vesselDivision={}
+for ante=1,40 do
+ reset('PIERROT1',0,false);local b=G.GAME.blind;b.name='Violet Vessel';b.chips=get_blind_amount(ante)*6;b.debuff={};b.boss=true
+ local before=b.chips;b:disable();drain()
+ results.vesselDivision[#results.vesselDivision+1]={ante=ante,before=numeric(before),disabled=numeric(b.chips),freshDouble=numeric(get_blind_amount(ante)*2),display=number_format(b.chips)}
+end
 results.targets={}
 for ante=1,39 do
  G.GAME.modifiers={};local n=get_blind_amount(ante)
- local function numeric(x)if x~=x then return 'NaN' elseif x==math.huge then return 'Infinity'end;return string.format('%.17g',x)end
  results.targets[#results.targets+1]={ante=ante,base=numeric(n),big=numeric(n*1.5),six=numeric(n*6)}
 end
 print(json(results))
@@ -171,7 +187,7 @@ CardArea={}
         raise SystemExit('JIT/interpreter disagreement')
 data = outputs[0]
 data['source'] = {'runtimeCommit': '43d0a19158ceabaa51b0462c1ebc97612b420a2e', 'jitInterpreterEqual': True,
-    'sha256': {name: hashlib.sha256((assets / name).read_bytes()).hexdigest() for name in ['blind.lua', 'functions/misc_functions.lua', 'functions/state_events.lua', 'cardarea.lua', 'engine/event.lua', 'functions/common_events.lua']},
-    'scope': 'Extracted native showdown hooks, Acorn and new_round setup callbacks, RNG and default get_blind_amount; original Event/EventManager/delay with own clock/Object/CardArea/debuff/creation-ID adapters. Stochastic setting_blind probe is adapter-owned. Not Android/full event-manager parity.'}
+    'sha256': {name: hashlib.sha256((assets / name).read_bytes()).hexdigest() for name in ['blind.lua', 'functions/misc_functions.lua', 'functions/state_events.lua', 'cardarea.lua', 'engine/event.lua', 'functions/common_events.lua', 'engine/string_packer.lua']},
+    'scope': 'Extracted native showdown hooks, Acorn and new_round setup callbacks, RNG, default get_blind_amount, number_format, STR_PACK/STR_UNPACK and native Vessel disable division; original Event/EventManager/delay with own clock/Object/CardArea/debuff/creation-ID adapters. Stochastic setting_blind probe is adapter-owned. Not Android/full event-manager parity.'}
 pathlib.Path(a.output).write_text(json.dumps(data, indent=2) + '\n')
 print('PASS native showdown hooks and Antes1–39; JIT/interpreter equal')

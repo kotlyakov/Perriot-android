@@ -138,6 +138,7 @@ export function applyShopAction(state,action,{refill,nextRound}={}) {
         }catch{return reject('NEXT_BLIND_UNAVAILABLE','Invalid next ante selection');}
       }
       next.round={...next.round,ante,blindId:newAnte?'small':boss?'boss':'big',target:newAnte?blindBase(ante):boss?bossTarget(next):nativeBlindTarget(ante,1.5),score:0n,handsRemaining:next.deckId==='blue'?5:4,discardsRemaining:next.deckId==='red'?4:3};
+      delete next.round.bossDisabled;
       next.hand=[];next.discardPile=[];next.apkShop.context=currentApkShopContext(next);
       return finish(next,[{type:'shop_left',nextBlindId:next.round.blindId}]);
     }

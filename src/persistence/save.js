@@ -1,3 +1,4 @@
+import {nativeBlindTarget} from '../core/blind-progression.js';
 import {getCashout} from '../core/cashout.js';
 import {supportsConsumable} from '../core/inventory.js';
 import {validConsumableUsage} from '../core/consumables.js';
@@ -418,7 +419,12 @@ function decode(payload) {
   const state=payload.state;
   const sortMode=state.sortMode;
   if(Object.hasOwn(state,'sortMode'))requireValue(['rank','suit'].includes(sortMode));
-  optionalObject(state,['schemaVersion','runId','seed','revision','phase','deckId','cards','hand','drawPile','discardPile','jokers','handLevels','discoveredHands','rng','money','round','lastScore'],['shop','bankruptAt','jokerSlots','apkShop','sortMode','roundNumber','apkBlinds','bossState','nextAnteBlinds','runStats','consumables','consumableSlots','mostPlayedHand','consumableUsage','consumableUsageTotal','lastTarotPlanet','packState','destroyedCardIds','hangedDestroyedCardIds','hangedShortfallCardIds','hangedShortfallEpoch','nextJokerCreationOrdinal','cashoutQuote']);
+  optionalObject(state,['schemaVersion','runId','seed','revision','phase','deckId','cards','hand','drawPile','discardPile','jokers','handLevels','discoveredHands','rng','money','round','lastScore'],['shop','bankruptAt','jokerSlots','apkShop','sortMode','roundNumber','apkBlinds','bossState','nextAnteBlinds','runStats','consumables','consumableSlots','mostPlayedHand','consumableUsage','consumableUsageTotal','lastTarotPlanet','packState','destroyedCardIds','hangedDestroyedCardIds','hangedShortfallCardIds','hangedShortfallEpoch','nextJokerCreationOrdinal','cashoutQuote','winAnte','won','winNotified','winPending']);
+  // Only the default win Ante is supported by the current blind-selection contract.
+  if(Object.hasOwn(state,'winAnte'))requireValue(state.winAnte===8);
+  for(const key of ['won','winNotified','winPending'])if(Object.hasOwn(state,key))requireValue(typeof state[key]==='boolean');
+  if(state.winNotified)requireValue(state.won===true);
+  if(state.winPending)requireValue(state.won===true&&state.winNotified===true&&state.phase==='round_won'&&state.round.blindId==='boss'&&state.round.ante===(state.winAnte??8)&&state.cashoutQuote?.earnedRevision===state.revision);
   requireValue(validConsumableUsage(state));
   if(Object.hasOwn(state,'mostPlayedHand'))requireValue(state.mostPlayedHand===null||Object.hasOwn(HANDS,state.mostPlayedHand));
   requireValue(state.schemaVersion===1 && PHASES.includes(state.phase) && ['red','blue'].includes(state.deckId));
@@ -477,26 +483,33 @@ function decode(payload) {
   for(const key of ['deck','effects','shop'])if(Object.hasOwn(state.rng,key)) {const rng=state.rng[key];object(rng,['algorithm','state']);randomInt(rng,1);}
   if(Object.hasOwn(state.rng,'apk'))decodeApkRng(state.rng.apk,state.seed);
   state.money=decimal(state.money,true);
-  object(state.round,['blindId','ante','target','score','handsRemaining','discardsRemaining','handSize']);
-  if(Object.hasOwn(state,'roundNumber'))integer(state.roundNumber,1,24);
-  const round=state.round;requireValue(['small','big','boss'].includes(round.blindId));integer(round.ante,1,8);integer(round.handsRemaining,0,state.deckId==='blue'?5:4);integer(round.discardsRemaining,0,state.deckId==='red'?4:3);integer(round.handSize,1,10000);
+  optionalObject(state.round,['blindId','ante','target','score','handsRemaining','discardsRemaining','handSize'],['bossDisabled']);
+  if(Object.hasOwn(state.round,'bossDisabled'))requireValue(state.round.bossDisabled===true&&['shop','pack'].includes(state.phase)&&state.round.blindId==='boss'&&['bl_wall','bl_final_vessel'].includes(state.apkBlinds?.bossId));
+  if(Object.hasOwn(state,'roundNumber'))integer(state.roundNumber,1);
+  const round=state.round;requireValue(['small','big','boss'].includes(round.blindId));integer(round.ante,1);integer(round.handsRemaining,0,state.deckId==='blue'?5:4);integer(round.discardsRemaining,0,state.deckId==='red'?4:3);integer(round.handSize,1,10000);
   if(Object.hasOwn(state,'hangedShortfallCardIds'))requireValue(['playing','round_won'].includes(state.phase)&&(state.phase==='round_won'||!state.drawPile.length||state.bossState?.id==='bl_serpent'||state.hand.length+state.hangedShortfallCardIds.length===round.handSize));
-  round.target=decimal(round.target);round.score=decimal(round.score);requireValue(round.target>0n);
+  // The only nonfinite save value is this exact target tag. Native STR_PACK drops
+  // its bare nan field on load; keeping it durable intentionally fixes that corruption.
+  if(round.target!==null&&typeof round.target==='object'){
+    object(round.target,['native']);requireValue(round.target.native==='NaN'&&state.apkShop);round.target=NaN;
+  }else {round.target=decimal(round.target);requireValue(round.target>0n);}
+  round.score=decimal(round.score);
   if(Object.hasOwn(state,'apkShop'))decodeApkShop(state.apkShop,state);
   if(Object.hasOwn(state,'apkBlinds'))decodeApkBlinds(state.apkBlinds,state);
   if(Object.hasOwn(state,'nextAnteBlinds')){
-    requireValue(['shop','pack'].includes(state.phase)&&round.blindId==='boss'&&round.ante<8&&state.nextAnteBlinds.playedCardIds?.length===0);
+    requireValue(['shop','pack'].includes(state.phase)&&round.blindId==='boss'&&state.nextAnteBlinds.playedCardIds?.length===0);
     decodeApkBlinds(state.nextAnteBlinds,{...state,round:{...round,ante:round.ante+1}},true);
   }
   if(Object.hasOwn(state,'bossState'))decodeBoss(state.bossState,state);
   if(round.blindId==='boss'){
-    requireValue(canEnterBoss(state)&&round.target===bossTarget(state));
+    requireValue(canEnterBoss(state)&&Object.is(round.target,bossTarget(state)));
     requireValue(['playing','round_won','game_over'].includes(state.phase)?!!state.bossState:!state.bossState&&round.handSize===8);
   }
+  if(state.apkShop&&round.blindId!=='boss')requireValue(Object.is(round.target,nativeBlindTarget(round.ante,round.blindId==='big'?1.5:1)));
   if(state.phase==='round_won')requireValue(round.score>=round.target);
   if(['shop','pack'].includes(state.phase))requireValue(round.score>=round.target && state.hand.length===0 && state.discardPile.length===0 && state.drawPile.length===cardIds.length && state.lastScore===null);
-  if(state.phase==='game_over')requireValue(round.handsRemaining===0 && round.score<round.target);
-  if(state.phase==='playing')requireValue(round.handsRemaining>0 && round.score<round.target && (state.hand.length+(state.hangedShortfallCardIds?.length??0)>=round.handSize || state.drawPile.length===0 || state.bossState?.id==='bl_serpent'));
+  if(state.phase==='game_over')requireValue(round.handsRemaining===0 && !(round.score>=round.target));
+  if(state.phase==='playing')requireValue(round.handsRemaining>0 && !(round.score>=round.target) && (state.hand.length+(state.hangedShortfallCardIds?.length??0)>=round.handSize || state.drawPile.length===0 || state.bossState?.id==='bl_serpent'));
   if(state.phase==='blind_selection')requireValue(state.hand.length===0 && state.discardPile.length===0 && round.score===0n);
   if(Object.hasOwn(state,'cashoutQuote')){
     requireValue(state.phase==='round_won');optionalObject(state.cashoutQuote,['moneyBefore','earnedRevision','bonusContext','quote'],['handsRemainingBefore']);
@@ -520,8 +533,8 @@ function decode(payload) {
   return state;
 }
 export function serializeState(state) {
-  requireValue(typeof state.money==='bigint' && typeof state.round.target==='bigint' && typeof state.round.score==='bigint');
-  const payload={format:'card-cascade-save',version:1,state:{...state,money:state.money.toString(),round:{...state.round,target:state.round.target.toString(),score:state.round.score.toString()},lastScore:encodeScore(state.lastScore)}};
+  requireValue(typeof state.money==='bigint' && (typeof state.round.target==='bigint'||Number.isNaN(state.round.target)) && typeof state.round.score==='bigint');
+  const payload={format:'card-cascade-save',version:1,state:{...state,money:state.money.toString(),round:{...state.round,target:Number.isNaN(state.round.target)?{native:'NaN'}:state.round.target.toString(),score:state.round.score.toString()},lastScore:encodeScore(state.lastScore)}};
   if(Object.hasOwn(state,'cashoutQuote')){
     getCashout(state);const snapshot=state.cashoutQuote,q=snapshot.quote;
     payload.state.cashoutQuote={handsRemainingBefore:Object.hasOwn(snapshot,'handsRemainingBefore')?snapshot.handsRemainingBefore:Number(q.hands),earnedRevision:snapshot.earnedRevision,bonusContext:structuredClone(snapshot.bonusContext),moneyBefore:snapshot.moneyBefore.toString(),quote:{...q,...Object.fromEntries(['reward','hands','interest','total'].map(key=>[key,q[key].toString()])),...(q.jokerBonuses?{jokerBonuses:q.jokerBonuses.map(row=>({...row,amount:row.amount.toString()}))}:{})}};
