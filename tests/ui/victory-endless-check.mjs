@@ -75,9 +75,14 @@ try{
    for(let i=0;i<3;i++){await escapePending(page,'#victory_retry');assert.equal(await page.evaluate(()=>cardGameBack()),true);assert.equal(await page.locator('#victory_retry').isVisible(),true);assert.deepEqual(await saved(page),s);}
    await page.evaluate(()=>Storage.prototype.setItem=window.originalSetItem);await page.locator('#victory_retry').click();await page.locator('#victory_endless').waitFor();assert.deepEqual(await saved(page),s);
   }
-  await page.evaluate(()=>{window.closedAfterSave=[];document.getElementById('dialog').addEventListener('close',()=>window.closedAfterSave.push(JSON.parse(localStorage.getItem('card-cascade.current')).state.winPending));});
-  await page.locator('#victory_endless').click();await page.locator('#dialog').waitFor({state:'hidden'});const acknowledged=await saved(page);
-  assert.equal(acknowledged.winPending,false);assert.equal(acknowledged.winNotified,true);assert.equal(acknowledged.revision,s.revision+1);assert.deepEqual(acknowledged.cashoutQuote,s.cashoutQuote);assert.deepEqual(acknowledged.round,s.round);assert.deepEqual(acknowledged.rng,s.rng);assert.equal(acknowledged.money,s.money);assert.deepEqual(await page.evaluate(()=>window.closedAfterSave),[false]);assert.equal(await page.locator('#cashout').isEnabled(),true);
+  await page.evaluate(()=>{
+   const dialog=document.getElementById('dialog'),persistedPending=()=>JSON.parse(localStorage.getItem('card-cascade.current')).state.winPending;
+   window.closingAfterSave=[];window.closedAfterSave=[];
+   dialog.addEventListener('beforetoggle',e=>{if(e.newState==='closed')window.closingAfterSave.push(persistedPending());},{once:true});
+   window.victoryClosed=new Promise(resolve=>dialog.addEventListener('close',()=>{window.closedAfterSave.push(persistedPending());resolve();},{once:true}));
+  });
+  await page.locator('#victory_endless').click();await page.locator('#dialog').waitFor({state:'hidden'});await page.evaluate(()=>window.victoryClosed);const acknowledged=await saved(page);
+  assert.equal(acknowledged.winPending,false);assert.equal(acknowledged.winNotified,true);assert.equal(acknowledged.revision,s.revision+1);assert.deepEqual(acknowledged.cashoutQuote,s.cashoutQuote);assert.deepEqual(acknowledged.round,s.round);assert.deepEqual(acknowledged.rng,s.rng);assert.equal(acknowledged.money,s.money);assert.deepEqual(await page.evaluate(()=>window.closingAfterSave),[false]);assert.deepEqual(await page.evaluate(()=>window.closedAfterSave),[false]);assert.equal(await page.locator('#cashout').isEnabled(),true);
   await page.reload();await enterRun(page,{startBlind:false});assert.equal(await page.locator('#victory_endless').count(),0);assert.deepEqual(getCashout(await saved(page)),quote);assert.deepEqual(await saved(page),acknowledged);
   // Acknowledgement proceeds through the actual generated shop; reload cannot re-pay or reroll it.
   const expectedShop=act(acknowledged,'CASH_OUT');assert.equal(expectedShop.error,null);
