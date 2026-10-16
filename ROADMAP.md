@@ -1,3 +1,7 @@
+16.10.2026: №4 завершён в игровом ядре: физические ID/order новых копий, legacy52, синхронная Stone/Lucky/Glass RNG chronology и strict replay. PR31 слит в apk-reference: d95975988b7c92f0b1c2e2e9c7afad1d4c8f12a5; source417e30351ae9bf76389e12f22d20e1c85cba2368. Локально984/984PASS0skip с private native oracles; CI38853367669 SUCCESS:983total/982PASS/1expected private-source skip,39Chromium suites, fresh Android, signature/alignment. APK0.4.35-preview/code48:15b14f90a8432f1d443106e4a8187a3e69b8ce0952efa2b88073b94f0792c8f2, debug-подпись, без гарантии обновления. CI synthetic merge c469ed0b105a28d36b3d86fb24271488926b2e06 и actual merge/source сравнились без файловых различий. Общая покадровая/event RNG parity (Cloud9, previews, Mark/Plant setup) остаётся в П-RNG-STONE и финальной матрице, не заявляется закрытой.53/150 джокеров, физический Android не проверен. Следующим предложен№5; ждать выбора пользователя.
+
+## Предыдущие записи
+
 ## Выбранный пункт — 16.10.2026
 
 Пользователь выбрал №4. Подготовлены физические ID/order новых карт, legacy52, единый RNG action contract play-score-v1 для Stone/Lucky/Glass и строгий replay. Локально983/983PASS0skip с native oracle; независимое review84targetedPASS, Critical/Important закрыты. Native354scoring cases и identity3seeds воспроизводимы. Платформенный CI ещё ожидается; №4 пока в проверке, №5 не начинать автоматически. Полная покадровая RNG parity оригинала, selection-preview side effects и Mark/Plant setup callbacks остаются открытым общим parity-пробелом; сохранён существующий pure-preview контракт интерфейса.

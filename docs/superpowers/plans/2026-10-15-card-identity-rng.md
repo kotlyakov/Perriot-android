@@ -13,8 +13,8 @@ User selected item 4; implement only this scope. Existing isolated workspace, na
 - [x] Independent native research: Stone getter chronology, actual phase fixtures and update-loop limitations. Do not claim whole-APK raw-state parity from isolated predicates.
 - [x] RED/GREEN: physical identity allocator/order, saved copies and destruction, legacy52 and invalid identities. Files: `src/core/apk-deck.js`, `src/core/boss-effects.js`, `src/persistence/save.js`, new `tests/core/playing-card-identity.test.js`.
 - [x] Shared helper supports new physical identity allocation only; creating cards through unimplemented content remains unavailable. Verify Death, Hook, Bell, Glass and subsequent shuffle/reload without enabling that content.
-- [ ] Implement only RNG chronology justified by executable native evidence. If native frame-driven RNG prevents a defensible complete contract, record a concrete blocker and leave item4 open rather than invent call totals.
-- [ ] Full core/native checks, independent review, source publication and platform CI for production changes. Update STATUS/ROADMAP/backlog/progress and numbered table truthfully. Item5 waits for user's selection.
+- [x] Implement only RNG chronology justified by executable native evidence. If native frame-driven RNG prevents a defensible complete contract, record a concrete blocker and leave item4 open rather than invent call totals.
+- [x] Full core/native checks, independent review, source publication and platform CI for production changes. Update STATUS/ROADMAP/backlog/progress and numbered table truthfully. Item5 waits for user's selection.
 
 ## Review focus
 

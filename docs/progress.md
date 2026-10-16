@@ -1,3 +1,7 @@
+16.10.2026: №4 завершён в игровом ядре: физические ID/order новых копий, legacy52, синхронная Stone/Lucky/Glass RNG chronology и strict replay. PR31 слит в apk-reference: d95975988b7c92f0b1c2e2e9c7afad1d4c8f12a5; source417e30351ae9bf76389e12f22d20e1c85cba2368. Локально984/984PASS0skip с private native oracles; CI38853367669 SUCCESS:983total/982PASS/1expected private-source skip,39Chromium suites, fresh Android, signature/alignment. APK0.4.35-preview/code48:15b14f90a8432f1d443106e4a8187a3e69b8ce0952efa2b88073b94f0792c8f2, debug-подпись, без гарантии обновления. CI synthetic merge c469ed0b105a28d36b3d86fb24271488926b2e06 и actual merge/source сравнились без файловых различий. Общая покадровая/event RNG parity (Cloud9, previews, Mark/Plant setup) остаётся в П-RNG-STONE и финальной матрице, не заявляется закрытой.53/150 джокеров, физический Android не проверен. Следующим предложен№5; ждать выбора пользователя.
+
+## Предыдущие записи
+
 16.10.2026: пользователь выбрал №4 — RNG Stone и физическая идентичность карт. Работа продолжается в feat/card-identity-rng. Identity foundation реализована и прошла независимые целевые проверки; общий Stone action RNG и strict replay/save ещё в работе. Native phase oracle1407cases и creation-order oracle3seeds подготовлены. №4 не завершён, №5 не начинать без выбора пользователя.
 
 # Текущий результат — 15.10.2026
@@ -22,7 +26,7 @@
 | 1 | Сбой повтора сохранения победы | Завершён:967 локальных PASS, независимое ревью, actual Chromium desktop/mobile PASS | Пользовательская приёмка отдельно |
 | 2 | Итоговое ревью всей ветки | Завершено: no Critical/Important found;104 целевых PASS0skip, native fixture reproducibility PASS | Платформенные/визуальные проверки остаются в№3; это не полный релиз |
 | 3 | Проверка и интеграция0.4.34 | Завершено: PR29 merged; оба CI SUCCESS;38 Chromium suites, Android/signature/alignment PASS; APK готов | Физический Android и установка остаются в№12; следующий предложен№4 |
-| 4 | RNG и идентичность карт | В работе: новые physical IDs/order, legacy52 и Glass ledger; native phase/order oracle | Общая хронология Stone/Lucky/Glass, исторический replay, полное ревью и CI |
+| 4 | RNG и идентичность карт | Завершено для игрового ядра:984localPASS,354native scoring cases,39Chromium, Android, PR31 merged | Покадровая/event parity оригинала отдельно остаётся открытой в П-RNG-STONE/финальной приёмке |
 | 5 | Четыре scored-retrigger Joker | Исследование и план готовы | Dusk, Hack, Sock and Buskin, Hanging Chad; зависит от№4 |
 | 6 | Остальные механизмы эффектов | Базовые эффекты и модификаторы работают | Печати, издания игральных карт, создание/копирование, lifecycle triggers |
 | 7 | Полный каталог Joker и Judgement | 53/150 джокеров работают | 97 оставшихся, включая№5; затем Judgement на полном пуле |
