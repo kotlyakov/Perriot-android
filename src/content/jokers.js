@@ -1,7 +1,9 @@
 import {isCardSuit} from '../core/card-suits.js';
 
+export const SCORED_RETRIGGER_JOKERS=Object.freeze(['j_dusk','j_hack','j_sock_and_buskin','j_hanging_chad']);
+
 // Exact supported scoring slice; the random shop still uses the complete catalogue.
-export const NATIVE_JOKERS=Object.freeze(['j_joker','j_jolly','j_zany','j_mad','j_crazy','j_droll','j_sly','j_wily','j_clever','j_devious','j_crafty','j_half','j_splash','j_abstract','j_duo','j_trio','j_family','j_order','j_tribe','j_greedy_joker','j_lusty_joker','j_wrathful_joker','j_gluttenous_joker','j_scary_face','j_even_steven','j_odd_todd','j_scholar','j_fibonacci','j_arrowhead','j_onyx_agate','j_smiley','j_walkie_talkie','j_acrobat','j_banner','j_blackboard','j_mystic_summit','j_raised_fist','j_stencil','j_baron','j_shoot_the_moon','j_flower_pot','j_seeing_double','j_stone','j_steel_joker','j_bull','j_drivers_license','j_bootstraps','j_blue_joker','j_swashbuckler','j_four_fingers','j_shortcut','j_golden','j_cloud_9']);
+export const NATIVE_JOKERS=Object.freeze(['j_joker','j_jolly','j_zany','j_mad','j_crazy','j_droll','j_sly','j_wily','j_clever','j_devious','j_crafty','j_half','j_splash','j_abstract','j_duo','j_trio','j_family','j_order','j_tribe','j_greedy_joker','j_lusty_joker','j_wrathful_joker','j_gluttenous_joker','j_scary_face','j_even_steven','j_odd_todd','j_scholar','j_fibonacci','j_arrowhead','j_onyx_agate','j_smiley','j_walkie_talkie','j_acrobat','j_banner','j_blackboard','j_mystic_summit','j_raised_fist','j_stencil','j_baron','j_shoot_the_moon','j_flower_pot','j_seeing_double','j_stone','j_steel_joker','j_bull','j_drivers_license','j_bootstraps','j_blue_joker','j_swashbuckler','j_four_fingers','j_shortcut','j_golden','j_cloud_9',...SCORED_RETRIGGER_JOKERS]);
 export const SUPPORTED_JOKERS=Object.freeze(['joker_joker','joker_sly_joker','joker_clever_joker','joker_splash',...NATIVE_JOKERS]);
 const aliases={joker_joker:'j_joker',joker_sly_joker:'j_sly',joker_clever_joker:'j_clever',joker_splash:'j_splash'};
 export const originalJokerKey=id=>aliases[id]??id;
@@ -73,3 +75,16 @@ export function scoredJokerEffects(entityId,card){
 }
 
 
+
+export function scoredJokerRepetitions(entityId,card,{firstScoringCardId,handsRemaining}={}){
+ const key=originalJokerKey(entityId);
+ if(key==='j_dusk'){
+  if(!Number.isSafeInteger(handsRemaining)||handsRemaining<1)throw new TypeError('Missing preplay hand counter');
+  return handsRemaining===1?1:0;
+ }
+ if(key==='j_hanging_chad')return card.id===firstScoringCardId?2:0;
+ if(card.enhancement==='stone')return 0;
+ if(key==='j_hack')return card.rank>=2&&card.rank<=5?1:0;
+ if(key==='j_sock_and_buskin')return card.rank>=11&&card.rank<=13?1:0;
+ return 0;
+}

@@ -1,4 +1,4 @@
-# Four Scored Retrigger Jokers Implementation Plan — draft for after showdown
+# Four Scored Retrigger Jokers Implementation Plan — execution for numbered item5
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. This draft is planning only; execution starts after the whole showdown branch is complete, reviewed, and verified. Preserve the root's selected execution method; no new approval flow is requested.
 
@@ -119,3 +119,8 @@
 Spec coverage: four predicates/values, three phase boundaries, debuffs, additive ordering, per-pass effects, exact RNG, Glass once, counters, persistence, normal catalogue/UI/own art, source oracle and closed mechanics map to Tasks1–4. All five Review Focus rows have explicit tests. No product code, new fixtures, tests, commits or build has been produced by this planning task.
 
 Concrete risks for implementer: (1) the current native function-level oracle does not execute the repetition loop; Task1 must upgrade evidence before implementation parity is claimed; (2) Lucky <=5 and codec's catch-all numeric event branch reject legitimate repeats without explicit updates; (3) Dusk pre/post decrement mismatch can silently trigger one hand late; (4) raw RNG is global despite keyed stream snapshots, and legacy effects RNG shares phase draws; (5) Heart replay requires old disabled identity, Bell/Glass later raw state must remain authenticated; (6) normal native locked Sock/Chad access depends on an explicitly unlocked context until career unlocking exists; (7) inherited trace/payload limits constrain extreme supported negative inventory and must never lead to silent truncation; (8) initial plan interfaces may shift when ongoing showdown Task5/6 finishes, so rebase the plan against their final verified result.
+
+
+## Execution checkpoint16.10
+
+User selected item5 after completed item4. Runtime0.4.35 APIs reconciled: play-score-v1 accumulator reused, new repeater APK actions always record it (including non-Stone hands), Hook chooses once after career, strict codec authenticates later Heart/Bell/Wheel. Legacy effects RNG now chronological for newly supported repeat content; old53 score history remains on its original contract. Native687cases/687assertions and independent111targeted+132boss cases PASS; no open Critical/Important. Local Chromium absent,40browser suites/Android run in CI. Version0.4.36/code49. No item6 scope enabled.

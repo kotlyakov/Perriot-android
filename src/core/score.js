@@ -1,14 +1,17 @@
 import {isBossCardDebuffed,isBossHandDebuffed,chooseHookDiscards} from './boss-effects.js';
 import { evaluateHand } from './hands.js';
 import { HANDS } from '../content/hands.js';
-import { SUPPORTED_JOKERS, handRecognitionOptions, heldJokerEffects, independentEffect, originalJokerKey, supportsJoker, scoredJokerEffects } from '../content/jokers.js';
+import { SUPPORTED_JOKERS, SCORED_RETRIGGER_JOKERS, scoredJokerRepetitions, handRecognitionOptions, heldJokerEffects, independentEffect, originalJokerKey, supportsJoker, scoredJokerEffects } from '../content/jokers.js';
 import {nextApkRandom} from './apk-rng.js';
 import {randomInt} from './rng.js';
 import {addExact,floorExact,multiplyExact} from './numbers.js';
 
 export function scoreHand(state, playedCards, {legacyRng=false} = {}) {
+  const hasRetrigger=state.jokers.some(j=>SCORED_RETRIGGER_JOKERS.includes(originalJokerKey(j.entityId)));
+  if(state.jokers.some(j=>!j.debuffed&&originalJokerKey(j.entityId)==='j_dusk'))scoredJokerRepetitions('j_dusk',playedCards[0],{handsRemaining:state.round?.handsRemaining});
+  let effectsRng=hasRetrigger&&!state.rng?.apk?state.rng?.effects:null;
   const hasStone=playedCards.some(c=>c.enhancement==='stone')||(state.hand??[]).some(id=>state.cards[id]?.enhancement==='stone');
-  let actionRng=!legacyRng&&hasStone&&state.rng?.apk?structuredClone(state.rng.apk):null;
+  let actionRng=!legacyRng&&(hasStone||hasRetrigger)&&state.rng?.apk?structuredClone(state.rng.apk):null;
   const actionBefore=actionRng&&structuredClone(actionRng),rngDraws=[];
   function rankGetter(card,phase='recognition',jokerId){
     if(card.enhancement!=='stone')return card.rank;
@@ -66,22 +69,22 @@ export function scoreHand(state, playedCards, {legacyRng=false} = {}) {
   function luckyRoll(key,bound){
     if(!luckyRng){
       if(state.rng?.apk){luckyKind='apk';luckyRng=actionRng??state.rng.apk;}
-      else if(state.rng?.effects){luckyKind='effects';luckyRng=state.rng.effects;}
+      else if(state.rng?.effects){luckyKind='effects';luckyRng=effectsRng??state.rng.effects;}
       else throw new TypeError('Missing Lucky Card RNG');
       luckyRngBefore=luckyKind==='apk'?luckySnapshot(luckyRng):structuredClone(luckyRng);
     }
     if(luckyKind==='apk'){const draw=nextApkRandom(actionRng??luckyRng,key);luckyRng=draw.rng;if(actionRng){actionRng=draw.rng;rngDraws.push({phase:'scored_card',key,value:draw.value});}return draw.value;}
-    const draw=randomInt(luckyRng,bound);luckyRng=draw.rng;return draw.value/bound;
+    const draw=randomInt(effectsRng??luckyRng,bound);luckyRng=draw.rng;if(effectsRng)effectsRng=draw.rng;return draw.value/bound;
   }
   function glassRoll(){
     if(!glassRng){
       if(state.rng?.apk){glassKind='apk';glassRng=actionRng??state.rng.apk;}
-      else if(state.rng?.effects){glassKind='effects';glassRng=state.rng.effects;}
+      else if(state.rng?.effects){glassKind='effects';glassRng=effectsRng??state.rng.effects;}
       else throw new TypeError('Missing Glass Card RNG');
       glassRngBefore=glassKind==='apk'?glassSnapshot(glassRng):structuredClone(glassRng);
     }
     if(glassKind==='apk'){const draw=nextApkRandom(actionRng??glassRng,'glass');glassRng=draw.rng;if(actionRng){actionRng=draw.rng;rngDraws.push({phase:'destruction',key:'glass',value:draw.value});}return draw.value;}
-    const draw=randomInt(glassRng,4);glassRng=draw.rng;return draw.value/4;
+    const draw=randomInt(effectsRng??glassRng,4);glassRng=draw.rng;if(effectsRng)effectsRng=draw.rng;return draw.value/4;
   }
   function apply(effect,phase,sourceId,effectSourceId){
     const before={chips,mult};
@@ -92,6 +95,18 @@ export function scoreHand(state, playedCards, {legacyRng=false} = {}) {
   }
   for (const card of playedCards) {
     if (!scoringSet.has(card.id) || isBossCardDebuffed(state,card)) continue;
+    const queue=[null];
+    for(const joker of state.jokers)if(!joker.debuffed){
+      if(actionRng&&card.enhancement==='stone'){
+        const key=originalJokerKey(joker.entityId),get=()=>rankGetter(card,'repetition',joker.id);
+        if(key==='j_sock_and_buskin')get();
+        if(key==='j_hack')void(get()===2||get()===3||get()===4||get()===5);
+      }
+      const count=scoredJokerRepetitions(joker.entityId,card,{firstScoringCardId:scoringCardIds[0],handsRemaining:state.round?.handsRemaining});
+      for(let i=0;i<count;i++)queue.push(joker.id);
+    }
+    for(const source of queue){
+    if(source)trace.push({type:'score_repeat',phase:'scored_card',sourceId:card.id,effectSourceId:source});
     const before = {chips,mult};
     chips += card.enhancement==='stone'?50n:BigInt(card.rank===14 ? 11 : Math.min(card.rank,10));
     trace.push({type:'score_step',phase:'scored_card',sourceId:card.id,operation:'add_chips',before,after:{chips,mult}});
@@ -114,6 +129,7 @@ export function scoreHand(state, playedCards, {legacyRng=false} = {}) {
       }
       for(const effect of scoredJokerEffects(joker.entityId,card))apply(effect,'scored_card',card.id,joker.id);
     }
+  }
   }
   for(const card of heldCards){
     // Native held Joker predicates query the card before checking its debuff.
@@ -149,7 +165,7 @@ export function scoreHand(state, playedCards, {legacyRng=false} = {}) {
   const score = floorExact(multiplyExact(chips,mult));
   trace.push({type:'score_total',phase:'total',chips,mult,score});
   const bellGlass=(actionRng||glassRolls.length>0&&glassKind==='apk')&&!state.bossState?.disabled&&state.bossState?.id==='bl_final_bell';
-  return {...hand,...actionProvenance(),playedCardIds:playedCards.map(c=>c.id),scoringCardIds,chips,mult,score,trace,...(actionRng||bellGlass||heldCards.some(card=>card.enhancement==='steel')||state.jokers.some(j=>['j_blackboard','j_raised_fist','j_baron','j_shoot_the_moon','j_blue_joker'].includes(originalJokerKey(j.entityId)))?{heldCardIds:heldCards.map(card=>card.id)}:{}),...(actionRng||bellGlass||state.jokers.some(j=>originalJokerKey(j.entityId)==='j_blue_joker')?{scoringPilesBefore:{drawPile:[...(state.drawPile??[])],discardPile:[...(state.discardPile??[])],...(state.hangedShortfallCardIds?{hangedShortfallCardIds:[...state.hangedShortfallCardIds],hangedShortfallRevision:state.hangedShortfallEpoch?.revision??state.revision}:{})}}:{}),...(moneyJokers?{scoringMoneyBefore:state.money}:{}),...(state.round&&(actionRng||bellGlass||state.jokers.some(j=>['j_acrobat','j_banner','j_mystic_summit','j_blue_joker'].includes(originalJokerKey(j.entityId))))?{scoringRoundBefore:{handsRemaining:state.round.handsRemaining,discardsRemaining:state.round.discardsRemaining}}:{}),...(luckyRolls.length?{luckyRolls,luckyRngKind:luckyKind,luckyRngBefore,luckyRngAfter:luckyKind==='apk'?{...luckySnapshot(luckyRng),mathState:[...luckyRng.mathState]}:luckyRng}:{}),...(glassRolls.length?{glassRolls,glassRngKind:glassKind,glassRngBefore,glassRngAfter:glassKind==='apk'?{...glassSnapshot(glassRng),mathState:[...glassRng.mathState]}:glassRng,glassDestroyedCards:glassRolls.filter(roll=>roll.destroyed).map(roll=>structuredClone(playedCards.find(card=>card.id===roll.cardId)))}:{})};
+  return {...hand,...actionProvenance(),playedCardIds:playedCards.map(c=>c.id),scoringCardIds,chips,mult,score,trace,...(actionRng||bellGlass||heldCards.some(card=>card.enhancement==='steel')||state.jokers.some(j=>['j_blackboard','j_raised_fist','j_baron','j_shoot_the_moon','j_blue_joker'].includes(originalJokerKey(j.entityId)))?{heldCardIds:heldCards.map(card=>card.id)}:{}),...(actionRng||bellGlass||state.jokers.some(j=>originalJokerKey(j.entityId)==='j_blue_joker')?{scoringPilesBefore:{drawPile:[...(state.drawPile??[])],discardPile:[...(state.discardPile??[])],...(state.hangedShortfallCardIds?{hangedShortfallCardIds:[...state.hangedShortfallCardIds],hangedShortfallRevision:state.hangedShortfallEpoch?.revision??state.revision}:{})}}:{}),...(moneyJokers?{scoringMoneyBefore:state.money}:{}),...(state.round&&(actionRng||bellGlass||state.jokers.some(j=>['j_acrobat','j_banner','j_mystic_summit','j_blue_joker','j_dusk'].includes(originalJokerKey(j.entityId))))?{scoringRoundBefore:{handsRemaining:state.round.handsRemaining,discardsRemaining:state.round.discardsRemaining}}:{}),...(luckyRolls.length?{luckyRolls,luckyRngKind:luckyKind,luckyRngBefore,luckyRngAfter:luckyKind==='apk'?{...luckySnapshot(luckyRng),mathState:[...luckyRng.mathState]}:luckyRng}:{}),...(glassRolls.length?{glassRolls,glassRngKind:glassKind,glassRngBefore,glassRngAfter:glassKind==='apk'?{...glassSnapshot(glassRng),mathState:[...glassRng.mathState]}:glassRng,glassDestroyedCards:glassRolls.filter(roll=>roll.destroyed).map(roll=>structuredClone(playedCards.find(card=>card.id===roll.cardId)))}:{})};
 }
 
 

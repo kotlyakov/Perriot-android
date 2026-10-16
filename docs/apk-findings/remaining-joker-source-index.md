@@ -1,3 +1,5 @@
+>16.10.2026: historical97-item index below. Dusk/Hack/Sock/Chad are now implemented by item5; remaining93. Runtime catalogue57/150.
+
 # Remaining native Joker source index
 
 Source-only navigation aid, 2026-10-14. The runtime catalogue currently supports53/150; this index lists97 remaining centres. Native source is the uploaded APK; no original code is copied here. Centre locations are in `game.lua`; hook locations are literal name references in `card.lua`, not a complete dependency or behavior specification. Read the actual surrounding hook and independent source oracle before implementation. Some references initialize/display an ability rather than execute it. Other modules and key-based references are not covered by this index.

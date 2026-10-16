@@ -1,4 +1,4 @@
-import {handRecognitionOptions} from '../content/jokers.js';
+import {handRecognitionOptions,SCORED_RETRIGGER_JOKERS,originalJokerKey} from '../content/jokers.js';
 import {applySkipBlind} from './skip-blind.js';
 import {applyConsumableAction} from './consumables.js';
 import {applyCelestialPackAction} from './celestial-pack.js';
@@ -189,7 +189,7 @@ export function dispatch(state, action, shopOptions={}) {
   let score=null,scoringState=state,hookDiscards=null;
   if (action.type==='PLAY_HAND') {
     try {
-      if(!state.bossState?.disabled&&state.bossState?.id==='bl_hook'&&!state.hand.some(id=>state.cards[id].enhancement==='stone')){
+      if(!state.bossState?.disabled&&state.bossState?.id==='bl_hook'&&!state.hand.some(id=>state.cards[id].enhancement==='stone')&&!state.jokers.some(j=>SCORED_RETRIGGER_JOKERS.includes(originalJokerKey(j.entityId)))){
         try{hookDiscards=chooseHookDiscards(state.rng.apk,state.hand.filter(id=>!selected.has(id)));}catch{return reject('UNSUPPORTED_BOSS_STATE','Invalid Hook card identities');}
         scoringState={...state,hand:state.hand.filter(id=>!hookDiscards.cardIds.includes(id)),discardPile:[...state.discardPile,...state.hand.filter(id=>hookDiscards.cardIds.includes(id))],rng:{...state.rng,apk:hookDiscards.rng}};
       }
