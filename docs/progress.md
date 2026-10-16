@@ -1,3 +1,5 @@
+16.10.2026: пользователь выбрал №4 — RNG Stone и физическая идентичность карт. Работа продолжается в feat/card-identity-rng. Identity foundation реализована и прошла независимые целевые проверки; общий Stone action RNG и strict replay/save ещё в работе. Native phase oracle1407cases и creation-order oracle3seeds подготовлены. №4 не завершён, №5 не начинать без выбора пользователя.
+
 # Текущий результат — 15.10.2026
 
 №3 завершён 15.10.2026: typography race и справочные надписи исправлены; PR29 слит в apk-reference (e8319950daee34a3cd304e057e7fe68337b893e7). PR CI38775578432 и post-merge CI38777249132 SUCCESS: 966 core PASS/1 private-oracle skip,38 Chromium suites, fresh Android, apksigner и zipalign PASS. Полный локальный прогон:967 PASS/0skip. APK artifact11994353537, SHA256 cadf68db3ec92dcdfcdec3a9a894e1134626c3fd76ea159fcc8c335c28666202, debug без гарантии обновления. Выборочная визуальная QA15PNG пройдена. Физическое устройство/установка не проверены. Полная игра не готова:53/150 джокеров. Предложен№4; ждать выбора пользователя.
@@ -20,7 +22,7 @@
 | 1 | Сбой повтора сохранения победы | Завершён:967 локальных PASS, независимое ревью, actual Chromium desktop/mobile PASS | Пользовательская приёмка отдельно |
 | 2 | Итоговое ревью всей ветки | Завершено: no Critical/Important found;104 целевых PASS0skip, native fixture reproducibility PASS | Платформенные/визуальные проверки остаются в№3; это не полный релиз |
 | 3 | Проверка и интеграция0.4.34 | Завершено: PR29 merged; оба CI SUCCESS;38 Chromium suites, Android/signature/alignment PASS; APK готов | Физический Android и установка остаются в№12; следующий предложен№4 |
-| 4 | RNG и идентичность карт | Базовые seeded/save механизмы работают | Stone raw RNG, ID создаваемых/копируемых карт, миграция старых сохранений |
+| 4 | RNG и идентичность карт | В работе: новые physical IDs/order, legacy52 и Glass ledger; native phase/order oracle | Общая хронология Stone/Lucky/Glass, исторический replay, полное ревью и CI |
 | 5 | Четыре scored-retrigger Joker | Исследование и план готовы | Dusk, Hack, Sock and Buskin, Hanging Chad; зависит от№4 |
 | 6 | Остальные механизмы эффектов | Базовые эффекты и модификаторы работают | Печати, издания игральных карт, создание/копирование, lifecycle triggers |
 | 7 | Полный каталог Joker и Judgement | 53/150 джокеров работают | 97 оставшихся, включая№5; затем Judgement на полном пуле |

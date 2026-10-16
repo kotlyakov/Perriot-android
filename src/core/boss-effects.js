@@ -1,6 +1,6 @@
 import {settleRoundSuccess,captureCashoutQuote} from './cashout.js';
 import {sortHand} from './sort.js';
-import {canonicalCards} from './apk-deck.js';
+import {canonicalCards,identityCard} from './apk-deck.js';
 import {nativeBlindTarget,divideNativeBlindTarget} from './blind-progression.js';
 import {nextApkRandom,nextApkSeed,createApkMathState,nextApkMathRandom,validateApkRng} from './apk-rng.js';
 import {APK_BOSSES,APK_BLINDS_BY_ID} from '../content/apk-blinds.js';
@@ -92,7 +92,7 @@ export function isBossHandDebuffed(state,cards,handId){
 export function chooseHookDiscards(rng,cardIds){
  validateApkRng(rng);
  if(!Array.isArray(cardIds)||cardIds.some(id=>typeof id!=='string'||!id)||new Set(cardIds).size!==cardIds.length)throw new TypeError('Invalid Hook hand');
- const pool=canonicalCards(cardIds.map(id=>{const match=/^card_(clubs|diamonds|hearts|spades)_(\d+)$/.exec(id);return match?{id,suit:match[1],rank:Number(match[2])}:null;})),selected=[];let current=rng;
+ const pool=canonicalCards(cardIds.map(identityCard)),selected=[];let current=rng;
  for(let i=0;i<Math.min(2,cardIds.length);i++){
   const draw=nextApkRandom(current,'hook',1,pool.length);current=draw.rng;selected.push(pool.splice(draw.value-1,1)[0]);
  }
