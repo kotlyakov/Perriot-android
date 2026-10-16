@@ -35,3 +35,13 @@ Inherited safety limits remain 2 MiB serialized payload, 10,000 trace events and
 ## Lead follow-up after review
 
 Oracle source hashes now pinned before any private extraction. An altered-source probe first exited0 (RED), then was rejected with explicit source hash mismatch (GREEN). Correct source regeneration still byte-identical. Metadata assertions cover the five pinned source hashes, four native keys, original evaluate_play/JIT-on-off method and excluded callbacks. Stale current53 title corrected to current57; no gameplay change.
+
+## Browser integration follow-up
+
+First CI38858908470 passed core and reduced-motion desktop checks, then failed the new normal-motion test's blanket `button.disabled` assertion. Source investigation found the existing owned-card UI uses captured `busy` guards in both click and pointer handlers rather than the DOM disabled property; field controls do expose disabled. The test now asserts disabled on field controls and directly attempts owned-card selection and sale, requiring no selection or persisted mutation. Product behavior was unchanged. Syntax and whitespace checks passed before publishing source38b7e6b73041b2f67bbd4ef4a9d4fcf7d4c96ecf for a complete CI rerun.
+
+## Final integration evidence
+
+16.10.2026: №5 завершён. Dusk, Hack, Sock and Buskin, Hanging Chad:57/150 эффектов. Локально1004/1004PASS0skip; native687cases/JIT equality/reproducibility PASS; независимое ревью no Critical/Important,111targeted+132boss scenarios PASS. CI38859217381 SUCCESS:1002corePASS/1expected private-source skip,40Chromium suites, fresh Android, signature/alignment PASS. PR32 merged в apk-reference:add946da62523e629372d090a2fecd6d55cf3acf; source:38b7e6b73041b2f67bbd4ef4a9d4fcf7d4c96ecf; tested synthetic merge:026b8b913f443281cceb8686345af30ada0f02e0. Source/tested/merge сравнились без файловых различий. APK0.4.36-preview/code49 SHA256:c8b1ccc7e5607a33e529c8c0a81504b28745fff5c26bbd8bf7222900e6184d07; artifact:12028078840, debug-подпись без гарантии обновления. Маркеры повторов не меняют числа; Lucky переоценивается каждый проход, Glass разрушается один раз; strict RNG/save replay. Default native locks сохранены; полный профиль/разблокировки в№10. Общая покадровая/event RNG parity и физический Android не заявлены. Следующий предложен№6; ждать выбора пользователя.
+
+The full browser rerun passed the repaired guard assertion, rejected selection/sale, all marker ordering, mouse/touch and reduced/normal-motion cases, commit-before-animation and reload invariants. Final APK offline assets were compared byte for byte against generated local HEAD assets. Physical-device installation remains unverified.
