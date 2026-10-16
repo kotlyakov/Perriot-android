@@ -132,8 +132,8 @@ test('native resource restoration preserves used actions and handles both admitt
   for(const copy of [s,old]){disable(copy);assert.equal(copy.round.handsRemaining,(deckId==='blue'?5:4)-(id==='bl_water'?1:0));assert.equal(copy.round.discardsRemaining,(deckId==='red'?4:3)-(id==='bl_needle'?1:0));assert.deepEqual(reload(copy),copy);}
  }
 });
-test('all current53 native Jokers sell to disable Leaf without RNG or extra sale income',()=>{
- assert.equal(NATIVE_JOKERS.length,53);
+test('all current57 native Jokers sell to disable Leaf without RNG or extra sale income',()=>{
+ assert.equal(NATIVE_JOKERS.length,57);
  for(const entityId of NATIVE_JOKERS){
   const s=active();s.jokers=[joker('sale',entityId)];const r=act(s,'SELL_OWNED_CARD',{area:'jokers',cardId:'sale'});
   assert.equal(r.error,null,entityId);assert.equal(r.state.money,s.money+2n,entityId);assert.equal(r.state.bossState.disabled,true,entityId);assert.deepEqual(r.state.rng,s.rng,entityId);assert.deepEqual(reload(r.state),r.state,entityId);

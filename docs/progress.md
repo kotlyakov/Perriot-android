@@ -1,3 +1,7 @@
+16.10.2026: выбран №5. Dusk, Hack, Sock and Buskin, Hanging Chad реализованы;57/150 effects. Additive scored repetition queue, per-pass effects/Lucky, one Glass destruction, strict marker/RNG replay, unchanged held/main/edition phase cardinality. Native687cases/JIT equality and repeated gzip identity PASS; independent review no Critical/Important,111targeted+132boss scenarios PASS. UI descriptions/neutral Ещё раз and40th browser suite prepared.0.4.36-preview/code49; CI/Android pending, item5 not yet closed; item6 not started.
+
+## Предыдущие записи
+
 16.10.2026: №4 завершён в игровом ядре: физические ID/order новых копий, legacy52, синхронная Stone/Lucky/Glass RNG chronology и strict replay. PR31 слит в apk-reference: d95975988b7c92f0b1c2e2e9c7afad1d4c8f12a5; source417e30351ae9bf76389e12f22d20e1c85cba2368. Локально984/984PASS0skip с private native oracles; CI38853367669 SUCCESS:983total/982PASS/1expected private-source skip,39Chromium suites, fresh Android, signature/alignment. APK0.4.35-preview/code48:15b14f90a8432f1d443106e4a8187a3e69b8ce0952efa2b88073b94f0792c8f2, debug-подпись, без гарантии обновления. CI synthetic merge c469ed0b105a28d36b3d86fb24271488926b2e06 и actual merge/source сравнились без файловых различий. Общая покадровая/event RNG parity (Cloud9, previews, Mark/Plant setup) остаётся в П-RNG-STONE и финальной матрице, не заявляется закрытой.53/150 джокеров, физический Android не проверен. Следующим предложен№5; ждать выбора пользователя.
 
 ## Предыдущие записи
@@ -27,9 +31,9 @@
 | 2 | Итоговое ревью всей ветки | Завершено: no Critical/Important found;104 целевых PASS0skip, native fixture reproducibility PASS | Платформенные/визуальные проверки остаются в№3; это не полный релиз |
 | 3 | Проверка и интеграция0.4.34 | Завершено: PR29 merged; оба CI SUCCESS;38 Chromium suites, Android/signature/alignment PASS; APK готов | Физический Android и установка остаются в№12; следующий предложен№4 |
 | 4 | RNG и идентичность карт | Завершено для игрового ядра:984localPASS,354native scoring cases,39Chromium, Android, PR31 merged | Покадровая/event parity оригинала отдельно остаётся открытой в П-RNG-STONE/финальной приёмке |
-| 5 | Четыре scored-retrigger Joker | Исследование и план готовы | Dusk, Hack, Sock and Buskin, Hanging Chad; зависит от№4 |
+| 5 | Четыре scored-retrigger Joker | Реализованы4эффекта;687native cases, review PASS | Browser40suites/Android и интеграция в проверке |
 | 6 | Остальные механизмы эффектов | Базовые эффекты и модификаторы работают | Печати, издания игральных карт, создание/копирование, lifecycle triggers |
-| 7 | Полный каталог Joker и Judgement | 53/150 джокеров работают | 97 оставшихся, включая№5; затем Judgement на полном пуле |
+| 7 | Полный каталог Joker и Judgement | 57/150 эффектов реализованы | 93 оставшихся; затем Judgement на полном пуле |
 | 8 | Расходники и паки | Большинство Tarot,12Planet/Black Hole, Celestial; Arcana generator140cases подготовлен | Arcana lifecycle, остальные паки и Spectral |
 | 9 | Ваучеры и теги | 6/24 тегов работают | 18 тегов и оставшиеся эффекты ваучеров |
 | 10 | Колоды, сложности, профиль, испытания | Red/Blue, seed и продолжение | Остальные колоды/ставки, полный профиль и испытания |

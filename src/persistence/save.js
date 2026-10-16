@@ -7,7 +7,7 @@ import {APK_BOSSES,APK_BLINDS_BY_ID} from '../content/apk-blinds.js';
 import {createApkTagContext,getApkTagPool} from '../core/apk-tags.js';
 import { apkPseudoHash, nextApkSeed, nextApkRandom, validateApkRng } from '../core/apk-rng.js';
 import { HANDS } from '../content/hands.js';
-import { SUPPORTED_JOKERS,supportsJoker } from '../content/jokers.js';
+import { SUPPORTED_JOKERS,SCORED_RETRIGGER_JOKERS,originalJokerKey,supportsJoker } from '../content/jokers.js';
 import { evaluateHand } from '../core/hands.js';
 import { randomInt } from '../core/rng.js';
 import { scoreHand } from '../core/score.js';
@@ -235,7 +235,7 @@ function decodeExact(value){
 function exactPair(value){object(value,['chips','mult']);return {chips:decimal(value.chips),mult:decodeExact(value.mult)};}
 function encodeScore(score) {
   if(score===null)return null;
-  return {...score,...(Object.hasOwn(score,'scoringMoneyBefore')?{scoringMoneyBefore:score.scoringMoneyBefore.toString()}:{}),chips:score.chips.toString(),mult:encodeExact(score.mult),score:score.score.toString(),trace:score.trace.map(event=>event.type==='score_money'?{...event,amount:event.amount.toString()}:event.type==='score_total'
+  return {...score,...(Object.hasOwn(score,'scoringMoneyBefore')?{scoringMoneyBefore:score.scoringMoneyBefore.toString()}:{}),chips:score.chips.toString(),mult:encodeExact(score.mult),score:score.score.toString(),trace:score.trace.map(event=>event.type==='score_repeat'?{...event}:event.type==='score_money'?{...event,amount:event.amount.toString()}:event.type==='score_total'
     ? {...event,chips:event.chips.toString(),mult:encodeExact(event.mult),score:event.score.toString()}
     : {...event,before:{chips:event.before.chips.toString(),mult:encodeExact(event.before.mult)},after:{chips:event.after.chips.toString(),mult:encodeExact(event.after.mult)}})};
 }
@@ -270,6 +270,11 @@ function decodeScore(value,state) {
       requireValue(total.chips===chips && equalExact(total.mult,mult) && total.score===score && previous.chips===chips && equalExact(previous.mult,mult));
       return total;
     }
+    if(event.type==='score_repeat'){
+      object(event,['type','phase','sourceId','effectSourceId']);
+      requireValue(i>0&&event.phase==='scored_card'&&value.scoringCardIds.includes(event.sourceId)&&state.jokers.some(j=>j.id===event.effectSourceId));
+      return {...event};
+    }
     if(event.type==='score_money'){
       object(event,['type','phase','sourceId','amount']);requireValue(event.phase==='scored_card'&&value.scoringCardIds.includes(event.sourceId));const amount=decimal(event.amount);requireValue(amount===20n);return {...event,amount};
     }
@@ -288,13 +293,13 @@ function decodeScore(value,state) {
   const luckyFields=['luckyRolls','luckyRngKind','luckyRngBefore','luckyRngAfter'],hasLucky=luckyFields.some(key=>Object.hasOwn(value,key));
   requireValue(!hasLucky||luckyFields.every(key=>Object.hasOwn(value,key)));
   if(hasLucky){
-    requireValue(['apk','effects'].includes(value.luckyRngKind)&&Array.isArray(value.luckyRolls)&&value.luckyRolls.length>=1&&value.luckyRolls.length<=5);
+    requireValue(['apk','effects'].includes(value.luckyRngKind)&&Array.isArray(value.luckyRolls)&&value.luckyRolls.length>=1&&value.luckyRolls.length<=value.trace.length);
     for(const roll of value.luckyRolls){object(roll,['cardId','multRoll','moneyRoll','multTriggered','moneyTriggered']);requireValue(value.scoringCardIds.includes(roll.cardId)&&Number.isFinite(roll.multRoll)&&roll.multRoll>=0&&roll.multRoll<1&&Number.isFinite(roll.moneyRoll)&&roll.moneyRoll>=0&&roll.moneyRoll<1&&typeof roll.multTriggered==='boolean'&&typeof roll.moneyTriggered==='boolean');}
     if(value.luckyRngKind==='apk'){
       requireValue(state.rng.apk);object(value.luckyRngBefore,['lucky_mult','lucky_money']);object(value.luckyRngAfter,['lucky_mult','lucky_money','mathState']);for(const snapshot of [value.luckyRngBefore,value.luckyRngAfter])for(const key of ['lucky_mult','lucky_money'])requireValue(snapshot[key]===null||Number.isFinite(snapshot[key])&&snapshot[key]>=0&&snapshot[key]<=1);validateApkRng({...state.rng.apk,mathState:value.luckyRngAfter.mathState});
       requireValue(['lucky_mult','lucky_money'].every(key=>value.luckyRngAfter[key]===(state.rng.apk.streams[key]??null)));
     }
-    else{randomInt(value.luckyRngBefore,1);randomInt(value.luckyRngAfter,1);requireValue(JSON.stringify(value.luckyRngAfter)===JSON.stringify(state.rng.effects));}
+    else{randomInt(value.luckyRngBefore,1);randomInt(value.luckyRngAfter,1);const shared=value.glassRngKind==='effects'&&state.jokers.some(j=>SCORED_RETRIGGER_JOKERS.includes(originalJokerKey(j.entityId)));requireValue(JSON.stringify(value.luckyRngAfter)===JSON.stringify(shared?value.glassRngBefore:state.rng.effects));}
   }
   const glassFields=['glassRolls','glassRngKind','glassRngBefore','glassRngAfter','glassDestroyedCards'],hasGlass=glassFields.some(key=>Object.hasOwn(value,key));
   const bellGlass=(hasAction||hasGlass&&value.glassRngKind==='apk')&&!state.bossState?.disabled&&state.bossState?.id==='bl_final_bell';
@@ -362,7 +367,7 @@ function decodeScore(value,state) {
     if(value.glassRngKind==='apk'){
       const apk=structuredClone(scoringState.rng.apk),stream=value.glassRngBefore.glass;if(stream===null)delete apk.streams.glass;else apk.streams.glass=stream;
       scoringState={...scoringState,rng:{...scoringState.rng,apk}};
-    }else scoringState={...scoringState,rng:{...scoringState.rng,effects:structuredClone(value.glassRngBefore)}};
+    }else if(!hasLucky||!state.jokers.some(j=>SCORED_RETRIGGER_JOKERS.includes(originalJokerKey(j.entityId))))scoringState={...scoringState,rng:{...scoringState.rng,effects:structuredClone(value.glassRngBefore)}};
   }
   if(!state.bossState?.disabled&&['bl_eye','bl_mouth'].includes(state.bossState?.id)){
     const history=value.bossHistory;object(history,state.bossState.id==='bl_eye'?['playedHands']:['firstHand']);
@@ -422,6 +427,8 @@ function decodeScore(value,state) {
       requireValue(JSON.stringify(endpoint)===JSON.stringify(state.rng.apk));
     }
   }
+  if(state.rng.apk&&scoringState.jokers.some(j=>SCORED_RETRIGGER_JOKERS.includes(originalJokerKey(j.entityId))))requireValue(hasAction);
+  if(!value.handDebuffed&&scoringState.jokers.some(j=>originalJokerKey(j.entityId)==='j_dusk'))requireValue(value.scoringRoundBefore!==undefined);
   const expected=scoreHand(scoringState,(value.playedCardIds??value.scoringCardIds).map(key=>scoreCards[key]),{legacyRng:!hasAction});
   requireValue(!hasAction||JSON.stringify(expected.actionRng)===JSON.stringify(value.actionRng));
   requireValue(expected.handDebuffed===value.handDebuffed && expected.handId===value.handId && expected.isRoyal===value.isRoyal && expected.chips===chips && equalExact(expected.mult,mult) && expected.score===score);
@@ -431,6 +438,7 @@ function decodeScore(value,state) {
     const actual=trace[i];
     if(event.phase!==actual.phase||event.type!==actual.type)return false;
     if(event.type==='score_total')return true;
+    if(event.type==='score_repeat')return event.sourceId===actual.sourceId&&event.effectSourceId===actual.effectSourceId;
     if(event.type==='score_money')return event.sourceId===actual.sourceId&&event.amount===actual.amount;
     return event.sourceId===actual.sourceId && event.effectSourceId===actual.effectSourceId && event.operation===actual.operation && event.before.chips===actual.before.chips && equalExact(event.before.mult,actual.before.mult) && event.after.chips===actual.after.chips && equalExact(event.after.mult,actual.after.mult);
   }));

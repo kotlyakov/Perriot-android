@@ -189,3 +189,8 @@
 ## №4 — 16.10.2026
 
 Физические ID новых/скопированных карт и monotonic order реализованы; Death сохраняет ID цели, новая копия получает новый. Legacy52 читаются без переписывания. Строгий codec проверяет active/destroyed continuum и generated Glass snapshot membership. Покрыты RNG draws Stone в career/recognition/individual/held и их хронология с Lucky/Glass, Hook и postscore Heart/Bell/Wheel. Старые score records без provenance воспроизводятся по старому контракту; новая сыгранная Stone-рука получает новый. Исправлены найденные review обход generated Glass ID и Hanged+Psychic rejected-hand reload. Core984PASS0skip, independent84targetedPASS, CI38853367669 SUCCESS:39Chromium/freshAndroid/signature/alignment; PR31 merged. Новые генераторы/джокеры не включены,53/150.
+
+
+## №5 — scored repetitions,16.10.2026
+
+Dusk1/Hack1/Sock1/Chad2 additional evaluations in owned order, first scoring physical ID unchanged by debuff. Repeated Lucky rows and per-pass numeric effects, single Glass roll, held/main/editions once. Source-bound native687cases reproduced, core/review PASS; browser/Android pending. No seals/Mime/Pareidolia/copy Joker or profile unlock admission. Inherited limits: trace10000events, actionRng2000draws, payload2MiB; extreme negative inventory is not silently truncated and can exceed these validation ceilings. Default negative-slot expansion explicitly tested.
