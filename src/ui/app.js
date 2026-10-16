@@ -105,7 +105,7 @@ document.getElementById('play_hand').onclick=()=>perform('PLAY_HAND',[...selecte
 document.getElementById('discard').onclick=()=>perform('DISCARD',[...selected]);
 function sort(mode){if(busy || state?.phase!=='playing')return;perform('SET_SORT',undefined,mode);}
 document.getElementById('sort_rank').onclick=()=>sort('rank');document.getElementById('sort_suit').onclick=()=>sort('suit');
-function showSettings(){if(busy||state?.winPending)return;openDialog('Настройки','<p>Пьеро · предварительная сборка 0.4.34-preview</p><p>Переходы анте, обычные и финальные боссы, победа и бесконечный режим. Доступны магазин, 53 из 150 эффектов джокеров, Планеты, Небесные наборы и реализованные карты Таро. Полный профиль и остальной контент ещё в разработке. Продолжение сохраняется после каждого действия.</p>',[['Продолжить',closeDialog],['Новый забег',()=>confirmNew()],['Главное меню',showMenu]]);}
+function showSettings(){if(busy||state?.winPending)return;openDialog('Настройки','<p>Пьеро · предварительная сборка 0.4.35-preview</p><p>Переходы анте, обычные и финальные боссы, победа и бесконечный режим. Доступны магазин, 53 из 150 эффектов джокеров, Планеты, Небесные наборы и реализованные карты Таро. Полный профиль и остальной контент ещё в разработке. Продолжение сохраняется после каждого действия.</p>',[['Продолжить',closeDialog],['Новый забег',()=>confirmNew()],['Главное меню',showMenu]]);}
 document.getElementById('options').onclick=showSettings;
 document.getElementById('run_info').onclick=()=>{
  if(busy||!state||state.winPending)return;const table=document.createElement('table');

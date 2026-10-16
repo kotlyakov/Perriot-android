@@ -2,7 +2,7 @@ import {isCardSuit} from './card-suits.js';
 
 const SUITS = new Set(['clubs', 'diamonds', 'hearts', 'spades']);
 
-export function evaluateHand(cards, {isCardDebuffed = () => false, fourFingers = false, shortcut = false} = {}) {
+export function evaluateHand(cards, {isCardDebuffed = () => false, fourFingers = false, shortcut = false, rankGetter} = {}) {
   if (!Array.isArray(cards) || cards.length < 1 || cards.length > 5) throw new RangeError('Select 1 to 5 cards');
   if (typeof isCardDebuffed !== 'function') throw new TypeError('Invalid card debuff predicate');
   if (typeof fourFingers !== 'boolean' || typeof shortcut !== 'boolean') throw new TypeError('Invalid recognition modifiers');
@@ -19,6 +19,17 @@ export function evaluateHand(cards, {isCardDebuffed = () => false, fourFingers =
     const group = ranks.get(card.rank) ?? [];
     group.push(card);
     ranks.set(card.rank, group);
+  }
+  // Native recognition evaluates fresh getters on both sides, including self
+  // comparisons. A Stone getter must never be cached: collisions affect the
+  // conditional extra getter even though negative ranks cannot form a group.
+  if(rankGetter){
+    for(const count of [5,4,3,2])for(let i=cards.length-1;i>=0;i--){
+      let size=1;
+      for(let j=0;j<cards.length;j++)if(rankGetter(cards[i])===rankGetter(cards[j])&&i!==j)size++;
+      if(size===count)rankGetter(cards[i]);
+    }
+    if(cards.length>=(fourFingers?4:5))for(const card of cards)rankGetter(card);
   }
   const rankedCards=cards.filter(card=>card.enhancement!=='stone');
   if(!rankedCards.length)return {handId:'high_card',scoringCardIds:[cards[0].id],isRoyal:false};

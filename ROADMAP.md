@@ -1,3 +1,7 @@
+## Выбранный пункт — 16.10.2026
+
+Пользователь выбрал №4. Подготовлены физические ID/order новых карт, legacy52, единый RNG action contract play-score-v1 для Stone/Lucky/Glass и строгий replay. Локально983/983PASS0skip с native oracle; независимое review84targetedPASS, Critical/Important закрыты. Native354scoring cases и identity3seeds воспроизводимы. Платформенный CI ещё ожидается; №4 пока в проверке, №5 не начинать автоматически. Полная покадровая RNG parity оригинала, selection-preview side effects и Mark/Plant setup callbacks остаются открытым общим parity-пробелом; сохранён существующий pure-preview контракт интерфейса.
+
 ## П-05л — Wheel / Polychrome, 13.10.2026
 
 Wheel/Polychrome опубликованы в PR #23: шанс 1/4 и пороги изданий, постоянный порядок создания вместо позиции в инвентаре, точные keyed/raw RNG-переходы, переподсчёт цены и дробное ×1,5 после собственного эффекта джокера. Локально 421 core PASS; Actions38433312892 проверяет 34 Chromium suites и fresh Android. Следующий срез 0.4.27 расширяет каталог до 38 джокеров: Acrobat/Banner/Mystic Summit используют реальные round counters, Blackboard/Raised Fist — фактическую оставшуюся руку, Joker Stencil — нативную effective capacity с Negative. Oracle и границы RED→GREEN; после полного core/CI продолжать партии джокеров, затем Judgement на полном пуле.

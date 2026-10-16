@@ -189,7 +189,7 @@ export function dispatch(state, action, shopOptions={}) {
   let score=null,scoringState=state,hookDiscards=null;
   if (action.type==='PLAY_HAND') {
     try {
-      if(!state.bossState?.disabled&&state.bossState?.id==='bl_hook'){
+      if(!state.bossState?.disabled&&state.bossState?.id==='bl_hook'&&!state.hand.some(id=>state.cards[id].enhancement==='stone')){
         try{hookDiscards=chooseHookDiscards(state.rng.apk,state.hand.filter(id=>!selected.has(id)));}catch{return reject('UNSUPPORTED_BOSS_STATE','Invalid Hook card identities');}
         scoringState={...state,hand:state.hand.filter(id=>!hookDiscards.cardIds.includes(id)),discardPile:[...state.discardPile,...state.hand.filter(id=>hookDiscards.cardIds.includes(id))],rng:{...state.rng,apk:hookDiscards.rng}};
       }
@@ -198,10 +198,11 @@ export function dispatch(state, action, shopOptions={}) {
         scoringState={...state,handLevels:{...state.handLevels,[handId]:Math.max(1,state.handLevels[handId]-1)}};
       }
       score=scoreHand(scoringState,playedIds.map(id=>state.cards[id]));
+      if(score.actionRng?.hookDiscardCardIds)hookDiscards={cardIds:score.actionRng.hookDiscardCardIds,rng:score.actionRng.after};
       if(!state.bossState?.disabled&&state.bossState?.id==='bl_eye')score.bossHistory={playedHands:[...state.bossState.playedHands]};
       if(!state.bossState?.disabled&&state.bossState?.id==='bl_mouth')score.bossHistory={firstHand:state.bossState.firstHand};
-      if(!state.bossState?.disabled&&state.bossState?.id==='bl_final_bell'&&score.glassRngKind==='apk')score.bossHistory={bellRngBefore:state.rng.apk.streams.cerulean_bell??null};
-      if(!state.bossState?.disabled&&state.bossState?.id==='bl_final_heart')score.bossHistory={heartDebuffedJokerId:state.bossState.heartDebuffedJokerId,...(score.glassRngKind==='apk'?{heartRngBefore:state.rng.apk.streams.crimson_heart??null}:{})};
+      if(!state.bossState?.disabled&&state.bossState?.id==='bl_final_bell'&&(score.actionRng||score.glassRngKind==='apk'))score.bossHistory={bellRngBefore:state.rng.apk.streams.cerulean_bell??null};
+      if(!state.bossState?.disabled&&state.bossState?.id==='bl_final_heart')score.bossHistory={heartDebuffedJokerId:state.bossState.heartDebuffedJokerId,...((score.actionRng||score.glassRngKind==='apk')?{heartRngBefore:state.rng.apk.streams.crimson_heart??null}:{})};
     }
     catch (error) { return reject('UNSUPPORTED_CONTENT',error.message); }
   }
@@ -220,19 +221,20 @@ export function dispatch(state, action, shopOptions={}) {
   }
   next.discardPile.push(...playedIds);
   if (score) {
-    if(score.luckyRngAfter){
+    if(score.luckyRngAfter&&!score.actionRng){
       if(score.luckyRngKind==='apk'){
         for(const key of ['lucky_mult','lucky_money']){const value=score.luckyRngAfter[key];if(value===null)delete next.rng.apk.streams[key];else next.rng.apk.streams[key]=value;}
         next.rng.apk.mathState=[...score.luckyRngAfter.mathState];
       }
       else next.rng.effects=structuredClone(score.luckyRngAfter);
     }
-    if(score.glassRngAfter){
+    if(score.glassRngAfter&&!score.actionRng){
       if(score.glassRngKind==='apk'){
         const value=score.glassRngAfter.glass;if(value===null)delete next.rng.apk.streams.glass;else next.rng.apk.streams.glass=value;
         next.rng.apk.mathState=[...score.glassRngAfter.mathState];
       }else next.rng.effects=structuredClone(score.glassRngAfter);
     }
+    if(score.actionRng)next.rng.apk=structuredClone(score.actionRng.after);
     const shattered=score.glassRolls?.filter(roll=>roll.destroyed).map(roll=>roll.cardId)??[];
     if(shattered.length){
       const removed=new Set(shattered);next.discardPile=next.discardPile.filter(id=>!removed.has(id));
