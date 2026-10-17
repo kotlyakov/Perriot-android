@@ -65,7 +65,7 @@ test('bonus quotation is immutable and never credits balance before interest',()
 });
 
 const lua=process.env.LUAJIT_BIN??'/workspace/scratch/669d7c37bc9d/private-apk-research/LuaJIT-43d0a19158ceabaa51b0462c1ebc97612b420a2e/src/luajit';
-const source=fileURLToPath(new URL('../../../reference-apk/assets/card.lua',import.meta.url));
+const source=process.env.NATIVE_APK_ASSETS?`${process.env.NATIVE_APK_ASSETS}/card.lua`:fileURLToPath(new URL('../../../reference-apk/assets/card.lua',import.meta.url));
 test('cashout helper agrees with native APK tally, get_id and calculate_dollar_bonus methods',{
  skip:!existsSync(lua)||!existsSync(source)?'Private APK source and verified LuaJIT required for native oracle':false
 },()=>{

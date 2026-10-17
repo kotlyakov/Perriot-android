@@ -1,3 +1,7 @@
+16.10.2026: выбран №6. Реализованы4печати/3издания игральных карт, контекстное копирование, heldповторы и создание/срок жизни. Seven native consumers Mime/Pareidolia/Blueprint/Brainstorm/Seltzer/DNA/Marble:64/150. Native1122score+228lifecycle PASS; independent55targeted+140reducer scenarios, finding DNAanimationanchor fixed RED→GREEN. Все28боссов play/save/discard checked. Strict effectReplay journal for new6 preserves legacy codec.0.4.37-preview/code50; browser41suites/Android pending, №6 ещё не закрыт; №7 не начинать автоматически.
+
+## Предыдущие записи
+
 16.10.2026: №5 завершён. Dusk, Hack, Sock and Buskin, Hanging Chad:57/150 эффектов. Локально1004/1004PASS0skip; native687cases/JIT equality/reproducibility PASS; независимое ревью no Critical/Important,111targeted+132boss scenarios PASS. CI38859217381 SUCCESS:1002corePASS/1expected private-source skip,40Chromium suites, fresh Android, signature/alignment PASS. PR32 merged в apk-reference:add946da62523e629372d090a2fecd6d55cf3acf; source:38b7e6b73041b2f67bbd4ef4a9d4fcf7d4c96ecf; tested synthetic merge:026b8b913f443281cceb8686345af30ada0f02e0. Source/tested/merge сравнились без файловых различий. APK0.4.36-preview/code49 SHA256:c8b1ccc7e5607a33e529c8c0a81504b28745fff5c26bbd8bf7222900e6184d07; artifact:12028078840, debug-подпись без гарантии обновления. Маркеры повторов не меняют числа; Lucky переоценивается каждый проход, Glass разрушается один раз; strict RNG/save replay. Default native locks сохранены; полный профиль/разблокировки в№10. Общая покадровая/event RNG parity и физический Android не заявлены. Следующий предложен№6; ждать выбора пользователя.
 
 ## Предыдущие записи
@@ -32,8 +36,8 @@
 | 3 | Проверка и интеграция0.4.34 | Завершено: PR29 merged; оба CI SUCCESS;38 Chromium suites, Android/signature/alignment PASS; APK готов | Физический Android и установка остаются в№12; следующий предложен№4 |
 | 4 | RNG и идентичность карт | Завершено для игрового ядра:984localPASS,354native scoring cases,39Chromium, Android, PR31 merged | Покадровая/event parity оригинала отдельно остаётся открытой в П-RNG-STONE/финальной приёмке |
 | 5 | Четыре scored-retrigger Joker | Завершено:4эффекта;1004localPASS,687native cases, review,40Chromium, Android, PR32 merged | Полный профиль/разблокировки отдельно в№10; следующий предложен№6 |
-| 6 | Остальные механизмы эффектов | Базовые эффекты и модификаторы работают | Печати, издания игральных карт, создание/копирование, lifecycle triggers |
-| 7 | Полный каталог Joker и Judgement | 57/150 эффектов реализованы | 93 оставшихся; затем Judgement на полном пуле |
+| 6 | Остальные механизмы эффектов | 4печати/3издания,7контекстных Joker, native1122+228, review PASS | Browser41/Android/интеграция в проверке; будущие потребители событий в№7 |
+| 7 | Полный каталог Joker и Judgement | 64/150 эффектов реализованы | 86 оставшихся; затем Judgement на полном пуле |
 | 8 | Расходники и паки | Большинство Tarot,12Planet/Black Hole, Celestial; Arcana generator140cases подготовлен | Arcana lifecycle, остальные паки и Spectral |
 | 9 | Ваучеры и теги | 6/24 тегов работают | 18 тегов и оставшиеся эффекты ваучеров |
 | 10 | Колоды, сложности, профиль, испытания | Red/Blue, seed и продолжение | Остальные колоды/ставки, полный профиль и испытания |

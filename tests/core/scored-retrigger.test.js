@@ -63,12 +63,12 @@ test('legacy effects RNG advances one shared chronological sequence through repe
  assert.deepEqual(r.luckyRolls.map(x=>[x.multRoll,x.moneyRoll]),rolls);assert.equal(r.glassRolls[0].roll,end.value/4);
  assert.deepEqual(r.glassRngBefore,current);assert.deepEqual(r.glassRngAfter,end.rng);
 });
-test('new scored repeats do not admit other repeat systems, seals or playing-card editions',()=>{
- for(const key of ['j_mime','j_pareidolia','j_blueprint','j_brainstorm','j_seltzer']){
+test('unknown Joker families and invalid playing-card modifiers remain rejected',()=>{
+ for(const key of ['j_vampire','j_perkeo','j_invisible','j_seltzer']){
   const offer=joker(key);assert.equal(content.supportsJoker(offer,{owned:true}),false);assert.equal(content.supportsJoker(offer),false);
   assert.throws(()=>scoreHand(state([joker('j_hanging_chad'),offer]),[card()]));
  }
- for(const fields of [{seal:'red'},{seal:'gold'},{seal:'blue'},{seal:'purple'},{edition:'foil'}]){
+ for(const fields of [{seal:'unknown'},{edition:'negative'},{edition:'unknown'}]){
   const c={...card(),...fields};assert.throws(()=>scoreHand(state([joker('j_hanging_chad')],[c]),[c]));
  }
 });

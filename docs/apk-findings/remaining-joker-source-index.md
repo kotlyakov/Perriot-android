@@ -1,3 +1,5 @@
+>16.10.2026: item6 adds Mime/Pareidolia/Blueprint/Brainstorm/Seltzer/DNA/Marble; runtime64/150, remaining86. The original97-row source index is historical navigation.
+
 >16.10.2026: historical97-item index below. Dusk/Hack/Sock/Chad are now implemented by item5; remaining93. Runtime catalogue57/150.
 
 # Remaining native Joker source index

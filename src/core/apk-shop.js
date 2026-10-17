@@ -175,3 +175,17 @@ export function generateApkTarotConsumables(rng,context,{set,count,instancePrefi
  return {cards,rng:s.rng};
 }
 
+
+// Seal callbacks: no soulable poll, no shop flags, no used-consumable juice.
+// Boundary includes constructor + immediate materialization, excludes later visual events.
+export function generateApkSealConsumables(rng,context,{requests,instancePrefix,instanceOffset=0}={}){
+ context=createApkShopContext(context);
+ if(!Number.isSafeInteger(instanceOffset)||instanceOffset<0||!Array.isArray(requests)||requests.length>10000||typeof instancePrefix!=='string'||!instancePrefix||requests.some(row=>!row||typeof row.sourceId!=='string'||!row.sourceId||!['Tarot','Planet'].includes(row.set)||row.set==='Planet'&&centres[row.centreId]?.set!=='Planet'))throw new TypeError('Invalid seal creation requests');
+ const s=session(rng,{...context,reducedMotion:false}),cards=[];
+ for(const [index,row]of requests.entries()){
+  const forced=row.set==='Planet'&&!context.bannedCentreIds.includes(row.centreId)?row.centreId:null;
+  const centreId=forced??s.select(row.set,row.set==='Tarot'?'8ba':'blusl');
+  cards.push(s.construct(centreId,`${instancePrefix}:${instanceOffset+index+1}`,{materialize:true}));
+ }
+ return {cards,rng:s.rng};
+}

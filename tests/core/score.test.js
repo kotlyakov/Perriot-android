@@ -42,7 +42,7 @@ test('levels do not choose a weaker hand with larger point value',()=>{
 });
 test('unknown effects and modifiers fail instead of partial score',()=>{
   assert.throws(()=>scoreHand(state(['joker_blueprint']),cards([14])));
-  for(const extra of [{edition:'foil'},{seal:'red'},{debuffed:true},{enhancement:'glass'}]) {
+  for(const extra of [{edition:'negative'},{seal:'unknown'},{debuffed:true},{enhancement:'unknown'}]) {
     assert.throws(()=>scoreHand(state(),[{id:'x',rank:14,suit:'spades',...extra}]));
   }
   assert.throws(()=>scoreHand(state([],{high_card:0}),cards([14])));

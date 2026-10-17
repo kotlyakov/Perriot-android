@@ -18,6 +18,8 @@ const blocked=(code,reason)=>({available:false,code,reason});
 const moneyTarots=new Set(['c_hermit','c_temperance']);
 const generatorTarots=new Map([['c_emperor','Tarot'],['c_high_priestess','Planet']]);
 const wheelKey='c_wheel_of_fortune';
+const sealSpectrals=new Map([['c_talisman','gold'],['c_deja_vu','red'],['c_trance','blue'],['c_medium','purple']]);
+const modifierTargetRule=key=>sealSpectrals.has(key)||key==='c_aura'?{minimum:1,maximum:1}:undefined;
 const creationSpace=(state,card)=>{const cards=state.consumables??[],remaining=cards.filter(c=>c.id!==card.id);return (state.consumableSlots??2)+cards.filter(c=>c.edition==='negative').length-remaining.length;};
 const generatedCount=(state,card)=>Math.min(2,Math.max(0,creationSpace(state,card)));
 const deckTarots=new Map([
@@ -47,7 +49,7 @@ export function wheelSucceeds(roll,normal=1){return Number.isFinite(roll)&&roll>
 export function wheelEdition(roll){if(!Number.isFinite(roll)||roll<0||roll>1)throw new RangeError('Invalid Wheel edition roll');return roll>.85?'polychrome':roll>.5?'holographic':roll>0?'foil':'base';}
 const wheelEligible=state=>(state.jokers??[]).filter(joker=>(joker.edition??'base')==='base');
 const wheelOrderKnown=jokers=>jokers.length<=1||jokers.every(joker=>Number.isSafeInteger(joker.creationOrdinal)&&joker.creationOrdinal>=1)&&new Set(jokers.map(joker=>joker.creationOrdinal)).size===jokers.length;
-export function supportsConsumableEffect(card){const centre=centres.get(card?.entityId);return supportsConsumable(card)&&!!(centre?.set==='Planet'&&handIds[centre.handType]||centre?.key==='c_black_hole'||centre?.key==='c_fool'||centre?.key===wheelKey||moneyTarots.has(centre?.key)||enhancementTarots.has(centre?.key)||deckTarots.has(centre?.key)||baseTarots.has(centre?.key)||generatorTarots.has(centre?.key));}
+export function supportsConsumableEffect(card){const centre=centres.get(card?.entityId);return supportsConsumable(card)&&!!(centre?.set==='Planet'&&handIds[centre.handType]||centre?.key==='c_black_hole'||centre?.key==='c_fool'||centre?.key===wheelKey||moneyTarots.has(centre?.key)||enhancementTarots.has(centre?.key)||deckTarots.has(centre?.key)||baseTarots.has(centre?.key)||generatorTarots.has(centre?.key)||sealSpectrals.has(centre?.key)||centre?.key==='c_aura');}
 
 export function validConsumableUsage(state){
  const hasUsage=Object.hasOwn(state,'consumableUsage'),hasTotals=Object.hasOwn(state,'consumableUsageTotal');
@@ -84,11 +86,13 @@ export function canUseConsumable(state,card,targetCardIds=[]){
  if(!owned)return blocked('CARD_NOT_FOUND','Карта больше не принадлежит игроку.');
  const centre=centres.get(owned.entityId);
  if(!supportsConsumableEffect(owned))return blocked('USE_UNAVAILABLE','Эффект этой расходной карты ещё не реализован.');
- const targetRule=enhancementTarots.has(centre.key)?{minimum:1,maximum:enhancementTarots.get(centre.key).maximum}:deckTarots.get(centre.key)??baseTarots.get(centre.key);
+ const targetRule=enhancementTarots.has(centre.key)?{minimum:1,maximum:enhancementTarots.get(centre.key).maximum}:deckTarots.get(centre.key)??baseTarots.get(centre.key)??modifierTargetRule(centre.key);
  if(targetRule){
   const {minimum,maximum}=targetRule;
   if(!Array.isArray(targetCardIds)||targetCardIds.length<minimum||targetCardIds.length>maximum||new Set(targetCardIds).size!==targetCardIds.length||targetCardIds.some(id=>typeof id!=='string'||!state.hand?.includes(id)||!state.cards?.[id]))return blocked('INVALID_TARGETS',minimum===maximum?(minimum===1?'Выберите одну карту в руке.':'Выберите две карты в руке.'):maximum===3?'Выберите от одной до трёх карт в руке.':'Выберите одну или две карты в руке.');
  }
+ if(centre.key==='c_aura'&&!owned.debuffed&&targetCardIds.some(id=>(state.cards[id].edition??'base')!=='base'))return blocked('INVALID_TARGETS','Выберите одну карту без издания.');
+ if((sealSpectrals.has(centre.key)||centre.key==='c_aura')&&!owned.debuffed&&!state.rng?.apk)return blocked('USE_UNAVAILABLE','Эффект требует нативного генератора.');
  let shopContext=null;
  try{if(state.apkShop){if(!record(state.apkShop.context))throw new TypeError('Missing shop context');shopContext=currentApkShopContext(state);}}catch{return blocked('INVALID_STATE','Некорректное состояние магазина.');}
  if(generatorTarots.has(centre.key)&&!owned.debuffed&&generatedCount(state,owned)>0){
@@ -110,7 +114,7 @@ export function canUseConsumable(state,card,targetCardIds=[]){
   const createdId=generatedFoolId(owned),occupied=[...Object.keys(state.cards??{}),...(state.jokers??[]).map(card=>card?.id),...cards.filter(card=>card!==owned).map(card=>card?.id)];
   if(!owned.debuffed&&hasFoolSpace(state,owned)&&occupied.includes(createdId))return blocked('INVALID_STATE','Идентификатор созданной карты уже используется.');
  }
- const affected=owned.debuffed||centre.set==='Tarot'?[]:centre.key==='c_black_hole'?Object.keys(APK_HAND_NAMES):[handIds[centre.handType]];
+ const affected=owned.debuffed?[]:centre.key==='c_black_hole'?Object.keys(APK_HAND_NAMES):centre.set==='Planet'?[handIds[centre.handType]]:[];
  if(!record(state.handLevels)||Object.keys(state.handLevels).length!==Object.keys(APK_HAND_NAMES).length||!Object.keys(APK_HAND_NAMES).every(id=>Number.isSafeInteger(state.handLevels[id])&&state.handLevels[id]>=1)||affected.some(id=>state.handLevels[id]===Number.MAX_SAFE_INTEGER)||!validConsumableUsage(state))return blocked('INVALID_STATE','Некорректный уровень комбинации или счётчик использования.');
  if(!owned.debuffed&&moneyTarots.has(centre.key)&&(typeof state.money!=='bigint'||centre.key==='c_temperance'&&(!Array.isArray(state.jokers)||state.jokers.some(joker=>typeof joker?.sellCost!=='bigint'||joker.sellCost<0n))))return blocked('INVALID_STATE','Некорректная сумма денег или стоимость джокера.');
  const totals=state.consumableUsageTotal??emptyTotals();
@@ -160,14 +164,23 @@ export function applyConsumableAction(state,action){
   if(next.bossState?.hiddenCardIds)next.bossState.hiddenCardIds=next.bossState.hiddenCardIds.filter(id=>!removed.has(id));
   if(removed.has(next.bossState?.forcedCardId))next.bossState.forcedCardId=null;
   if(next.bossState?.hiddenFaceRanks)for(const id of removed)delete next.bossState.hiddenFaceRanks[id];
+  if(next.bossState?.pareidoliaHiddenCardIds)next.bossState.pareidoliaHiddenCardIds=next.bossState.pareidoliaHiddenCardIds.filter(id=>!removed.has(id));
  }
  if(!card.debuffed&&centre.key==='c_death'){
   const selected=new Set(action.targetCardIds),ordered=state.hand.filter(id=>selected.has(id)),[left,right]=ordered;
   const source=next.cards[right],target=next.cards[left];target.rank=source.rank;target.suit=source.suit;
-  if(Object.hasOwn(source,'enhancement'))target.enhancement=source.enhancement;else delete target.enhancement;
+  for(const property of ['enhancement','edition','seal'])if(Object.hasOwn(source,property))target[property]=source[property];else delete target[property];
   events.push({type:'playing_card_copied',cardId:left,sourceCardId:right,sourceId:card.id});
  }
- const affected=card.debuffed||centre.set==='Tarot'?[]:centre.key==='c_black_hole'?Object.keys(APK_HAND_NAMES):[handIds[centre.handType]];
+ if(!card.debuffed&&(sealSpectrals.has(centre.key)||centre.key==='c_aura')){
+  const target=next.cards[action.targetCardIds[0]];
+  if(sealSpectrals.has(centre.key)){target.seal=sealSpectrals.get(centre.key);events.push({type:'playing_card_seal_changed',cardId:target.id,seal:target.seal,sourceId:card.id});}
+  else{const roll=nextApkRandom(next.rng.apk,'aura');next.rng.apk=roll.rng;target.edition=wheelEdition(roll.value);events.push({type:'playing_card_edition_changed',cardId:target.id,edition:target.edition,sourceId:card.id});}
+  // Explicit use-operation callbacks: changed-card juice and used Spectral juice.
+  const count=centre.key==='c_aura'&&target.edition==='base'?1:2;
+  for(let index=0;index<count;index++){const draw=nextApkMathRandom(next.rng.apk.mathState);next.rng.apk={...next.rng.apk,mathState:draw.state};}
+ }
+ const affected=card.debuffed?[]:centre.key==='c_black_hole'?Object.keys(APK_HAND_NAMES):centre.set==='Planet'?[handIds[centre.handType]]:[];
  for(const handId of affected){next.handLevels[handId]++;events.push({type:'hand_level_changed',handId,levels:1,level:next.handLevels[handId]});}
  if(!card.debuffed&&moneyTarots.has(centre.key)){
   let delta;if(centre.key==='c_hermit')delta=next.money<=0n?0n:next.money<20n?next.money:20n;
