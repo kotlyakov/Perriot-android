@@ -1,0 +1,3007 @@
+{
+  "apk_sha256": "6236dc68a312d04295839cfbfd2699d4751877bdf162c3a4ce425481d28397bd",
+  "runtime_commit": "43d0a19158ceabaa51b0462c1ebc97612b420a2e",
+  "jit_interpreter_equal": true,
+  "scope": "conditional original selection/card-ability/pricing oracle; rendering/materialize/constructor adapter; NOT full game execution",
+  "cases": [
+    {
+      "first_trace": [
+        {
+          "key": "Voucher1",
+          "kind": "pseudoseed",
+          "value": 0.2672995367065086
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.2672995367065086
+        },
+        {
+          "args": [
+            32
+          ],
+          "kind": "random",
+          "value": 12
+        },
+        {
+          "key": "Voucher1_resample2",
+          "kind": "pseudoseed",
+          "value": 0.5653786237694586
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.5653786237694586
+        },
+        {
+          "args": [
+            32
+          ],
+          "kind": "random",
+          "value": 11
+        },
+        {
+          "key": "cdt1",
+          "kind": "pseudoseed",
+          "value": 0.2923923196399586
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.2923923196399586
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.2938180912756101
+        },
+        {
+          "key": "rarity1sho",
+          "kind": "pseudoseed",
+          "value": 0.5559663891084585
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.5559663891084585
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.5842727941479127
+        },
+        {
+          "key": "Joker1sho1",
+          "kind": "pseudoseed",
+          "value": 0.7088951513372586
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.7088951513372586
+        },
+        {
+          "args": [
+            61
+          ],
+          "kind": "random",
+          "value": 11
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.29681549730810786
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.8727139518792548
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.9662098686183562
+        },
+        {
+          "key": "etperpoll1",
+          "kind": "pseudoseed",
+          "value": 0.2853124839733586
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.2853124839733586
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.8503829680414456
+        },
+        {
+          "key": "edisho1",
+          "kind": "pseudoseed",
+          "value": 0.6047281799724086
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.6047281799724086
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.5986074172274389
+        },
+        {
+          "key": "cdt1",
+          "kind": "pseudoseed",
+          "value": 0.3993729025931086
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.3993729025931086
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.3952919712094043
+        },
+        {
+          "key": "rarity1sho",
+          "kind": "pseudoseed",
+          "value": 0.3538569230816586
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.3538569230816586
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.923758267913813
+        },
+        {
+          "key": "Joker2sho1",
+          "kind": "pseudoseed",
+          "value": 0.4594455688069586
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.4594455688069586
+        },
+        {
+          "args": [
+            64
+          ],
+          "kind": "random",
+          "value": 54
+        },
+        {
+          "key": "Joker2sho1_resample2",
+          "kind": "pseudoseed",
+          "value": 0.5056888676504586
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.5056888676504586
+        },
+        {
+          "args": [
+            64
+          ],
+          "kind": "random",
+          "value": 3
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.22708962172698288
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.6054042357406968
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.6145799505639424
+        },
+        {
+          "key": "etperpoll1",
+          "kind": "pseudoseed",
+          "value": 0.3871650545880086
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.3871650545880086
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.9962526606914734
+        },
+        {
+          "key": "edisho1",
+          "kind": "pseudoseed",
+          "value": 0.4379374807888586
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.4379374807888586
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.08366397372297141
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.4648525558893277
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.8498227976337134
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.5590324482579725
+        },
+        {
+          "args": [
+            2
+          ],
+          "kind": "random",
+          "value": 2
+        },
+        {
+          "args": [
+            1,
+            2
+          ],
+          "kind": "random",
+          "value": 1
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.8811376344042163
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.2914355102316222
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.6274796386429169
+        },
+        {
+          "args": [
+            2
+          ],
+          "kind": "random",
+          "value": 2
+        },
+        {
+          "key": "shop_pack1",
+          "kind": "pseudoseed",
+          "value": 0.6791293208109586
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.6791293208109586
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.11465254775460698
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.27216238380359714
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.5375998941499132
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.6697083242500157
+        },
+        {
+          "args": [
+            2
+          ],
+          "kind": "random",
+          "value": 1
+        }
+      ],
+      "items": [
+        {
+          "cost": 3,
+          "edition": false,
+          "key": "j_sly",
+          "sell_cost": 1,
+          "set": "Joker"
+        },
+        {
+          "cost": 5,
+          "edition": false,
+          "key": "j_mime",
+          "sell_cost": 2,
+          "set": "Joker"
+        }
+      ],
+      "key_state": {
+        "Joker1sho1": 0.9427756236376,
+        "Joker2sho1": 0.443876458577,
+        "Joker2sho1_resample2": 0.536363056264,
+        "Planetsho1": 0.6734066295172,
+        "Voucher1": 0.0595843943761,
+        "Voucher1_resample2": 0.655742568502,
+        "cdt1": 0.3288276930324,
+        "edisho1": 0.4008602825408,
+        "etperpoll1": 0.2993154301391,
+        "hashed_seed": 0.4750146790369172,
+        "rarity1sho": 0.2326991671264,
+        "seed": "AAAAAAA1",
+        "shop_pack1": 0.883243962585
+      },
+      "packs": [
+        {
+          "cost": 4,
+          "edition": false,
+          "key": "p_buffoon_normal_1",
+          "sell_cost": 2,
+          "set": "Booster"
+        },
+        {
+          "cost": 4,
+          "edition": false,
+          "key": "p_arcana_normal_3",
+          "sell_cost": 2,
+          "set": "Booster"
+        }
+      ],
+      "pool_counts": {
+        "Booster": 32,
+        "Enhanced": 8,
+        "Joker": 150,
+        "Planet": 12,
+        "Spectral": 18,
+        "Tarot": 22,
+        "Voucher": 32
+      },
+      "profile": "fresh meta; explicit seeded run; high-card-only first win",
+      "reduced_motion": false,
+      "reroll_items": [
+        {
+          "cost": 3,
+          "edition": false,
+          "key": "c_jupiter",
+          "sell_cost": 1,
+          "set": "Planet"
+        },
+        {
+          "cost": 3,
+          "edition": false,
+          "key": "c_mercury",
+          "sell_cost": 1,
+          "set": "Planet"
+        }
+      ],
+      "reroll_trace": [
+        {
+          "key": "cdt1",
+          "kind": "pseudoseed",
+          "value": 0.5838408419196086
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.5838408419196086
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.9007013102848773
+        },
+        {
+          "key": "Planetsho1",
+          "kind": "pseudoseed",
+          "value": 0.6837586260969086
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.6837586260969086
+        },
+        {
+          "args": [
+            12
+          ],
+          "kind": "random",
+          "value": 5
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.27389289619078383
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.9918525578503812
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.7893133207575027
+        },
+        {
+          "args": [
+            2
+          ],
+          "kind": "random",
+          "value": 1
+        },
+        {
+          "args": [
+            2
+          ],
+          "kind": "random",
+          "value": 1
+        },
+        {
+          "key": "cdt1",
+          "kind": "pseudoseed",
+          "value": 0.4019211860346586
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.4019211860346586
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.8999996638253933
+        },
+        {
+          "key": "Planetsho1",
+          "kind": "pseudoseed",
+          "value": 0.5742106542770586
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.5742106542770586
+        },
+        {
+          "args": [
+            12
+          ],
+          "kind": "random",
+          "value": 1
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.6456122491625529
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.3520594489754043
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.911066399896181
+        },
+        {
+          "args": [
+            2
+          ],
+          "kind": "random",
+          "value": 2
+        },
+        {
+          "args": [
+            2
+          ],
+          "kind": "random",
+          "value": 1
+        }
+      ],
+      "seed": "AAAAAAA1",
+      "voucher": {
+        "cost": 10,
+        "edition": false,
+        "key": "v_telescope",
+        "sell_cost": 5,
+        "set": "Voucher"
+      }
+    },
+    {
+      "first_trace": [
+        {
+          "key": "Voucher1",
+          "kind": "pseudoseed",
+          "value": 0.4711958655332671
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.4711958655332671
+        },
+        {
+          "args": [
+            32
+          ],
+          "kind": "random",
+          "value": 3
+        },
+        {
+          "key": "cdt1",
+          "kind": "pseudoseed",
+          "value": 0.1590068699236671
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.1590068699236671
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.6032493876356431
+        },
+        {
+          "key": "rarity1sho",
+          "kind": "pseudoseed",
+          "value": 0.3382198058234671
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.3382198058234671
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.20402401073891108
+        },
+        {
+          "key": "Joker1sho1",
+          "kind": "pseudoseed",
+          "value": 0.5800643950261171
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.5800643950261171
+        },
+        {
+          "args": [
+            61
+          ],
+          "kind": "random",
+          "value": 52
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.5783303527190955
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.35236394950875094
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.8628778873804888
+        },
+        {
+          "key": "etperpoll1",
+          "kind": "pseudoseed",
+          "value": 0.34271539471776713
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.34271539471776713
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.46161921559902064
+        },
+        {
+          "key": "edisho1",
+          "kind": "pseudoseed",
+          "value": 0.4237697214450671
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.4237697214450671
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.6777801239065451
+        },
+        {
+          "key": "cdt1",
+          "kind": "pseudoseed",
+          "value": 0.2746800667131171
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.2746800667131171
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.315618678789531
+        },
+        {
+          "key": "rarity1sho",
+          "kind": "pseudoseed",
+          "value": 0.5836991435727671
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.5836991435727671
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.06348385706633608
+        },
+        {
+          "key": "Joker1sho1",
+          "kind": "pseudoseed",
+          "value": 0.5007147530971171
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.5007147530971171
+        },
+        {
+          "args": [
+            61
+          ],
+          "kind": "random",
+          "value": 40
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.6449954857518012
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.4971747626445444
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.01515289797588748
+        },
+        {
+          "key": "etperpoll1",
+          "kind": "pseudoseed",
+          "value": 0.5914509429787671
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.5914509429787671
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.9334854096093057
+        },
+        {
+          "key": "edisho1",
+          "kind": "pseudoseed",
+          "value": 0.2312139187650171
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.2312139187650171
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.3372709003712089
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.6724232408029911
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.513248392373175
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.620252557184195
+        },
+        {
+          "args": [
+            2
+          ],
+          "kind": "random",
+          "value": 1
+        },
+        {
+          "args": [
+            1,
+            2
+          ],
+          "kind": "random",
+          "value": 2
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.34478357391718073
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.873757617333965
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.5130576900422033
+        },
+        {
+          "args": [
+            2
+          ],
+          "kind": "random",
+          "value": 1
+        },
+        {
+          "key": "shop_pack1",
+          "kind": "pseudoseed",
+          "value": 0.4639820678878171
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.4639820678878171
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.27061017820092625
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.2775769112579787
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.0408146780876415
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.4113998374445049
+        },
+        {
+          "args": [
+            2
+          ],
+          "kind": "random",
+          "value": 2
+        }
+      ],
+      "items": [
+        {
+          "cost": 4,
+          "edition": false,
+          "key": "j_juggler",
+          "sell_cost": 2,
+          "set": "Joker"
+        },
+        {
+          "cost": 4,
+          "edition": false,
+          "key": "j_green_joker",
+          "sell_cost": 2,
+          "set": "Joker"
+        }
+      ],
+      "key_state": {
+        "Joker1sho1": 0.543540983645,
+        "Tarotsho1": 0.3909396472174,
+        "Voucher1": 0.7581503420228,
+        "cdt1": 0.451883555006,
+        "edisho1": 0.6141337550867,
+        "etperpoll1": 0.85645604744,
+        "hashed_seed": 0.18424138904373422,
+        "rarity1sho": 0.8297230006941,
+        "seed": "PIERROT1",
+        "shop_pack1": 0.7437227467319
+      },
+      "packs": [
+        {
+          "cost": 4,
+          "edition": false,
+          "key": "p_buffoon_normal_2",
+          "sell_cost": 2,
+          "set": "Booster"
+        },
+        {
+          "cost": 8,
+          "edition": false,
+          "key": "p_arcana_mega_1",
+          "sell_cost": 4,
+          "set": "Booster"
+        }
+      ],
+      "pool_counts": {
+        "Booster": 32,
+        "Enhanced": 8,
+        "Joker": 150,
+        "Planet": 12,
+        "Spectral": 18,
+        "Tarot": 22,
+        "Voucher": 32
+      },
+      "profile": "fresh meta; explicit seeded run; high-card-only first win",
+      "reduced_motion": false,
+      "reroll_items": [
+        {
+          "cost": 4,
+          "edition": false,
+          "key": "j_devious",
+          "sell_cost": 2,
+          "set": "Joker"
+        },
+        {
+          "cost": 3,
+          "edition": false,
+          "key": "c_star",
+          "sell_cost": 1,
+          "set": "Tarot"
+        }
+      ],
+      "reroll_trace": [
+        {
+          "key": "cdt1",
+          "kind": "pseudoseed",
+          "value": 0.4741367873444171
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.4741367873444171
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.006411491765009103
+        },
+        {
+          "key": "rarity1sho",
+          "kind": "pseudoseed",
+          "value": 0.506982194868917
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.506982194868917
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.4755235874614532
+        },
+        {
+          "key": "Joker1sho1",
+          "kind": "pseudoseed",
+          "value": 0.3638911863443671
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.3638911863443671
+        },
+        {
+          "args": [
+            61
+          ],
+          "kind": "random",
+          "value": 14
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.1811436460071394
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.3888351080352561
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.1952401205839822
+        },
+        {
+          "key": "etperpoll1",
+          "kind": "pseudoseed",
+          "value": 0.5203487182418671
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.5203487182418671
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.33301864355375876
+        },
+        {
+          "key": "edisho1",
+          "kind": "pseudoseed",
+          "value": 0.3991875720652171
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.3991875720652171
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.10492127357062464
+        },
+        {
+          "args": [
+            2
+          ],
+          "kind": "random",
+          "value": 1
+        },
+        {
+          "key": "cdt1",
+          "kind": "pseudoseed",
+          "value": 0.31806247202486715
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.31806247202486715
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.79132718626192
+        },
+        {
+          "key": "Tarotsho1",
+          "kind": "pseudoseed",
+          "value": 0.28759051813056713
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.28759051813056713
+        },
+        {
+          "args": [
+            22
+          ],
+          "kind": "random",
+          "value": 18
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.7413831229388297
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.3843635491709232
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.3054839575291741
+        },
+        {
+          "args": [
+            2
+          ],
+          "kind": "random",
+          "value": 2
+        },
+        {
+          "args": [
+            2
+          ],
+          "kind": "random",
+          "value": 1
+        }
+      ],
+      "seed": "PIERROT1",
+      "voucher": {
+        "cost": 10,
+        "edition": false,
+        "key": "v_clearance_sale",
+        "sell_cost": 5,
+        "set": "Voucher"
+      }
+    },
+    {
+      "first_trace": [
+        {
+          "key": "Voucher1",
+          "kind": "pseudoseed",
+          "value": 0.654962373871457
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.654962373871457
+        },
+        {
+          "args": [
+            32
+          ],
+          "kind": "random",
+          "value": 32
+        },
+        {
+          "key": "Voucher1_resample2",
+          "kind": "pseudoseed",
+          "value": 0.548710605327257
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.548710605327257
+        },
+        {
+          "args": [
+            32
+          ],
+          "kind": "random",
+          "value": 23
+        },
+        {
+          "key": "cdt1",
+          "kind": "pseudoseed",
+          "value": 0.746736187795507
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.746736187795507
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.8995562674363864
+        },
+        {
+          "key": "Planetsho1",
+          "kind": "pseudoseed",
+          "value": 0.509938396398557
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.509938396398557
+        },
+        {
+          "args": [
+            12
+          ],
+          "kind": "random",
+          "value": 8
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.6165797719002011
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.5073278161859072
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.5542343010092217
+        },
+        {
+          "args": [
+            2
+          ],
+          "kind": "random",
+          "value": 1
+        },
+        {
+          "key": "cdt1",
+          "kind": "pseudoseed",
+          "value": 0.646410952749507
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.646410952749507
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.346053148686172
+        },
+        {
+          "key": "rarity1sho",
+          "kind": "pseudoseed",
+          "value": 0.6520692570791069
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.6520692570791069
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.8114357373045846
+        },
+        {
+          "key": "Joker2sho1",
+          "kind": "pseudoseed",
+          "value": 0.46306705749655697
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.46306705749655697
+        },
+        {
+          "args": [
+            64
+          ],
+          "kind": "random",
+          "value": 11
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.6990517116050665
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.023233039217980478
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.08633372300197562
+        },
+        {
+          "key": "etperpoll1",
+          "kind": "pseudoseed",
+          "value": 0.5228453396030069
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.5228453396030069
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.9254766367688769
+        },
+        {
+          "key": "edisho1",
+          "kind": "pseudoseed",
+          "value": 0.5310599397213569
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.5310599397213569
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.0983935526479287
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.038178084299695714
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.8024729484308502
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.45491464811518
+        },
+        {
+          "args": [
+            2
+          ],
+          "kind": "random",
+          "value": 1
+        },
+        {
+          "args": [
+            1,
+            2
+          ],
+          "kind": "random",
+          "value": 1
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.46694788339217874
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.308894841014703
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.5618983614154955
+        },
+        {
+          "args": [
+            2
+          ],
+          "kind": "random",
+          "value": 2
+        },
+        {
+          "key": "shop_pack1",
+          "kind": "pseudoseed",
+          "value": 0.549527542664507
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.549527542664507
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.2356508807399882
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.12787424494998567
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.38121379226951957
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.2068980194872192
+        },
+        {
+          "args": [
+            2
+          ],
+          "kind": "random",
+          "value": 1
+        }
+      ],
+      "items": [
+        {
+          "cost": 3,
+          "edition": false,
+          "key": "c_neptune",
+          "sell_cost": 1,
+          "set": "Planet"
+        },
+        {
+          "cost": 5,
+          "edition": false,
+          "key": "j_pareidolia",
+          "sell_cost": 2,
+          "set": "Joker"
+        }
+      ],
+      "key_state": {
+        "Joker1sho1": 0.8790021170345,
+        "Joker2sho1": 0.3506304996292,
+        "Planetsho1": 0.4443731774332,
+        "Voucher1": 0.734421132379,
+        "Voucher1_resample2": 0.5219175952906,
+        "cdt1": 0.7747495871712,
+        "edisho1": 0.8131264255094,
+        "etperpoll1": 0.7642782558643,
+        "hashed_seed": 0.5755036153639139,
+        "rarity1sho": 0.8083967283361,
+        "seed": "12345678",
+        "shop_pack1": 0.5235514699651
+      },
+      "packs": [
+        {
+          "cost": 4,
+          "edition": false,
+          "key": "p_buffoon_normal_1",
+          "sell_cost": 2,
+          "set": "Booster"
+        },
+        {
+          "cost": 6,
+          "edition": false,
+          "key": "p_arcana_jumbo_2",
+          "sell_cost": 3,
+          "set": "Booster"
+        }
+      ],
+      "pool_counts": {
+        "Booster": 32,
+        "Enhanced": 8,
+        "Joker": 150,
+        "Planet": 12,
+        "Spectral": 18,
+        "Tarot": 22,
+        "Voucher": 32
+      },
+      "profile": "fresh meta; explicit seeded run; high-card-only first win",
+      "reduced_motion": false,
+      "reroll_items": [
+        {
+          "cost": 4,
+          "edition": false,
+          "key": "j_hallucination",
+          "sell_cost": 2,
+          "set": "Joker"
+        },
+        {
+          "cost": 4,
+          "edition": false,
+          "key": "j_zany",
+          "sell_cost": 2,
+          "set": "Joker"
+        }
+      ],
+      "reroll_trace": [
+        {
+          "key": "cdt1",
+          "kind": "pseudoseed",
+          "value": 0.473418911946307
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.473418911946307
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.19916478016653638
+        },
+        {
+          "key": "rarity1sho",
+          "kind": "pseudoseed",
+          "value": 0.48317559592530696
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.48317559592530696
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.13399264921972653
+        },
+        {
+          "key": "Joker1sho1",
+          "kind": "pseudoseed",
+          "value": 0.503649087606757
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.503649087606757
+        },
+        {
+          "args": [
+            61
+          ],
+          "kind": "random",
+          "value": 50
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.2926593852353896
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.9550538799573376
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.6766124922776733
+        },
+        {
+          "key": "etperpoll1",
+          "kind": "pseudoseed",
+          "value": 0.7603532003981069
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.7603532003981069
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.7474647893444974
+        },
+        {
+          "key": "edisho1",
+          "kind": "pseudoseed",
+          "value": 0.774517736750357
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.774517736750357
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.14897185076144193
+        },
+        {
+          "args": [
+            2
+          ],
+          "kind": "random",
+          "value": 2
+        },
+        {
+          "key": "cdt1",
+          "kind": "pseudoseed",
+          "value": 0.675126601267557
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.675126601267557
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.11442142111371822
+        },
+        {
+          "key": "rarity1sho",
+          "kind": "pseudoseed",
+          "value": 0.691950171850007
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.691950171850007
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.0001236929059347247
+        },
+        {
+          "key": "Joker1sho1",
+          "kind": "pseudoseed",
+          "value": 0.727252866199207
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.727252866199207
+        },
+        {
+          "args": [
+            61
+          ],
+          "kind": "random",
+          "value": 7
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.3942320481203565
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.970673322995752
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.15642394307679375
+        },
+        {
+          "key": "etperpoll1",
+          "kind": "pseudoseed",
+          "value": 0.669890935614107
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.669890935614107
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.41747200087618785
+        },
+        {
+          "key": "edisho1",
+          "kind": "pseudoseed",
+          "value": 0.6943150204366569
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.6943150204366569
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.2741841105974121
+        },
+        {
+          "args": [
+            2
+          ],
+          "kind": "random",
+          "value": 1
+        }
+      ],
+      "seed": "12345678",
+      "voucher": {
+        "cost": 10,
+        "edition": false,
+        "key": "v_blank",
+        "sell_cost": 5,
+        "set": "Voucher"
+      }
+    },
+    {
+      "first_trace": [
+        {
+          "key": "Voucher1",
+          "kind": "pseudoseed",
+          "value": 0.2672995367065086
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.2672995367065086
+        },
+        {
+          "args": [
+            32
+          ],
+          "kind": "random",
+          "value": 12
+        },
+        {
+          "key": "Voucher1_resample2",
+          "kind": "pseudoseed",
+          "value": 0.5653786237694586
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.5653786237694586
+        },
+        {
+          "args": [
+            32
+          ],
+          "kind": "random",
+          "value": 11
+        },
+        {
+          "key": "cdt1",
+          "kind": "pseudoseed",
+          "value": 0.2923923196399586
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.2923923196399586
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.2938180912756101
+        },
+        {
+          "key": "rarity1sho",
+          "kind": "pseudoseed",
+          "value": 0.5559663891084585
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.5559663891084585
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.5842727941479127
+        },
+        {
+          "key": "Joker1sho1",
+          "kind": "pseudoseed",
+          "value": 0.7088951513372586
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.7088951513372586
+        },
+        {
+          "args": [
+            61
+          ],
+          "kind": "random",
+          "value": 11
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.29681549730810786
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.8727139518792548
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.9662098686183562
+        },
+        {
+          "key": "etperpoll1",
+          "kind": "pseudoseed",
+          "value": 0.2853124839733586
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.2853124839733586
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.8503829680414456
+        },
+        {
+          "key": "edisho1",
+          "kind": "pseudoseed",
+          "value": 0.6047281799724086
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.6047281799724086
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.5986074172274389
+        },
+        {
+          "key": "cdt1",
+          "kind": "pseudoseed",
+          "value": 0.3993729025931086
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.3993729025931086
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.3952919712094043
+        },
+        {
+          "key": "rarity1sho",
+          "kind": "pseudoseed",
+          "value": 0.3538569230816586
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.3538569230816586
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.923758267913813
+        },
+        {
+          "key": "Joker2sho1",
+          "kind": "pseudoseed",
+          "value": 0.4594455688069586
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.4594455688069586
+        },
+        {
+          "args": [
+            64
+          ],
+          "kind": "random",
+          "value": 54
+        },
+        {
+          "key": "Joker2sho1_resample2",
+          "kind": "pseudoseed",
+          "value": 0.5056888676504586
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.5056888676504586
+        },
+        {
+          "args": [
+            64
+          ],
+          "kind": "random",
+          "value": 3
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.22708962172698288
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.6054042357406968
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.6145799505639424
+        },
+        {
+          "key": "etperpoll1",
+          "kind": "pseudoseed",
+          "value": 0.3871650545880086
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.3871650545880086
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.9962526606914734
+        },
+        {
+          "key": "edisho1",
+          "kind": "pseudoseed",
+          "value": 0.4379374807888586
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.4379374807888586
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.08366397372297141
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.4648525558893277
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.8498227976337134
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.5590324482579725
+        },
+        {
+          "args": [
+            1,
+            2
+          ],
+          "kind": "random",
+          "value": 2
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.1876505310656611
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.8811376344042163
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.2914355102316222
+        },
+        {
+          "key": "shop_pack1",
+          "kind": "pseudoseed",
+          "value": 0.6791293208109586
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.6791293208109586
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.11465254775460698
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.27216238380359714
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.5375998941499132
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.6697083242500157
+        }
+      ],
+      "items": [
+        {
+          "cost": 3,
+          "edition": false,
+          "key": "j_sly",
+          "sell_cost": 1,
+          "set": "Joker"
+        },
+        {
+          "cost": 5,
+          "edition": false,
+          "key": "j_mime",
+          "sell_cost": 2,
+          "set": "Joker"
+        }
+      ],
+      "key_state": {
+        "Joker1sho1": 0.9427756236376,
+        "Joker2sho1": 0.443876458577,
+        "Joker2sho1_resample2": 0.536363056264,
+        "Planetsho1": 0.6734066295172,
+        "Voucher1": 0.0595843943761,
+        "Voucher1_resample2": 0.655742568502,
+        "cdt1": 0.3288276930324,
+        "edisho1": 0.4008602825408,
+        "etperpoll1": 0.2993154301391,
+        "hashed_seed": 0.4750146790369172,
+        "rarity1sho": 0.2326991671264,
+        "seed": "AAAAAAA1",
+        "shop_pack1": 0.883243962585
+      },
+      "packs": [
+        {
+          "cost": 4,
+          "edition": false,
+          "key": "p_buffoon_normal_2",
+          "sell_cost": 2,
+          "set": "Booster"
+        },
+        {
+          "cost": 4,
+          "edition": false,
+          "key": "p_arcana_normal_3",
+          "sell_cost": 2,
+          "set": "Booster"
+        }
+      ],
+      "pool_counts": {
+        "Booster": 32,
+        "Enhanced": 8,
+        "Joker": 150,
+        "Planet": 12,
+        "Spectral": 18,
+        "Tarot": 22,
+        "Voucher": 32
+      },
+      "profile": "fresh meta; explicit seeded run; high-card-only first win",
+      "reduced_motion": true,
+      "reroll_items": [
+        {
+          "cost": 3,
+          "edition": false,
+          "key": "c_jupiter",
+          "sell_cost": 1,
+          "set": "Planet"
+        },
+        {
+          "cost": 3,
+          "edition": false,
+          "key": "c_mercury",
+          "sell_cost": 1,
+          "set": "Planet"
+        }
+      ],
+      "reroll_trace": [
+        {
+          "key": "cdt1",
+          "kind": "pseudoseed",
+          "value": 0.5838408419196086
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.5838408419196086
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.9007013102848773
+        },
+        {
+          "key": "Planetsho1",
+          "kind": "pseudoseed",
+          "value": 0.6837586260969086
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.6837586260969086
+        },
+        {
+          "args": [
+            12
+          ],
+          "kind": "random",
+          "value": 5
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.27389289619078383
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.9918525578503812
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.7893133207575027
+        },
+        {
+          "key": "cdt1",
+          "kind": "pseudoseed",
+          "value": 0.4019211860346586
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.4019211860346586
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.8999996638253933
+        },
+        {
+          "key": "Planetsho1",
+          "kind": "pseudoseed",
+          "value": 0.5742106542770586
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.5742106542770586
+        },
+        {
+          "args": [
+            12
+          ],
+          "kind": "random",
+          "value": 1
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.6456122491625529
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.3520594489754043
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.911066399896181
+        }
+      ],
+      "seed": "AAAAAAA1",
+      "voucher": {
+        "cost": 10,
+        "edition": false,
+        "key": "v_telescope",
+        "sell_cost": 5,
+        "set": "Voucher"
+      }
+    },
+    {
+      "first_trace": [
+        {
+          "key": "Voucher1",
+          "kind": "pseudoseed",
+          "value": 0.4711958655332671
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.4711958655332671
+        },
+        {
+          "args": [
+            32
+          ],
+          "kind": "random",
+          "value": 3
+        },
+        {
+          "key": "cdt1",
+          "kind": "pseudoseed",
+          "value": 0.1590068699236671
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.1590068699236671
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.6032493876356431
+        },
+        {
+          "key": "rarity1sho",
+          "kind": "pseudoseed",
+          "value": 0.3382198058234671
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.3382198058234671
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.20402401073891108
+        },
+        {
+          "key": "Joker1sho1",
+          "kind": "pseudoseed",
+          "value": 0.5800643950261171
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.5800643950261171
+        },
+        {
+          "args": [
+            61
+          ],
+          "kind": "random",
+          "value": 52
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.5783303527190955
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.35236394950875094
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.8628778873804888
+        },
+        {
+          "key": "etperpoll1",
+          "kind": "pseudoseed",
+          "value": 0.34271539471776713
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.34271539471776713
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.46161921559902064
+        },
+        {
+          "key": "edisho1",
+          "kind": "pseudoseed",
+          "value": 0.4237697214450671
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.4237697214450671
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.6777801239065451
+        },
+        {
+          "key": "cdt1",
+          "kind": "pseudoseed",
+          "value": 0.2746800667131171
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.2746800667131171
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.315618678789531
+        },
+        {
+          "key": "rarity1sho",
+          "kind": "pseudoseed",
+          "value": 0.5836991435727671
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.5836991435727671
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.06348385706633608
+        },
+        {
+          "key": "Joker1sho1",
+          "kind": "pseudoseed",
+          "value": 0.5007147530971171
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.5007147530971171
+        },
+        {
+          "args": [
+            61
+          ],
+          "kind": "random",
+          "value": 40
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.6449954857518012
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.4971747626445444
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.01515289797588748
+        },
+        {
+          "key": "etperpoll1",
+          "kind": "pseudoseed",
+          "value": 0.5914509429787671
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.5914509429787671
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.9334854096093057
+        },
+        {
+          "key": "edisho1",
+          "kind": "pseudoseed",
+          "value": 0.2312139187650171
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.2312139187650171
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.3372709003712089
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.6724232408029911
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.513248392373175
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.620252557184195
+        },
+        {
+          "args": [
+            1,
+            2
+          ],
+          "kind": "random",
+          "value": 1
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.7590654863421529
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.34478357391718073
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.873757617333965
+        },
+        {
+          "key": "shop_pack1",
+          "kind": "pseudoseed",
+          "value": 0.4639820678878171
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.4639820678878171
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.27061017820092625
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.2775769112579787
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.0408146780876415
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.4113998374445049
+        }
+      ],
+      "items": [
+        {
+          "cost": 4,
+          "edition": false,
+          "key": "j_juggler",
+          "sell_cost": 2,
+          "set": "Joker"
+        },
+        {
+          "cost": 4,
+          "edition": false,
+          "key": "j_green_joker",
+          "sell_cost": 2,
+          "set": "Joker"
+        }
+      ],
+      "key_state": {
+        "Joker1sho1": 0.543540983645,
+        "Tarotsho1": 0.3909396472174,
+        "Voucher1": 0.7581503420228,
+        "cdt1": 0.451883555006,
+        "edisho1": 0.6141337550867,
+        "etperpoll1": 0.85645604744,
+        "hashed_seed": 0.18424138904373422,
+        "rarity1sho": 0.8297230006941,
+        "seed": "PIERROT1",
+        "shop_pack1": 0.7437227467319
+      },
+      "packs": [
+        {
+          "cost": 4,
+          "edition": false,
+          "key": "p_buffoon_normal_1",
+          "sell_cost": 2,
+          "set": "Booster"
+        },
+        {
+          "cost": 8,
+          "edition": false,
+          "key": "p_arcana_mega_1",
+          "sell_cost": 4,
+          "set": "Booster"
+        }
+      ],
+      "pool_counts": {
+        "Booster": 32,
+        "Enhanced": 8,
+        "Joker": 150,
+        "Planet": 12,
+        "Spectral": 18,
+        "Tarot": 22,
+        "Voucher": 32
+      },
+      "profile": "fresh meta; explicit seeded run; high-card-only first win",
+      "reduced_motion": true,
+      "reroll_items": [
+        {
+          "cost": 4,
+          "edition": false,
+          "key": "j_devious",
+          "sell_cost": 2,
+          "set": "Joker"
+        },
+        {
+          "cost": 3,
+          "edition": false,
+          "key": "c_star",
+          "sell_cost": 1,
+          "set": "Tarot"
+        }
+      ],
+      "reroll_trace": [
+        {
+          "key": "cdt1",
+          "kind": "pseudoseed",
+          "value": 0.4741367873444171
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.4741367873444171
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.006411491765009103
+        },
+        {
+          "key": "rarity1sho",
+          "kind": "pseudoseed",
+          "value": 0.506982194868917
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.506982194868917
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.4755235874614532
+        },
+        {
+          "key": "Joker1sho1",
+          "kind": "pseudoseed",
+          "value": 0.3638911863443671
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.3638911863443671
+        },
+        {
+          "args": [
+            61
+          ],
+          "kind": "random",
+          "value": 14
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.1811436460071394
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.3888351080352561
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.1952401205839822
+        },
+        {
+          "key": "etperpoll1",
+          "kind": "pseudoseed",
+          "value": 0.5203487182418671
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.5203487182418671
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.33301864355375876
+        },
+        {
+          "key": "edisho1",
+          "kind": "pseudoseed",
+          "value": 0.3991875720652171
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.3991875720652171
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.10492127357062464
+        },
+        {
+          "key": "cdt1",
+          "kind": "pseudoseed",
+          "value": 0.31806247202486715
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.31806247202486715
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.79132718626192
+        },
+        {
+          "key": "Tarotsho1",
+          "kind": "pseudoseed",
+          "value": 0.28759051813056713
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.28759051813056713
+        },
+        {
+          "args": [
+            22
+          ],
+          "kind": "random",
+          "value": 18
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.7413831229388297
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.3843635491709232
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.3054839575291741
+        }
+      ],
+      "seed": "PIERROT1",
+      "voucher": {
+        "cost": 10,
+        "edition": false,
+        "key": "v_clearance_sale",
+        "sell_cost": 5,
+        "set": "Voucher"
+      }
+    },
+    {
+      "first_trace": [
+        {
+          "key": "Voucher1",
+          "kind": "pseudoseed",
+          "value": 0.654962373871457
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.654962373871457
+        },
+        {
+          "args": [
+            32
+          ],
+          "kind": "random",
+          "value": 32
+        },
+        {
+          "key": "Voucher1_resample2",
+          "kind": "pseudoseed",
+          "value": 0.548710605327257
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.548710605327257
+        },
+        {
+          "args": [
+            32
+          ],
+          "kind": "random",
+          "value": 23
+        },
+        {
+          "key": "cdt1",
+          "kind": "pseudoseed",
+          "value": 0.746736187795507
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.746736187795507
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.8995562674363864
+        },
+        {
+          "key": "Planetsho1",
+          "kind": "pseudoseed",
+          "value": 0.509938396398557
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.509938396398557
+        },
+        {
+          "args": [
+            12
+          ],
+          "kind": "random",
+          "value": 8
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.6165797719002011
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.5073278161859072
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.5542343010092217
+        },
+        {
+          "key": "cdt1",
+          "kind": "pseudoseed",
+          "value": 0.646410952749507
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.646410952749507
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.346053148686172
+        },
+        {
+          "key": "rarity1sho",
+          "kind": "pseudoseed",
+          "value": 0.6520692570791069
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.6520692570791069
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.8114357373045846
+        },
+        {
+          "key": "Joker2sho1",
+          "kind": "pseudoseed",
+          "value": 0.46306705749655697
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.46306705749655697
+        },
+        {
+          "args": [
+            64
+          ],
+          "kind": "random",
+          "value": 11
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.6990517116050665
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.023233039217980478
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.08633372300197562
+        },
+        {
+          "key": "etperpoll1",
+          "kind": "pseudoseed",
+          "value": 0.5228453396030069
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.5228453396030069
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.9254766367688769
+        },
+        {
+          "key": "edisho1",
+          "kind": "pseudoseed",
+          "value": 0.5310599397213569
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.5310599397213569
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.0983935526479287
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.038178084299695714
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.8024729484308502
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.45491464811518
+        },
+        {
+          "args": [
+            1,
+            2
+          ],
+          "kind": "random",
+          "value": 1
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.30212659478784354
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.46694788339217874
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.308894841014703
+        },
+        {
+          "key": "shop_pack1",
+          "kind": "pseudoseed",
+          "value": 0.549527542664507
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.549527542664507
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.2356508807399882
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.12787424494998567
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.38121379226951957
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.2068980194872192
+        }
+      ],
+      "items": [
+        {
+          "cost": 3,
+          "edition": false,
+          "key": "c_neptune",
+          "sell_cost": 1,
+          "set": "Planet"
+        },
+        {
+          "cost": 5,
+          "edition": false,
+          "key": "j_pareidolia",
+          "sell_cost": 2,
+          "set": "Joker"
+        }
+      ],
+      "key_state": {
+        "Joker1sho1": 0.8790021170345,
+        "Joker2sho1": 0.3506304996292,
+        "Planetsho1": 0.4443731774332,
+        "Voucher1": 0.734421132379,
+        "Voucher1_resample2": 0.5219175952906,
+        "cdt1": 0.7747495871712,
+        "edisho1": 0.8131264255094,
+        "etperpoll1": 0.7642782558643,
+        "hashed_seed": 0.5755036153639139,
+        "rarity1sho": 0.8083967283361,
+        "seed": "12345678",
+        "shop_pack1": 0.5235514699651
+      },
+      "packs": [
+        {
+          "cost": 4,
+          "edition": false,
+          "key": "p_buffoon_normal_1",
+          "sell_cost": 2,
+          "set": "Booster"
+        },
+        {
+          "cost": 6,
+          "edition": false,
+          "key": "p_arcana_jumbo_2",
+          "sell_cost": 3,
+          "set": "Booster"
+        }
+      ],
+      "pool_counts": {
+        "Booster": 32,
+        "Enhanced": 8,
+        "Joker": 150,
+        "Planet": 12,
+        "Spectral": 18,
+        "Tarot": 22,
+        "Voucher": 32
+      },
+      "profile": "fresh meta; explicit seeded run; high-card-only first win",
+      "reduced_motion": true,
+      "reroll_items": [
+        {
+          "cost": 4,
+          "edition": false,
+          "key": "j_hallucination",
+          "sell_cost": 2,
+          "set": "Joker"
+        },
+        {
+          "cost": 4,
+          "edition": false,
+          "key": "j_zany",
+          "sell_cost": 2,
+          "set": "Joker"
+        }
+      ],
+      "reroll_trace": [
+        {
+          "key": "cdt1",
+          "kind": "pseudoseed",
+          "value": 0.473418911946307
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.473418911946307
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.19916478016653638
+        },
+        {
+          "key": "rarity1sho",
+          "kind": "pseudoseed",
+          "value": 0.48317559592530696
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.48317559592530696
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.13399264921972653
+        },
+        {
+          "key": "Joker1sho1",
+          "kind": "pseudoseed",
+          "value": 0.503649087606757
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.503649087606757
+        },
+        {
+          "args": [
+            61
+          ],
+          "kind": "random",
+          "value": 50
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.2926593852353896
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.9550538799573376
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.6766124922776733
+        },
+        {
+          "key": "etperpoll1",
+          "kind": "pseudoseed",
+          "value": 0.7603532003981069
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.7603532003981069
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.7474647893444974
+        },
+        {
+          "key": "edisho1",
+          "kind": "pseudoseed",
+          "value": 0.774517736750357
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.774517736750357
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.14897185076144193
+        },
+        {
+          "key": "cdt1",
+          "kind": "pseudoseed",
+          "value": 0.675126601267557
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.675126601267557
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.11442142111371822
+        },
+        {
+          "key": "rarity1sho",
+          "kind": "pseudoseed",
+          "value": 0.691950171850007
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.691950171850007
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.0001236929059347247
+        },
+        {
+          "key": "Joker1sho1",
+          "kind": "pseudoseed",
+          "value": 0.727252866199207
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.727252866199207
+        },
+        {
+          "args": [
+            61
+          ],
+          "kind": "random",
+          "value": 7
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.3942320481203565
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.970673322995752
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.15642394307679375
+        },
+        {
+          "key": "etperpoll1",
+          "kind": "pseudoseed",
+          "value": 0.669890935614107
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.669890935614107
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.41747200087618785
+        },
+        {
+          "key": "edisho1",
+          "kind": "pseudoseed",
+          "value": 0.6943150204366569
+        },
+        {
+          "kind": "randomseed",
+          "seed": 0.6943150204366569
+        },
+        {
+          "args": {},
+          "kind": "random",
+          "value": 0.2741841105974121
+        }
+      ],
+      "seed": "12345678",
+      "voucher": {
+        "cost": 10,
+        "edition": false,
+        "key": "v_blank",
+        "sell_cost": 5,
+        "set": "Voucher"
+      }
+    }
+  ]
+}

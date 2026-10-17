@@ -1,0 +1,80 @@
+import {enterRun} from './enter-run.mjs';
+import assert from 'node:assert/strict';import {createRequire} from 'node:module';
+import {createRun,dispatch} from '../../src/core/run.js';import {serializeState,deserializeState} from '../../src/persistence/save.js';
+const {chromium}=createRequire(import.meta.url)(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');
+const browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_PATH});
+function fixture(){let s=createRun('SHOPUI47',{runId:'shop-ui-047',money:100n,referenceRng:true,referenceShop:true});s.phase='round_won';s.round.score=300n;s.round.handsRemaining=1;s=dispatch(s,{type:'CASH_OUT',expectedRevision:0}).state;s.money=100n;s.shop.main=[{id:'visible_1',entityId:'j_joker',originalKey:'j_joker',set:'Joker',edition:'base',cost:4n,sellCost:2n},{id:'visible_2',entityId:'j_duo',originalKey:'j_duo',set:'Joker',edition:'holographic',cost:11n,sellCost:5n}];return s;}
+const saved=async p=>deserializeState(await p.evaluate(()=>localStorage.getItem('card-cascade.current')));
+async function install(page,s){await page.goto(process.env.PREVIEW_URL);await page.evaluate(s=>localStorage.setItem('card-cascade.current',s),serializeState(s));await page.reload();await enterRun(page);await page.locator('#shop_screen').waitFor();await page.locator('#shop_screen').evaluate(el=>Promise.all(el.getAnimations().map(a=>a.finished.catch(()=>{}))));}
+async function dragTo(page,selector,destination='buy',touch=false,cancel=false,checkReturn=false){
+ const b=await page.locator(selector).boundingBox(),stage=await page.locator('#stage').boundingBox(),scale=stage.width/1536;
+ const from={x:b.x+b.width/2,y:b.y+b.height/2},to=destination==='buy'?{x:stage.x+850*scale,y:stage.y+90*scale}:{x:stage.x+1300*scale,y:stage.y+400*scale};
+ if(touch){const session=await page.context().newCDPSession(page);await session.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[from]});await session.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[to]});assert.equal(await page.locator('#shop_buy_zone').count(),1);await session.send('Input.dispatchTouchEvent',{type:cancel?'touchCancel':'touchEnd',touchPoints:[]});await session.detach();}
+ else{await page.mouse.move(from.x,from.y);await page.mouse.down();await page.mouse.move(to.x,to.y,{steps:8});assert.equal(await page.locator('#shop_buy_zone').count(),1);if(page.viewportSize().width===1536&&destination==='buy'&&!cancel)await page.screenshot({path:'artifacts/shop-buy-zone.png'});if(cancel)await page.locator(selector).press('Escape');await page.mouse.up();}
+ assert.equal(await page.locator('#shop_buy_zone').count(),0);assert.equal(await page.locator('#shop_tooltip').count(),0,'Dragging dismisses tooltip');
+ if(await page.evaluate(()=>matchMedia('(prefers-reduced-motion: reduce)').matches))assert.equal(await page.locator('.shop-choice.is-dragging').count(),0,'Reduced motion must not animate the return');
+ if(checkReturn){
+  const ghost=page.locator('.shop-choice.is-dragging');assert.equal(await ghost.count(),1,'Cancelled card must remain visible while returning');
+  const returning=await ghost.boundingBox();assert.ok(Math.hypot(returning.x-b.x,returning.y-b.y)>5,'Return starts away from its home');
+  await page.waitForFunction(({x,y})=>{const el=document.querySelector('.shop-choice.is-dragging');if(!el)return false;const r=el.getBoundingClientRect();return Math.hypot(r.x-x,r.y-y)<100;},{x:b.x,y:b.y});
+ }
+ await page.waitForFunction(()=>!document.querySelector('.shop-choice.is-dragging'));
+ const home=await page.locator(selector).boundingBox();
+ if(destination!=='buy'||cancel){assert.ok(Math.abs(home.x-b.x)<1&&Math.abs(home.y-b.y)<1,'Cancelled drag must return exactly home');assert.equal(await page.locator(selector).evaluate(el=>getComputedStyle(el.closest('.shop-choice')).opacity),'1');}
+}
+
+async function blindGeometry(page){
+ await page.locator('#blind_selection').evaluate(el=>Promise.allSettled(el.getAnimations().map(a=>a.finished)));
+ const values=await page.locator('.blind-choice').evaluateAll(nodes=>nodes.map(el=>{const b=el.getBoundingClientRect();return{width:b.width,height:b.height,top:b.top,font:getComputedStyle(el.querySelector('.blind-choice-select')).fontSize};}));
+ for(const value of values){for(const key of ['width','height','top'])assert.ok(Math.abs(value[key]-values[0][key])<=1,'Blind panel geometry must match');assert.equal(value.font,values[0].font,'Blind status fonts must match');}
+ assert.ok(await page.locator('.blind-choice-unavailable').evaluateAll(nodes=>nodes.every(el=>getComputedStyle(el).fontSize===getComputedStyle(document.querySelector('.blind-choice-select')).fontSize)));
+ assert.ok(await page.locator('.blind-choice-skip button').evaluateAll(buttons=>buttons.length>0&&buttons.every(button=>{const b=button.getBoundingClientRect(),p=button.closest('.blind-choice').getBoundingClientRect();return b.left>=p.left&&b.right<=p.right&&b.top>=p.top&&b.bottom<=p.bottom;})),'Skip controls must fit their panels');
+}
+try{
+ for(const [width,height] of [[1536,688],[915,412],[568,320],[360,800]]){
+  const page=await browser.newPage({viewport:{width,height},hasTouch:true}),errors=[];page.on('pageerror',e=>errors.push(e.message));
+  await page.goto(process.env.PREVIEW_URL);await page.evaluate(s=>localStorage.setItem('card-cascade.current',s),serializeState(createRun('BLINDUI',{runId:'blind-ui',money:4n,referenceRng:true,referenceShop:true})));await page.reload();await page.locator('#start_new').click();await page.locator('#setup_continue_tab').click();await page.locator('#blind_selection').waitFor();await blindGeometry(page);
+  await install(page,fixture());
+  assert.equal(await page.locator('[data-kind=main]').count(),2);assert.equal(await page.locator('[data-kind=voucher]').count(),1);assert.equal(await page.locator('[data-kind=booster]').count(),2);
+  assert.equal(await page.locator('#post_round').count(),0);assert.equal(await page.locator('#shop_reroll').innerText(),'Переброс\n$5');
+  const box=await page.locator('#shop_screen').boundingBox();assert.ok(box.x>=0&&box.y>=0&&box.x+box.width<=width+1&&box.y+box.height<=height+1);
+  const before=await saved(page);await page.locator('[data-offer-id=visible_1] .shop-card').tap();assert.equal(await page.locator('#shop_tooltip').count(),1,'Tap keeps tooltip open');assert.equal(await page.locator('#shop_screen .shop-buy').count(),0);
+  const unchanged=await page.evaluate(()=>localStorage.getItem('card-cascade.current'));await dragTo(page,'[data-offer-id=visible_1] .shop-card','outside',false,false,true);assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),unchanged);await dragTo(page,'[data-offer-id=visible_1] .shop-card','buy',true,true);assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),unchanged);
+  await dragTo(page,'[data-offer-id=visible_1] .shop-card','buy',width<1000);await page.locator('[data-kind=owned][data-offer-id=visible_1]').waitFor();assert.equal((await saved(page)).money,96n);assert.equal((await saved(page)).revision,before.revision+1);
+  await page.locator('.money-pop.scarlet').waitFor();assert.equal(await page.locator('.money-pop.scarlet').innerText(),'−$4');await page.waitForFunction(()=>!document.getElementById('shop_reroll').disabled);
+  const encoded=await page.evaluate(()=>localStorage.getItem('card-cascade.current'));await page.reload();await enterRun(page);await page.locator('#shop_screen').waitFor();await page.locator('#shop_screen').evaluate(el=>Promise.allSettled(el.getAnimations().map(a=>a.finished)));assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),encoded);assert.equal(await page.locator('[data-kind=owned]').count(),1);
+  // Tooltip appears in the pointerdown handler, without a hold or release.
+  const card=await page.locator('[data-kind=owned] .shop-card').boundingBox();
+  await page.evaluate(()=>{document.addEventListener('pointerdown',()=>globalThis.tipAtPress=!!document.getElementById('shop_tooltip'),{once:true});});
+  await page.mouse.move(card.x+card.width/2,card.y+card.height/2);await page.mouse.down();
+  assert.equal(await page.evaluate(()=>globalThis.tipAtPress),true,'Tooltip exists during the pointerdown event');
+  assert.equal(await page.locator('#shop_tooltip').count(),1,'Pointerdown opens tooltip immediately');
+  await page.mouse.up();assert.match(await page.locator('#shop_tooltip').innerText(),/\+4 к множителю/);
+  // The tray centre is covered by the remaining card. Tap its empty lower-left corner.
+  const tray=await page.locator('.shop-main-tray').boundingBox(),trayScale=tray.width/457,empty={x:tray.x+20*trayScale,y:tray.y+175*trayScale};
+  assert.equal(await page.evaluate(({x,y})=>!!document.elementFromPoint(x,y)?.closest('.shop-choice,.shop-tooltip'),empty),false,'Dismissal gesture must hit empty space');
+  await page.mouse.click(empty.x,empty.y);assert.equal(await page.locator('#shop_tooltip').count(),0,'Tap on empty shop space dismisses tooltip');
+  await page.locator('[data-kind=owned] .shop-card').tap();assert.equal(await page.locator('#shop_tooltip').count(),1);
+  const stage=await page.locator('#stage').boundingBox(),blank={x:stage.x+1380*stage.width/1536,y:stage.y+210*stage.width/1536};
+  assert.equal(await page.evaluate(({x,y})=>!!document.elementFromPoint(x,y)?.closest('.shop-choice,.shop-tooltip'),blank),false,'Global dismissal gesture must hit empty space');
+  await page.mouse.click(blank.x,blank.y);assert.equal(await page.locator('#shop_tooltip').count(),0,'Tap on empty field dismisses tooltip');
+  const sellCard=await page.locator('[data-kind=owned] .shop-card').boundingBox(),sellStage=await page.locator('#stage').boundingBox();await page.mouse.move(sellCard.x+sellCard.width/2,sellCard.y+sellCard.height/2);await page.mouse.down();await page.mouse.move(sellStage.x+1450*sellStage.width/1536,sellStage.y+300*sellStage.width/1536,{steps:8});await page.mouse.up();await page.locator('.money-pop.gold').waitFor();assert.equal((await saved(page)).money,98n);await page.waitForFunction(()=>!document.getElementById('shop_reroll').disabled);
+  const preRoll=await saved(page);await page.evaluate(()=>globalThis.testShopBody=document.getElementById('shop_screen'));await page.locator('#shop_reroll').click();await page.waitForFunction(()=>!document.getElementById('shop_reroll').disabled);const afterRoll=await saved(page);assert.equal(afterRoll.money,93n);assert.equal(afterRoll.revision,preRoll.revision+1);assert.deepEqual(afterRoll.shop.vouchers,preRoll.shop.vouchers);assert.deepEqual(afterRoll.shop.boosters,preRoll.shop.boosters);assert.notDeepEqual(afterRoll.shop.main,preRoll.shop.main);assert.ok(await page.evaluate(()=>testShopBody===document.getElementById('shop_screen')));assert.equal(await page.locator('#shop_reroll').innerText(),'Переброс\n$6');
+  await page.screenshot({path:'artifacts/shop-'+width+'x'+height+'.png'});assert.deepEqual(errors,[]);await page.close();console.log('shop buy/sell/reroll/touch/reload '+width+'x'+height);
+ }
+ const reduced=await browser.newPage({reducedMotion:'reduce'});await install(reduced,fixture());const reducedSave=await reduced.evaluate(()=>localStorage.getItem('card-cascade.current'));await dragTo(reduced,'[data-offer-id=visible_1] .shop-card','outside');assert.equal(await reduced.locator('.shop-choice.is-dragging').count(),0);assert.equal(await reduced.evaluate(()=>localStorage.getItem('card-cascade.current')),reducedSave);await reduced.close();console.log('reduced motion cancellation returns immediately without bounce');
+ const redraw=await browser.newPage();await install(redraw,fixture());
+ const redrawCard=await redraw.locator('[data-offer-id=visible_1] .shop-card').boundingBox(),redrawStage=await redraw.locator('#stage').boundingBox();
+ await redraw.mouse.move(redrawCard.x+redrawCard.width/2,redrawCard.y+redrawCard.height/2);await redraw.mouse.down();await redraw.mouse.move(redrawStage.x+redrawStage.width*.9,redrawStage.y+redrawStage.height*.8,{steps:5});await redraw.mouse.up();
+ assert.equal(await redraw.locator('.shop-choice.is-dragging').count(),1);await redraw.locator('#shop_reroll').click();await redraw.waitForFunction(()=>!document.getElementById('shop_reroll').disabled);
+ assert.equal(await redraw.locator('.shop-choice.is-dragging').count(),0,'Rendering during return removes its ghost');assert.ok(await redraw.locator('#shop_screen .shop-choice').evaluateAll(nodes=>nodes.every(el=>getComputedStyle(el).opacity==='1')),'Rendering restores all sources');assert.equal((await saved(redraw)).money,95n);await redraw.close();console.log('reroll during cancellation leaves no ghost or hidden source');
+ const page=await browser.newPage();await install(page,fixture());await page.locator('[data-offer-id=visible_1] .shop-card').click();const previous=await page.evaluate(()=>localStorage.getItem('card-cascade.current'));await page.evaluate(()=>{Storage.prototype.setItem=()=>{throw Error('shop test write failed');};});await dragTo(page,'[data-offer-id=visible_1] .shop-card');await page.locator('dialog[open]').waitFor();assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),previous);assert.equal(await page.locator('[data-kind=owned]').count(),0);assert.equal(await page.locator('#money_value').innerText(),'$100');await page.close();console.log('failed purchase write leaves inventory/money/RNG unchanged');
+ const big=await browser.newPage();await install(big,fixture());await big.locator('[data-offer-id=visible_1] .shop-card').click();await dragTo(big,'[data-offer-id=visible_1] .shop-card');await big.waitForFunction(()=>!document.getElementById('shop_next_round').disabled);await big.locator('#shop_next_round').click();await big.locator('#select_big').waitFor();await blindGeometry(big);assert.equal(await big.locator('#select_small').isDisabled(),true);assert.equal(await big.locator('#select_big_target').innerText(),'450');await big.locator('#select_big').click();await big.waitForFunction(()=>!document.getElementById('play_hand').hidden);const playing=await saved(big);assert.equal(playing.round.blindId,'big');assert.equal(playing.roundNumber,2);assert.equal(playing.jokers[0].entityId,'j_joker');assert.equal(await big.locator('#shop_owned [data-kind=owned]').count(),1);await big.locator('#shop_owned .shop-card').click();assert.equal(await big.locator('#shop_owned .shop-buy').count(),0);await big.locator('#shop_owned .shop-card').press('F1');await big.locator('#shop_tooltip').waitFor();await big.locator('#joker_count').click();assert.equal(await big.locator('#shop_tooltip').count(),0);assert.deepEqual(deserializeState(serializeState(playing)),playing);await big.screenshot({path:'artifacts/big-blind-shop-joker.png'});await big.close();console.log('purchased Joker retained into Big Blind, target450');
+ for(const reason of ['unsupported','money','slots']){
+  const rejected=fixture();if(reason==='unsupported'){rejected.shop.main[0].entityId='j_vampire';rejected.shop.main[0].originalKey='j_vampire';}if(reason==='money')rejected.money=0n;if(reason==='slots')rejected.jokerSlots=0;
+  const page=await browser.newPage();await install(page,rejected);const previous=await page.evaluate(()=>localStorage.getItem('card-cascade.current'));await dragTo(page,'[data-offer-id=visible_1] .shop-card');assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),previous);assert.equal(await page.locator('[data-kind=owned]').count(),0);await page.close();console.log('drag rejects '+reason+' without charge');
+ }
+ const huge=fixture();huge.shop.main[0].cost=123456789012345678901234567890n;const fit=await browser.newPage();await install(fit,huge);const plaque=fit.locator('[data-offer-id=visible_1] .shop-price');assert.equal(await plaque.innerText(),'$'+huge.shop.main[0].cost);assert.ok(await plaque.evaluate(el=>el.firstChild.getBoundingClientRect().width<=el.clientWidth+1));await fit.close();console.log('long BigInt price fits plaque without truncating stored value');
+}finally{await browser.close();}
+
+

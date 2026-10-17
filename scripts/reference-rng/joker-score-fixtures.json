@@ -1,0 +1,8726 @@
+{
+  "cases": [
+    {
+      "case": "high-card",
+      "expected": {},
+      "key": "j_jolly",
+      "phase": "independent"
+    },
+    {
+      "case": "high-card",
+      "expected": {},
+      "key": "j_zany",
+      "phase": "independent"
+    },
+    {
+      "case": "high-card",
+      "expected": {},
+      "key": "j_mad",
+      "phase": "independent"
+    },
+    {
+      "case": "high-card",
+      "expected": {},
+      "key": "j_crazy",
+      "phase": "independent"
+    },
+    {
+      "case": "high-card",
+      "expected": {},
+      "key": "j_droll",
+      "phase": "independent"
+    },
+    {
+      "case": "high-card",
+      "expected": {},
+      "key": "j_sly",
+      "phase": "independent"
+    },
+    {
+      "case": "high-card",
+      "expected": {},
+      "key": "j_wily",
+      "phase": "independent"
+    },
+    {
+      "case": "high-card",
+      "expected": {},
+      "key": "j_clever",
+      "phase": "independent"
+    },
+    {
+      "case": "high-card",
+      "expected": {},
+      "key": "j_devious",
+      "phase": "independent"
+    },
+    {
+      "case": "high-card",
+      "expected": {},
+      "key": "j_crafty",
+      "phase": "independent"
+    },
+    {
+      "case": "high-card",
+      "expected": {},
+      "key": "j_duo",
+      "phase": "independent"
+    },
+    {
+      "case": "high-card",
+      "expected": {},
+      "key": "j_trio",
+      "phase": "independent"
+    },
+    {
+      "case": "high-card",
+      "expected": {},
+      "key": "j_family",
+      "phase": "independent"
+    },
+    {
+      "case": "high-card",
+      "expected": {},
+      "key": "j_order",
+      "phase": "independent"
+    },
+    {
+      "case": "high-card",
+      "expected": {},
+      "key": "j_tribe",
+      "phase": "independent"
+    },
+    {
+      "case": "pair",
+      "expected": {
+        "mult_mod": 8
+      },
+      "key": "j_jolly",
+      "phase": "independent"
+    },
+    {
+      "case": "pair",
+      "expected": {},
+      "key": "j_zany",
+      "phase": "independent"
+    },
+    {
+      "case": "pair",
+      "expected": {},
+      "key": "j_mad",
+      "phase": "independent"
+    },
+    {
+      "case": "pair",
+      "expected": {},
+      "key": "j_crazy",
+      "phase": "independent"
+    },
+    {
+      "case": "pair",
+      "expected": {},
+      "key": "j_droll",
+      "phase": "independent"
+    },
+    {
+      "case": "pair",
+      "expected": {
+        "chip_mod": 50
+      },
+      "key": "j_sly",
+      "phase": "independent"
+    },
+    {
+      "case": "pair",
+      "expected": {},
+      "key": "j_wily",
+      "phase": "independent"
+    },
+    {
+      "case": "pair",
+      "expected": {},
+      "key": "j_clever",
+      "phase": "independent"
+    },
+    {
+      "case": "pair",
+      "expected": {},
+      "key": "j_devious",
+      "phase": "independent"
+    },
+    {
+      "case": "pair",
+      "expected": {},
+      "key": "j_crafty",
+      "phase": "independent"
+    },
+    {
+      "case": "pair",
+      "expected": {
+        "Xmult_mod": 2
+      },
+      "key": "j_duo",
+      "phase": "independent"
+    },
+    {
+      "case": "pair",
+      "expected": {},
+      "key": "j_trio",
+      "phase": "independent"
+    },
+    {
+      "case": "pair",
+      "expected": {},
+      "key": "j_family",
+      "phase": "independent"
+    },
+    {
+      "case": "pair",
+      "expected": {},
+      "key": "j_order",
+      "phase": "independent"
+    },
+    {
+      "case": "pair",
+      "expected": {},
+      "key": "j_tribe",
+      "phase": "independent"
+    },
+    {
+      "case": "two-pair",
+      "expected": {
+        "mult_mod": 8
+      },
+      "key": "j_jolly",
+      "phase": "independent"
+    },
+    {
+      "case": "two-pair",
+      "expected": {},
+      "key": "j_zany",
+      "phase": "independent"
+    },
+    {
+      "case": "two-pair",
+      "expected": {
+        "mult_mod": 10
+      },
+      "key": "j_mad",
+      "phase": "independent"
+    },
+    {
+      "case": "two-pair",
+      "expected": {},
+      "key": "j_crazy",
+      "phase": "independent"
+    },
+    {
+      "case": "two-pair",
+      "expected": {},
+      "key": "j_droll",
+      "phase": "independent"
+    },
+    {
+      "case": "two-pair",
+      "expected": {
+        "chip_mod": 50
+      },
+      "key": "j_sly",
+      "phase": "independent"
+    },
+    {
+      "case": "two-pair",
+      "expected": {},
+      "key": "j_wily",
+      "phase": "independent"
+    },
+    {
+      "case": "two-pair",
+      "expected": {
+        "chip_mod": 80
+      },
+      "key": "j_clever",
+      "phase": "independent"
+    },
+    {
+      "case": "two-pair",
+      "expected": {},
+      "key": "j_devious",
+      "phase": "independent"
+    },
+    {
+      "case": "two-pair",
+      "expected": {},
+      "key": "j_crafty",
+      "phase": "independent"
+    },
+    {
+      "case": "two-pair",
+      "expected": {
+        "Xmult_mod": 2
+      },
+      "key": "j_duo",
+      "phase": "independent"
+    },
+    {
+      "case": "two-pair",
+      "expected": {},
+      "key": "j_trio",
+      "phase": "independent"
+    },
+    {
+      "case": "two-pair",
+      "expected": {},
+      "key": "j_family",
+      "phase": "independent"
+    },
+    {
+      "case": "two-pair",
+      "expected": {},
+      "key": "j_order",
+      "phase": "independent"
+    },
+    {
+      "case": "two-pair",
+      "expected": {},
+      "key": "j_tribe",
+      "phase": "independent"
+    },
+    {
+      "case": "three",
+      "expected": {
+        "mult_mod": 8
+      },
+      "key": "j_jolly",
+      "phase": "independent"
+    },
+    {
+      "case": "three",
+      "expected": {
+        "mult_mod": 12
+      },
+      "key": "j_zany",
+      "phase": "independent"
+    },
+    {
+      "case": "three",
+      "expected": {},
+      "key": "j_mad",
+      "phase": "independent"
+    },
+    {
+      "case": "three",
+      "expected": {},
+      "key": "j_crazy",
+      "phase": "independent"
+    },
+    {
+      "case": "three",
+      "expected": {},
+      "key": "j_droll",
+      "phase": "independent"
+    },
+    {
+      "case": "three",
+      "expected": {
+        "chip_mod": 50
+      },
+      "key": "j_sly",
+      "phase": "independent"
+    },
+    {
+      "case": "three",
+      "expected": {
+        "chip_mod": 100
+      },
+      "key": "j_wily",
+      "phase": "independent"
+    },
+    {
+      "case": "three",
+      "expected": {},
+      "key": "j_clever",
+      "phase": "independent"
+    },
+    {
+      "case": "three",
+      "expected": {},
+      "key": "j_devious",
+      "phase": "independent"
+    },
+    {
+      "case": "three",
+      "expected": {},
+      "key": "j_crafty",
+      "phase": "independent"
+    },
+    {
+      "case": "three",
+      "expected": {
+        "Xmult_mod": 2
+      },
+      "key": "j_duo",
+      "phase": "independent"
+    },
+    {
+      "case": "three",
+      "expected": {
+        "Xmult_mod": 3
+      },
+      "key": "j_trio",
+      "phase": "independent"
+    },
+    {
+      "case": "three",
+      "expected": {},
+      "key": "j_family",
+      "phase": "independent"
+    },
+    {
+      "case": "three",
+      "expected": {},
+      "key": "j_order",
+      "phase": "independent"
+    },
+    {
+      "case": "three",
+      "expected": {},
+      "key": "j_tribe",
+      "phase": "independent"
+    },
+    {
+      "case": "straight",
+      "expected": {},
+      "key": "j_jolly",
+      "phase": "independent"
+    },
+    {
+      "case": "straight",
+      "expected": {},
+      "key": "j_zany",
+      "phase": "independent"
+    },
+    {
+      "case": "straight",
+      "expected": {},
+      "key": "j_mad",
+      "phase": "independent"
+    },
+    {
+      "case": "straight",
+      "expected": {
+        "mult_mod": 12
+      },
+      "key": "j_crazy",
+      "phase": "independent"
+    },
+    {
+      "case": "straight",
+      "expected": {},
+      "key": "j_droll",
+      "phase": "independent"
+    },
+    {
+      "case": "straight",
+      "expected": {},
+      "key": "j_sly",
+      "phase": "independent"
+    },
+    {
+      "case": "straight",
+      "expected": {},
+      "key": "j_wily",
+      "phase": "independent"
+    },
+    {
+      "case": "straight",
+      "expected": {},
+      "key": "j_clever",
+      "phase": "independent"
+    },
+    {
+      "case": "straight",
+      "expected": {
+        "chip_mod": 100
+      },
+      "key": "j_devious",
+      "phase": "independent"
+    },
+    {
+      "case": "straight",
+      "expected": {},
+      "key": "j_crafty",
+      "phase": "independent"
+    },
+    {
+      "case": "straight",
+      "expected": {},
+      "key": "j_duo",
+      "phase": "independent"
+    },
+    {
+      "case": "straight",
+      "expected": {},
+      "key": "j_trio",
+      "phase": "independent"
+    },
+    {
+      "case": "straight",
+      "expected": {},
+      "key": "j_family",
+      "phase": "independent"
+    },
+    {
+      "case": "straight",
+      "expected": {
+        "Xmult_mod": 3
+      },
+      "key": "j_order",
+      "phase": "independent"
+    },
+    {
+      "case": "straight",
+      "expected": {},
+      "key": "j_tribe",
+      "phase": "independent"
+    },
+    {
+      "case": "flush",
+      "expected": {},
+      "key": "j_jolly",
+      "phase": "independent"
+    },
+    {
+      "case": "flush",
+      "expected": {},
+      "key": "j_zany",
+      "phase": "independent"
+    },
+    {
+      "case": "flush",
+      "expected": {},
+      "key": "j_mad",
+      "phase": "independent"
+    },
+    {
+      "case": "flush",
+      "expected": {},
+      "key": "j_crazy",
+      "phase": "independent"
+    },
+    {
+      "case": "flush",
+      "expected": {
+        "mult_mod": 10
+      },
+      "key": "j_droll",
+      "phase": "independent"
+    },
+    {
+      "case": "flush",
+      "expected": {},
+      "key": "j_sly",
+      "phase": "independent"
+    },
+    {
+      "case": "flush",
+      "expected": {},
+      "key": "j_wily",
+      "phase": "independent"
+    },
+    {
+      "case": "flush",
+      "expected": {},
+      "key": "j_clever",
+      "phase": "independent"
+    },
+    {
+      "case": "flush",
+      "expected": {},
+      "key": "j_devious",
+      "phase": "independent"
+    },
+    {
+      "case": "flush",
+      "expected": {
+        "chip_mod": 80
+      },
+      "key": "j_crafty",
+      "phase": "independent"
+    },
+    {
+      "case": "flush",
+      "expected": {},
+      "key": "j_duo",
+      "phase": "independent"
+    },
+    {
+      "case": "flush",
+      "expected": {},
+      "key": "j_trio",
+      "phase": "independent"
+    },
+    {
+      "case": "flush",
+      "expected": {},
+      "key": "j_family",
+      "phase": "independent"
+    },
+    {
+      "case": "flush",
+      "expected": {},
+      "key": "j_order",
+      "phase": "independent"
+    },
+    {
+      "case": "flush",
+      "expected": {
+        "Xmult_mod": 2
+      },
+      "key": "j_tribe",
+      "phase": "independent"
+    },
+    {
+      "case": "full-house",
+      "expected": {
+        "mult_mod": 8
+      },
+      "key": "j_jolly",
+      "phase": "independent"
+    },
+    {
+      "case": "full-house",
+      "expected": {
+        "mult_mod": 12
+      },
+      "key": "j_zany",
+      "phase": "independent"
+    },
+    {
+      "case": "full-house",
+      "expected": {
+        "mult_mod": 10
+      },
+      "key": "j_mad",
+      "phase": "independent"
+    },
+    {
+      "case": "full-house",
+      "expected": {},
+      "key": "j_crazy",
+      "phase": "independent"
+    },
+    {
+      "case": "full-house",
+      "expected": {},
+      "key": "j_droll",
+      "phase": "independent"
+    },
+    {
+      "case": "full-house",
+      "expected": {
+        "chip_mod": 50
+      },
+      "key": "j_sly",
+      "phase": "independent"
+    },
+    {
+      "case": "full-house",
+      "expected": {
+        "chip_mod": 100
+      },
+      "key": "j_wily",
+      "phase": "independent"
+    },
+    {
+      "case": "full-house",
+      "expected": {
+        "chip_mod": 80
+      },
+      "key": "j_clever",
+      "phase": "independent"
+    },
+    {
+      "case": "full-house",
+      "expected": {},
+      "key": "j_devious",
+      "phase": "independent"
+    },
+    {
+      "case": "full-house",
+      "expected": {},
+      "key": "j_crafty",
+      "phase": "independent"
+    },
+    {
+      "case": "full-house",
+      "expected": {
+        "Xmult_mod": 2
+      },
+      "key": "j_duo",
+      "phase": "independent"
+    },
+    {
+      "case": "full-house",
+      "expected": {
+        "Xmult_mod": 3
+      },
+      "key": "j_trio",
+      "phase": "independent"
+    },
+    {
+      "case": "full-house",
+      "expected": {},
+      "key": "j_family",
+      "phase": "independent"
+    },
+    {
+      "case": "full-house",
+      "expected": {},
+      "key": "j_order",
+      "phase": "independent"
+    },
+    {
+      "case": "full-house",
+      "expected": {},
+      "key": "j_tribe",
+      "phase": "independent"
+    },
+    {
+      "case": "four",
+      "expected": {
+        "mult_mod": 8
+      },
+      "key": "j_jolly",
+      "phase": "independent"
+    },
+    {
+      "case": "four",
+      "expected": {
+        "mult_mod": 12
+      },
+      "key": "j_zany",
+      "phase": "independent"
+    },
+    {
+      "case": "four",
+      "expected": {},
+      "key": "j_mad",
+      "phase": "independent"
+    },
+    {
+      "case": "four",
+      "expected": {},
+      "key": "j_crazy",
+      "phase": "independent"
+    },
+    {
+      "case": "four",
+      "expected": {},
+      "key": "j_droll",
+      "phase": "independent"
+    },
+    {
+      "case": "four",
+      "expected": {
+        "chip_mod": 50
+      },
+      "key": "j_sly",
+      "phase": "independent"
+    },
+    {
+      "case": "four",
+      "expected": {
+        "chip_mod": 100
+      },
+      "key": "j_wily",
+      "phase": "independent"
+    },
+    {
+      "case": "four",
+      "expected": {},
+      "key": "j_clever",
+      "phase": "independent"
+    },
+    {
+      "case": "four",
+      "expected": {},
+      "key": "j_devious",
+      "phase": "independent"
+    },
+    {
+      "case": "four",
+      "expected": {},
+      "key": "j_crafty",
+      "phase": "independent"
+    },
+    {
+      "case": "four",
+      "expected": {
+        "Xmult_mod": 2
+      },
+      "key": "j_duo",
+      "phase": "independent"
+    },
+    {
+      "case": "four",
+      "expected": {
+        "Xmult_mod": 3
+      },
+      "key": "j_trio",
+      "phase": "independent"
+    },
+    {
+      "case": "four",
+      "expected": {
+        "Xmult_mod": 4
+      },
+      "key": "j_family",
+      "phase": "independent"
+    },
+    {
+      "case": "four",
+      "expected": {},
+      "key": "j_order",
+      "phase": "independent"
+    },
+    {
+      "case": "four",
+      "expected": {},
+      "key": "j_tribe",
+      "phase": "independent"
+    },
+    {
+      "case": "straight-flush",
+      "expected": {},
+      "key": "j_jolly",
+      "phase": "independent"
+    },
+    {
+      "case": "straight-flush",
+      "expected": {},
+      "key": "j_zany",
+      "phase": "independent"
+    },
+    {
+      "case": "straight-flush",
+      "expected": {},
+      "key": "j_mad",
+      "phase": "independent"
+    },
+    {
+      "case": "straight-flush",
+      "expected": {
+        "mult_mod": 12
+      },
+      "key": "j_crazy",
+      "phase": "independent"
+    },
+    {
+      "case": "straight-flush",
+      "expected": {
+        "mult_mod": 10
+      },
+      "key": "j_droll",
+      "phase": "independent"
+    },
+    {
+      "case": "straight-flush",
+      "expected": {},
+      "key": "j_sly",
+      "phase": "independent"
+    },
+    {
+      "case": "straight-flush",
+      "expected": {},
+      "key": "j_wily",
+      "phase": "independent"
+    },
+    {
+      "case": "straight-flush",
+      "expected": {},
+      "key": "j_clever",
+      "phase": "independent"
+    },
+    {
+      "case": "straight-flush",
+      "expected": {
+        "chip_mod": 100
+      },
+      "key": "j_devious",
+      "phase": "independent"
+    },
+    {
+      "case": "straight-flush",
+      "expected": {
+        "chip_mod": 80
+      },
+      "key": "j_crafty",
+      "phase": "independent"
+    },
+    {
+      "case": "straight-flush",
+      "expected": {},
+      "key": "j_duo",
+      "phase": "independent"
+    },
+    {
+      "case": "straight-flush",
+      "expected": {},
+      "key": "j_trio",
+      "phase": "independent"
+    },
+    {
+      "case": "straight-flush",
+      "expected": {},
+      "key": "j_family",
+      "phase": "independent"
+    },
+    {
+      "case": "straight-flush",
+      "expected": {
+        "Xmult_mod": 3
+      },
+      "key": "j_order",
+      "phase": "independent"
+    },
+    {
+      "case": "straight-flush",
+      "expected": {
+        "Xmult_mod": 2
+      },
+      "key": "j_tribe",
+      "phase": "independent"
+    },
+    {
+      "case": "five",
+      "expected": {
+        "mult_mod": 8
+      },
+      "key": "j_jolly",
+      "phase": "independent"
+    },
+    {
+      "case": "five",
+      "expected": {
+        "mult_mod": 12
+      },
+      "key": "j_zany",
+      "phase": "independent"
+    },
+    {
+      "case": "five",
+      "expected": {},
+      "key": "j_mad",
+      "phase": "independent"
+    },
+    {
+      "case": "five",
+      "expected": {},
+      "key": "j_crazy",
+      "phase": "independent"
+    },
+    {
+      "case": "five",
+      "expected": {},
+      "key": "j_droll",
+      "phase": "independent"
+    },
+    {
+      "case": "five",
+      "expected": {
+        "chip_mod": 50
+      },
+      "key": "j_sly",
+      "phase": "independent"
+    },
+    {
+      "case": "five",
+      "expected": {
+        "chip_mod": 100
+      },
+      "key": "j_wily",
+      "phase": "independent"
+    },
+    {
+      "case": "five",
+      "expected": {},
+      "key": "j_clever",
+      "phase": "independent"
+    },
+    {
+      "case": "five",
+      "expected": {},
+      "key": "j_devious",
+      "phase": "independent"
+    },
+    {
+      "case": "five",
+      "expected": {},
+      "key": "j_crafty",
+      "phase": "independent"
+    },
+    {
+      "case": "five",
+      "expected": {
+        "Xmult_mod": 2
+      },
+      "key": "j_duo",
+      "phase": "independent"
+    },
+    {
+      "case": "five",
+      "expected": {
+        "Xmult_mod": 3
+      },
+      "key": "j_trio",
+      "phase": "independent"
+    },
+    {
+      "case": "five",
+      "expected": {
+        "Xmult_mod": 4
+      },
+      "key": "j_family",
+      "phase": "independent"
+    },
+    {
+      "case": "five",
+      "expected": {},
+      "key": "j_order",
+      "phase": "independent"
+    },
+    {
+      "case": "five",
+      "expected": {},
+      "key": "j_tribe",
+      "phase": "independent"
+    },
+    {
+      "case": "flush-house",
+      "expected": {
+        "mult_mod": 8
+      },
+      "key": "j_jolly",
+      "phase": "independent"
+    },
+    {
+      "case": "flush-house",
+      "expected": {
+        "mult_mod": 12
+      },
+      "key": "j_zany",
+      "phase": "independent"
+    },
+    {
+      "case": "flush-house",
+      "expected": {
+        "mult_mod": 10
+      },
+      "key": "j_mad",
+      "phase": "independent"
+    },
+    {
+      "case": "flush-house",
+      "expected": {},
+      "key": "j_crazy",
+      "phase": "independent"
+    },
+    {
+      "case": "flush-house",
+      "expected": {
+        "mult_mod": 10
+      },
+      "key": "j_droll",
+      "phase": "independent"
+    },
+    {
+      "case": "flush-house",
+      "expected": {
+        "chip_mod": 50
+      },
+      "key": "j_sly",
+      "phase": "independent"
+    },
+    {
+      "case": "flush-house",
+      "expected": {
+        "chip_mod": 100
+      },
+      "key": "j_wily",
+      "phase": "independent"
+    },
+    {
+      "case": "flush-house",
+      "expected": {
+        "chip_mod": 80
+      },
+      "key": "j_clever",
+      "phase": "independent"
+    },
+    {
+      "case": "flush-house",
+      "expected": {},
+      "key": "j_devious",
+      "phase": "independent"
+    },
+    {
+      "case": "flush-house",
+      "expected": {
+        "chip_mod": 80
+      },
+      "key": "j_crafty",
+      "phase": "independent"
+    },
+    {
+      "case": "flush-house",
+      "expected": {
+        "Xmult_mod": 2
+      },
+      "key": "j_duo",
+      "phase": "independent"
+    },
+    {
+      "case": "flush-house",
+      "expected": {
+        "Xmult_mod": 3
+      },
+      "key": "j_trio",
+      "phase": "independent"
+    },
+    {
+      "case": "flush-house",
+      "expected": {},
+      "key": "j_family",
+      "phase": "independent"
+    },
+    {
+      "case": "flush-house",
+      "expected": {},
+      "key": "j_order",
+      "phase": "independent"
+    },
+    {
+      "case": "flush-house",
+      "expected": {
+        "Xmult_mod": 2
+      },
+      "key": "j_tribe",
+      "phase": "independent"
+    },
+    {
+      "case": "flush-five",
+      "expected": {
+        "mult_mod": 8
+      },
+      "key": "j_jolly",
+      "phase": "independent"
+    },
+    {
+      "case": "flush-five",
+      "expected": {
+        "mult_mod": 12
+      },
+      "key": "j_zany",
+      "phase": "independent"
+    },
+    {
+      "case": "flush-five",
+      "expected": {},
+      "key": "j_mad",
+      "phase": "independent"
+    },
+    {
+      "case": "flush-five",
+      "expected": {},
+      "key": "j_crazy",
+      "phase": "independent"
+    },
+    {
+      "case": "flush-five",
+      "expected": {
+        "mult_mod": 10
+      },
+      "key": "j_droll",
+      "phase": "independent"
+    },
+    {
+      "case": "flush-five",
+      "expected": {
+        "chip_mod": 50
+      },
+      "key": "j_sly",
+      "phase": "independent"
+    },
+    {
+      "case": "flush-five",
+      "expected": {
+        "chip_mod": 100
+      },
+      "key": "j_wily",
+      "phase": "independent"
+    },
+    {
+      "case": "flush-five",
+      "expected": {},
+      "key": "j_clever",
+      "phase": "independent"
+    },
+    {
+      "case": "flush-five",
+      "expected": {},
+      "key": "j_devious",
+      "phase": "independent"
+    },
+    {
+      "case": "flush-five",
+      "expected": {
+        "chip_mod": 80
+      },
+      "key": "j_crafty",
+      "phase": "independent"
+    },
+    {
+      "case": "flush-five",
+      "expected": {
+        "Xmult_mod": 2
+      },
+      "key": "j_duo",
+      "phase": "independent"
+    },
+    {
+      "case": "flush-five",
+      "expected": {
+        "Xmult_mod": 3
+      },
+      "key": "j_trio",
+      "phase": "independent"
+    },
+    {
+      "case": "flush-five",
+      "expected": {
+        "Xmult_mod": 4
+      },
+      "key": "j_family",
+      "phase": "independent"
+    },
+    {
+      "case": "flush-five",
+      "expected": {},
+      "key": "j_order",
+      "phase": "independent"
+    },
+    {
+      "case": "flush-five",
+      "expected": {
+        "Xmult_mod": 2
+      },
+      "key": "j_tribe",
+      "phase": "independent"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_greedy_joker",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_lusty_joker",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_wrathful_joker",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 3
+      },
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_gluttenous_joker",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "mult": 8
+      },
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "mult": 8
+      },
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 8
+      },
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "mult": 8
+      },
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "mult": 8
+      },
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "mult": 8
+      },
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 8
+      },
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "mult": 8
+      },
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "mult": 8
+      },
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "mult": 8
+      },
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 8
+      },
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "mult": 8
+      },
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "mult": 8
+      },
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "mult": 8
+      },
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 8
+      },
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "mult": 8
+      },
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "mult": 8
+      },
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "mult": 8
+      },
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 8
+      },
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "mult": 8
+      },
+      "key": "j_fibonacci",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "chips": 30
+      },
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "chips": 30
+      },
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "chips": 30
+      },
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "chips": 30
+      },
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "chips": 30
+      },
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "chips": 30
+      },
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "chips": 30
+      },
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "chips": 30
+      },
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "chips": 30
+      },
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "chips": 30
+      },
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "chips": 30
+      },
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "chips": 30
+      },
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_scary_face",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "mult": 4
+      },
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "mult": 4
+      },
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 4
+      },
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "mult": 4
+      },
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "mult": 4
+      },
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "mult": 4
+      },
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 4
+      },
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "mult": 4
+      },
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "mult": 4
+      },
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "mult": 4
+      },
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 4
+      },
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "mult": 4
+      },
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "mult": 4
+      },
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "mult": 4
+      },
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 4
+      },
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "mult": 4
+      },
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "mult": 4
+      },
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "mult": 4
+      },
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 4
+      },
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "mult": 4
+      },
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_even_steven",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "chips": 31
+      },
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "chips": 31
+      },
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "chips": 31
+      },
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "chips": 31
+      },
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "chips": 31
+      },
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "chips": 31
+      },
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "chips": 31
+      },
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "chips": 31
+      },
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "chips": 31
+      },
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "chips": 31
+      },
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "chips": 31
+      },
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "chips": 31
+      },
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "chips": 31
+      },
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "chips": 31
+      },
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "chips": 31
+      },
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "chips": 31
+      },
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "chips": 31
+      },
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "chips": 31
+      },
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "chips": 31
+      },
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "chips": 31
+      },
+      "key": "j_odd_todd",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "chips": 20,
+        "mult": 4
+      },
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "chips": 20,
+        "mult": 4
+      },
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "chips": 20,
+        "mult": 4
+      },
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "chips": 20,
+        "mult": 4
+      },
+      "key": "j_scholar",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "chips": 50
+      },
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "chips": 50
+      },
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "chips": 50
+      },
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "chips": 50
+      },
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "chips": 50
+      },
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "chips": 50
+      },
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "chips": 50
+      },
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "chips": 50
+      },
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "chips": 50
+      },
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "chips": 50
+      },
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "chips": 50
+      },
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "chips": 50
+      },
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "chips": 50
+      },
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_arrowhead",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 7
+      },
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 7
+      },
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 7
+      },
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 7
+      },
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 7
+      },
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 7
+      },
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 7
+      },
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 7
+      },
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 7
+      },
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 7
+      },
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 7
+      },
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 7
+      },
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 7
+      },
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_onyx_agate",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "mult": 5
+      },
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "mult": 5
+      },
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 5
+      },
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "mult": 5
+      },
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "mult": 5
+      },
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "mult": 5
+      },
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 5
+      },
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "mult": 5
+      },
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "mult": 5
+      },
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "mult": 5
+      },
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "mult": 5
+      },
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "mult": 5
+      },
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_smiley",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 2,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 3,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "chips": 10,
+        "mult": 4
+      },
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "chips": 10,
+        "mult": 4
+      },
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "chips": 10,
+        "mult": 4
+      },
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "chips": 10,
+        "mult": 4
+      },
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 4,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 5,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 6,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 7,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 8,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 9,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {
+        "chips": 10,
+        "mult": 4
+      },
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Spades"
+    },
+    {
+      "expected": {
+        "chips": 10,
+        "mult": 4
+      },
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {
+        "chips": 10,
+        "mult": 4
+      },
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {
+        "chips": 10,
+        "mult": 4
+      },
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 10,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 11,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 12,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 13,
+      "suit": "Diamonds"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Spades"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Hearts"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Clubs"
+    },
+    {
+      "expected": {},
+      "key": "j_walkie_talkie",
+      "phase": "individual-play",
+      "rank": 14,
+      "suit": "Diamonds"
+    },
+    {
+      "case": "full-five-stencils",
+      "debuff": false,
+      "deckCount": 0,
+      "discards": 0,
+      "expected": {
+        "Xmult_mod": 5
+      },
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 5,
+      "jokerLimit": 5,
+      "key": "j_stencil",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        }
+      ],
+      "playedCount": 2,
+      "stencilX": 5
+    },
+    {
+      "case": "negative-full-capacity",
+      "debuff": false,
+      "deckCount": 0,
+      "discards": 0,
+      "expected": {},
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 6,
+      "jokerLimit": 6,
+      "key": "j_stencil",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        }
+      ],
+      "playedCount": 2,
+      "stencilX": 1
+    },
+    {
+      "case": "boundary-zero",
+      "debuff": false,
+      "deckCount": 0,
+      "discards": 0,
+      "expected": {
+        "mult_mod": 4
+      },
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 5,
+      "jokerLimit": 5,
+      "key": "j_joker",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 4,
+          "stone": false,
+          "suit": "Clubs",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 5,
+          "stone": false,
+          "suit": "Diamonds",
+          "wild": false
+        }
+      ],
+      "playedCount": 4,
+      "stencilX": 1
+    },
+    {
+      "case": "boundary-three",
+      "debuff": false,
+      "deckCount": 40,
+      "discards": 3,
+      "expected": {
+        "mult_mod": 4
+      },
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 1,
+      "jokerLimit": 5,
+      "key": "j_joker",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 4,
+          "stone": false,
+          "suit": "Clubs",
+          "wild": false
+        }
+      ],
+      "playedCount": 3,
+      "stencilX": 1
+    },
+    {
+      "case": "two-stencils",
+      "debuff": false,
+      "deckCount": 10,
+      "discards": 0,
+      "expected": {
+        "mult_mod": 4
+      },
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 2,
+      "jokerLimit": 5,
+      "key": "j_joker",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        }
+      ],
+      "playedCount": 2,
+      "stencilX": 1
+    },
+    {
+      "case": "debuffed",
+      "debuff": true,
+      "deckCount": 10,
+      "discards": 0,
+      "expected": {},
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 1,
+      "jokerLimit": 5,
+      "key": "j_joker",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        }
+      ],
+      "playedCount": 2,
+      "stencilX": 1
+    },
+    {
+      "case": "boundary-zero",
+      "debuff": false,
+      "deckCount": 0,
+      "discards": 0,
+      "expected": {},
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 5,
+      "jokerLimit": 5,
+      "key": "j_half",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 4,
+          "stone": false,
+          "suit": "Clubs",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 5,
+          "stone": false,
+          "suit": "Diamonds",
+          "wild": false
+        }
+      ],
+      "playedCount": 4,
+      "stencilX": 1
+    },
+    {
+      "case": "boundary-three",
+      "debuff": false,
+      "deckCount": 40,
+      "discards": 3,
+      "expected": {
+        "mult_mod": 20
+      },
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 1,
+      "jokerLimit": 5,
+      "key": "j_half",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 4,
+          "stone": false,
+          "suit": "Clubs",
+          "wild": false
+        }
+      ],
+      "playedCount": 3,
+      "stencilX": 1
+    },
+    {
+      "case": "two-stencils",
+      "debuff": false,
+      "deckCount": 10,
+      "discards": 0,
+      "expected": {
+        "mult_mod": 20
+      },
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 2,
+      "jokerLimit": 5,
+      "key": "j_half",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        }
+      ],
+      "playedCount": 2,
+      "stencilX": 1
+    },
+    {
+      "case": "debuffed",
+      "debuff": true,
+      "deckCount": 10,
+      "discards": 0,
+      "expected": {},
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 1,
+      "jokerLimit": 5,
+      "key": "j_half",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        }
+      ],
+      "playedCount": 2,
+      "stencilX": 1
+    },
+    {
+      "case": "boundary-zero",
+      "debuff": false,
+      "deckCount": 0,
+      "discards": 0,
+      "expected": {},
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 5,
+      "jokerLimit": 5,
+      "key": "j_banner",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 4,
+          "stone": false,
+          "suit": "Clubs",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 5,
+          "stone": false,
+          "suit": "Diamonds",
+          "wild": false
+        }
+      ],
+      "playedCount": 4,
+      "stencilX": 1
+    },
+    {
+      "case": "boundary-three",
+      "debuff": false,
+      "deckCount": 40,
+      "discards": 3,
+      "expected": {
+        "chip_mod": 90
+      },
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 1,
+      "jokerLimit": 5,
+      "key": "j_banner",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 4,
+          "stone": false,
+          "suit": "Clubs",
+          "wild": false
+        }
+      ],
+      "playedCount": 3,
+      "stencilX": 1
+    },
+    {
+      "case": "two-stencils",
+      "debuff": false,
+      "deckCount": 10,
+      "discards": 0,
+      "expected": {},
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 2,
+      "jokerLimit": 5,
+      "key": "j_banner",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        }
+      ],
+      "playedCount": 2,
+      "stencilX": 1
+    },
+    {
+      "case": "debuffed",
+      "debuff": true,
+      "deckCount": 10,
+      "discards": 0,
+      "expected": {},
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 1,
+      "jokerLimit": 5,
+      "key": "j_banner",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        }
+      ],
+      "playedCount": 2,
+      "stencilX": 1
+    },
+    {
+      "case": "boundary-zero",
+      "debuff": false,
+      "deckCount": 0,
+      "discards": 0,
+      "expected": {
+        "mult_mod": 15
+      },
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 5,
+      "jokerLimit": 5,
+      "key": "j_mystic_summit",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 4,
+          "stone": false,
+          "suit": "Clubs",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 5,
+          "stone": false,
+          "suit": "Diamonds",
+          "wild": false
+        }
+      ],
+      "playedCount": 4,
+      "stencilX": 1
+    },
+    {
+      "case": "boundary-three",
+      "debuff": false,
+      "deckCount": 40,
+      "discards": 3,
+      "expected": {},
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 1,
+      "jokerLimit": 5,
+      "key": "j_mystic_summit",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 4,
+          "stone": false,
+          "suit": "Clubs",
+          "wild": false
+        }
+      ],
+      "playedCount": 3,
+      "stencilX": 1
+    },
+    {
+      "case": "two-stencils",
+      "debuff": false,
+      "deckCount": 10,
+      "discards": 0,
+      "expected": {
+        "mult_mod": 15
+      },
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 2,
+      "jokerLimit": 5,
+      "key": "j_mystic_summit",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        }
+      ],
+      "playedCount": 2,
+      "stencilX": 1
+    },
+    {
+      "case": "debuffed",
+      "debuff": true,
+      "deckCount": 10,
+      "discards": 0,
+      "expected": {},
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 1,
+      "jokerLimit": 5,
+      "key": "j_mystic_summit",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        }
+      ],
+      "playedCount": 2,
+      "stencilX": 1
+    },
+    {
+      "case": "boundary-zero",
+      "debuff": false,
+      "deckCount": 0,
+      "discards": 0,
+      "expected": {},
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 5,
+      "jokerLimit": 5,
+      "key": "j_blue_joker",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 4,
+          "stone": false,
+          "suit": "Clubs",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 5,
+          "stone": false,
+          "suit": "Diamonds",
+          "wild": false
+        }
+      ],
+      "playedCount": 4,
+      "stencilX": 1
+    },
+    {
+      "case": "boundary-three",
+      "debuff": false,
+      "deckCount": 40,
+      "discards": 3,
+      "expected": {
+        "chip_mod": 80
+      },
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 1,
+      "jokerLimit": 5,
+      "key": "j_blue_joker",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 4,
+          "stone": false,
+          "suit": "Clubs",
+          "wild": false
+        }
+      ],
+      "playedCount": 3,
+      "stencilX": 1
+    },
+    {
+      "case": "two-stencils",
+      "debuff": false,
+      "deckCount": 10,
+      "discards": 0,
+      "expected": {
+        "chip_mod": 20
+      },
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 2,
+      "jokerLimit": 5,
+      "key": "j_blue_joker",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        }
+      ],
+      "playedCount": 2,
+      "stencilX": 1
+    },
+    {
+      "case": "debuffed",
+      "debuff": true,
+      "deckCount": 10,
+      "discards": 0,
+      "expected": {},
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 1,
+      "jokerLimit": 5,
+      "key": "j_blue_joker",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        }
+      ],
+      "playedCount": 2,
+      "stencilX": 1
+    },
+    {
+      "case": "boundary-zero",
+      "debuff": false,
+      "deckCount": 0,
+      "discards": 0,
+      "expected": {
+        "mult_mod": 15
+      },
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 5,
+      "jokerLimit": 5,
+      "key": "j_abstract",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 4,
+          "stone": false,
+          "suit": "Clubs",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 5,
+          "stone": false,
+          "suit": "Diamonds",
+          "wild": false
+        }
+      ],
+      "playedCount": 4,
+      "stencilX": 1
+    },
+    {
+      "case": "boundary-three",
+      "debuff": false,
+      "deckCount": 40,
+      "discards": 3,
+      "expected": {
+        "mult_mod": 3
+      },
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 1,
+      "jokerLimit": 5,
+      "key": "j_abstract",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 4,
+          "stone": false,
+          "suit": "Clubs",
+          "wild": false
+        }
+      ],
+      "playedCount": 3,
+      "stencilX": 1
+    },
+    {
+      "case": "two-stencils",
+      "debuff": false,
+      "deckCount": 10,
+      "discards": 0,
+      "expected": {
+        "mult_mod": 6
+      },
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 2,
+      "jokerLimit": 5,
+      "key": "j_abstract",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        }
+      ],
+      "playedCount": 2,
+      "stencilX": 1
+    },
+    {
+      "case": "debuffed",
+      "debuff": true,
+      "deckCount": 10,
+      "discards": 0,
+      "expected": {},
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 1,
+      "jokerLimit": 5,
+      "key": "j_abstract",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        }
+      ],
+      "playedCount": 2,
+      "stencilX": 1
+    },
+    {
+      "case": "boundary-zero",
+      "debuff": false,
+      "deckCount": 0,
+      "discards": 0,
+      "expected": {},
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 5,
+      "jokerLimit": 5,
+      "key": "j_stencil",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 4,
+          "stone": false,
+          "suit": "Clubs",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 5,
+          "stone": false,
+          "suit": "Diamonds",
+          "wild": false
+        }
+      ],
+      "playedCount": 4,
+      "stencilX": 1
+    },
+    {
+      "case": "boundary-three",
+      "debuff": false,
+      "deckCount": 40,
+      "discards": 3,
+      "expected": {
+        "Xmult_mod": 5
+      },
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 1,
+      "jokerLimit": 5,
+      "key": "j_stencil",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 4,
+          "stone": false,
+          "suit": "Clubs",
+          "wild": false
+        }
+      ],
+      "playedCount": 3,
+      "stencilX": 5
+    },
+    {
+      "case": "two-stencils",
+      "debuff": false,
+      "deckCount": 10,
+      "discards": 0,
+      "expected": {
+        "Xmult_mod": 5
+      },
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 2,
+      "jokerLimit": 5,
+      "key": "j_stencil",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        }
+      ],
+      "playedCount": 2,
+      "stencilX": 5
+    },
+    {
+      "case": "debuffed",
+      "debuff": true,
+      "deckCount": 10,
+      "discards": 0,
+      "expected": {},
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 1,
+      "jokerLimit": 5,
+      "key": "j_stencil",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        }
+      ],
+      "playedCount": 2,
+      "stencilX": 5
+    },
+    {
+      "case": "empty",
+      "debuff": false,
+      "deckCount": 0,
+      "discards": 0,
+      "expected": {
+        "Xmult_mod": 3
+      },
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 1,
+      "jokerLimit": 5,
+      "key": "j_blackboard",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        }
+      ],
+      "playedCount": 2,
+      "stencilX": 1
+    },
+    {
+      "case": "black",
+      "debuff": false,
+      "deckCount": 0,
+      "discards": 0,
+      "expected": {
+        "Xmult_mod": 3
+      },
+      "held": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Clubs",
+          "wild": false
+        }
+      ],
+      "heldCount": 2,
+      "jokerCount": 1,
+      "jokerLimit": 5,
+      "key": "j_blackboard",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        }
+      ],
+      "playedCount": 2,
+      "stencilX": 1
+    },
+    {
+      "case": "red",
+      "debuff": false,
+      "deckCount": 0,
+      "discards": 0,
+      "expected": {},
+      "held": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        }
+      ],
+      "heldCount": 2,
+      "jokerCount": 1,
+      "jokerLimit": 5,
+      "key": "j_blackboard",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        }
+      ],
+      "playedCount": 2,
+      "stencilX": 1
+    },
+    {
+      "case": "debuff-black",
+      "debuff": false,
+      "deckCount": 0,
+      "discards": 0,
+      "expected": {
+        "Xmult_mod": 3
+      },
+      "held": [
+        {
+          "debuff": true,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        }
+      ],
+      "heldCount": 1,
+      "jokerCount": 1,
+      "jokerLimit": 5,
+      "key": "j_blackboard",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        }
+      ],
+      "playedCount": 2,
+      "stencilX": 1
+    },
+    {
+      "case": "stone-black",
+      "debuff": false,
+      "deckCount": 0,
+      "discards": 0,
+      "expected": {},
+      "held": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": true,
+          "suit": "Spades",
+          "wild": false
+        }
+      ],
+      "heldCount": 1,
+      "jokerCount": 1,
+      "jokerLimit": 5,
+      "key": "j_blackboard",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        }
+      ],
+      "playedCount": 2,
+      "stencilX": 1
+    },
+    {
+      "case": "wild-red",
+      "debuff": false,
+      "deckCount": 0,
+      "discards": 0,
+      "expected": {
+        "Xmult_mod": 3
+      },
+      "held": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": true
+        }
+      ],
+      "heldCount": 1,
+      "jokerCount": 1,
+      "jokerLimit": 5,
+      "key": "j_blackboard",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        }
+      ],
+      "playedCount": 2,
+      "stencilX": 1
+    },
+    {
+      "case": "four-suits",
+      "debuff": false,
+      "deckCount": 0,
+      "discards": 0,
+      "expected": {
+        "Xmult_mod": 3
+      },
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 1,
+      "jokerLimit": 5,
+      "key": "j_flower_pot",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Clubs",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 4,
+          "stone": false,
+          "suit": "Diamonds",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 5,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        }
+      ],
+      "playedCount": 4,
+      "stencilX": 1
+    },
+    {
+      "case": "missing-suit",
+      "debuff": false,
+      "deckCount": 0,
+      "discards": 0,
+      "expected": {},
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 1,
+      "jokerLimit": 5,
+      "key": "j_flower_pot",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Clubs",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 4,
+          "stone": false,
+          "suit": "Diamonds",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 5,
+          "stone": false,
+          "suit": "Diamonds",
+          "wild": false
+        }
+      ],
+      "playedCount": 4,
+      "stencilX": 1
+    },
+    {
+      "case": "wild-fourth",
+      "debuff": false,
+      "deckCount": 0,
+      "discards": 0,
+      "expected": {
+        "Xmult_mod": 3
+      },
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 1,
+      "jokerLimit": 5,
+      "key": "j_flower_pot",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Clubs",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 4,
+          "stone": false,
+          "suit": "Diamonds",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 5,
+          "stone": false,
+          "suit": "Diamonds",
+          "wild": true
+        }
+      ],
+      "playedCount": 4,
+      "stencilX": 1
+    },
+    {
+      "case": "debuff-plain",
+      "debuff": false,
+      "deckCount": 0,
+      "discards": 0,
+      "expected": {
+        "Xmult_mod": 3
+      },
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 1,
+      "jokerLimit": 5,
+      "key": "j_flower_pot",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": true,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Clubs",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 4,
+          "stone": false,
+          "suit": "Diamonds",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 5,
+          "stone": false,
+          "suit": "Hearts",
+          "wild": false
+        }
+      ],
+      "playedCount": 4,
+      "stencilX": 1
+    },
+    {
+      "case": "debuff-wild",
+      "debuff": false,
+      "deckCount": 0,
+      "discards": 0,
+      "expected": {},
+      "held": [],
+      "heldCount": 0,
+      "jokerCount": 1,
+      "jokerLimit": 5,
+      "key": "j_flower_pot",
+      "phase": "independent",
+      "played": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 3,
+          "stone": false,
+          "suit": "Clubs",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 4,
+          "stone": false,
+          "suit": "Diamonds",
+          "wild": false
+        },
+        {
+          "debuff": true,
+          "rank": 5,
+          "stone": false,
+          "suit": "Diamonds",
+          "wild": true
+        }
+      ],
+      "playedCount": 4,
+      "stencilX": 1
+    },
+    {
+      "case": "last-tied-lowest",
+      "expected": {},
+      "held": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 5,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        }
+      ],
+      "heldIndex": 1,
+      "key": "j_raised_fist",
+      "phase": "individual-held",
+      "rank": 2
+    },
+    {
+      "case": "last-tied-lowest",
+      "expected": {},
+      "held": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 5,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        }
+      ],
+      "heldIndex": 2,
+      "key": "j_raised_fist",
+      "phase": "individual-held",
+      "rank": 5
+    },
+    {
+      "case": "last-tied-lowest",
+      "expected": {
+        "h_mult": 4
+      },
+      "held": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 5,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        }
+      ],
+      "heldIndex": 3,
+      "key": "j_raised_fist",
+      "phase": "individual-held",
+      "rank": 2
+    },
+    {
+      "case": "ace-high",
+      "expected": {},
+      "held": [
+        {
+          "debuff": false,
+          "rank": 14,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 13,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        }
+      ],
+      "heldIndex": 1,
+      "key": "j_raised_fist",
+      "phase": "individual-held",
+      "rank": 14
+    },
+    {
+      "case": "ace-high",
+      "expected": {
+        "h_mult": 20
+      },
+      "held": [
+        {
+          "debuff": false,
+          "rank": 14,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 13,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        }
+      ],
+      "heldIndex": 2,
+      "key": "j_raised_fist",
+      "phase": "individual-held",
+      "rank": 13
+    },
+    {
+      "case": "stone-skipped",
+      "expected": {},
+      "held": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": true,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 5,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        }
+      ],
+      "heldIndex": 1,
+      "key": "j_raised_fist",
+      "phase": "individual-held",
+      "rank": 2
+    },
+    {
+      "case": "stone-skipped",
+      "expected": {
+        "h_mult": 10
+      },
+      "held": [
+        {
+          "debuff": false,
+          "rank": 2,
+          "stone": true,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 5,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        }
+      ],
+      "heldIndex": 2,
+      "key": "j_raised_fist",
+      "phase": "individual-held",
+      "rank": 5
+    },
+    {
+      "case": "lowest-debuff",
+      "expected": {},
+      "held": [
+        {
+          "debuff": true,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 5,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        }
+      ],
+      "heldIndex": 1,
+      "key": "j_raised_fist",
+      "phase": "individual-held",
+      "rank": 2
+    },
+    {
+      "case": "lowest-debuff",
+      "expected": {},
+      "held": [
+        {
+          "debuff": true,
+          "rank": 2,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        },
+        {
+          "debuff": false,
+          "rank": 5,
+          "stone": false,
+          "suit": "Spades",
+          "wild": false
+        }
+      ],
+      "heldIndex": 2,
+      "key": "j_raised_fist",
+      "phase": "individual-held",
+      "rank": 5
+    }
+  ],
+  "catalog": [
+    {
+      "config": {
+        "mult": 4
+      },
+      "effect": "Mult",
+      "key": "j_joker",
+      "name": "Joker"
+    },
+    {
+      "config": {
+        "extra": {
+          "s_mult": 3,
+          "suit": "Diamonds"
+        }
+      },
+      "effect": "Suit Mult",
+      "key": "j_greedy_joker",
+      "name": "Greedy Joker"
+    },
+    {
+      "config": {
+        "extra": {
+          "s_mult": 3,
+          "suit": "Hearts"
+        }
+      },
+      "effect": "Suit Mult",
+      "key": "j_lusty_joker",
+      "name": "Lusty Joker"
+    },
+    {
+      "config": {
+        "extra": {
+          "s_mult": 3,
+          "suit": "Spades"
+        }
+      },
+      "effect": "Suit Mult",
+      "key": "j_wrathful_joker",
+      "name": "Wrathful Joker"
+    },
+    {
+      "config": {
+        "extra": {
+          "s_mult": 3,
+          "suit": "Clubs"
+        }
+      },
+      "effect": "Suit Mult",
+      "key": "j_gluttenous_joker",
+      "name": "Gluttonous Joker"
+    },
+    {
+      "config": {
+        "t_mult": 8,
+        "type": "Pair"
+      },
+      "effect": "Type Mult",
+      "key": "j_jolly",
+      "name": "Jolly Joker"
+    },
+    {
+      "config": {
+        "t_mult": 12,
+        "type": "Three of a Kind"
+      },
+      "effect": "Type Mult",
+      "key": "j_zany",
+      "name": "Zany Joker"
+    },
+    {
+      "config": {
+        "t_mult": 10,
+        "type": "Two Pair"
+      },
+      "effect": "Type Mult",
+      "key": "j_mad",
+      "name": "Mad Joker"
+    },
+    {
+      "config": {
+        "t_mult": 12,
+        "type": "Straight"
+      },
+      "effect": "Type Mult",
+      "key": "j_crazy",
+      "name": "Crazy Joker"
+    },
+    {
+      "config": {
+        "t_mult": 10,
+        "type": "Flush"
+      },
+      "effect": "Type Mult",
+      "key": "j_droll",
+      "name": "Droll Joker"
+    },
+    {
+      "config": {
+        "t_chips": 50,
+        "type": "Pair"
+      },
+      "key": "j_sly",
+      "name": "Sly Joker"
+    },
+    {
+      "config": {
+        "t_chips": 100,
+        "type": "Three of a Kind"
+      },
+      "key": "j_wily",
+      "name": "Wily Joker"
+    },
+    {
+      "config": {
+        "t_chips": 80,
+        "type": "Two Pair"
+      },
+      "key": "j_clever",
+      "name": "Clever Joker"
+    },
+    {
+      "config": {
+        "t_chips": 100,
+        "type": "Straight"
+      },
+      "key": "j_devious",
+      "name": "Devious Joker"
+    },
+    {
+      "config": {
+        "t_chips": 80,
+        "type": "Flush"
+      },
+      "key": "j_crafty",
+      "name": "Crafty Joker"
+    },
+    {
+      "config": {
+        "extra": {
+          "mult": 20,
+          "size": 3
+        }
+      },
+      "effect": "Hand Size Mult",
+      "key": "j_half",
+      "name": "Half Joker"
+    },
+    {
+      "config": {},
+      "effect": "Hand Size Mult",
+      "key": "j_stencil",
+      "name": "Joker Stencil"
+    },
+    {
+      "config": {
+        "extra": 30
+      },
+      "effect": "Discard Chips",
+      "key": "j_banner",
+      "name": "Banner"
+    },
+    {
+      "config": {
+        "extra": {
+          "d_remaining": 0,
+          "mult": 15
+        }
+      },
+      "effect": "No Discard Mult",
+      "key": "j_mystic_summit",
+      "name": "Mystic Summit"
+    },
+    {
+      "config": {},
+      "effect": "Socialized Mult",
+      "key": "j_raised_fist",
+      "name": "Raised Fist"
+    },
+    {
+      "config": {
+        "extra": 8
+      },
+      "effect": "Card Mult",
+      "key": "j_fibonacci",
+      "name": "Fibonacci"
+    },
+    {
+      "config": {
+        "extra": 30
+      },
+      "effect": "Scary Face Cards",
+      "key": "j_scary_face",
+      "name": "Scary Face"
+    },
+    {
+      "config": {
+        "extra": 4
+      },
+      "effect": "Even Card Buff",
+      "key": "j_even_steven",
+      "name": "Even Steven"
+    },
+    {
+      "config": {
+        "extra": 31
+      },
+      "effect": "Odd Card Buff",
+      "key": "j_odd_todd",
+      "name": "Odd Todd"
+    },
+    {
+      "config": {
+        "extra": {
+          "chips": 20,
+          "mult": 4
+        }
+      },
+      "effect": "Ace Buff",
+      "key": "j_scholar",
+      "name": "Scholar"
+    },
+    {
+      "config": {},
+      "key": "j_splash",
+      "name": "Splash"
+    },
+    {
+      "config": {
+        "extra": 3
+      },
+      "effect": "Joker Mult",
+      "key": "j_abstract",
+      "name": "Abstract Joker"
+    },
+    {
+      "config": {
+        "extra": 3
+      },
+      "key": "j_blackboard",
+      "name": "Blackboard"
+    },
+    {
+      "config": {
+        "extra": 2
+      },
+      "key": "j_blue_joker",
+      "name": "Blue Joker"
+    },
+    {
+      "config": {
+        "extra": 50
+      },
+      "effect": "",
+      "key": "j_arrowhead",
+      "name": "Arrowhead"
+    },
+    {
+      "config": {
+        "extra": 7
+      },
+      "effect": "",
+      "key": "j_onyx_agate",
+      "name": "Onyx Agate"
+    },
+    {
+      "config": {
+        "extra": 5
+      },
+      "key": "j_smiley",
+      "name": "Smiley Face"
+    },
+    {
+      "config": {
+        "extra": {
+          "chips": 10,
+          "mult": 4
+        }
+      },
+      "key": "j_walkie_talkie",
+      "name": "Walkie Talkie"
+    },
+    {
+      "config": {
+        "extra": 3
+      },
+      "effect": "",
+      "key": "j_flower_pot",
+      "name": "Flower Pot"
+    },
+    {
+      "config": {
+        "Xmult": 2,
+        "type": "Pair"
+      },
+      "effect": "X1.5 Mult",
+      "key": "j_duo",
+      "name": "The Duo"
+    },
+    {
+      "config": {
+        "Xmult": 3,
+        "type": "Three of a Kind"
+      },
+      "effect": "X2 Mult",
+      "key": "j_trio",
+      "name": "The Trio"
+    },
+    {
+      "config": {
+        "Xmult": 4,
+        "type": "Four of a Kind"
+      },
+      "effect": "X3 Mult",
+      "key": "j_family",
+      "name": "The Family"
+    },
+    {
+      "config": {
+        "Xmult": 3,
+        "type": "Straight"
+      },
+      "effect": "X3 Mult",
+      "key": "j_order",
+      "name": "The Order"
+    },
+    {
+      "config": {
+        "Xmult": 2,
+        "type": "Flush"
+      },
+      "effect": "X3 Mult",
+      "key": "j_tribe",
+      "name": "The Tribe"
+    }
+  ],
+  "contains": [
+    {
+      "case": "high-card",
+      "contains": [
+        "High Card"
+      ],
+      "flush": false,
+      "ranks": [
+        14,
+        10,
+        8,
+        5,
+        2
+      ]
+    },
+    {
+      "case": "pair",
+      "contains": [
+        "High Card",
+        "Pair"
+      ],
+      "flush": false,
+      "ranks": [
+        9,
+        9,
+        8,
+        5,
+        2
+      ]
+    },
+    {
+      "case": "two-pair",
+      "contains": [
+        "High Card",
+        "Pair",
+        "Two Pair"
+      ],
+      "flush": false,
+      "ranks": [
+        9,
+        9,
+        8,
+        8,
+        2
+      ]
+    },
+    {
+      "case": "three",
+      "contains": [
+        "High Card",
+        "Pair",
+        "Three of a Kind"
+      ],
+      "flush": false,
+      "ranks": [
+        9,
+        9,
+        9,
+        5,
+        2
+      ]
+    },
+    {
+      "case": "straight",
+      "contains": [
+        "High Card",
+        "Straight"
+      ],
+      "flush": false,
+      "ranks": [
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "case": "flush",
+      "contains": [
+        "Flush",
+        "High Card"
+      ],
+      "flush": true,
+      "ranks": [
+        14,
+        10,
+        8,
+        5,
+        2
+      ]
+    },
+    {
+      "case": "full-house",
+      "contains": [
+        "Full House",
+        "High Card",
+        "Pair",
+        "Three of a Kind",
+        "Two Pair"
+      ],
+      "flush": false,
+      "ranks": [
+        9,
+        9,
+        9,
+        8,
+        8
+      ]
+    },
+    {
+      "case": "four",
+      "contains": [
+        "Four of a Kind",
+        "High Card",
+        "Pair",
+        "Three of a Kind"
+      ],
+      "flush": false,
+      "ranks": [
+        9,
+        9,
+        9,
+        9,
+        2
+      ]
+    },
+    {
+      "case": "straight-flush",
+      "contains": [
+        "Flush",
+        "High Card",
+        "Straight",
+        "Straight Flush"
+      ],
+      "flush": true,
+      "ranks": [
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "case": "five",
+      "contains": [
+        "Five of a Kind",
+        "Four of a Kind",
+        "High Card",
+        "Pair",
+        "Three of a Kind"
+      ],
+      "flush": false,
+      "ranks": [
+        9,
+        9,
+        9,
+        9,
+        9
+      ]
+    },
+    {
+      "case": "flush-house",
+      "contains": [
+        "Flush",
+        "Flush House",
+        "Full House",
+        "High Card",
+        "Pair",
+        "Three of a Kind",
+        "Two Pair"
+      ],
+      "flush": true,
+      "ranks": [
+        9,
+        9,
+        9,
+        8,
+        8
+      ]
+    },
+    {
+      "case": "flush-five",
+      "contains": [
+        "Five of a Kind",
+        "Flush",
+        "Flush Five",
+        "Four of a Kind",
+        "High Card",
+        "Pair",
+        "Three of a Kind"
+      ],
+      "flush": true,
+      "ranks": [
+        9,
+        9,
+        9,
+        9,
+        9
+      ]
+    }
+  ],
+  "editions": [
+    {
+      "config": {
+        "extra": 50
+      },
+      "edition": "foil",
+      "expected": {
+        "chip_mod": 50
+      }
+    },
+    {
+      "config": {
+        "extra": 10
+      },
+      "edition": "holo",
+      "expected": {
+        "mult_mod": 10
+      }
+    },
+    {
+      "config": {
+        "extra": 1
+      },
+      "edition": "negative",
+      "expected": {}
+    },
+    {
+      "config": {
+        "extra": 1.5
+      },
+      "edition": "polychrome",
+      "expected": {
+        "x_mult_mod": 1.5
+      }
+    }
+  ],
+  "source": {
+    "apkSha256": "6236dc68a312d04295839cfbfd2699d4751877bdf162c3a4ce425481d28397bd",
+    "method": "Original Card:set_ability, Card:calculate_joker, Card:get_edition and evaluate_poker_hand under minimal adapter",
+    "limits": "Not full APK execution. No rendering, round loop, retriggers, or full state_events execution. Stencil update formula applied explicitly from native Card:update."
+  }
+}

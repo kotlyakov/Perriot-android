@@ -1,0 +1,267 @@
+id,set,name,order,cost,rarity,weight,kind,unlocked,source,line,status
+j_joker,Joker,Joker,1,2,1,,,true,assets/game.lua,371,metadata_only_effects_pending
+j_greedy_joker,Joker,Greedy Joker,2,5,1,,,true,assets/game.lua,372,metadata_only_effects_pending
+j_lusty_joker,Joker,Lusty Joker,3,5,1,,,true,assets/game.lua,373,metadata_only_effects_pending
+j_wrathful_joker,Joker,Wrathful Joker,4,5,1,,,true,assets/game.lua,374,metadata_only_effects_pending
+j_gluttenous_joker,Joker,Gluttonous Joker,5,5,1,,,true,assets/game.lua,375,metadata_only_effects_pending
+j_jolly,Joker,Jolly Joker,6,3,1,,,true,assets/game.lua,376,metadata_only_effects_pending
+j_zany,Joker,Zany Joker,7,4,1,,,true,assets/game.lua,377,metadata_only_effects_pending
+j_mad,Joker,Mad Joker,8,4,1,,,true,assets/game.lua,378,metadata_only_effects_pending
+j_crazy,Joker,Crazy Joker,9,4,1,,,true,assets/game.lua,379,metadata_only_effects_pending
+j_droll,Joker,Droll Joker,10,4,1,,,true,assets/game.lua,380,metadata_only_effects_pending
+j_sly,Joker,Sly Joker,11,3,1,,,true,assets/game.lua,381,metadata_only_effects_pending
+j_wily,Joker,Wily Joker,12,4,1,,,true,assets/game.lua,382,metadata_only_effects_pending
+j_clever,Joker,Clever Joker,13,4,1,,,true,assets/game.lua,383,metadata_only_effects_pending
+j_devious,Joker,Devious Joker,14,4,1,,,true,assets/game.lua,384,metadata_only_effects_pending
+j_crafty,Joker,Crafty Joker,15,4,1,,,true,assets/game.lua,385,metadata_only_effects_pending
+j_half,Joker,Half Joker,16,5,1,,,true,assets/game.lua,387,metadata_only_effects_pending
+j_stencil,Joker,Joker Stencil,17,8,2,,,true,assets/game.lua,388,metadata_only_effects_pending
+j_four_fingers,Joker,Four Fingers,18,7,2,,,true,assets/game.lua,389,metadata_only_effects_pending
+j_mime,Joker,Mime,19,5,2,,,true,assets/game.lua,390,metadata_only_effects_pending
+j_credit_card,Joker,Credit Card,20,1,1,,,true,assets/game.lua,391,metadata_only_effects_pending
+j_ceremonial,Joker,Ceremonial Dagger,21,6,2,,,true,assets/game.lua,392,metadata_only_effects_pending
+j_banner,Joker,Banner,22,5,1,,,true,assets/game.lua,393,metadata_only_effects_pending
+j_mystic_summit,Joker,Mystic Summit,23,5,1,,,true,assets/game.lua,394,metadata_only_effects_pending
+j_marble,Joker,Marble Joker,24,6,2,,,true,assets/game.lua,395,metadata_only_effects_pending
+j_loyalty_card,Joker,Loyalty Card,25,5,2,,,true,assets/game.lua,396,metadata_only_effects_pending
+j_8_ball,Joker,8 Ball,26,5,1,,,true,assets/game.lua,397,metadata_only_effects_pending
+j_misprint,Joker,Misprint,27,4,1,,,true,assets/game.lua,398,metadata_only_effects_pending
+j_dusk,Joker,Dusk,28,5,2,,,true,assets/game.lua,399,metadata_only_effects_pending
+j_raised_fist,Joker,Raised Fist,29,5,1,,,true,assets/game.lua,400,metadata_only_effects_pending
+j_chaos,Joker,Chaos the Clown,30,4,1,,,true,assets/game.lua,401,metadata_only_effects_pending
+j_fibonacci,Joker,Fibonacci,31,8,2,,,true,assets/game.lua,403,metadata_only_effects_pending
+j_steel_joker,Joker,Steel Joker,32,7,2,,,true,assets/game.lua,404,metadata_only_effects_pending
+j_scary_face,Joker,Scary Face,33,4,1,,,true,assets/game.lua,405,metadata_only_effects_pending
+j_abstract,Joker,Abstract Joker,34,4,1,,,true,assets/game.lua,406,metadata_only_effects_pending
+j_delayed_grat,Joker,Delayed Gratification,35,4,1,,,true,assets/game.lua,407,metadata_only_effects_pending
+j_hack,Joker,Hack,36,6,2,,,true,assets/game.lua,408,metadata_only_effects_pending
+j_pareidolia,Joker,Pareidolia,37,5,2,,,true,assets/game.lua,409,metadata_only_effects_pending
+j_gros_michel,Joker,Gros Michel,38,5,1,,,true,assets/game.lua,410,metadata_only_effects_pending
+j_even_steven,Joker,Even Steven,39,4,1,,,true,assets/game.lua,411,metadata_only_effects_pending
+j_odd_todd,Joker,Odd Todd,40,4,1,,,true,assets/game.lua,412,metadata_only_effects_pending
+j_scholar,Joker,Scholar,41,4,1,,,true,assets/game.lua,413,metadata_only_effects_pending
+j_business,Joker,Business Card,42,4,1,,,true,assets/game.lua,414,metadata_only_effects_pending
+j_supernova,Joker,Supernova,43,5,1,,,true,assets/game.lua,415,metadata_only_effects_pending
+j_ride_the_bus,Joker,Ride the Bus,44,6,1,,,true,assets/game.lua,416,metadata_only_effects_pending
+j_space,Joker,Space Joker,45,5,2,,,true,assets/game.lua,417,metadata_only_effects_pending
+j_egg,Joker,Egg,46,4,1,,,true,assets/game.lua,419,metadata_only_effects_pending
+j_burglar,Joker,Burglar,47,6,2,,,true,assets/game.lua,420,metadata_only_effects_pending
+j_blackboard,Joker,Blackboard,48,6,2,,,true,assets/game.lua,421,metadata_only_effects_pending
+j_runner,Joker,Runner,49,5,1,,,true,assets/game.lua,422,metadata_only_effects_pending
+j_ice_cream,Joker,Ice Cream,50,5,1,,,true,assets/game.lua,423,metadata_only_effects_pending
+j_dna,Joker,DNA,51,8,3,,,true,assets/game.lua,424,metadata_only_effects_pending
+j_splash,Joker,Splash,52,3,1,,,true,assets/game.lua,425,metadata_only_effects_pending
+j_blue_joker,Joker,Blue Joker,53,5,1,,,true,assets/game.lua,426,metadata_only_effects_pending
+j_sixth_sense,Joker,Sixth Sense,54,6,2,,,true,assets/game.lua,427,metadata_only_effects_pending
+j_constellation,Joker,Constellation,55,6,2,,,true,assets/game.lua,428,metadata_only_effects_pending
+j_hiker,Joker,Hiker,56,5,2,,,true,assets/game.lua,429,metadata_only_effects_pending
+j_faceless,Joker,Faceless Joker,57,4,1,,,true,assets/game.lua,430,metadata_only_effects_pending
+j_green_joker,Joker,Green Joker,58,4,1,,,true,assets/game.lua,431,metadata_only_effects_pending
+j_superposition,Joker,Superposition,59,4,1,,,true,assets/game.lua,432,metadata_only_effects_pending
+j_todo_list,Joker,To Do List,60,4,1,,,true,assets/game.lua,433,metadata_only_effects_pending
+j_cavendish,Joker,Cavendish,61,4,1,,,true,assets/game.lua,435,metadata_only_effects_pending
+j_card_sharp,Joker,Card Sharp,62,6,2,,,true,assets/game.lua,436,metadata_only_effects_pending
+j_red_card,Joker,Red Card,63,5,1,,,true,assets/game.lua,437,metadata_only_effects_pending
+j_madness,Joker,Madness,64,7,2,,,true,assets/game.lua,438,metadata_only_effects_pending
+j_square,Joker,Square Joker,65,4,1,,,true,assets/game.lua,439,metadata_only_effects_pending
+j_seance,Joker,Seance,66,6,2,,,true,assets/game.lua,440,metadata_only_effects_pending
+j_riff_raff,Joker,Riff-raff,67,6,1,,,true,assets/game.lua,441,metadata_only_effects_pending
+j_vampire,Joker,Vampire,68,7,2,,,true,assets/game.lua,442,metadata_only_effects_pending
+j_shortcut,Joker,Shortcut,69,7,2,,,true,assets/game.lua,443,metadata_only_effects_pending
+j_hologram,Joker,Hologram,70,7,2,,,true,assets/game.lua,444,metadata_only_effects_pending
+j_vagabond,Joker,Vagabond,71,8,3,,,true,assets/game.lua,445,metadata_only_effects_pending
+j_baron,Joker,Baron,72,8,3,,,true,assets/game.lua,446,metadata_only_effects_pending
+j_cloud_9,Joker,Cloud 9,73,7,2,,,true,assets/game.lua,447,metadata_only_effects_pending
+j_rocket,Joker,Rocket,74,6,2,,,true,assets/game.lua,448,metadata_only_effects_pending
+j_obelisk,Joker,Obelisk,75,8,3,,,true,assets/game.lua,449,metadata_only_effects_pending
+j_midas_mask,Joker,Midas Mask,76,7,2,,,true,assets/game.lua,451,metadata_only_effects_pending
+j_luchador,Joker,Luchador,77,5,2,,,true,assets/game.lua,452,metadata_only_effects_pending
+j_photograph,Joker,Photograph,78,5,1,,,true,assets/game.lua,453,metadata_only_effects_pending
+j_gift,Joker,Gift Card,79,6,2,,,true,assets/game.lua,454,metadata_only_effects_pending
+j_turtle_bean,Joker,Turtle Bean,80,6,2,,,true,assets/game.lua,455,metadata_only_effects_pending
+j_erosion,Joker,Erosion,81,6,2,,,true,assets/game.lua,456,metadata_only_effects_pending
+j_reserved_parking,Joker,Reserved Parking,82,6,1,,,true,assets/game.lua,457,metadata_only_effects_pending
+j_mail,Joker,Mail-In Rebate,83,4,1,,,true,assets/game.lua,458,metadata_only_effects_pending
+j_to_the_moon,Joker,To the Moon,84,5,2,,,true,assets/game.lua,459,metadata_only_effects_pending
+j_hallucination,Joker,Hallucination,85,4,1,,,true,assets/game.lua,460,metadata_only_effects_pending
+j_fortune_teller,Joker,Fortune Teller,86,6,1,,,true,assets/game.lua,461,metadata_only_effects_pending
+j_juggler,Joker,Juggler,87,4,1,,,true,assets/game.lua,462,metadata_only_effects_pending
+j_drunkard,Joker,Drunkard,88,4,1,,,true,assets/game.lua,463,metadata_only_effects_pending
+j_stone,Joker,Stone Joker,89,6,2,,,true,assets/game.lua,464,metadata_only_effects_pending
+j_golden,Joker,Golden Joker,90,6,1,,,true,assets/game.lua,465,metadata_only_effects_pending
+j_lucky_cat,Joker,Lucky Cat,91,6,2,,,true,assets/game.lua,467,metadata_only_effects_pending
+j_baseball,Joker,Baseball Card,92,8,3,,,true,assets/game.lua,468,metadata_only_effects_pending
+j_bull,Joker,Bull,93,6,2,,,true,assets/game.lua,469,metadata_only_effects_pending
+j_diet_cola,Joker,Diet Cola,94,6,2,,,true,assets/game.lua,470,metadata_only_effects_pending
+j_trading,Joker,Trading Card,95,6,2,,,true,assets/game.lua,471,metadata_only_effects_pending
+j_flash,Joker,Flash Card,96,5,2,,,true,assets/game.lua,472,metadata_only_effects_pending
+j_popcorn,Joker,Popcorn,97,5,1,,,true,assets/game.lua,473,metadata_only_effects_pending
+j_trousers,Joker,Spare Trousers,98,6,2,,,true,assets/game.lua,474,metadata_only_effects_pending
+j_ancient,Joker,Ancient Joker,99,8,3,,,true,assets/game.lua,475,metadata_only_effects_pending
+j_ramen,Joker,Ramen,100,6,2,,,true,assets/game.lua,476,metadata_only_effects_pending
+j_walkie_talkie,Joker,Walkie Talkie,101,4,1,,,true,assets/game.lua,477,metadata_only_effects_pending
+j_selzer,Joker,Seltzer,102,6,2,,,true,assets/game.lua,478,metadata_only_effects_pending
+j_castle,Joker,Castle,103,6,2,,,true,assets/game.lua,479,metadata_only_effects_pending
+j_smiley,Joker,Smiley Face,104,4,1,,,true,assets/game.lua,480,metadata_only_effects_pending
+j_campfire,Joker,Campfire,105,9,3,,,true,assets/game.lua,481,metadata_only_effects_pending
+j_ticket,Joker,Golden Ticket,106,5,1,,,false,assets/game.lua,483,metadata_only_effects_pending
+j_mr_bones,Joker,Mr. Bones,107,5,2,,,false,assets/game.lua,484,metadata_only_effects_pending
+j_acrobat,Joker,Acrobat,108,6,2,,,false,assets/game.lua,485,metadata_only_effects_pending
+j_sock_and_buskin,Joker,Sock and Buskin,109,6,2,,,false,assets/game.lua,486,metadata_only_effects_pending
+j_swashbuckler,Joker,Swashbuckler,110,4,1,,,false,assets/game.lua,487,metadata_only_effects_pending
+j_troubadour,Joker,Troubadour,111,6,2,,,false,assets/game.lua,488,metadata_only_effects_pending
+j_certificate,Joker,Certificate,112,6,2,,,false,assets/game.lua,489,metadata_only_effects_pending
+j_smeared,Joker,Smeared Joker,113,7,2,,,false,assets/game.lua,490,metadata_only_effects_pending
+j_throwback,Joker,Throwback,114,6,2,,,false,assets/game.lua,491,metadata_only_effects_pending
+j_hanging_chad,Joker,Hanging Chad,115,4,1,,,false,assets/game.lua,492,metadata_only_effects_pending
+j_rough_gem,Joker,Rough Gem,116,7,2,,,false,assets/game.lua,493,metadata_only_effects_pending
+j_bloodstone,Joker,Bloodstone,117,7,2,,,false,assets/game.lua,494,metadata_only_effects_pending
+j_arrowhead,Joker,Arrowhead,118,7,2,,,false,assets/game.lua,495,metadata_only_effects_pending
+j_onyx_agate,Joker,Onyx Agate,119,7,2,,,false,assets/game.lua,496,metadata_only_effects_pending
+j_glass,Joker,Glass Joker,120,6,2,,,false,assets/game.lua,497,metadata_only_effects_pending
+j_ring_master,Joker,Showman,121,5,2,,,false,assets/game.lua,499,metadata_only_effects_pending
+j_flower_pot,Joker,Flower Pot,122,6,2,,,false,assets/game.lua,500,metadata_only_effects_pending
+j_blueprint,Joker,Blueprint,123,10,3,,,false,assets/game.lua,501,metadata_only_effects_pending
+j_wee,Joker,Wee Joker,124,8,3,,,false,assets/game.lua,502,metadata_only_effects_pending
+j_merry_andy,Joker,Merry Andy,125,7,2,,,false,assets/game.lua,503,metadata_only_effects_pending
+j_oops,Joker,Oops! All 6s,126,4,2,,,false,assets/game.lua,504,metadata_only_effects_pending
+j_idol,Joker,The Idol,127,6,2,,,false,assets/game.lua,505,metadata_only_effects_pending
+j_seeing_double,Joker,Seeing Double,128,6,2,,,false,assets/game.lua,506,metadata_only_effects_pending
+j_matador,Joker,Matador,129,7,2,,,false,assets/game.lua,507,metadata_only_effects_pending
+j_hit_the_road,Joker,Hit the Road,130,8,3,,,false,assets/game.lua,508,metadata_only_effects_pending
+j_duo,Joker,The Duo,131,8,3,,,false,assets/game.lua,509,metadata_only_effects_pending
+j_trio,Joker,The Trio,132,8,3,,,false,assets/game.lua,510,metadata_only_effects_pending
+j_family,Joker,The Family,133,8,3,,,false,assets/game.lua,511,metadata_only_effects_pending
+j_order,Joker,The Order,134,8,3,,,false,assets/game.lua,512,metadata_only_effects_pending
+j_tribe,Joker,The Tribe,135,8,3,,,false,assets/game.lua,513,metadata_only_effects_pending
+j_stuntman,Joker,Stuntman,136,7,3,,,false,assets/game.lua,515,metadata_only_effects_pending
+j_invisible,Joker,Invisible Joker,137,8,3,,,false,assets/game.lua,516,metadata_only_effects_pending
+j_brainstorm,Joker,Brainstorm,138,10,3,,,false,assets/game.lua,517,metadata_only_effects_pending
+j_satellite,Joker,Satellite,139,6,2,,,false,assets/game.lua,518,metadata_only_effects_pending
+j_shoot_the_moon,Joker,Shoot the Moon,140,5,1,,,false,assets/game.lua,519,metadata_only_effects_pending
+j_drivers_license,Joker,Driver's License,141,7,3,,,false,assets/game.lua,520,metadata_only_effects_pending
+j_cartomancer,Joker,Cartomancer,142,6,2,,,false,assets/game.lua,521,metadata_only_effects_pending
+j_astronomer,Joker,Astronomer,143,8,2,,,false,assets/game.lua,522,metadata_only_effects_pending
+j_burnt,Joker,Burnt Joker,144,8,3,,,false,assets/game.lua,523,metadata_only_effects_pending
+j_bootstraps,Joker,Bootstraps,145,7,2,,,false,assets/game.lua,524,metadata_only_effects_pending
+j_caino,Joker,Caino,146,20,4,,,false,assets/game.lua,525,metadata_only_effects_pending
+j_triboulet,Joker,Triboulet,147,20,4,,,false,assets/game.lua,526,metadata_only_effects_pending
+j_yorick,Joker,Yorick,148,20,4,,,false,assets/game.lua,527,metadata_only_effects_pending
+j_chicot,Joker,Chicot,149,20,4,,,false,assets/game.lua,528,metadata_only_effects_pending
+j_perkeo,Joker,Perkeo,150,20,4,,,false,assets/game.lua,529,metadata_only_effects_pending
+c_fool,Tarot,The Fool,1,3,,,,,assets/game.lua,534,metadata_only_effects_pending
+c_magician,Tarot,The Magician,2,3,,,,,assets/game.lua,535,metadata_only_effects_pending
+c_high_priestess,Tarot,The High Priestess,3,3,,,,,assets/game.lua,536,metadata_only_effects_pending
+c_empress,Tarot,The Empress,4,3,,,,,assets/game.lua,537,metadata_only_effects_pending
+c_emperor,Tarot,The Emperor,5,3,,,,,assets/game.lua,538,metadata_only_effects_pending
+c_heirophant,Tarot,The Hierophant,6,3,,,,,assets/game.lua,539,metadata_only_effects_pending
+c_lovers,Tarot,The Lovers,7,3,,,,,assets/game.lua,540,metadata_only_effects_pending
+c_chariot,Tarot,The Chariot,8,3,,,,,assets/game.lua,541,metadata_only_effects_pending
+c_justice,Tarot,Justice,9,3,,,,,assets/game.lua,542,metadata_only_effects_pending
+c_hermit,Tarot,The Hermit,10,3,,,,,assets/game.lua,543,metadata_only_effects_pending
+c_wheel_of_fortune,Tarot,The Wheel of Fortune,11,3,,,,,assets/game.lua,544,metadata_only_effects_pending
+c_strength,Tarot,Strength,12,3,,,,,assets/game.lua,545,metadata_only_effects_pending
+c_hanged_man,Tarot,The Hanged Man,13,3,,,,,assets/game.lua,546,metadata_only_effects_pending
+c_death,Tarot,Death,14,3,,,,,assets/game.lua,547,metadata_only_effects_pending
+c_temperance,Tarot,Temperance,15,3,,,,,assets/game.lua,548,metadata_only_effects_pending
+c_devil,Tarot,The Devil,16,3,,,,,assets/game.lua,549,metadata_only_effects_pending
+c_tower,Tarot,The Tower,17,3,,,,,assets/game.lua,550,metadata_only_effects_pending
+c_star,Tarot,The Star,18,3,,,,,assets/game.lua,551,metadata_only_effects_pending
+c_moon,Tarot,The Moon,19,3,,,,,assets/game.lua,552,metadata_only_effects_pending
+c_sun,Tarot,The Sun,20,3,,,,,assets/game.lua,553,metadata_only_effects_pending
+c_judgement,Tarot,Judgement,21,3,,,,,assets/game.lua,554,metadata_only_effects_pending
+c_world,Tarot,The World,22,3,,,,,assets/game.lua,555,metadata_only_effects_pending
+c_mercury,Planet,Mercury,1,3,,,,,assets/game.lua,558,metadata_only_effects_pending
+c_venus,Planet,Venus,2,3,,,,,assets/game.lua,559,metadata_only_effects_pending
+c_earth,Planet,Earth,3,3,,,,,assets/game.lua,560,metadata_only_effects_pending
+c_mars,Planet,Mars,4,3,,,,,assets/game.lua,561,metadata_only_effects_pending
+c_jupiter,Planet,Jupiter,5,3,,,,,assets/game.lua,562,metadata_only_effects_pending
+c_saturn,Planet,Saturn,6,3,,,,,assets/game.lua,563,metadata_only_effects_pending
+c_uranus,Planet,Uranus,7,3,,,,,assets/game.lua,564,metadata_only_effects_pending
+c_neptune,Planet,Neptune,8,3,,,,,assets/game.lua,565,metadata_only_effects_pending
+c_pluto,Planet,Pluto,9,3,,,,,assets/game.lua,566,metadata_only_effects_pending
+c_planet_x,Planet,Planet X,10,3,,,,,assets/game.lua,567,metadata_only_effects_pending
+c_ceres,Planet,Ceres,11,3,,,,,assets/game.lua,568,metadata_only_effects_pending
+c_eris,Planet,Eris,12,3,,,,,assets/game.lua,569,metadata_only_effects_pending
+c_familiar,Spectral,Familiar,1,4,,,,,assets/game.lua,572,metadata_only_effects_pending
+c_grim,Spectral,Grim,2,4,,,,,assets/game.lua,573,metadata_only_effects_pending
+c_incantation,Spectral,Incantation,3,4,,,,,assets/game.lua,574,metadata_only_effects_pending
+c_talisman,Spectral,Talisman,4,4,,,,,assets/game.lua,575,metadata_only_effects_pending
+c_aura,Spectral,Aura,5,4,,,,,assets/game.lua,576,metadata_only_effects_pending
+c_wraith,Spectral,Wraith,6,4,,,,,assets/game.lua,577,metadata_only_effects_pending
+c_sigil,Spectral,Sigil,7,4,,,,,assets/game.lua,578,metadata_only_effects_pending
+c_ouija,Spectral,Ouija,8,4,,,,,assets/game.lua,579,metadata_only_effects_pending
+c_ectoplasm,Spectral,Ectoplasm,9,4,,,,,assets/game.lua,580,metadata_only_effects_pending
+c_immolate,Spectral,Immolate,10,4,,,,,assets/game.lua,581,metadata_only_effects_pending
+c_ankh,Spectral,Ankh,11,4,,,,,assets/game.lua,582,metadata_only_effects_pending
+c_deja_vu,Spectral,Deja Vu,12,4,,,,,assets/game.lua,583,metadata_only_effects_pending
+c_hex,Spectral,Hex,13,4,,,,,assets/game.lua,584,metadata_only_effects_pending
+c_trance,Spectral,Trance,14,4,,,,,assets/game.lua,585,metadata_only_effects_pending
+c_medium,Spectral,Medium,15,4,,,,,assets/game.lua,586,metadata_only_effects_pending
+c_cryptid,Spectral,Cryptid,16,4,,,,,assets/game.lua,587,metadata_only_effects_pending
+c_soul,Spectral,The Soul,17,4,,,,,assets/game.lua,589,metadata_only_effects_pending
+c_black_hole,Spectral,Black Hole,18,4,,,,,assets/game.lua,590,metadata_only_effects_pending
+v_overstock_norm,Voucher,Overstock,1,10,,,,true,assets/game.lua,593,metadata_only_effects_pending
+v_clearance_sale,Voucher,Clearance Sale,3,10,,,,true,assets/game.lua,594,metadata_only_effects_pending
+v_hone,Voucher,Hone,5,10,,,,true,assets/game.lua,595,metadata_only_effects_pending
+v_reroll_surplus,Voucher,Reroll Surplus,7,10,,,,true,assets/game.lua,596,metadata_only_effects_pending
+v_crystal_ball,Voucher,Crystal Ball,9,10,,,,true,assets/game.lua,597,metadata_only_effects_pending
+v_telescope,Voucher,Telescope,11,10,,,,true,assets/game.lua,598,metadata_only_effects_pending
+v_grabber,Voucher,Grabber,13,10,,,,true,assets/game.lua,599,metadata_only_effects_pending
+v_wasteful,Voucher,Wasteful,15,10,,,,true,assets/game.lua,600,metadata_only_effects_pending
+v_tarot_merchant,Voucher,Tarot Merchant,17,10,,,,true,assets/game.lua,601,metadata_only_effects_pending
+v_planet_merchant,Voucher,Planet Merchant,19,10,,,,true,assets/game.lua,602,metadata_only_effects_pending
+v_seed_money,Voucher,Seed Money,21,10,,,,true,assets/game.lua,603,metadata_only_effects_pending
+v_blank,Voucher,Blank,23,10,,,,true,assets/game.lua,604,metadata_only_effects_pending
+v_magic_trick,Voucher,Magic Trick,25,10,,,,true,assets/game.lua,605,metadata_only_effects_pending
+v_hieroglyph,Voucher,Hieroglyph,27,10,,,,true,assets/game.lua,606,metadata_only_effects_pending
+v_directors_cut,Voucher,Director's Cut,29,10,,,,true,assets/game.lua,607,metadata_only_effects_pending
+v_paint_brush,Voucher,Paint Brush,31,10,,,,true,assets/game.lua,608,metadata_only_effects_pending
+v_overstock_plus,Voucher,Overstock Plus,2,10,,,,false,assets/game.lua,610,metadata_only_effects_pending
+v_liquidation,Voucher,Liquidation,4,10,,,,false,assets/game.lua,611,metadata_only_effects_pending
+v_glow_up,Voucher,Glow Up,6,10,,,,false,assets/game.lua,612,metadata_only_effects_pending
+v_reroll_glut,Voucher,Reroll Glut,8,10,,,,false,assets/game.lua,613,metadata_only_effects_pending
+v_omen_globe,Voucher,Omen Globe,10,10,,,,false,assets/game.lua,614,metadata_only_effects_pending
+v_observatory,Voucher,Observatory,12,10,,,,false,assets/game.lua,615,metadata_only_effects_pending
+v_nacho_tong,Voucher,Nacho Tong,14,10,,,,false,assets/game.lua,616,metadata_only_effects_pending
+v_recyclomancy,Voucher,Recyclomancy,16,10,,,,false,assets/game.lua,617,metadata_only_effects_pending
+v_tarot_tycoon,Voucher,Tarot Tycoon,18,10,,,,false,assets/game.lua,618,metadata_only_effects_pending
+v_planet_tycoon,Voucher,Planet Tycoon,20,10,,,,false,assets/game.lua,619,metadata_only_effects_pending
+v_money_tree,Voucher,Money Tree,22,10,,,,false,assets/game.lua,620,metadata_only_effects_pending
+v_antimatter,Voucher,Antimatter,24,10,,,,false,assets/game.lua,621,metadata_only_effects_pending
+v_illusion,Voucher,Illusion,26,10,,,,false,assets/game.lua,622,metadata_only_effects_pending
+v_petroglyph,Voucher,Petroglyph,28,10,,,,false,assets/game.lua,623,metadata_only_effects_pending
+v_retcon,Voucher,Retcon,30,10,,,,false,assets/game.lua,624,metadata_only_effects_pending
+v_palette,Voucher,Palette,32,10,,,,false,assets/game.lua,625,metadata_only_effects_pending
+p_arcana_normal_1,Booster,Arcana Pack,1,4,,1,Arcana,,assets/game.lua,666,metadata_only_effects_pending
+p_arcana_normal_2,Booster,Arcana Pack,2,4,,1,Arcana,,assets/game.lua,667,metadata_only_effects_pending
+p_arcana_normal_3,Booster,Arcana Pack,3,4,,1,Arcana,,assets/game.lua,668,metadata_only_effects_pending
+p_arcana_normal_4,Booster,Arcana Pack,4,4,,1,Arcana,,assets/game.lua,669,metadata_only_effects_pending
+p_arcana_jumbo_1,Booster,Jumbo Arcana Pack,5,6,,1,Arcana,,assets/game.lua,670,metadata_only_effects_pending
+p_arcana_jumbo_2,Booster,Jumbo Arcana Pack,6,6,,1,Arcana,,assets/game.lua,671,metadata_only_effects_pending
+p_arcana_mega_1,Booster,Mega Arcana Pack,7,8,,0.25,Arcana,,assets/game.lua,672,metadata_only_effects_pending
+p_arcana_mega_2,Booster,Mega Arcana Pack,8,8,,0.25,Arcana,,assets/game.lua,673,metadata_only_effects_pending
+p_celestial_normal_1,Booster,Celestial Pack,9,4,,1,Celestial,,assets/game.lua,674,metadata_only_effects_pending
+p_celestial_normal_2,Booster,Celestial Pack,10,4,,1,Celestial,,assets/game.lua,675,metadata_only_effects_pending
+p_celestial_normal_3,Booster,Celestial Pack,11,4,,1,Celestial,,assets/game.lua,676,metadata_only_effects_pending
+p_celestial_normal_4,Booster,Celestial Pack,12,4,,1,Celestial,,assets/game.lua,677,metadata_only_effects_pending
+p_celestial_jumbo_1,Booster,Jumbo Celestial Pack,13,6,,1,Celestial,,assets/game.lua,678,metadata_only_effects_pending
+p_celestial_jumbo_2,Booster,Jumbo Celestial Pack,14,6,,1,Celestial,,assets/game.lua,679,metadata_only_effects_pending
+p_celestial_mega_1,Booster,Mega Celestial Pack,15,8,,0.25,Celestial,,assets/game.lua,680,metadata_only_effects_pending
+p_celestial_mega_2,Booster,Mega Celestial Pack,16,8,,0.25,Celestial,,assets/game.lua,681,metadata_only_effects_pending
+p_spectral_normal_1,Booster,Spectral Pack,29,4,,0.3,Spectral,,assets/game.lua,682,metadata_only_effects_pending
+p_spectral_normal_2,Booster,Spectral Pack,30,4,,0.3,Spectral,,assets/game.lua,683,metadata_only_effects_pending
+p_spectral_jumbo_1,Booster,Jumbo Spectral Pack,31,6,,0.3,Spectral,,assets/game.lua,684,metadata_only_effects_pending
+p_spectral_mega_1,Booster,Mega Spectral Pack,32,8,,0.07,Spectral,,assets/game.lua,685,metadata_only_effects_pending
+p_standard_normal_1,Booster,Standard Pack,17,4,,1,Standard,,assets/game.lua,686,metadata_only_effects_pending
+p_standard_normal_2,Booster,Standard Pack,18,4,,1,Standard,,assets/game.lua,687,metadata_only_effects_pending
+p_standard_normal_3,Booster,Standard Pack,19,4,,1,Standard,,assets/game.lua,688,metadata_only_effects_pending
+p_standard_normal_4,Booster,Standard Pack,20,4,,1,Standard,,assets/game.lua,689,metadata_only_effects_pending
+p_standard_jumbo_1,Booster,Jumbo Standard Pack,21,6,,1,Standard,,assets/game.lua,690,metadata_only_effects_pending
+p_standard_jumbo_2,Booster,Jumbo Standard Pack,22,6,,1,Standard,,assets/game.lua,691,metadata_only_effects_pending
+p_standard_mega_1,Booster,Mega Standard Pack,23,8,,0.25,Standard,,assets/game.lua,692,metadata_only_effects_pending
+p_standard_mega_2,Booster,Mega Standard Pack,24,8,,0.25,Standard,,assets/game.lua,693,metadata_only_effects_pending
+p_buffoon_normal_1,Booster,Buffoon Pack,25,4,,0.6,Buffoon,,assets/game.lua,694,metadata_only_effects_pending
+p_buffoon_normal_2,Booster,Buffoon Pack,26,4,,0.6,Buffoon,,assets/game.lua,695,metadata_only_effects_pending
+p_buffoon_jumbo_1,Booster,Jumbo Buffoon Pack,27,6,,0.6,Buffoon,,assets/game.lua,696,metadata_only_effects_pending
+p_buffoon_mega_1,Booster,Mega Buffoon Pack,28,8,,0.15,Buffoon,,assets/game.lua,697,metadata_only_effects_pending

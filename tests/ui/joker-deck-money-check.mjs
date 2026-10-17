@@ -1,0 +1,24 @@
+import assert from 'node:assert/strict';
+import {createRequire} from 'node:module';
+import {createRun,dispatch} from '../../src/core/run.js';
+import {serializeState,deserializeState} from '../../src/persistence/save.js';
+import {enterRun} from './enter-run.mjs';
+const {chromium}=createRequire(import.meta.url)(process.env.PLAYWRIGHT_MODULE??process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');
+const offer=(id,key,cost)=>({id,entityId:key,originalKey:key,set:'Joker',edition:'base',cost,sellCost:cost/2n,creationOrdinal:id==='bull'?1:2});
+function shop(){let s=createRun('JOKERDECKUI',{runId:'joker-deck-ui',money:100n,referenceRng:true,referenceShop:true,reducedMotion:true});s.phase='round_won';s.round.score=300n;s=dispatch(s,{type:'CASH_OUT',expectedRevision:0}).state;s.money=100n;s.shop.main=[offer('bull','j_bull',6n),offer('moon','j_shoot_the_moon',5n)];s.nextJokerCreationOrdinal=3;return s;}
+function playing(){let s=createRun('JOKERHELDUI',{runId:'joker-held-ui',money:89n,referenceRng:true,referenceShop:true,reducedMotion:true});s=dispatch(s,{type:'START_BLIND',expectedRevision:0}).state;s.jokers=[offer('bull','j_bull',6n),offer('moon','j_shoot_the_moon',5n)];s.nextJokerCreationOrdinal=3;s.hand=['card_spades_14','card_hearts_12','card_clubs_2','card_diamonds_3','card_clubs_4','card_hearts_5','card_spades_6','card_diamonds_7'];s.drawPile=Object.keys(s.cards).filter(id=>!s.hand.includes(id));return s;}
+const saved=async page=>deserializeState(await page.evaluate(()=>localStorage.getItem('card-cascade.current')));
+async function install(page,s){await page.goto(process.env.PREVIEW_URL);await page.evaluate(text=>localStorage.setItem('card-cascade.current',text),serializeState(s));await page.reload();await enterRun(page,{startBlind:false});}
+async function buy(page,id,touch){const box=await page.locator(`[data-kind=main][data-offer-id=${id}] .shop-card`).boundingBox(),stage=await page.locator('#stage').boundingBox(),scale=stage.width/1536;const from={x:box.x+box.width/2,y:box.y+box.height/2},to={x:stage.x+850*scale,y:stage.y+90*scale};if(touch){const session=await page.context().newCDPSession(page);await session.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[from]});await session.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[to]});await session.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await session.detach();}else{await page.mouse.move(from.x,from.y);await page.mouse.down();await page.mouse.move(to.x,to.y,{steps:8});await page.mouse.up();}await page.locator(`[data-kind=owned][data-offer-id=${id}]`).waitFor();await page.waitForFunction(()=>!document.getElementById('shop_reroll').disabled);}
+const browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_PATH});
+try{
+ for(const [width,height] of [[1536,688],[915,412]]){
+  const page=await browser.newPage({viewport:{width,height},hasTouch:true,reducedMotion:'reduce'});page.setDefaultTimeout(10000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  await install(page,shop());await page.locator('[data-offer-id=bull] .shop-card').tap();assert.match(await page.locator('#shop_tooltip').innerText(),/\+2.*\$1/);await buy(page,'bull',width<1000);await buy(page,'moon',width<1000);let s=await saved(page);assert.equal(s.money,89n);assert.deepEqual(s.jokers.map(c=>c.entityId),['j_bull','j_shoot_the_moon']);
+  await page.reload();await enterRun(page,{startBlind:false});assert.equal((await saved(page)).money,89n);await page.locator('[data-offer-id=moon] .shop-card').tap();assert.match(await page.locator('#shop_tooltip').innerText(),/дама.*в руке.*\+13/i);
+  await install(page,playing());await page.locator('.playing-card[data-card-id=card_spades_14]').tap();await page.locator('#play_hand').click();await page.waitForFunction(()=>{const s=JSON.parse(localStorage.getItem('card-cascade.current')).state;return s.phase==='round_won';});await page.waitForFunction(()=>document.querySelector('#post_round'));
+  s=await saved(page);assert.equal(s.lastScore.chips,194n);assert.equal(s.lastScore.mult,14n);assert.equal(s.lastScore.score,2716n);assert.equal(s.money,89n);assert.ok(s.lastScore.trace.some(e=>e.sourceId==='card_hearts_12'&&e.effectSourceId==='moon'));assert.ok(s.lastScore.trace.some(e=>e.sourceId==='bull'&&e.phase==='independent'));
+  const encoded=await page.evaluate(()=>localStorage.getItem('card-cascade.current'));await page.reload();await enterRun(page,{startBlind:false});assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),encoded);assert.equal((await saved(page)).lastScore.score,2716n);await page.screenshot({path:`artifacts/joker-deck-money-${width}.png`});assert.deepEqual(errors,[]);await page.close();
+ }
+ console.log('Deck/money/held Jokers purchase, mouse/touch, score snapshot and reload PASS');
+}finally{await browser.close();}
