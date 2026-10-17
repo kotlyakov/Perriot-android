@@ -1,3 +1,4 @@
+import {validPlayingCardModifiers} from './playing-card-modifiers.js';
 import { nextApkSeed, createApkMathState, nextApkMathRandom } from './apk-rng.js';
 
 const SUITS = { clubs: 'C', diamonds: 'D', hearts: 'H', spades: 'S' };
@@ -35,12 +36,13 @@ export function createPlayingCard(state, source, {area='drawPile'}={}) {
   validatePlayingCardIdentities(state);
   if(!['hand','drawPile','discardPile'].includes(area)||!Array.isArray(state[area])||!source||
     !Object.hasOwn(SUITS,source.suit)||!Number.isInteger(source.rank)||source.rank<2||source.rank>14||
-    Object.keys(source).some(key=>!['id','rank','suit','enhancement','creationOrdinal'].includes(key))||
+    Object.keys(source).some(key=>!['id','rank','suit','enhancement','edition','seal','creationOrdinal'].includes(key))||
+    !validPlayingCardModifiers(source)||
     source.enhancement!==undefined&&!['bonus','mult','lucky','wild','steel','glass','stone','gold'].includes(source.enhancement))throw new TypeError('Invalid playing card creation');
   const ordinal=state.nextPlayingCardOrdinal??53,id=`card_created_${ordinal}`;
   const occupied=[...(state.jokers??[]),...(state.consumables??[]),...(state.shop?['main','vouchers','boosters'].flatMap(key=>state.shop[key]??[]):[]),...(state.packState?.cards??[])];
   if(ordinal===Number.MAX_SAFE_INTEGER||Object.keys(state.cards).length>=10000||occupied.some(card=>card.id===id))throw new RangeError('Playing card identity unavailable');
-  const card={id,rank:source.rank,suit:source.suit,...(source.enhancement!==undefined?{enhancement:source.enhancement}:{}),creationOrdinal:ordinal};
+  const card={id,rank:source.rank,suit:source.suit,...(source.enhancement!==undefined?{enhancement:source.enhancement}:{}),...(source.edition!==undefined?{edition:source.edition}:{}),...(source.seal!==undefined?{seal:source.seal}:{}),creationOrdinal:ordinal};
   state.cards[id]=card;state[area].push(id);state.nextPlayingCardOrdinal=ordinal+1;
   return card;
 }

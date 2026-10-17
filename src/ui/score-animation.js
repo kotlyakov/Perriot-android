@@ -9,7 +9,7 @@ export async function animateScore(events){const reduced=matchMedia('(prefers-re
  for(const event of events){
    if(event.type==='score_repeat'){
      const joker=document.querySelector(`#shop_owned [data-offer-id="${event.effectSourceId}"]`);
-     const card=joker??document.querySelector(`.played-card[data-card-id="${event.sourceId}"]`);
+     const card=joker??document.querySelector(`${event.phase==='held_card'?'#hand .playing-card':'.played-card'}[data-card-id="${event.sourceId}"]`);
      if(card){const pop=document.createElement('span');pop.className='score-pop score-repeat';pop.textContent='Ещё раз';pop.dataset.sourceId=event.sourceId;pop.dataset.effectSourceId=event.effectSourceId;pop.dataset.operation='repeat';Object.assign(pop.style,{left:parseFloat(card.style.left)+57.5+'px',top:parseFloat(card.style.top)+(joker?card.offsetHeight+4:-27)+'px'});document.getElementById('stage').append(pop);
        if(!reduced){card.animate([{translate:'0 0'},{translate:'0 -8px'},{translate:'0 0'}],{duration:230});pop.animate([{opacity:1,translate:'0 0'},{opacity:0,translate:`0 ${joker?30:-30}px`}],{duration:520}).finished.then(()=>pop.remove());}else pop.remove();}
      if(!reduced)await pause(260);continue;

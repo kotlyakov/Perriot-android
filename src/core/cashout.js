@@ -1,3 +1,4 @@
+import {applyEndRoundCardEffects} from './card-effects.js';
 import {getJokerCashoutBonuses} from './joker-cashout.js';
 import {canEnterBoss,isBossCardDebuffed,needleRestorationAfterEarning} from './boss-effects.js';
 import {APK_BLINDS_BY_ID} from '../content/apk-blinds.js';
@@ -50,9 +51,7 @@ export function captureCashoutQuote(state,earnedRevision=state.revision){return 
 export function settleRoundSuccess(state,events){
  if(state.phase!=='playing'||!(state.round.score>=state.round.target))return false;
  if(state.runStats)state.runStats.unusedDiscards+=state.round.discardsRemaining;
- const beforeGold=state.money;
- for(const cardId of state.hand){const card=state.cards[cardId];if(card.enhancement==='gold'&&!isBossCardDebuffed(state,card)){state.money+=3n;events.push({type:'gold_card_paid',cardId,amount:3n});}}
- if(state.money!==beforeGold)events.push({type:'money_changed',before:beforeGold,after:state.money,delta:state.money-beforeGold});
+ applyEndRoundCardEffects(state,events);
  state.phase='round_won';state.cashoutQuote=captureCashoutQuote(state,state.revision+1);events.push({type:'round_won',score:state.round.score});
  if(state.round.blindId==='boss'&&state.round.ante===(state.winAnte??8)){
   state.won=true;

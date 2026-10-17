@@ -1,4 +1,4 @@
-import {cardMarkup,SUITS,rankLabel} from './field.js';
+import {cardMarkup,applyCardModifiers,SUITS,rankLabel} from './field.js';
 import {suitSvg} from './card-art.js';
 import {DECKS} from '../content/decks.js';
 const suits=['spades','hearts','clubs','diamonds'];
@@ -25,7 +25,7 @@ export function createDeckView(state){
      item.dataset.available=String(available.has(card.id));item.setAttribute('aria-label',`${card.enhancement==='stone'?'Каменная карта':`${rankLabel(card.rank)} ${suit}`}, ${available.has(card.id)?hidden.length?'в колоде или скрытой руке':'в колоде':state.hand.includes(card.id)?'в руке':'сброшена'}`);
      const middle=(ordered.length-1)/2;
      item.style.left=((760-79-gap*(ordered.length-1))/2+i*gap)+'px';item.style.top=(Math.abs(i-middle)*.75)+'px';item.style.transform=`rotate(${(i-middle)*.55}deg)`;
-     const art=document.createElement('div');art.className='playing-card card-scale';art.style.color=SUITS[suit][1];if(card.enhancement&&card.enhancement!=='base')art.dataset.enhancement=card.enhancement;art.innerHTML=cardMarkup(card);item.append(art);row.append(item);
+     const art=document.createElement('div');art.className='playing-card card-scale';art.style.color=SUITS[suit][1];applyCardModifiers(art,card);art.innerHTML=cardMarkup(card);item.append(art);row.append(item);
    });
  }
  function select(mode){

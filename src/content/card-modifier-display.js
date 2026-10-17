@@ -1,4 +1,4 @@
-// Description metadata only: these do not enable modifiers in the scoring engine.
+// Independent modifier descriptions; runtime admission remains owned by core.
 // Verified APK assets/game.lua:649–662 and assets/card.lua:1034–1074,2245–2272.
 export const EDITION_DESCRIPTIONS=Object.freeze({
  foil:'Фольга: +50 очков.',

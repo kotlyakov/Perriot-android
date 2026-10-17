@@ -106,3 +106,10 @@ button{font-weight:700}.title{font-weight:800;font-size:26px}.token{font-weight:
 .playing-card.hidden-card[data-deck=blue]:disabled{background-color:#087bad!important}
 
 .payout-bonus-list{position:absolute;left:16px;right:18px;top:191px;bottom:14px;overflow:auto}.payout-bonus-list .payout-row{position:static;min-height:45px;margin-bottom:4px}.payout-bonus-list .payout-joker>strong:first-child{color:#f6c35d}
+/* Printing finishes and wax seals are independent of the card enhancement. */
+.playing-card[data-edition]::before{content:"";position:absolute;inset:0;z-index:2;border-radius:5px;pointer-events:none}
+.playing-card[data-edition=foil]::before{background:repeating-linear-gradient(125deg,#a7d7e91a 0 5px,#e8ffff70 6px,#376b8738 8px 13px);box-shadow:inset 0 0 0 3px #bad6e6aa;mix-blend-mode:screen}
+.playing-card[data-edition=holographic]::before{background:linear-gradient(125deg,#df69ba50,#73cfdb55 30%,#f3d78366 55%,#8c88e955 80%,#df69ba50);box-shadow:inset 0 0 0 3px #dabdf5aa;mix-blend-mode:hard-light}
+.playing-card[data-edition=polychrome]::before{background:conic-gradient(from 40deg,#ef789970,#f2d57275,#78d68b65,#7bd0ef75,#ab8ee570,#ef789970);box-shadow:inset 0 0 0 3px #faf0bbaa;mix-blend-mode:hard-light}
+.playing-seal{position:absolute;right:7px;top:45px;z-index:3;display:grid;place-items:center;width:25px;height:25px;border:3px double #fff0c3;border-radius:50%;background:#a33f38;color:#fff2cf;font-size:18px;line-height:20px;font-weight:800;box-shadow:1px 2px 0 #3b2518aa;pointer-events:none}
+.playing-seal[data-seal=gold]{background:#ac791d}.playing-seal[data-seal=blue]{background:#397aa6}.playing-seal[data-seal=purple]{background:#86519b}.boss-debuffed .playing-seal{opacity:.45}

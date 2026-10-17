@@ -10,7 +10,10 @@ import {exactText} from '../core/numbers.js';
 export const HAND_NAMES={high_card:'Старшая карта',pair:'Пара',two_pair:'Две пары',three_of_a_kind:'Тройка',straight:'Стрит',flush:'Флеш',full_house:'Фулл-хаус',four_of_a_kind:'Каре',straight_flush:'Стрит-флеш',five_of_a_kind:'Пятёрка',flush_house:'Флеш-хаус',flush_five:'Флеш-пятёрка'};
 export const SUITS={spades:['♠','#283c53'],hearts:['♥','#bb3034'],clubs:['♣','#143d39'],diamonds:['♦','#ca502a']};
 export function rankLabel(rank){return ({11:'J',12:'Q',13:'K',14:'A'})[rank]??String(rank);}
-export function cardMarkup(card) {
+export function applyCardModifiers(element,card) {
+ for(const key of ['enhancement','edition','seal']){delete element.dataset[key];if(card[key]&&card[key]!=='base')element.dataset[key]=card[key];}
+}
+function cardFaceMarkup(card) {
  if(card.enhancement==='stone')return '<svg class="stone-face" viewBox="0 0 70 124" aria-hidden="true"><defs><linearGradient id="stone-slab" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#b9b2a4"/><stop offset="1" stop-color="#57564f"/></linearGradient></defs><path d="M12 7L57 11L65 42L60 110L42 119L10 108L5 58Z" fill="url(#stone-slab)" stroke="#343b3c" stroke-width="3"/><path d="M15 32L31 20L43 39L57 27M10 70L29 58L39 76L61 61M18 103L31 88L50 105" fill="none" stroke="#d9d2c3" stroke-width="4" opacity=".62"/><circle cx="28" cy="46" r="5" fill="#474d4c"/><circle cx="49" cy="89" r="7" fill="#404645"/></svg>';
  const [symbol,color]=SUITS[card.suit],rank=rankLabel(card.rank);
  let inside='';
@@ -19,6 +22,10 @@ export function cardMarkup(card) {
    inside=pipArtwork(card);
  }
  return `<span class="corner" style="color:${color}">${rank}<span>${suitSvg(card.suit)}</span></span>${inside}<span class="corner bottom" style="color:${color}">${rank}<span>${suitSvg(card.suit)}</span></span>`;
+}
+export function cardMarkup(card){
+ const seal={red:'↻',gold:'$',blue:'✦',purple:'◇'}[card.seal];
+ return cardFaceMarkup(card)+(seal?`<span class="playing-seal" data-seal="${card.seal}" aria-hidden="true">${seal}</span>`:'');
 }
 function text(id,value){document.getElementById(id).textContent=String(value);}
 // Display only: conversion reconstructs native binary64 for scientific formatting;
@@ -69,7 +76,7 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
  const start=478+(fanWidth-115-gap*(state.hand.length-1))/2;
  state.hand.forEach((id,i)=>{
    const card=state.cards[id],b=document.createElement('button'),middle=(state.hand.length-1)/2,tilt=state.hand.length>1?(i-middle)*1.35:0;
-   const hidden=hiddenCardIds.has(id),debuffed=!hidden&&state.phase==='playing'&&isBossCardDebuffed(state,card);b.className='playing-card'+(hidden?' hidden-card deck-back':'')+(selected.has(id)?' selected':'')+(debuffed?' boss-debuffed':'')+(!state.bossState?.disabled&&state.bossState?.forcedCardId===id?' bell-forced':'');b.dataset.cardId=id;if(!hidden&&card.enhancement&&card.enhancement!=='base')b.dataset.enhancement=card.enhancement;
+   const hidden=hiddenCardIds.has(id),debuffed=!hidden&&state.phase==='playing'&&isBossCardDebuffed(state,card);b.className='playing-card'+(hidden?' hidden-card deck-back':'')+(selected.has(id)?' selected':'')+(debuffed?' boss-debuffed':'')+(!state.bossState?.disabled&&state.bossState?.forcedCardId===id?' bell-forced':'');b.dataset.cardId=id;if(!hidden)applyCardModifiers(b,card);
    if(hidden)b.dataset.deck=state.deckId;
    b.setAttribute('aria-label',hidden?'Скрытая карта':`${card.enhancement==='stone'?'Каменная карта':`${rankLabel(card.rank)} ${({clubs:'трефы',diamonds:'бубны',hearts:'червы',spades:'пики'})[card.suit]}`}${debuffed?' — ослаблена':''}`);b.setAttribute('aria-pressed',selected.has(id));
    const left=start+i*gap,top=388+Math.abs(i-middle)*2.5-(selected.has(id)?28:0);

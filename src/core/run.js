@@ -1,3 +1,7 @@
+import {isCardFace} from './card-faces.js';
+import {applyJokerBlindStart,applyJokerAfterScore} from './joker-lifecycle.js';
+import {applyDiscardSeals} from './card-effects.js';
+import {hasEffectMechanisms} from './playing-card-modifiers.js';
 import {handRecognitionOptions,SCORED_RETRIGGER_JOKERS,originalJokerKey} from '../content/jokers.js';
 import {applySkipBlind} from './skip-blind.js';
 import {applyConsumableAction} from './consumables.js';
@@ -36,7 +40,7 @@ export function createRun(seed, {runId,deckId='red',money,referenceRng=false,ref
     handLevels:Object.fromEntries(Object.keys(HANDS).map(id=>[id,1])),
     discoveredHands:Object.keys(HANDS).slice(0,9),
     rng:{deck:createRng(`${seed}:deck`),effects:createRng(`${seed}:effects`)},money,
-    round:{blindId:'small',ante:1,target:300n,score:0n,handsRemaining:deckId==='blue'?5:4,discardsRemaining:deckId==='red'?4:3,handSize:8},
+    round:{handsPlayed:0,blindId:'small',ante:1,target:300n,score:0n,handsRemaining:deckId==='blue'?5:4,discardsRemaining:deckId==='red'?4:3,handSize:8},
     lastScore:null,sortMode:'rank',mostPlayedHand:'high_card',nextJokerCreationOrdinal:1,
     consumableUsage:{},consumableUsageTotal:{tarot:0,planet:0,spectral:0,tarot_planet:0,all:0},lastTarotPlanet:null,
   };
@@ -71,9 +75,9 @@ function drawToLimit(state, events,action='START_BLIND') {
       const rank=state.cards[id].rank;return [id,rank>=11&&rank<=13?rank:Number(id.match(/_(\d+)$/)?.[1])];
     }));
     for(const id of ids){
-      let hidden=boss.id==='bl_house'&&action==='START_BLIND'||boss.id==='bl_fish'&&action==='PLAY_HAND'||boss.id==='bl_mark'&&state.cards[id].enhancement!=='stone'&&state.cards[id].rank>=11&&state.cards[id].rank<=13;
+      let hidden=boss.id==='bl_house'&&action==='START_BLIND'||boss.id==='bl_fish'&&action==='PLAY_HAND'||boss.id==='bl_mark'&&isCardFace(state.cards[id],state.jokers,{debuffed:false});
       if(boss.id==='bl_wheel'){const draw=nextApkRandom(state.rng.apk,'wheel');state.rng.apk=draw.rng;hidden=draw.value<1/7;}
-      if(hidden){boss.hiddenCardIds.push(id);if(boss.id==='bl_mark'){boss.hiddenFaceRanks??={};boss.hiddenFaceRanks[id]=state.cards[id].rank;}}
+      if(hidden){boss.hiddenCardIds.push(id);if(boss.id==='bl_mark'){boss.hiddenFaceRanks??={};boss.hiddenFaceRanks[id]=state.cards[id].rank;if(state.jokers.some(j=>j.entityId==='j_pareidolia'&&!j.debuffed)){boss.pareidoliaHiddenCardIds??=[];boss.pareidoliaHiddenCardIds.push(id);}}}
     }
   }
   state.hand.push(...ids);sortHand(state);
@@ -90,7 +94,30 @@ function drawToLimit(state, events,action='START_BLIND') {
   }
 }
 
-export function dispatch(state, action, shopOptions={}) {
+// The journal retains a single preplay state; following actions never nest history.
+export function dispatch(state,action,shopOptions={}){
+  let result;try{result=dispatchCore(state,action,shopOptions);}catch(error){return {state,events:[],error:{code:'INVALID_STATE',message:error.message}};}
+  if(result.error||result.state===state)return result;
+  const next=result.state;
+  if(next.lastScore!==null){
+    let journal;
+    if(action.type==='PLAY_HAND'&&hasEffectMechanisms(state)){
+      const before=structuredClone(state);delete before.effectReplay;before.lastScore=null;
+      journal={version:1,before,actions:[structuredClone(action)]};
+    }else if(action.type!=='PLAY_HAND'&&state.effectReplay){
+      if(state.effectReplay.actions.length>=10000)return {state,events:[],error:{code:'INVALID_STATE',message:'Effect history limit reached'}};
+      journal={...structuredClone(state.effectReplay),actions:[...structuredClone(state.effectReplay.actions),structuredClone(action)]};
+    }
+    if(journal)next.effectReplay=journal;else delete next.effectReplay;
+  }else delete next.effectReplay;
+  return result;
+}
+export function replayEffectActions(before,actions){
+  let state=structuredClone(before);
+  for(const action of actions){const result=dispatchCore(state,action);if(result.error)throw new TypeError('Invalid effect action history');state=result.state;}
+  return state;
+}
+function dispatchCore(state, action, shopOptions={}) {
   const reject=(code,message)=>({state,events:[],error:{code,message}});
   if (!action || typeof action.type!=='string' || !Number.isSafeInteger(action.expectedRevision)) return reject('INVALID_ACTION','Malformed action');
   if (action.expectedRevision!==state.revision) return reject('STALE_ACTION','State revision has changed');
@@ -153,6 +180,7 @@ export function dispatch(state, action, shopOptions={}) {
       if(next.bossState.id==='bl_final_bell'){next.bossState.forcedCardId=null;next.bossState.bellChoice=null;}
       if(next.bossState.id==='bl_final_acorn')next.bossState.hiddenJokerIds=next.jokers.map(j=>j.id);
     }
+    next.round.handsPlayed=0;applyJokerBlindStart(next,events);
     if(next.rng.apk){
       const shuffled=shuffleApkDeck(next.drawPile.map(id=>next.cards[id]),next.rng.apk,'nr'+next.round.ante);next.drawPile=shuffled.cardIds;next.rng.apk=shuffled.rng;
     }else for(let i=next.drawPile.length-1;i>0;i--) {
@@ -165,7 +193,7 @@ export function dispatch(state, action, shopOptions={}) {
     if(next.apkShop)next.roundNumber=(next.round.ante-1)*3+({small:1,big:2,boss:3}[next.round.blindId]);
     next.phase='playing';next.revision++;
     events.push({type:'round_started',blindId:next.round.blindId,target:next.round.target});
-    try{drawToLimit(next,events);}catch(error){return reject('UNSUPPORTED_BOSS_STATE',error.message);}
+    try{drawToLimit(next,events);if(next.apkShop)next.apkShop.context=currentApkShopContext(next);}catch(error){return reject('UNSUPPORTED_BOSS_STATE',error.message);}
     return {state:next,events,error:null};
   }
   if (!['PLAY_HAND','DISCARD','REORDER_HAND','SET_SORT'].includes(action.type)) return reject('UNKNOWN_ACTION','Unsupported action');
@@ -189,7 +217,7 @@ export function dispatch(state, action, shopOptions={}) {
   let score=null,scoringState=state,hookDiscards=null;
   if (action.type==='PLAY_HAND') {
     try {
-      if(!state.bossState?.disabled&&state.bossState?.id==='bl_hook'&&!state.hand.some(id=>state.cards[id].enhancement==='stone')&&!state.jokers.some(j=>SCORED_RETRIGGER_JOKERS.includes(originalJokerKey(j.entityId)))){
+      if(!state.bossState?.disabled&&state.bossState?.id==='bl_hook'&&!state.hand.some(id=>state.cards[id].enhancement==='stone')&&!state.jokers.some(j=>SCORED_RETRIGGER_JOKERS.includes(originalJokerKey(j.entityId)))&&!hasEffectMechanisms(state)){
         try{hookDiscards=chooseHookDiscards(state.rng.apk,state.hand.filter(id=>!selected.has(id)));}catch{return reject('UNSUPPORTED_BOSS_STATE','Invalid Hook card identities');}
         scoringState={...state,hand:state.hand.filter(id=>!hookDiscards.cardIds.includes(id)),discardPile:[...state.discardPile,...state.hand.filter(id=>hookDiscards.cardIds.includes(id))],rng:{...state.rng,apk:hookDiscards.rng}};
       }
@@ -208,10 +236,14 @@ export function dispatch(state, action, shopOptions={}) {
   }
   if(state.runStats && action.type==='PLAY_HAND' && (state.runStats.handsPlayed>=Number.MAX_SAFE_INTEGER || state.runStats.unusedDiscards>Number.MAX_SAFE_INTEGER-state.round.discardsRemaining))return reject('INVALID_STATE','Run counters exhausted');
   const next=structuredClone(state);const events=[];
+  if(score?.createdPlayingCards)for(const card of score.createdPlayingCards){next.cards[card.id]=structuredClone(card);next.hand.push(card.id);next.nextPlayingCardOrdinal=card.creationOrdinal+1;}
+  if(score?.createdConsumables){next.consumables??=[];next.consumables.push(...structuredClone(score.createdConsumables));}
+  if(score?.lifecycleEvents)events.push(...structuredClone(score.lifecycleEvents));
   if(!state.bossState?.disabled&&state.bossState?.id==='bl_arm'&&scoringState!==state){next.handLevels={...scoringState.handLevels};if(next.handLevels[score.handId]!==state.handLevels[score.handId])events.push({type:'hand_level_changed',handId:score.handId,levels:-1,level:next.handLevels[score.handId]});}
   if(next.bossState?.id==='bl_final_bell'){next.bossState.forcedCardId=null;next.bossState.bellChoice=null;}
   next.hand=next.hand.filter(id=>!selected.has(id));
   if(next.bossState?.hiddenCardIds)next.bossState.hiddenCardIds=next.bossState.hiddenCardIds.filter(id=>next.hand.includes(id));
+  if(next.bossState?.pareidoliaHiddenCardIds)next.bossState.pareidoliaHiddenCardIds=next.bossState.pareidoliaHiddenCardIds.filter(id=>next.hand.includes(id));
   if(next.bossState?.hiddenFaceRanks)next.bossState.hiddenFaceRanks=Object.fromEntries(Object.entries(next.bossState.hiddenFaceRanks).filter(([id])=>next.hand.includes(id)));
   if(score&&!next.bossState?.disabled&&next.bossState?.id==='bl_hook'){
     next.rng.apk=hookDiscards.rng;
@@ -252,7 +284,10 @@ export function dispatch(state, action, shopOptions={}) {
     if(next.money!==beforeMoney)events.push({type:'money_changed',before:beforeMoney,after:next.money,delta:next.money-beforeMoney});
     if(next.apkBlinds?.playedCardIds)for(const id of playedIds)if(Object.hasOwn(next.cards,id)&&!next.apkBlinds.playedCardIds.includes(id))next.apkBlinds.playedCardIds.push(id);
     if(next.runStats)next.runStats.handsPlayed++;
+    next.round.handsPlayed=(next.round.handsPlayed??0)+1;next.lastPlayedHand=score.handId;
     next.round.handsRemaining--;next.round.score+=score.score;next.lastScore=score;
+    applyJokerAfterScore(next,events);
+    if(next.bossState?.hiddenJokerIds)next.bossState.hiddenJokerIds=next.bossState.hiddenJokerIds.filter(id=>next.jokers.some(j=>j.id===id));
     if (!next.discoveredHands.includes(score.handId)) next.discoveredHands.push(score.handId);
     if(next.apkShop){const name=APK_HAND_NAMES[score.handId];next.apkShop.context.playedHands[name]=(next.apkShop.context.playedHands[name]??0)+1;}
     events.push({type:'hand_played',cardIds:[...playedIds]},...structuredClone(score.trace));
@@ -262,6 +297,7 @@ export function dispatch(state, action, shopOptions={}) {
       events.push({type:'round_lost',score:next.round.score});}
     if(next.phase!=='playing'&&next.bossState?.id==='bl_serpent'&&next.bossState.disabled)next.bossState.serpentTerminalUnfilledCardIds=[...playedIds,...(state.hangedShortfallCardIds??[])];
   } else {
+    applyDiscardSeals(next,playedIds,events);
     next.round.discardsRemaining--;events.push({type:'cards_discarded',cardIds:[...playedIds]});
   }
   if(next.phase==='round_won'&&next.bossState?.id==='bl_final_acorn')next.bossState.hiddenJokerIds=[];
@@ -269,6 +305,7 @@ export function dispatch(state, action, shopOptions={}) {
   // accepted clone, counters and RNG are never committed on that error.
   if(next.phase==='playing')try{drawToLimit(next,events,action.type);}catch(error){return reject('UNSUPPORTED_BOSS_STATE',error.message);}
   if(state.hangedShortfallCardIds)next.hangedShortfallEpoch={...(state.hangedShortfallEpoch??{cardIds:[...state.hangedShortfallCardIds],revision:state.revision,ante:state.round.ante,blindId:state.round.blindId,handsRemaining:state.round.handsRemaining}),consumed:true,consumedBy:action.type};delete next.hangedShortfallCardIds;
+  if(next.apkShop)next.apkShop.context=currentApkShopContext(next);
   next.revision++;
   return {state:next,events,error:null};
 }

@@ -1,3 +1,4 @@
+import {isCardFace} from './card-faces.js';
 import {settleRoundSuccess,captureCashoutQuote} from './cashout.js';
 import {sortHand} from './sort.js';
 import {canonicalCards,identityCard} from './apk-deck.js';
@@ -83,7 +84,7 @@ export function canEnterFirstAnteBoss(state){
 }
 export function isBossCardDebuffed(state,card){
  const boss=state.bossState;
- return !!boss && !boss.disabled && (boss.id==='bl_final_leaf' || suits[boss.id]&&isCardSuit(card,suits[boss.id],{bypassDebuff:true}) || boss.id==='bl_pillar'&&boss.playedBeforeBoss.includes(card.id) || boss.id==='bl_plant'&&card.enhancement!=='stone'&&card.rank>=11&&card.rank<=13);
+ return !!boss && !boss.disabled && (boss.id==='bl_final_leaf' || suits[boss.id]&&isCardSuit(card,suits[boss.id],{bypassDebuff:true}) || boss.id==='bl_pillar'&&boss.playedBeforeBoss.includes(card.id) || boss.id==='bl_plant'&&isCardFace(card,state.jokers,{debuffed:false}));
 }
 export function isBossHandDebuffed(state,cards,handId){
  const boss=state.bossState;
@@ -121,7 +122,7 @@ export function disableBoss(state,events){
  if(boss.hiddenCardIds)boss.hiddenCardIds=[];
  if(boss.hiddenJokerIds)boss.hiddenJokerIds=[];
  if(Object.hasOwn(boss,'forcedCardId')){boss.forcedCardId=null;boss.bellChoice=null;}
- if(boss.hiddenFaceRanks)boss.hiddenFaceRanks={};
+ if(boss.hiddenFaceRanks)boss.hiddenFaceRanks={};if(boss.pareidoliaHiddenCardIds)boss.pareidoliaHiddenCardIds=[];
  if(boss.playedHands)boss.playedHands=[];
  if(Object.hasOwn(boss,'firstHand'))boss.firstHand=null;
  if(boss.id==='bl_final_heart'){for(const joker of state.jokers)joker.debuffed=false;boss.heartDebuffedJokerId=null;}

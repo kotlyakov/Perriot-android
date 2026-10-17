@@ -1,10 +1,11 @@
-import {cardMarkup,SUITS} from './field.js';
+import {cardMarkup,applyCardModifiers,SUITS} from './field.js';
+export function animationHeldCardIds(hand,played,forced,created=[]){return [...hand.filter(id=>!played.includes(id)&&!forced.includes(id)),...created.map(card=>card.id)];}
 export function preparePlayedCards(ids,discard=false,revealedCards={}) {
  const stage=document.getElementById('stage');
  const cards=ids.map(id=>stage.querySelector(`.playing-card[data-card-id="${id}"]`)).filter(Boolean).map(card=>{
    const clone=card.cloneNode(true);clone.classList.add('played-card');clone.classList.remove('selected');
    if(!discard&&clone.classList.contains('hidden-card')&&revealedCards[card.dataset.cardId]){
-     const revealed=revealedCards[card.dataset.cardId];clone.classList.remove('hidden-card','deck-back');delete clone.dataset.deck;if(revealed.enhancement&&revealed.enhancement!=='base')clone.dataset.enhancement=revealed.enhancement;clone.innerHTML=cardMarkup(revealed);clone.style.color=SUITS[revealed.suit][1];
+     const revealed=revealedCards[card.dataset.cardId];clone.classList.remove('hidden-card','deck-back');delete clone.dataset.deck;applyCardModifiers(clone,revealed);clone.innerHTML=cardMarkup(revealed);clone.style.color=SUITS[revealed.suit][1];
    }
    clone.disabled=false;clone.tabIndex=-1;clone.setAttribute('aria-hidden','true');return clone;
  });
