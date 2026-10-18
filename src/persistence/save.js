@@ -1,3 +1,4 @@
+import {validItem7Ability,item7CapacityDeltas} from '../core/joker-item7-lifecycle.js';
 import {replayEffectActions} from '../core/run.js';
 import {hasEffectMechanisms,validPlayingCardModifiers} from '../core/playing-card-modifiers.js';
 import {nativeBlindTarget} from '../core/blind-progression.js';
@@ -32,9 +33,13 @@ function optionalObject(value,required,optional=[]) {
   requireValue(required.every(key=>Object.hasOwn(value,key)) && Object.keys(value).every(key=>required.includes(key) || optional.includes(key)));
 }
 function decodeOffer(value,ids,owned=false,consumable=false) {
-  optionalObject(value,owned?['id','entityId']:['id','entityId','cost','sellCost'],['cost','sellCost','edition','eternal','rental','perishable','debuffed','originalKey','set','frontKey','toDoPokerHand','creationOrdinal','repeatHandsRemaining']);
+  optionalObject(value,owned?['id','entityId']:['id','entityId','cost','sellCost'],['cost','sellCost','edition','eternal','rental','perishable','debuffed','originalKey','set','frontKey','toDoPokerHand','creationOrdinal','repeatHandsRemaining','mult','chips','xMult','yorickDiscards','cainoXMult','turtleHandSize','invisibleRounds','rocketDollars','loyaltyRemaining','extraValue']);
   id(value.id);id(value.entityId);requireValue(!ids.has(value.id));ids.add(value.id);
+  // Mutable currency counters are serialized decimals; ownership checks need
+  // their decoded native type, just like the ability validator below.
+  for(const key of ['rocketDollars','extraValue'])if(Object.hasOwn(value,key))value[key]=decimal(value[key]);
   if(owned)requireValue(consumable?supportsConsumable(value):supportsJoker(value,{owned:true}));
+  requireValue(validItem7Ability(value));
   for(const key of ['cost','sellCost'])if(Object.hasOwn(value,key))value[key]=decimal(value[key]);
   if(Object.hasOwn(value,'edition'))requireValue(['base','foil','holographic','polychrome','negative'].includes(value.edition));
   for(const key of ['eternal','rental','perishable','debuffed'])if(Object.hasOwn(value,key))requireValue(typeof value[key]==='boolean');
@@ -85,7 +90,7 @@ function decodeBoss(value,state){
  const extras={bl_house:['hiddenCardIds'],bl_wheel:['hiddenCardIds'],bl_fish:['hiddenCardIds'],bl_mark:['hiddenCardIds'],bl_eye:['playedHands'],bl_mouth:['firstHand'],bl_ox:['oxHand'],bl_final_heart:['heartDebuffedJokerId'],bl_final_bell:['forcedCardId','bellChoice'],bl_final_acorn:['hiddenJokerIds']};
  optionalObject(value,['version','id','playedBeforeBoss','baseHandSize',...(extras[value.id]??[])],['disabled','disabledRevision',...(value.id==='bl_mark'?['hiddenFaceRanks','pareidoliaHiddenCardIds']:[]),...(value.id==='bl_water'?['discardsSub']:[]),...(value.id==='bl_needle'?['handsSub','startedRevision','needleDisableOrigin']:[]),...(value.id==='bl_serpent'?['serpentInitialCardCount','serpentDisableOrigin','serpentTerminalUnfilledCardIds']:[])]);
  requireValue(value.version===1&&value.id===state.apkBlinds?.bossId&&canEnterBoss(state));
- requireValue(state.round.blindId==='boss'&&['playing','round_won','game_over'].includes(state.phase)&&state.roundNumber===state.round.ante*3&&value.baseHandSize===8);
+ requireValue(state.round.blindId==='boss'&&['playing','round_won','game_over'].includes(state.phase)&&state.roundNumber===state.round.ante*3&&value.baseHandSize===8+item7CapacityDeltas(state.jokers).handSize);
  cardList(value.playedBeforeBoss,state);requireValue(value.playedBeforeBoss.every(id=>state.apkBlinds.playedCardIds.includes(id)));
  if(Object.hasOwn(value,'disabled'))requireValue(typeof value.disabled==='boolean');
  if(Object.hasOwn(value,'disabledRevision')){integer(value.disabledRevision,1,state.revision);requireValue(value.disabled===true);}
@@ -94,9 +99,9 @@ function decodeBoss(value,state){
   if(value.disabled){requireValue(Object.hasOwn(value,'disabledRevision'));needleRestorationAfterEarning(state);}
   else requireValue(value.needleDisableOrigin===undefined);
  }
- requireValue(state.round.handSize===(value.id==='bl_manacle'&&!value.disabled?7:8));
- if(Object.hasOwn(value,'discardsSub'))integer(value.discardsSub,0,state.deckId==='red'?4:3);
- if(Object.hasOwn(value,'handsSub'))requireValue(value.handsSub===(state.deckId==='blue'?4:3));
+ requireValue(state.round.handSize===value.baseHandSize-(value.id==='bl_manacle'&&!value.disabled?1:0));
+ if(Object.hasOwn(value,'discardsSub'))integer(value.discardsSub,0,10000);
+ if(Object.hasOwn(value,'handsSub'))integer(value.handsSub,0,10000);
  if(Object.hasOwn(value,'hiddenCardIds')){
   cardList(value.hiddenCardIds,state);if(value.disabled)requireValue(value.hiddenCardIds.length===0);requireValue(value.hiddenCardIds.every(id=>state.hand.includes(id)));
   if(value.id==='bl_mark'){
@@ -160,7 +165,7 @@ function decodeBoss(value,state){
   }else requireValue(value.serpentInitialCardCount!==null&&value.serpentDisableOrigin===undefined&&value.serpentTerminalUnfilledCardIds===undefined);
  }
  if(value.id==='bl_water'&&!value.disabled)requireValue(state.round.discardsRemaining===0);
- if(value.id==='bl_needle'&&!value.disabled)requireValue(state.round.handsRemaining<=1);
+ if(value.id==='bl_needle'&&!value.disabled)requireValue(state.round.handsRemaining<=1+(state.round.burglarHandsGranted??0));
 }
 // A single disable origin binds later ordinary refills; no action log is kept.
 function validateDisabledSerpentPiles(state,target){
@@ -221,7 +226,7 @@ function decodeApkRng(rng,seed) {
 }
 function encodeOffer(offer) {
   const encoded={...offer};
-  for(const key of ['cost','sellCost'])if(Object.hasOwn(offer,key)) {requireValue(typeof offer[key]==='bigint');encoded[key]=offer[key].toString();}
+  for(const key of ['cost','sellCost','rocketDollars','extraValue'])if(Object.hasOwn(offer,key)) {requireValue(typeof offer[key]==='bigint');encoded[key]=offer[key].toString();}
   return encoded;
 }
 function integer(value,min=0,max=Number.MAX_SAFE_INTEGER) { requireValue(Number.isSafeInteger(value) && value>=min && value<=max); }
@@ -238,7 +243,7 @@ function decodeExact(value){
 function exactPair(value){object(value,['chips','mult']);return {chips:decimal(value.chips),mult:decodeExact(value.mult)};}
 function encodeScore(score) {
   if(score===null)return null;
-  return {...score,...(score.createdConsumables?{createdConsumables:score.createdConsumables.map(encodeOffer)}:{}),...(Object.hasOwn(score,'scoringMoneyBefore')?{scoringMoneyBefore:score.scoringMoneyBefore.toString()}:{}),chips:score.chips.toString(),mult:encodeExact(score.mult),score:score.score.toString(),trace:score.trace.map(event=>event.type==='score_repeat'?{...event}:event.type==='score_money'?{...event,amount:event.amount.toString()}:event.type==='score_total'
+  return {...score,...(score.item7State?{item7State:JSON.parse(JSON.stringify(score.item7State,(_,v)=>typeof v==='bigint'?v.toString():v))}:{}),...(score.lifecycleEvents?{lifecycleEvents:JSON.parse(JSON.stringify(score.lifecycleEvents,(_,v)=>typeof v==='bigint'?v.toString():v))}:{}),...(score.createdConsumables?{createdConsumables:score.createdConsumables.map(encodeOffer)}:{}),...(Object.hasOwn(score,'scoringMoneyBefore')?{scoringMoneyBefore:score.scoringMoneyBefore.toString()}:{}),chips:score.chips.toString(),mult:encodeExact(score.mult),score:score.score.toString(),trace:score.trace.map(event=>event.type==='score_repeat'?{...event}:event.type==='score_money'?{...event,amount:event.amount.toString()}:event.type==='score_total'
     ? {...event,chips:event.chips.toString(),mult:encodeExact(event.mult),score:event.score.toString()}
     : {...event,before:{chips:event.before.chips.toString(),mult:encodeExact(event.before.mult)},after:{chips:event.after.chips.toString(),mult:encodeExact(event.after.mult)}})};
 }
@@ -319,7 +324,7 @@ function decodeScore(value,state) {
     }else{randomInt(value.glassRngBefore,1);randomInt(value.glassRngAfter,1);requireValue(JSON.stringify(value.glassRngAfter)===JSON.stringify(state.rng.effects));}
   }else requireValue(glassDestroyedCards.length===0);
   const scoringMoneyBefore=Object.hasOwn(value,'scoringMoneyBefore')?decimal(value.scoringMoneyBefore,true):undefined;
-  if(value.scoringRoundBefore){object(value.scoringRoundBefore,['handsRemaining','discardsRemaining']);integer(value.scoringRoundBefore.handsRemaining,1,5);integer(value.scoringRoundBefore.discardsRemaining,0,4);requireValue(value.scoringRoundBefore.handsRemaining===state.round.handsRemaining+1&&value.scoringRoundBefore.discardsRemaining>=state.round.discardsRemaining);}
+  if(value.scoringRoundBefore){object(value.scoringRoundBefore,['handsRemaining','discardsRemaining']);integer(value.scoringRoundBefore.handsRemaining,1,10000);integer(value.scoringRoundBefore.discardsRemaining,0,10000);requireValue(value.scoringRoundBefore.handsRemaining===state.round.handsRemaining+1&&value.scoringRoundBefore.discardsRemaining>=state.round.discardsRemaining);}
   if(scoringMoneyBefore!==undefined){
     let committedMoney=scoringMoneyBefore;
     if(!state.bossState?.disabled&&state.bossState?.id==='bl_tooth')committedMoney-=BigInt(value.playedCardIds?.length??value.scoringCardIds.length);
@@ -457,7 +462,7 @@ function decode(payload) {
   requireValue(state.lastScore===null||!hasEffectMechanisms(state));
   const sortMode=state.sortMode;
   if(Object.hasOwn(state,'sortMode'))requireValue(['rank','suit'].includes(sortMode));
-  optionalObject(state,['schemaVersion','runId','seed','revision','phase','deckId','cards','hand','drawPile','discardPile','jokers','handLevels','discoveredHands','rng','money','round','lastScore'],['shop','bankruptAt','jokerSlots','apkShop','sortMode','roundNumber','apkBlinds','bossState','nextAnteBlinds','runStats','consumables','consumableSlots','mostPlayedHand','consumableUsage','consumableUsageTotal','lastTarotPlanet','packState','destroyedCardIds','hangedDestroyedCardIds','hangedShortfallCardIds','hangedShortfallEpoch','nextJokerCreationOrdinal','cashoutQuote','winAnte','won','winNotified','winPending','nextPlayingCardOrdinal','lastPlayedHand']);
+  optionalObject(state,['schemaVersion','runId','seed','revision','phase','deckId','cards','hand','drawPile','discardPile','jokers','handLevels','discoveredHands','rng','money','round','lastScore'],['shop','bankruptAt','jokerSlots','apkShop','sortMode','roundNumber','apkBlinds','bossState','nextAnteBlinds','runStats','consumables','consumableSlots','mostPlayedHand','consumableUsage','consumableUsageTotal','lastTarotPlanet','packState','destroyedCardIds','hangedDestroyedCardIds','hangedShortfallCardIds','hangedShortfallEpoch','nextJokerCreationOrdinal','cashoutQuote','winAnte','won','winNotified','winPending','nextPlayingCardOrdinal','lastPlayedHand','handUsage','startingDeckSize','pendingDoubleTags']);
   // Only the default win Ante is supported by the current blind-selection contract.
   if(Object.hasOwn(state,'winAnte'))requireValue(state.winAnte===8);
   for(const key of ['won','winNotified','winPending'])if(Object.hasOwn(state,key))requireValue(typeof state[key]==='boolean');
@@ -470,8 +475,11 @@ function decode(payload) {
   requireValue(typeof state.runId==='string' && state.runId.length>=1 && state.runId.length<=120);
   requireValue(typeof state.seed==='string' && state.seed.length>=1 && state.seed.length<=1000);integer(state.revision);
   requireValue(state.cards!==null && typeof state.cards==='object' && !Array.isArray(state.cards));
+  if(Object.hasOwn(state,'handUsage')){requireValue(state.handUsage&&typeof state.handUsage==='object'&&!Array.isArray(state.handUsage));for(const [key,value]of Object.entries(state.handUsage)){requireValue(Object.hasOwn(HANDS,key));integer(value);}}
+  if(Object.hasOwn(state,'startingDeckSize'))integer(state.startingDeckSize,0,10000);
+  if(Object.hasOwn(state,'pendingDoubleTags'))integer(state.pendingDoubleTags);
   const cardIds=Object.keys(state.cards);requireValue(cardIds.length<=10000);
-  for(const key of cardIds) { id(key);optionalObject(state.cards[key],['id','rank','suit'],['enhancement','edition','seal','creationOrdinal']);requireValue(validPlayingCardModifiers(state.cards[key])&&state.cards[key].id===key);evaluateHand([state.cards[key]]); }
+  for(const key of cardIds) { id(key);optionalObject(state.cards[key],['id','rank','suit'],['enhancement','edition','seal','creationOrdinal','permaBonus']);requireValue(validPlayingCardModifiers(state.cards[key])&&state.cards[key].id===key);if(Object.hasOwn(state.cards[key],'permaBonus'))integer(state.cards[key].permaBonus);evaluateHand([state.cards[key]]); }
   if(Object.hasOwn(state,'destroyedCardIds')){
     const missing=APK_BASE_CARD_IDS.filter(key=>!Object.hasOwn(state.cards,key));
     requireValue(Array.isArray(state.destroyedCardIds)&&state.destroyedCardIds.length>=1&&missing.every(key=>state.destroyedCardIds.includes(key)));
@@ -488,7 +496,7 @@ function decode(payload) {
   if(Object.hasOwn(state,'hangedShortfallEpoch')){
     const epoch=state.hangedShortfallEpoch;optionalObject(epoch,['revision','ante','blindId','handsRemaining','consumed','cardIds'],['consumedBy']);
     requireValue(Array.isArray(epoch.cardIds)&&epoch.cardIds.length>0&&new Set(epoch.cardIds).size===epoch.cardIds.length&&JSON.stringify((state.hangedDestroyedCardIds??[]).slice(-epoch.cardIds.length))===JSON.stringify(epoch.cardIds));
-    integer(epoch.revision,0,state.revision);integer(epoch.ante,1,state.round.ante);integer(epoch.handsRemaining,0,5);
+    integer(epoch.revision,0,state.revision);integer(epoch.ante,1,state.round.ante);integer(epoch.handsRemaining,0,10000);
     requireValue(['small','big','boss'].includes(epoch.blindId)&&typeof epoch.consumed==='boolean'&&(epoch.consumed?['PLAY_HAND','DISCARD','CASH_OUT'].includes(epoch.consumedBy):epoch.consumedBy===undefined)&&state.hangedDestroyedCardIds?.length);
     if(state.hangedShortfallCardIds)requireValue(!epoch.consumed&&epoch.ante===state.round.ante&&epoch.blindId===state.round.blindId&&epoch.handsRemaining===state.round.handsRemaining&&JSON.stringify(epoch.cardIds)===JSON.stringify(state.hangedShortfallCardIds));
     else requireValue(epoch.consumed);
@@ -523,11 +531,16 @@ function decode(payload) {
   for(const key of ['deck','effects','shop'])if(Object.hasOwn(state.rng,key)) {const rng=state.rng[key];object(rng,['algorithm','state']);randomInt(rng,1);}
   if(Object.hasOwn(state.rng,'apk'))decodeApkRng(state.rng.apk,state.seed);
   state.money=decimal(state.money,true);
-  optionalObject(state.round,['blindId','ante','target','score','handsRemaining','discardsRemaining','handSize'],['bossDisabled','handsPlayed']);
-  if(Object.hasOwn(state.round,'handsPlayed'))integer(state.round.handsPlayed,0,Number.MAX_SAFE_INTEGER);
+  optionalObject(state.round,['blindId','ante','target','score','handsRemaining','discardsRemaining','handSize'],['bossDisabled','handsPlayed','discardsUsed','burglarHandsGranted','handUsage','idolCard','mailRank','ancientSuit','castleSuit']);
+  if(Object.hasOwn(state.round,'burglarHandsGranted')){integer(state.round.burglarHandsGranted,0,10000);requireValue(state.round.burglarHandsGranted%3===0);}
+  for(const key of ['handsPlayed','discardsUsed'])if(Object.hasOwn(state.round,key))integer(state.round[key]);
+  if(Object.hasOwn(state.round,'handUsage')){requireValue(state.round.handUsage&&typeof state.round.handUsage==='object'&&!Array.isArray(state.round.handUsage));for(const [key,value]of Object.entries(state.round.handUsage)){requireValue(Object.hasOwn(HANDS,key));integer(value);}}
   if(Object.hasOwn(state.round,'bossDisabled'))requireValue(state.round.bossDisabled===true&&['shop','pack'].includes(state.phase)&&state.round.blindId==='boss'&&['bl_wall','bl_final_vessel'].includes(state.apkBlinds?.bossId));
   if(Object.hasOwn(state,'roundNumber'))integer(state.roundNumber,1);
-  const round=state.round;requireValue(['small','big','boss'].includes(round.blindId));integer(round.ante,1);integer(round.handsRemaining,0,state.deckId==='blue'?5:4);integer(round.discardsRemaining,0,state.deckId==='red'?4:3);integer(round.handSize,1,10000);
+  // These are resource limits rather than base-deck totals: Burglar bonuses
+  // survive sale, and acquiring/removing passives can change current counters.
+  // Played states additionally authenticate every value through effectReplay.
+  const round=state.round;requireValue(['small','big','boss'].includes(round.blindId));integer(round.ante,1);integer(round.handsRemaining,0,10000);integer(round.discardsRemaining,0,10000);integer(round.handSize,1,10000);
   if(Object.hasOwn(state,'hangedShortfallCardIds'))requireValue(['playing','round_won'].includes(state.phase)&&(state.phase==='round_won'||!state.drawPile.length||state.bossState?.id==='bl_serpent'||state.hand.length+state.hangedShortfallCardIds.length===round.handSize));
   // The only nonfinite save value is this exact target tag. Native STR_PACK drops
   // its bare nan field on load; keeping it durable intentionally fixes that corruption.
@@ -544,7 +557,7 @@ function decode(payload) {
   if(Object.hasOwn(state,'bossState'))decodeBoss(state.bossState,state);
   if(round.blindId==='boss'){
     requireValue(canEnterBoss(state)&&Object.is(round.target,bossTarget(state)));
-    requireValue(['playing','round_won','game_over'].includes(state.phase)?!!state.bossState:!state.bossState&&round.handSize===8);
+    requireValue(['playing','round_won','game_over'].includes(state.phase)?!!state.bossState:!state.bossState&&round.handSize===8+item7CapacityDeltas(state.jokers).handSize);
   }
   if(state.apkShop&&round.blindId!=='boss')requireValue(Object.is(round.target,nativeBlindTarget(round.ante,round.blindId==='big'?1.5:1)));
   if(state.phase==='round_won')requireValue(round.score>=round.target);
@@ -554,14 +567,14 @@ function decode(payload) {
   if(state.phase==='blind_selection')requireValue(state.hand.length===0 && state.discardPile.length===0 && round.score===0n);
   if(Object.hasOwn(state,'cashoutQuote')){
     requireValue(state.phase==='round_won');optionalObject(state.cashoutQuote,['moneyBefore','earnedRevision','bonusContext','quote'],['handsRemainingBefore']);
-    integer(state.cashoutQuote.earnedRevision);object(state.cashoutQuote.bonusContext,['sources','nineCardIds']);
+    integer(state.cashoutQuote.earnedRevision);optionalObject(state.cashoutQuote.bonusContext,['sources','nineCardIds'],['item7']);
     requireValue(Array.isArray(state.cashoutQuote.bonusContext.sources));for(const row of state.cashoutQuote.bonusContext.sources){object(row,['id','entityId']);id(row.id);}
     requireValue(Array.isArray(state.cashoutQuote.bonusContext.nineCardIds));for(const key of state.cashoutQuote.bonusContext.nineCardIds)id(key);
     const snapshot=state.cashoutQuote,q=snapshot.quote; snapshot.moneyBefore=decimal(snapshot.moneyBefore,true);
     optionalObject(q,['reward','hands','interest','total'],['jokerBonuses']);
     for(const key of ['reward','hands','interest','total'])q[key]=decimal(q[key]);
     if(!Object.hasOwn(snapshot,'handsRemainingBefore'))snapshot.handsRemainingBefore=Number(q.hands);
-    integer(snapshot.handsRemainingBefore,0,state.deckId==='blue'?5:4);
+    integer(snapshot.handsRemainingBefore,0,10000);
     if(Object.hasOwn(q,'jokerBonuses')){
       requireValue(Array.isArray(q.jokerBonuses)&&q.jokerBonuses.length>0&&q.jokerBonuses.length<=10000);
       for(const row of q.jokerBonuses){object(row,['sourceId','entityId','amount']);id(row.sourceId);row.amount=decimal(row.amount);}
@@ -582,7 +595,7 @@ function encodeState(state) {
   }
   if(Object.hasOwn(state,'bankruptAt')) {requireValue(typeof state.bankruptAt==='bigint');payload.state.bankruptAt=state.bankruptAt.toString();}
   if(state.consumables)payload.state.consumables=state.consumables.map(encodeOffer);
-  if(state.jokers.some(j=>Object.hasOwn(j,'cost') || Object.hasOwn(j,'sellCost')))payload.state.jokers=state.jokers.map(encodeOffer);
+  payload.state.jokers=state.jokers.map(encodeOffer);
   if(Object.hasOwn(state,'shop') && state.shop!==null) {
     requireValue(typeof state.shop.rerollBase==='bigint' && typeof state.shop.rerollIncrease==='bigint');
     payload.state.shop={...state.shop,main:state.shop.main.map(encodeOffer),vouchers:state.shop.vouchers.map(encodeOffer),boosters:state.shop.boosters.map(encodeOffer),rerollBase:state.shop.rerollBase.toString(),rerollIncrease:state.shop.rerollIncrease.toString()};

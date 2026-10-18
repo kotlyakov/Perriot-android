@@ -1,3 +1,9 @@
+import {applyItem7FirstDraw,applyItem7SixthSense} from './joker-item7-creation.js';
+import {applyItem7PlayingCardsAdded,item7CapacityDeltas} from './joker-item7-lifecycle.js';
+import {item7EconomyModifiers} from './joker-item7-economy.js';
+import {finishItem7Action} from './joker-item7-actions.js';
+import {applyItem7BlindStart,applyItem7EndRound,applyItem7Discard,applyItem7CardsDestroyed,resetItem7RoundTargets} from './joker-item7-lifecycle.js';
+import {applyItem7EconomyContext} from './joker-item7-economy.js';
 import {isCardFace} from './card-faces.js';
 import {applyJokerBlindStart,applyJokerAfterScore} from './joker-lifecycle.js';
 import {applyDiscardSeals} from './card-effects.js';
@@ -65,10 +71,22 @@ export function createRun(seed, {runId,deckId='red',money,referenceRng=false,ref
 }
 
 function drawToLimit(state, events,action='START_BLIND') {
+  const boss=state.bossState;
+  if(boss&&!boss.disabled&&boss.id==='bl_final_heart'&&action!=='DISCARD'){
+    // Heart's choice consumes no card-dependent RNG. Resolve its passive
+    // transition before dealing so the final hand fills the actual capacity.
+    const before=item7CapacityDeltas(state.jokers);
+    const choice=chooseHeartJoker(state.rng.apk,state.jokers);state.rng.apk=choice.rng;
+    for(const joker of state.jokers)joker.debuffed=joker.id===choice.jokerId;
+    boss.heartDebuffedJokerId=choice.jokerId;
+    const after=item7CapacityDeltas(state.jokers),handSize=after.handSize-before.handSize,discards=after.discards-before.discards;
+    state.round.handSize+=handSize;boss.baseHandSize+=handSize;
+    state.round.discardsRemaining=Math.max(0,state.round.discardsRemaining+discards);
+    if(handSize||discards)events.push({type:'joker_capacity_changed',handSize,discards});
+  }
   const serpent=!state.bossState?.disabled&&state.bossState?.id==='bl_serpent'&&action!=='START_BLIND';
   const count=Math.min(serpent?3:Math.max(0,state.round.handSize-state.hand.length),state.drawPile.length);
   const ids=state.rng.apk?Array.from({length:count},()=>state.drawPile.pop()):state.drawPile.splice(0,count);
-  const boss=state.bossState;
   if(boss && !boss.disabled && ['bl_house','bl_wheel','bl_fish','bl_mark'].includes(boss.id)){
     boss.hiddenCardIds??=[];
     if(boss.id==='bl_mark'&&!boss.hiddenFaceRanks)boss.hiddenFaceRanks=Object.fromEntries(boss.hiddenCardIds.map(id=>{
@@ -76,7 +94,7 @@ function drawToLimit(state, events,action='START_BLIND') {
     }));
     for(const id of ids){
       let hidden=boss.id==='bl_house'&&action==='START_BLIND'||boss.id==='bl_fish'&&action==='PLAY_HAND'||boss.id==='bl_mark'&&isCardFace(state.cards[id],state.jokers,{debuffed:false});
-      if(boss.id==='bl_wheel'){const draw=nextApkRandom(state.rng.apk,'wheel');state.rng.apk=draw.rng;hidden=draw.value<1/7;}
+      if(boss.id==='bl_wheel'){const draw=nextApkRandom(state.rng.apk,'wheel');state.rng.apk=draw.rng;hidden=draw.value<item7EconomyModifiers(state).probabilityNormal/7;}
       if(hidden){boss.hiddenCardIds.push(id);if(boss.id==='bl_mark'){boss.hiddenFaceRanks??={};boss.hiddenFaceRanks[id]=state.cards[id].rank;if(state.jokers.some(j=>j.entityId==='j_pareidolia'&&!j.debuffed)){boss.pareidoliaHiddenCardIds??=[];boss.pareidoliaHiddenCardIds.push(id);}}}
     }
   }
@@ -86,12 +104,6 @@ function drawToLimit(state, events,action='START_BLIND') {
     boss.bellChoice={cardIds:[...state.hand],streamBefore:state.rng.apk.streams.cerulean_bell??null,revision:state.revision+(action==='START_BLIND'?0:1)};
     const choice=chooseBellCard(state.rng.apk,state.hand.map(id=>state.cards[id]));state.rng.apk=choice.rng;boss.forcedCardId=choice.cardId;
   }
-  if(boss&&!boss.disabled&&boss.id==='bl_final_heart'&&action!=='DISCARD'){
-    // Native drawn_to_hand collects candidates before clearing previous debuffs.
-    const choice=chooseHeartJoker(state.rng.apk,state.jokers);state.rng.apk=choice.rng;
-    for(const joker of state.jokers)joker.debuffed=joker.id===choice.jokerId;
-    boss.heartDebuffedJokerId=choice.jokerId;
-  }
 }
 
 // The journal retains a single preplay state; following actions never nest history.
@@ -99,6 +111,7 @@ export function dispatch(state,action,shopOptions={}){
   let result;try{result=dispatchCore(state,action,shopOptions);}catch(error){return {state,events:[],error:{code:'INVALID_STATE',message:error.message}};}
   if(result.error||result.state===state)return result;
   const next=result.state;
+  try{finishItem7Action(state,next,action,result.events);}catch(error){return {state,events:[],error:{code:'INVALID_STATE',message:error.message}};}
   if(next.lastScore!==null){
     let journal;
     if(action.type==='PLAY_HAND'&&hasEffectMechanisms(state)){
@@ -114,7 +127,7 @@ export function dispatch(state,action,shopOptions={}){
 }
 export function replayEffectActions(before,actions){
   let state=structuredClone(before);
-  for(const action of actions){const result=dispatchCore(state,action);if(result.error)throw new TypeError('Invalid effect action history');state=result.state;}
+  for(const action of actions){const result=dispatchCore(state,action);if(result.error)throw new TypeError('Invalid effect action history');if(result.state!==state)finishItem7Action(state,result.state,action,result.events);state=result.state;}
   return state;
 }
 function dispatchCore(state, action, shopOptions={}) {
@@ -180,7 +193,7 @@ function dispatchCore(state, action, shopOptions={}) {
       if(next.bossState.id==='bl_final_bell'){next.bossState.forcedCardId=null;next.bossState.bellChoice=null;}
       if(next.bossState.id==='bl_final_acorn')next.bossState.hiddenJokerIds=next.jokers.map(j=>j.id);
     }
-    next.round.handsPlayed=0;applyJokerBlindStart(next,events);
+    next.round.handsPlayed=0;next.round.discardsUsed=0;next.round.handUsage={};delete next.round.burglarHandsGranted;next.phase='playing';resetItem7RoundTargets(next);applyItem7BlindStart(next,events);applyItem7EconomyContext(next,{type:'setting_blind'},events);applyJokerBlindStart(next,events);
     if(next.rng.apk){
       const shuffled=shuffleApkDeck(next.drawPile.map(id=>next.cards[id]),next.rng.apk,'nr'+next.round.ante);next.drawPile=shuffled.cardIds;next.rng.apk=shuffled.rng;
     }else for(let i=next.drawPile.length-1;i>0;i--) {
@@ -193,7 +206,7 @@ function dispatchCore(state, action, shopOptions={}) {
     if(next.apkShop)next.roundNumber=(next.round.ante-1)*3+({small:1,big:2,boss:3}[next.round.blindId]);
     next.phase='playing';next.revision++;
     events.push({type:'round_started',blindId:next.round.blindId,target:next.round.target});
-    try{drawToLimit(next,events);if(next.apkShop)next.apkShop.context=currentApkShopContext(next);}catch(error){return reject('UNSUPPORTED_BOSS_STATE',error.message);}
+    try{const created=applyItem7FirstDraw(next,events);applyItem7PlayingCardsAdded(next,created,events);drawToLimit(next,events);if(next.apkShop)next.apkShop.context=currentApkShopContext(next);}catch(error){return reject('UNSUPPORTED_BOSS_STATE',error.message);}
     return {state:next,events,error:null};
   }
   if (!['PLAY_HAND','DISCARD','REORDER_HAND','SET_SORT'].includes(action.type)) return reject('UNKNOWN_ACTION','Unsupported action');
@@ -236,10 +249,11 @@ function dispatchCore(state, action, shopOptions={}) {
   }
   if(state.runStats && action.type==='PLAY_HAND' && (state.runStats.handsPlayed>=Number.MAX_SAFE_INTEGER || state.runStats.unusedDiscards>Number.MAX_SAFE_INTEGER-state.round.discardsRemaining))return reject('INVALID_STATE','Run counters exhausted');
   const next=structuredClone(state);const events=[];
+  if(score?.item7State)for(const key of ['jokers','cards','handLevels'])next[key]=structuredClone(score.item7State[key]);
   if(score?.createdPlayingCards)for(const card of score.createdPlayingCards){next.cards[card.id]=structuredClone(card);next.hand.push(card.id);next.nextPlayingCardOrdinal=card.creationOrdinal+1;}
   if(score?.createdConsumables){next.consumables??=[];next.consumables.push(...structuredClone(score.createdConsumables));}
   if(score?.lifecycleEvents)events.push(...structuredClone(score.lifecycleEvents));
-  if(!state.bossState?.disabled&&state.bossState?.id==='bl_arm'&&scoringState!==state){next.handLevels={...scoringState.handLevels};if(next.handLevels[score.handId]!==state.handLevels[score.handId])events.push({type:'hand_level_changed',handId:score.handId,levels:-1,level:next.handLevels[score.handId]});}
+  if(!state.bossState?.disabled&&state.bossState?.id==='bl_arm'&&scoringState!==state){if(!score.item7State)next.handLevels={...scoringState.handLevels};if(next.handLevels[score.handId]!==state.handLevels[score.handId])events.push({type:'hand_level_changed',handId:score.handId,levels:-1,level:next.handLevels[score.handId]});}
   if(next.bossState?.id==='bl_final_bell'){next.bossState.forcedCardId=null;next.bossState.bellChoice=null;}
   next.hand=next.hand.filter(id=>!selected.has(id));
   if(next.bossState?.hiddenCardIds)next.bossState.hiddenCardIds=next.bossState.hiddenCardIds.filter(id=>next.hand.includes(id));
@@ -249,6 +263,7 @@ function dispatchCore(state, action, shopOptions={}) {
     next.rng.apk=hookDiscards.rng;
     const discarded=next.hand.filter(id=>hookDiscards.cardIds.includes(id));
     next.hand=next.hand.filter(id=>!hookDiscards.cardIds.includes(id));next.discardPile.push(...discarded);
+    const removed=applyItem7Discard(next,discarded,events,{forced:true});applyItem7CardsDestroyed(next,removed,events);for(const card of removed){delete next.cards[card.id];next.discardPile=next.discardPile.filter(id=>id!==card.id);next.destroyedCardIds=[...(next.destroyedCardIds??[]),card.id];}
     if(discarded.length)events.push({type:'cards_forced_discarded',cardIds:discarded});
   }
   next.discardPile.push(...playedIds);
@@ -271,6 +286,7 @@ function dispatchCore(state, action, shopOptions={}) {
     if(shattered.length){
       const removed=new Set(shattered);next.discardPile=next.discardPile.filter(id=>!removed.has(id));
       const priorDestroyed=next.destroyedCardIds??APK_BASE_CARD_IDS.filter(id=>!Object.hasOwn(next.cards,id));next.destroyedCardIds=[...priorDestroyed,...shattered];
+      applyItem7CardsDestroyed(next,shattered.map(id=>({...next.cards[id],shattered:true})),events);
       for(const id of shattered){delete next.cards[id];events.push({type:'card_shattered',cardId:id});}
       if(next.bossState?.hiddenCardIds)next.bossState.hiddenCardIds=next.bossState.hiddenCardIds.filter(id=>!removed.has(id));
       if(next.apkShop)next.apkShop.context=currentApkShopContext(next);
@@ -283,22 +299,26 @@ function dispatchCore(state, action, shopOptions={}) {
     next.money+=score.trace.reduce((sum,event)=>sum+(event.type==='score_money'?event.amount:0n),0n);
     if(next.money!==beforeMoney)events.push({type:'money_changed',before:beforeMoney,after:next.money,delta:next.money-beforeMoney});
     if(next.apkBlinds?.playedCardIds)for(const id of playedIds)if(Object.hasOwn(next.cards,id)&&!next.apkBlinds.playedCardIds.includes(id))next.apkBlinds.playedCardIds.push(id);
+    const sixthDestroyed=applyItem7SixthSense(next,playedIds,events);applyItem7CardsDestroyed(next,sixthDestroyed.map(c=>({...c,shattered:c.enhancement==='glass'})),events);
     if(next.runStats)next.runStats.handsPlayed++;
     next.round.handsPlayed=(next.round.handsPlayed??0)+1;next.lastPlayedHand=score.handId;
+    next.handUsage??={};next.handUsage[score.handId]=(next.handUsage[score.handId]??0)+1;next.round.handUsage??={};next.round.handUsage[score.handId]=(next.round.handUsage[score.handId]??0)+1;
     next.round.handsRemaining--;next.round.score+=score.score;next.lastScore=score;
     applyJokerAfterScore(next,events);
     if(next.bossState?.hiddenJokerIds)next.bossState.hiddenJokerIds=next.bossState.hiddenJokerIds.filter(id=>next.jokers.some(j=>j.id===id));
     if (!next.discoveredHands.includes(score.handId)) next.discoveredHands.push(score.handId);
     if(next.apkShop){const name=APK_HAND_NAMES[score.handId];next.apkShop.context.playedHands[name]=(next.apkShop.context.playedHands[name]??0)+1;}
     events.push({type:'hand_played',cardIds:[...playedIds]},...structuredClone(score.trace));
-    if(!settleRoundSuccess(next,events)&&next.round.handsRemaining===0){next.phase='game_over';
+    if(!settleRoundSuccess(next,events)&&next.round.handsRemaining===0){const end=applyItem7EndRound(next,events,{gameOver:true});applyItem7EconomyContext(next,{type:'end_of_round'},events);if(end.saved)settleRoundSuccess(next,events,{saved:true,endRoundApplied:true});else next.phase='game_over';
       // APK state_events.lua:112-124 sets won even on a losing win-Ante Boss.
       if(next.round.blindId==='boss'&&next.round.ante===(next.winAnte??8))next.won=true;
-      events.push({type:'round_lost',score:next.round.score});}
+      if(next.phase==='game_over')events.push({type:'round_lost',score:next.round.score});}
     if(next.phase!=='playing'&&next.bossState?.id==='bl_serpent'&&next.bossState.disabled)next.bossState.serpentTerminalUnfilledCardIds=[...playedIds,...(state.hangedShortfallCardIds??[])];
   } else {
-    applyDiscardSeals(next,playedIds,events);
-    next.round.discardsRemaining--;events.push({type:'cards_discarded',cardIds:[...playedIds]});
+    const removed=applyItem7Discard(next,playedIds,events);applyItem7CardsDestroyed(next,removed,events);
+    for(const card of removed){delete next.cards[card.id];next.discardPile=next.discardPile.filter(id=>id!==card.id);next.destroyedCardIds=[...(next.destroyedCardIds??[]),card.id];}
+    applyDiscardSeals(next,playedIds.filter(id=>next.cards[id]),events);
+    next.round.discardsUsed=(next.round.discardsUsed??0)+1;next.round.discardsRemaining--;events.push({type:'cards_discarded',cardIds:[...playedIds]});
   }
   if(next.phase==='round_won'&&next.bossState?.id==='bl_final_acorn')next.bossState.hiddenJokerIds=[];
   // Native empty Bell pool errors. Convert at the dispatcher boundary so the

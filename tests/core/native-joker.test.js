@@ -115,7 +115,7 @@ test('buy and sell native Joker once with persisted identity and RNG unchanged',
 test('native capacity, unsupported effects and unaffordable actions reject before payment',()=>{
  const s=shop();s.shop.main=[offer()];s.jokers=Array.from({length:5},(_,i)=>({...offer(),id:'owned'+i}));assert.equal(act(s,'BUY_SHOP_CARD',{offerId:'native_offer'}).error.code,'NO_SPACE');
  s.shop.main[0].edition='negative';const r=act(s,'BUY_SHOP_CARD',{offerId:'native_offer'});assert.equal(r.error,null);assert.equal(r.state.jokers.length,6);assert.deepEqual(deserializeState(serializeState(r.state)),r.state);
- for(const bad of [offer('j_vampire'),{...offer(),rental:true},{...offer(),perishable:true}]){s.jokers=[];s.shop.main=[bad];const before=structuredClone(s),r=act(s,'BUY_SHOP_CARD',{offerId:bad.id});assert.equal(r.error.code,'UNSUPPORTED_CONTENT');assert.strictEqual(r.state,s);assert.deepEqual(s,before);}
+ for(const bad of [offer('j_unknown_joker'),{...offer(),rental:true},{...offer(),perishable:true}]){s.jokers=[];s.shop.main=[bad];const before=structuredClone(s),r=act(s,'BUY_SHOP_CARD',{offerId:bad.id});assert.equal(r.error.code,'UNSUPPORTED_CONTENT');assert.strictEqual(r.state,s);assert.deepEqual(s,before);}
  s.shop.main=[offer()];s.money=0n;assert.equal(act(s,'BUY_SHOP_CARD',{offerId:'native_offer'}).error.code,'INSUFFICIENT_FUNDS');
 });
 test('full played hand survives save so Half Joker cannot score a five-card high-card hand',()=>{

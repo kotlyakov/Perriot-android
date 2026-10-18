@@ -8,6 +8,7 @@ import {currentApkShopContext} from '../../src/core/apk-shop-state.js';
 import {nextApkRandom} from '../../src/core/apk-rng.js';
 import {createShop} from '../../src/core/shop.js';
 import {serializeState,deserializeState} from '../../src/persistence/save.js';
+import {item7CapacityDeltas} from '../../src/core/joker-item7-lifecycle.js';
 import {APK_BOSSES} from '../../src/content/apk-blinds.js';
 import * as effects from '../../src/core/boss-effects.js';
 const act=(s,type,fields={})=>dispatch(s,{type,expectedRevision:s.revision,...fields});
@@ -47,7 +48,7 @@ test('Leaf recognition retains Four Fingers/Shortcut, independently debuffed rec
  const s=active();s.jokers=[joker('four','j_four_fingers'),joker('shortcut','j_shortcut')];
  const played=['card_clubs_2','card_hearts_4','card_spades_6','card_diamonds_8'].map(id=>s.cards[id]);
  assert.equal(scoreHand(s,played).handId,'straight');
- assert.deepEqual(handRecognitionOptions(s.jokers.map(j=>({...j,debuffed:true}))),{fourFingers:false,shortcut:false});
+ const disabled=s.jokers.map(j=>({...j,debuffed:true}));assert.deepEqual(handRecognitionOptions(disabled),{fourFingers:false,jokers:disabled,shortcut:false});
 });
 test('supported Joker drag sale disables Leaf once, pays only sellCost, clears derived debuffs and persists without RNG',()=>{
  const s=active(),before=structuredClone(s),r=act(s,'SELL_OWNED_CARD',{area:'jokers',cardId:'sale'});
@@ -132,10 +133,10 @@ test('native resource restoration preserves used actions and handles both admitt
   for(const copy of [s,old]){disable(copy);assert.equal(copy.round.handsRemaining,(deckId==='blue'?5:4)-(id==='bl_water'?1:0));assert.equal(copy.round.discardsRemaining,(deckId==='red'?4:3)-(id==='bl_needle'?1:0));assert.deepEqual(reload(copy),copy);}
  }
 });
-test('all current64 native Jokers sell to disable Leaf without RNG or extra sale income',()=>{
- assert.equal(NATIVE_JOKERS.length,64);
+test('all current107 native Jokers sell to disable Leaf without RNG or extra sale income',()=>{
+ assert.equal(NATIVE_JOKERS.length,107);
  for(const entityId of NATIVE_JOKERS){
-  const s=active();s.jokers=[joker('sale',entityId)];const r=act(s,'SELL_OWNED_CARD',{area:'jokers',cardId:'sale'});
+  const s=active();s.jokers=[joker('sale',entityId)];const delta=item7CapacityDeltas(s.jokers);s.round.handSize+=delta.handSize;s.bossState.baseHandSize+=delta.handSize;const r=act(s,'SELL_OWNED_CARD',{area:'jokers',cardId:'sale'});
   assert.equal(r.error,null,entityId);assert.equal(r.state.money,s.money+2n,entityId);assert.equal(r.state.bossState.disabled,true,entityId);assert.deepEqual(r.state.rng,s.rng,entityId);assert.deepEqual(reload(r.state),r.state,entityId);
  }
 });
