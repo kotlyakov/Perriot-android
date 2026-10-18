@@ -2,7 +2,7 @@ import {isCardSuit} from './card-suits.js';
 
 const SUITS = new Set(['clubs', 'diamonds', 'hearts', 'spades']);
 
-export function evaluateHand(cards, {isCardDebuffed = () => false, fourFingers = false, shortcut = false, rankGetter} = {}) {
+export function evaluateHand(cards, {isCardDebuffed = () => false, fourFingers = false, shortcut = false, rankGetter, jokers = []} = {}) {
   if (!Array.isArray(cards) || cards.length < 1 || cards.length > 5) throw new RangeError('Select 1 to 5 cards');
   if (typeof isCardDebuffed !== 'function') throw new TypeError('Invalid card debuff predicate');
   if (typeof fourFingers !== 'boolean' || typeof shortcut !== 'boolean') throw new TypeError('Invalid recognition modifiers');
@@ -40,7 +40,7 @@ export function evaluateHand(cards, {isCardDebuffed = () => false, fourFingers =
   if (cards.length >= required) {
     // Native get_flush returns the first qualifying suit, including all of its cards.
     for (const suit of ['spades','hearts','clubs','diamonds']) {
-      const suited = cards.filter(card => isCardSuit(card,suit,{debuffed:isCardDebuffed(card),flushCalc:true}));
+      const suited = cards.filter(card => isCardSuit(card,suit,{debuffed:isCardDebuffed(card),flushCalc:true,jokers}));
       if (suited.length >= required) { flushCards = suited; break; }
     }
     let length = 0, found = false, skipped = false;

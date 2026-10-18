@@ -47,9 +47,9 @@ function session(rng,context){
   if(c.no_pool_flag&&context.poolFlags[c.no_pool_flag] || c.yes_pool_flag&&!context.poolFlags[c.yes_pool_flag] || context.bannedCentreIds.includes(c.key))add=false;
   return add;
  };
- const select=(set,append='')=>{
+ const select=(set,append='',forcedRarity)=>{
   let source=pools[set];let key=set+append;
-  if(set==='Joker'){const poll=random('rarity'+context.ante+append);const rarity=poll>0.95?3:poll>0.7?2:1;source=source.filter(c=>c.rarity===rarity);key='Joker'+rarity+append;}
+  if(set==='Joker'){const poll=forcedRarity??random('rarity'+context.ante+append);const rarity=poll>0.95?3:poll>0.7?2:1;source=source.filter(c=>c.rarity===rarity);key='Joker'+rarity+append;}
   key+=context.ante;
   let values=source.map(c=>available(c)?c.key:'UNAVAILABLE');
   if(values.every(v=>v==='UNAVAILABLE'))values=[fallback[set]];
@@ -57,7 +57,7 @@ function session(rng,context){
   while(id==='UNAVAILABLE'){resample++;id=element(values,key+'_resample'+resample);}
   return id;
  };
- const edition=()=>{const poll=random('edisho'+context.ante);return poll>0.997?'negative':poll>1-0.006*context.editionRate?'polychrome':poll>1-0.02*context.editionRate?'holographic':poll>1-0.04*context.editionRate?'foil':'base';};
+ const edition=(key='edisho'+context.ante)=>{const poll=random(key);return poll>0.997?'negative':poll>1-0.006*context.editionRate?'polychrome':poll>1-0.02*context.editionRate?'holographic':poll>1-0.04*context.editionRate?'foil':'base';};
  const construct=(id,instanceId,{main=false,materialize=false,frontKey}={})=>{
   const c=centres[id];if(!c)throw new Error('Unknown APK centre '+id);
   const offer={id:instanceId,entityId:id,originalKey:id,set:c.set,edition:'base'};
@@ -97,7 +97,7 @@ function session(rng,context){
   if(['Base','Enhanced'].includes(type)&&illusion&&random('illusion')>0.8){const ep=random('illusion');offer.edition=ep>0.85?'polychrome':ep>0.5?'holographic':'foil';reprice(offer);}
   if(reroll)juice();return offer;
  });
- return {random,unkeyed,select,construct,main,usedHas:id=>used.has(id),get rng(){return current;}};
+ return {random,unkeyed,select,construct,main,edition,reprice,usedHas:id=>used.has(id),get rng(){return current;}};
 }
 export function chooseApkVoucher(rng,context){context=createApkShopContext(context);const s=session(rng,context);return {voucherId:s.select('Voucher'),rng:s.rng};}
 export function generateApkShop(rng,context,{voucherId,firstShopBuffoon=false,instancePrefix='shop'}={}){
@@ -186,6 +186,25 @@ export function generateApkSealConsumables(rng,context,{requests,instancePrefix,
   const forced=row.set==='Planet'&&!context.bannedCentreIds.includes(row.centreId)?row.centreId:null;
   const centreId=forced??s.select(row.set,row.set==='Tarot'?'8ba':'blusl');
   cards.push(s.construct(centreId,`${instancePrefix}:${instanceOffset+index+1}`,{materialize:true}));
+ }
+ return {cards,rng:s.rng};
+}
+
+// create_card callbacks used by Jokers: ordinary pools, no soulable/shop flags.
+export function generateApkEffectCards(rng,context,{set,count,instancePrefix,append='',rarity,materialize=set!=='Joker'}={}){
+ context=createApkShopContext(context);
+ if(!['Joker','Tarot','Planet','Spectral'].includes(set)||!Number.isSafeInteger(count)||count<0||count>10000||typeof instancePrefix!=='string'||!instancePrefix||typeof append!=='string'||rarity!==undefined&&(typeof rarity!=='number'||!Number.isFinite(rarity)||rarity<0||rarity>1))throw new TypeError('Invalid effect creation request');
+ const s=session(rng,{...context,reducedMotion:false}),cards=[];
+ for(let index=0;index<count;index++){
+  const card=s.construct(s.select(set,append,rarity),`${instancePrefix}:${index+1}`,{materialize:set!=='Joker'&&materialize});
+  if(set==='Joker'){
+   card.edition=s.edition('edi'+append+context.ante);
+   if(context.modifiers.all_eternal&&centres[card.entityId].eternal_compat)card.eternal=true;
+   s.reprice(card);
+   if(materialize)s.unkeyed();
+   if(card.edition!=='base')s.unkeyed();
+  }
+  cards.push(card);
  }
  return {cards,rng:s.rng};
 }

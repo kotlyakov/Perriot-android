@@ -64,7 +64,7 @@ test('legacy effects RNG advances one shared chronological sequence through repe
  assert.deepEqual(r.glassRngBefore,current);assert.deepEqual(r.glassRngAfter,end.rng);
 });
 test('unknown Joker families and invalid playing-card modifiers remain rejected',()=>{
- for(const key of ['j_vampire','j_perkeo','j_invisible','j_seltzer']){
+ for(const key of ['j_unknown_vampire','j_unknown_perkeo','j_unknown_invisible','j_seltzer']){
   const offer=joker(key);assert.equal(content.supportsJoker(offer,{owned:true}),false);assert.equal(content.supportsJoker(offer),false);
   assert.throws(()=>scoreHand(state([joker('j_hanging_chad'),offer]),[card()]));
  }

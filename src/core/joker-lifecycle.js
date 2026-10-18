@@ -1,3 +1,4 @@
+import {applyItem7AfterScore,applyItem7PlayingCardsAdded} from './joker-item7-lifecycle.js';
 import {createPlayingCard,APK_BASE_CARD_IDS,playingCardOrdinal} from './apk-deck.js';
 import {nextApkMathRandom,nextApkSeed,createApkMathState} from './apk-rng.js';
 import {jokerEffectContext} from './joker-contexts.js';
@@ -27,6 +28,7 @@ export function applyJokerBeforeScore(state,playedIds,events){
   created.push(copy);createdEvent(events,copy,context);
  }
  raw(state,created.length);
+ applyItem7PlayingCardsAdded(state,created,events);
  return created;
 }
 
@@ -43,11 +45,13 @@ export function applyJokerBlindStart(state,events){
   const card=createPlayingCard(state,{...fronts[draw.value-1],enhancement:'stone'},{area:'drawPile'});
   raw(state,1); // Native start_materialize's immediate juice, including reduced motion.
   created.push(card);createdEvent(events,card,context);
+  applyItem7PlayingCardsAdded(state,[card],events);
  }
  return created;
 }
 
 export function applyJokerAfterScore(state,events){
+ applyItem7AfterScore(state,events);
  const remove=[];
  // Copied after effects are intentionally absent; native lifetime mutations
  // are guarded by not context.blueprint. Removal callbacks run after discovery.

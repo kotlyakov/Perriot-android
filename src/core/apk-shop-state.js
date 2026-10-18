@@ -8,7 +8,7 @@ export const APK_HAND_NAMES={high_card:'High Card',pair:'Pair',two_pair:'Two Pai
 // Rebuild duplicate eligibility from actual areas, including unbought offers.
 export function currentApkShopContext(state) {
  if(!state.apkShop || !state.rng?.apk)throw new TypeError('Missing APK shop state');
- const ownedCentreIds=[...state.jokers,...(state.consumables??[])].map(j=>originalJokers[j.entityId]??j.entityId);
+ const ownedCentreIds=[...state.jokers,...(state.consumables??[])].filter(j=>!j.debuffed||!['j_ring_master','j_astronomer'].includes(j.entityId)).map(j=>originalJokers[j.entityId]??j.entityId);
  const offers=state.shop?[...state.shop.main,...state.shop.vouchers,...state.shop.boosters]:[];
  const identities=[...ownedCentreIds,...offers.map(o=>o.originalKey??o.entityId)];
  if(identities.some(id=>!centres.has(id)))throw new TypeError('Unsupported centre identity');

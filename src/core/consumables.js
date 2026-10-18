@@ -1,3 +1,4 @@
+import {createItem7Cards,item7EconomyModifiers,applyItem7EconomyContext} from './joker-item7-economy.js';
 import {captureCashoutQuote} from './cashout.js';
 import {generateApkFoolCard,generateApkTarotConsumables} from './apk-shop.js';
 import {quoteShopCard} from './shop-pricing.js';
@@ -86,6 +87,11 @@ export function canUseConsumable(state,card,targetCardIds=[]){
  if(!owned)return blocked('CARD_NOT_FOUND','Карта больше не принадлежит игроку.');
  const centre=centres.get(owned.entityId);
  if(!supportsConsumableEffect(owned))return blocked('USE_UNAVAILABLE','Эффект этой расходной карты ещё не реализован.');
+ if(centre.key==='c_judgement'){
+  const capacity=(state.jokerSlots??5)+(state.jokers??[]).filter(j=>j.edition==='negative').length;
+  if((state.jokers??[]).length>=capacity)return blocked('USE_UNAVAILABLE','Нет места для нового джокера.');
+  if(!owned.debuffed&&(!state.apkShop||!state.rng?.apk))return blocked('USE_UNAVAILABLE','Создание джокера требует нативного генератора.');
+ }
  const targetRule=enhancementTarots.has(centre.key)?{minimum:1,maximum:enhancementTarots.get(centre.key).maximum}:deckTarots.get(centre.key)??baseTarots.get(centre.key)??modifierTargetRule(centre.key);
  if(targetRule){
   const {minimum,maximum}=targetRule;
@@ -189,7 +195,7 @@ export function applyConsumableAction(state,action){
  }
  if(!card.debuffed&&centre.key===wheelKey){
   let roll=nextApkRandom(next.rng.apk,'wheel_of_fortune');next.rng.apk=roll.rng;
-  if(wheelSucceeds(roll.value)){
+  if(wheelSucceeds(roll.value,item7EconomyModifiers(next).probabilityNormal)){
    const eligible=wheelEligible(next).sort((a,b)=>(a.creationOrdinal??0)-(b.creationOrdinal??0));
    const selected=nextApkRandom(next.rng.apk,'wheel_of_fortune',1,eligible.length);next.rng.apk=selected.rng;
    roll=nextApkRandom(next.rng.apk,'wheel_of_fortune');next.rng.apk=roll.rng;
@@ -200,6 +206,10 @@ export function applyConsumableAction(state,action){
    let juice=nextApkMathRandom(next.rng.apk.mathState);next.rng.apk={...next.rng.apk,mathState:juice.state};
    if(edition!=='base'){juice=nextApkMathRandom(next.rng.apk.mathState);next.rng.apk={...next.rng.apk,mathState:juice.state};}
   }else{const juice=nextApkMathRandom(next.rng.apk.mathState);next.rng.apk={...next.rng.apk,mathState:juice.state};}
+ }
+ if(!card.debuffed&&centre.key==='c_judgement'){
+  createItem7Cards(next,{set:'Joker',count:1,append:'jud',sourceId:card.id},events);
+  const juice=nextApkMathRandom(next.rng.apk.mathState);next.rng.apk={...next.rng.apk,mathState:juice.state};
  }
  let created=null;
  let generatedCards=[];
@@ -221,6 +231,7 @@ export function applyConsumableAction(state,action){
  else if(centre.set==='Tarot'){next.consumableUsageTotal.tarot++;next.consumableUsageTotal.tarot_planet++;next.lastTarotPlanet=centre.key;}
  else next.consumableUsageTotal.spectral++;
  next.consumableUsageTotal.all++;
+ applyItem7EconomyContext(next,{type:'using_consumeable',set:centre.set},events);
  next.consumables=next.consumables.filter(c=>c.id!==card.id);if(created)next.consumables.push(created);next.consumables.push(...generatedCards);next.lastScore=null;next.revision++;
  if(next.apkShop)next.apkShop.context=currentApkShopContext(next);
  events.unshift({type:'consumable_used',cardId:card.id,entityId:centre.key,set:centre.set});
