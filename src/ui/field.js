@@ -54,7 +54,8 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
  text('target_value',displayBlindTarget(state.round.target));text('blind_title',boss?boss.name:state.round.blindId==='big'?'Большой блайнд':'Малый блайнд');document.querySelector('#blind_token span').textContent=boss?boss.name:state.round.blindId==='big'?'БОЛЬШОЙ\nБЛАЙНД':'МАЛЫЙ\nБЛАЙНД';document.querySelector('#blind_target b').textContent=boss?'$'.repeat(boss.dollars):state.round.blindId==='big'?'$$$$':'$$$';document.querySelector('#round strong').textContent=state.roundNumber??1;animateNumber(document.getElementById('round_score_value'),state.round.score,{format:displayInteger});animateNumber(document.getElementById('hands_value'),state.round.handsRemaining);animateNumber(document.getElementById('discards_value'),state.round.discardsRemaining);text('money_value','$'+state.money);
  document.querySelector('#ante strong').firstChild.textContent=String(state.phase==='shop'&&state.round.blindId==='boss'?state.apkShop.context.ante:state.round.ante);
  text('hand_count',state.hand.length+'/'+state.round.handSize);text('deck_count',state.drawPile.length+'/'+Object.keys(state.cards).length);text('joker_count',state.jokers.length+'/5');
- const hiddenCardIds=new Set(state.bossState?.hiddenCardIds??[]);
+ const arcana=state.phase==='pack'&&state.packState?.sourceEntityId.startsWith('p_arcana_');
+ const hiddenCardIds=new Set(state.phase==='playing'?state.bossState?.hiddenCardIds??[]:[]);
  const hiddenSelection=state.hand.some(id=>selected.has(id)&&hiddenCardIds.has(id));
  const played=state.hand.filter(id=>selected.has(id)).map(id=>state.cards[id]);
  let preview=hiddenSelection?null:scoringPreview;try{if(!hiddenSelection && !preview && played.length)preview=scoreHand(state,played);}catch{}
@@ -63,10 +64,10 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
  showNumbers(base?.chips??0n,base?.mult??0n);
  showFlame(preview?.score??0n,state.round.target);
  for(const mode of ['rank','suit'])document.getElementById('sort_'+mode).classList.toggle('sort-active',state.sortMode===mode);
- const playing=state.phase==='playing';
+ const playing=state.phase==='playing',selectable=playing||arcana;
  document.getElementById('play_hand').disabled=busy || !playing || !selected.size || !state.round.handsRemaining;
  document.getElementById('discard').disabled=busy || !playing || !selected.size || !state.round.discardsRemaining;
- for(const id of ['sort_rank','sort_suit'])document.getElementById(id).disabled=busy || !playing;
+ for(const id of ['sort_rank','sort_suit'])document.getElementById(id).disabled=busy || !selectable;
  const focusedCard=document.activeElement?.dataset.cardId;
  const hand=document.getElementById('hand');hand.replaceChildren();
  // geometry.json describes visible rotated bounds. Reserve 10px at each
@@ -76,12 +77,12 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
  const start=478+(fanWidth-115-gap*(state.hand.length-1))/2;
  state.hand.forEach((id,i)=>{
    const card=state.cards[id],b=document.createElement('button'),middle=(state.hand.length-1)/2,tilt=state.hand.length>1?(i-middle)*1.35:0;
-   const hidden=hiddenCardIds.has(id),debuffed=!hidden&&state.phase==='playing'&&isBossCardDebuffed(state,card);b.className='playing-card'+(hidden?' hidden-card deck-back':'')+(selected.has(id)?' selected':'')+(debuffed?' boss-debuffed':'')+(!state.bossState?.disabled&&state.bossState?.forcedCardId===id?' bell-forced':'');b.dataset.cardId=id;if(!hidden)applyCardModifiers(b,card);
+   const hidden=hiddenCardIds.has(id),debuffed=!hidden&&state.phase==='playing'&&isBossCardDebuffed(state,card);b.className='playing-card'+(hidden?' hidden-card deck-back':'')+(selected.has(id)?' selected':'')+(debuffed?' boss-debuffed':'')+(playing&&!state.bossState?.disabled&&state.bossState?.forcedCardId===id?' bell-forced':'');b.dataset.cardId=id;if(!hidden)applyCardModifiers(b,card);
    if(hidden)b.dataset.deck=state.deckId;
    b.setAttribute('aria-label',hidden?'Скрытая карта':`${card.enhancement==='stone'?'Каменная карта':`${rankLabel(card.rank)} ${({clubs:'трефы',diamonds:'бубны',hearts:'червы',spades:'пики'})[card.suit]}`}${debuffed?' — ослаблена':''}`);b.setAttribute('aria-pressed',selected.has(id));
-   const left=start+i*gap,top=388+Math.abs(i-middle)*2.5-(selected.has(id)?28:0);
+   const left=start+i*gap,top=(arcana?430:388)+Math.abs(i-middle)*2.5-(selected.has(id)?arcana?14:28:0);
    Object.assign(b.style,{left:left+'px',top:top+'px',transform:`rotate(${tilt}deg)`,zIndex:String(3+i),color:hidden?'#f0e5c8':SUITS[card.suit][1]});
-   b.innerHTML=hidden?'<span class="deck-seal" aria-hidden="true"><svg viewBox="0 0 32 32"><path fill="currentColor" d="M16 0Q19 13 32 16Q19 19 16 32Q13 19 0 16Q13 13 16 0Z"/></svg></span>':cardMarkup(card)+(debuffed?'<span class=debuff-stamp>Ослаблена</span>':'');b.disabled=busy || !playing;
+   b.innerHTML=hidden?'<span class="deck-seal" aria-hidden="true"><svg viewBox="0 0 32 32"><path fill="currentColor" d="M16 0Q19 13 32 16Q19 19 16 32Q13 19 0 16Q13 13 16 0Z"/></svg></span>':cardMarkup(card)+(debuffed?'<span class=debuff-stamp>Ослаблена</span>':'');b.disabled=busy || !selectable;
    // Touch emits a compatibility click with detail=0 after pointerup. Only
    // keyboard/programmatic clicks need this path; pointers already toggled.
    b.addEventListener('click',e=>{if(e.detail===0 && !e.pointerType && !e.sourceCapabilities?.firesTouchEvents)onCard(id);});
@@ -107,7 +108,7 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
        if(dragged){b.classList.add('dragging');b.style.left=left+(ev.clientX-x)/scale+'px';b.style.top=top+(ev.clientY-y)/scale+'px';
          to=Math.max(0,Math.min(state.hand.length-1,Math.round((parseFloat(b.style.left)-start)/Math.max(gap,1))));
          const order=state.hand.filter(other=>other!==id);order.splice(to,0,id);
-         for(const n of hand.children){if(n===b)continue;const slot=slots[order.indexOf(n.dataset.cardId)];Object.assign(n.style,{left:slot.left,top:parseFloat(slot.top)+(selected.has(slot.id)?28:0)-(selected.has(n.dataset.cardId)?28:0)+'px',transform:slot.transform});}
+         for(const n of hand.children){if(n===b)continue;const slot=slots[order.indexOf(n.dataset.cardId)];Object.assign(n.style,{left:slot.left,top:parseFloat(slot.top)+(selected.has(slot.id)?arcana?14:28:0)-(selected.has(n.dataset.cardId)?arcana?14:28:0)+'px',transform:slot.transform});}
          placeTip();
        }
      }

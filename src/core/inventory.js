@@ -5,7 +5,7 @@ import catalogue from '../content/apk-shop-catalog.js';
 import {currentApkShopContext} from './apk-shop-state.js';
 const consumables=new Map(catalogue.centres.filter(c=>['Tarot','Planet','Spectral'].includes(c.set)).map(c=>[c.key,c.set]));
 export function supportsConsumable(card){return consumables.get(card?.entityId)===card?.set&&card.originalKey===card.entityId&&!card.rental&&!card.perishable;}
-export function canManageInventory(state){return !state.winPending&&['blind_selection','playing','round_won','shop'].includes(state.phase);}
+export function canManageInventory(state){return !state.winPending&&(['blind_selection','playing','round_won','shop'].includes(state.phase)||state.phase==='pack'&&!!state.packState);}
 export function canSellOwned(state,card,area){return canManageInventory(state)&&!card.eternal&&typeof card.sellCost==='bigint'&&card.sellCost>=0n&&(area==='jokers'?supportsJoker(card,{owned:true}):area==='consumables'&&supportsConsumable(card));}
 export function applyInventoryAction(state,action){
  const reject=(code,message)=>({state,events:[],error:{code,message}});

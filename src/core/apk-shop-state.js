@@ -11,7 +11,7 @@ export function currentApkShopContext(state) {
  const ownedCentreIds=[...state.jokers,...(state.consumables??[])].map(j=>originalJokers[j.entityId]??j.entityId);
  const activeCentreIds=[...state.jokers,...(state.consumables??[])].filter(j=>!j.debuffed).map(j=>originalJokers[j.entityId]??j.entityId);
  const offers=state.shop?[...state.shop.main,...state.shop.vouchers,...state.shop.boosters]:[];
- const identities=[...ownedCentreIds,...offers.map(o=>o.originalKey??o.entityId)];
+ const identities=[...ownedCentreIds,...offers.map(o=>o.originalKey??o.entityId),...(state.packState?.cards??[]).map(o=>o.originalKey??o.entityId)];
  if(identities.some(id=>!centres.has(id)))throw new TypeError('Unsupported centre identity');
  const names=new Set(identities.map(id=>centres.get(id).name));
  const usedCentreIds=catalogue.centres.filter(c=>names.has(c.name)).map(c=>c.key);

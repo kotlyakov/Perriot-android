@@ -207,9 +207,15 @@ function decodeShop(shop,ids) {
   shop.rerollBase=decimal(shop.rerollBase);shop.rerollIncrease=decimal(shop.rerollIncrease);integer(shop.freeRerolls,0,10000);
 }
 function decodePackState(value,state,ids){
- object(value,['version','sourceEntityId','cards','choicesRemaining']);
- const source=centres.get(value.sourceEntityId);requireValue(value.version===1&&source?.set==='Booster'&&source.kind==='Celestial');
- requireValue(Array.isArray(value.cards)&&value.cards.length>=1&&value.cards.length<=5);for(const card of value.cards){decodeOffer(card,ids);requireValue(card.originalKey===card.entityId&&(card.set==='Planet'||card.entityId==='c_black_hole'));}
+ optionalObject(value,['version','sourceEntityId','cards','choicesRemaining'],['handDraw']);
+ const source=centres.get(value.sourceEntityId),arcana=source?.kind==='Arcana';requireValue(value.version===1&&source?.set==='Booster'&&['Celestial','Arcana'].includes(source.kind));
+ if(arcana){
+  object(value.handDraw,['cardIds','handSize']);const draw=value.handDraw;integer(draw.handSize,1,10000);
+  requireValue(Array.isArray(draw.cardIds)&&new Set(draw.cardIds).size===draw.cardIds.length&&draw.cardIds.length<=draw.handSize);
+  requireValue(draw.cardIds.every(id=>state.hand.includes(id)||state.hangedDestroyedCardIds?.includes(id))&&state.hand.every(id=>draw.cardIds.includes(id)));
+  requireValue(draw.cardIds.length===Math.min(draw.handSize,state.drawPile.length+draw.cardIds.length));
+ }else requireValue(!Object.hasOwn(value,'handDraw'));
+ requireValue(Array.isArray(value.cards)&&value.cards.length>=1&&value.cards.length<=5);for(const card of value.cards){decodeOffer(card,ids);requireValue(card.originalKey===card.entityId&&(arcana?card.set==='Tarot'||card.entityId==='c_soul':card.set==='Planet'||card.entityId==='c_black_hole'));}
  integer(value.choicesRemaining,1,2);
  const mega=value.sourceEntityId.includes('_mega_'),jumbo=value.sourceEntityId.includes('_jumbo_');
  requireValue(mega?value.choicesRemaining===2&&value.cards.length===5||value.choicesRemaining===1&&value.cards.length===4:value.choicesRemaining===1&&value.cards.length===(jumbo?5:3));
@@ -567,7 +573,7 @@ function decode(payload) {
   }
   if(state.apkShop&&round.blindId!=='boss')requireValue(Object.is(round.target,nativeBlindTarget(round.ante,round.blindId==='big'?1.5:1)));
   if(state.phase==='round_won')requireValue(round.score>=round.target);
-  if(['shop','pack'].includes(state.phase))requireValue(round.score>=round.target && state.hand.length===0 && state.discardPile.length===0 && state.drawPile.length===cardIds.length && state.lastScore===null);
+  if(['shop','pack'].includes(state.phase))requireValue(round.score>=round.target && (state.packState?.handDraw?state.hand.length<=state.packState.handDraw.handSize:state.hand.length===0) && state.discardPile.length===0 && state.drawPile.length+state.hand.length===cardIds.length && state.lastScore===null);
   if(state.phase==='game_over')requireValue(round.handsRemaining===0 && !(round.score>=round.target));
   if(state.phase==='playing')requireValue(round.handsRemaining>0 && !(round.score>=round.target) && (state.hand.length+(state.hangedShortfallCardIds?.length??0)>=round.handSize || state.drawPile.length===0 || state.bossState?.id==='bl_serpent'));
   if(state.phase==='blind_selection')requireValue(state.hand.length===0 && state.discardPile.length===0 && round.score===0n);

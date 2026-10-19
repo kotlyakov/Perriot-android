@@ -1,3 +1,5 @@
+19.10.2026 — выбран №8а: наборы Таро. База №7б слита PR35/d4b3792; ветка feat/item8a-arcana, кандидат0.4.40/code53. Реализованы8Arcana identities,22Таро+редкаяДуша, целевая рука, Mega/owned-use, сохранение, Hallucination-before-generation и714nativeSoulfixtures. Независимое ревью нашло stale consumed Hanged epoch: RED→GREEN. Локальные целевые проверки пройдены; финальный core/browser/Android CI иAPK ещё требуются. №8а не объявлен завершённым; №8б не начат. Подробности docs/qa/item8a.md.
+
 # Текущий этап — №7б
 
 - [x] Восстановить43 оставшихся эффекта и «Суд».

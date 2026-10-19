@@ -50,7 +50,7 @@ test('save rejects impossible Celestial contents and size/choice combinations',(
 });
 
 test('unsupported packs, bad phases, missing cards and insufficient funds reject atomically',()=>{
- for(const change of [s=>{s.shop.boosters=[offer('p_arcana_normal_1','pack')];},s=>{s.money=0n;},s=>{s.phase='playing';}]){const state=shop();change(state);const before=structuredClone(state),result=act(state,'OPEN_BOOSTER',{offerId:'pack'});assert.ok(result.error);assert.equal(result.state,state);assert.deepEqual(state,before);}
+ for(const change of [s=>{s.shop.boosters=[offer('p_buffoon_normal_1','pack')];},s=>{s.money=0n;},s=>{s.phase='playing';}]){const state=shop();change(state);const before=structuredClone(state),result=act(state,'OPEN_BOOSTER',{offerId:'pack'});assert.ok(result.error);assert.equal(result.state,state);assert.deepEqual(state,before);}
  const opened=act(shop(),'OPEN_BOOSTER',{offerId:'pack'}).state;
  for(const action of [{type:'USE_PACK_CARD',cardId:'missing'},{type:'SKIP_PACK',extra:true}]){const before=structuredClone(opened),result=act(opened,action.type,action);assert.ok(result.error);assert.equal(result.state,opened);assert.deepEqual(opened,before);}
 });

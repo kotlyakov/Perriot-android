@@ -1,3 +1,10 @@
+## 19.10.2026 — №8а
+
+| ID | Критичность | Задача | Критерий | Статус | Версия |
+|---|---|---|---|---|---|
+| П-08а | Некритическое · высокий | Arcana: все Таро/редкая Душа, целевая рука и сохранение | Все8наборов,22Таро+Soul, Mega, owned-use, save/replay, browser иAndroid | В проверке | 0.4.40 |
+| П-08а-HANGED | Критическое | Старый consumed shortfall ломает save после pack Hanged | Предыдущий Hanged→cashout→packHanged reload | Исправлено RED→GREEN, итогCI ожидается | 0.4.40 |
+
 ## 19.10.2026 — №7б: checkpoint1
 
 - DONE П-7Б-SAVE-CONSUMABLE: activeCentreIds включает активные расходники; загрузчик ошибочно требовал только Joker. Потеря продолжения; исправлено RED→GREEN, оставшаяся Empress и deterministic continuation покрыты.
