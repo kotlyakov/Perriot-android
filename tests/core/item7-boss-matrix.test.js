@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createRun,dispatch} from '../../src/core/run.js';
-import {ITEM7_JOKERS} from '../../src/content/jokers.js';
+import {ITEM7A_JOKERS as ITEM7_JOKERS} from '../../src/content/jokers.js';
 import {APK_BOSSES} from '../../src/content/apk-blinds.js';
 import {initializeItem7Joker,item7CapacityDeltas} from '../../src/core/joker-item7-lifecycle.js';
 import {bossTarget} from '../../src/core/boss-effects.js';

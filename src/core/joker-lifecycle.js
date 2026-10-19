@@ -15,16 +15,18 @@ function createdEvent(events,card,context){events.push({type:'playing_card_creat
 // Mutates a caller-owned transaction clone, never the live preview state.
 // Constructors run synchronously; initial materialization callbacks run FIFO
 // after every before activation, before the next scoring effect boundary.
-export function applyJokerBeforeScore(state,playedIds,events){
+// The callback interleaves other before effects with DNA in inventory order.
+export function applyJokerBeforeScore(state,playedIds,events,beforeContext){
  const created=[];
- if((state.round?.handsPlayed??0)!==0||playedIds.length!==1)return created;
- const source=state.cards[playedIds[0]];
+ const source=(state.round?.handsPlayed??0)===0&&playedIds.length===1?state.cards[playedIds[0]]:null;
  for(let index=0;index<state.jokers.length;index++){
   const context=jokerEffectContext(state.jokers,index);
-  if(context?.target.entityId!=='j_dna')continue;
+  beforeContext?.(context);
+  if(!source||context?.target.entityId!=='j_dna')continue;
   raw(state,3);
-  const payload=Object.fromEntries(['rank','suit','enhancement','edition','seal'].filter(key=>Object.hasOwn(source,key)).map(key=>[key,source[key]]));
+  const payload=Object.fromEntries(['rank','suit','enhancement','edition','seal'].filter(key=>Object.hasOwn(source,key)&&(key!=='enhancement'||source[key]!=='base')).map(key=>[key,source[key]]));
   const copy=createPlayingCard(state,payload,{area:'hand'});
+  if(Object.hasOwn(source,'permaBonus'))copy.permaBonus=source.permaBonus;
   created.push(copy);createdEvent(events,copy,context);
  }
  raw(state,created.length);
@@ -32,11 +34,10 @@ export function applyJokerBeforeScore(state,playedIds,events){
  return created;
 }
 
-export function applyJokerBlindStart(state,events){
+export function applyJokerBlindStart(state,events,{contexts=state.jokers.map((_,index)=>jokerEffectContext(state.jokers,index)),scheduled=false}={}){
  const created=[];
- for(let index=0;index<state.jokers.length;index++){
-  const context=jokerEffectContext(state.jokers,index);
-  if(context?.target.entityId!=='j_marble'||context.source.gettingSliced)continue;
+ for(const context of contexts){
+  if(context?.target.entityId!=='j_marble'||!scheduled&&(context.source.gettingSliced||context.target.gettingSliced))continue;
   if(!state.rng?.apk)throw new TypeError('Joker lifecycle requires native RNG');
   const seed=nextApkSeed(state.rng.apk,'marb_fr');
   const draw=nextApkMathRandom(createApkMathState(seed.value),fronts.length);

@@ -1,3 +1,4 @@
+import {resetItem7RoundTargets} from '../../src/core/joker-item7-lifecycle.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -15,6 +16,8 @@ const fixtures=JSON.parse(readFileSync(new URL('../../scripts/reference-rng/show
 const joker=(id,entityId='j_joker',extra={})=>({id,entityId,sellCost:2n,...extra});
 const act=(s,type,fields={})=>dispatch(s,{type,expectedRevision:s.revision,...fields});
 const reload=s=>deserializeState(serializeState(s));
+// Native successful settlement resets four targets after scoring, with no boss poll.
+function settledRng(s){const copy=structuredClone(s);resetItem7RoundTargets(copy);return copy.rng;}
 function pending(count=2,seed='AAAAAAA1'){
  const s=createRun(seed,{runId:'heart',money:10n,referenceRng:true,referenceShop:true});
  s.round.ante=8;s.round.blindId='boss';s.apkShop.context.ante=8;s.apkBlinds.ante=8;s.apkBlinds.tagContext.ante=8;
@@ -74,7 +77,7 @@ test('terminal Heart success or failure consumes no replacement poll',()=>{
  for(const win of [false,true]){
   let s=active();if(!win)for(let i=0;i<3;i++)s=act(s,'PLAY_HAND',{cardIds:[s.hand[0]]}).state;
   else s.round.score=s.round.target-1n;
-  const rng=structuredClone(s.rng),id=s.bossState.heartDebuffedJokerId,drawPile=[...s.drawPile];
+  const rng=win?settledRng(s):structuredClone(s.rng),id=s.bossState.heartDebuffedJokerId,drawPile=[...s.drawPile];
   const r=act(s,'PLAY_HAND',{cardIds:[s.hand[0]]});assert.equal(r.error,null);
   assert.equal(r.state.phase,win?'round_won':'game_over');assert.equal(r.state.bossState.heartDebuffedJokerId,id);
   assert.deepEqual(r.state.rng,rng);assert.deepEqual(r.state.drawPile,drawPile);assert.deepEqual(reload(r.state),r.state);
@@ -178,7 +181,7 @@ test('disabled Golden and Cloud9 never enter earned bonus context and cleanup/sa
   let s=active(1);s.jokers[0].entityId=entityId;sync(s);assert.deepEqual(getJokerCashoutBonuses(s),[]);
   s.round.score=s.round.target-1n;s=act(s,'PLAY_HAND',{cardIds:[s.hand[0]]}).state;assert.equal(s.phase,'round_won');
   const quote=getCashout(s),snapshot=structuredClone(s.cashoutQuote);assert.deepEqual(snapshot.bonusContext.sources,[]);assert.equal(quote.jokerBonuses,undefined);assert.deepEqual(reload(s),s);
-  const cleaned=act(s,'CONTINUE_ENDLESS').state;disableBoss(cleaned,[]);cleaned.revision++;assert.deepEqual(getCashout(cleaned),quote);assert.deepEqual(cleaned.cashoutQuote,snapshot);assert.deepEqual(reload(cleaned),cleaned);
+  const cleaned=act(s,'CONTINUE_ENDLESS').state;disableBoss(cleaned,[]);cleaned.revision++;delete cleaned.effectReplay;assert.deepEqual(getCashout(cleaned),quote);assert.deepEqual(cleaned.cashoutQuote,snapshot);assert.deepEqual(reload(cleaned),cleaned);
   const sold=act(cleaned,'SELL_OWNED_CARD',{area:'jokers',cardId:cleaned.jokers[0].id});assert.equal(sold.error,null);
   assert.deepEqual(getCashout(sold.state),quote);assert.deepEqual(sold.state.cashoutQuote,snapshot);assert.deepEqual(reload(sold.state),sold.state);
   const fresh=structuredClone(s),sourceId=fresh.jokers[0].id;fresh.cashoutQuote.bonusContext.sources.push({id:sourceId,entityId});
@@ -195,7 +198,11 @@ test('Glass score history and post-score Heart poll both survive reload for zero
   assert.equal(after.phase,{continue:'playing',win:'round_won',loss:'game_over'}[terminal],label);
   assert.equal(after.lastScore.bossHistory.heartDebuffedJokerId,before.bossState.heartDebuffedJokerId,label);
   assert.equal(after.rng.apk.streams.glass,after.lastScore.glassRngAfter.glass,label);
-  if(terminal==='continue'&&count)assert.notDeepEqual(after.rng.apk.mathState,after.lastScore.glassRngAfter.mathState,label);
+  if(terminal==='win'){
+   assert.equal(after.rng.apk.streams.crimson_heart,before.rng.apk.streams.crimson_heart,label);
+   for(const key of ['idol8','mail8','anc8','cas8'])assert.notEqual(after.rng.apk.streams[key],before.rng.apk.streams[key],label+' '+key);
+   assert.notDeepEqual(after.rng.apk.mathState,after.lastScore.glassRngAfter.mathState,label);
+  }else if(terminal==='continue'&&count)assert.notDeepEqual(after.rng.apk.mathState,after.lastScore.glassRngAfter.mathState,label);
   else assert.deepEqual(after.rng.apk.mathState,after.lastScore.glassRngAfter.mathState,label);
   assert.deepEqual(reload(after),after,label);
   if(terminal==='continue'){

@@ -1,4 +1,4 @@
-import {initializeItem7Joker,item7CapacityDeltas} from './joker-item7-lifecycle.js';
+import {initializeItem7Joker,item7CapacityDeltas,resetItem7RoundTargets} from './joker-item7-lifecycle.js';
 import {item7EconomyModifiers,applyItem7EconomyContext,applyItem7SoldJoker,repriceItem7Cards} from './joker-item7-economy.js';
 import {stampJokerCreationOrdinals} from './shop.js';
 import {disableBoss} from './boss-effects.js';
@@ -9,10 +9,13 @@ export function finishItem7Action(before,next,action,events){
  const oldIds=new Set(before.jokers.map(j=>j.id));
  for(const joker of next.jokers)if(!oldIds.has(joker.id))initializeItem7Joker(next,joker);
  stampJokerCreationOrdinals(next,next.jokers.filter(j=>!oldIds.has(j.id)));
+ const oldConsumableIds=new Set((before.consumables??[]).map(card=>card.id));
+ if(next.rng?.apk)stampJokerCreationOrdinals(next,(next.consumables??[]).filter(card=>!oldConsumableIds.has(card.id)));
+ if(next.jokers.some(j=>!oldIds.has(j.id)&&['j_idol','j_mail','j_ancient','j_castle'].includes(j.entityId)))resetItem7RoundTargets(next,{onlyMissing:true});
  const soldId=action.type==='SELL_JOKER'?action.jokerId:action.type==='SELL_OWNED_CARD'?action.cardId:null;
  if(soldId){
   const sold=before.jokers.find(j=>j.id===soldId);
-  if(sold)applyItem7SoldJoker(next,sold,events);
+  if(sold)applyItem7SoldJoker(next,sold,events,{acceptedRevision:before.revision});
   applyItem7EconomyContext(next,{type:'selling_card'},events);
  }
  const context={REROLL_SHOP:'reroll_shop',LEAVE_SHOP:'ending_shop',OPEN_BOOSTER:'open_booster',SKIP_PACK:'skipping_booster'}[action.type];
@@ -28,6 +31,6 @@ export function finishItem7Action(before,next,action,events){
  if(mod.bankruptAt!==0n||old.bankruptAt!==0n)next.bankruptAt=mod.bankruptAt;
  if(mod.astronomer!==old.astronomer)repriceItem7Cards(next);
  if(next.shop)next.shop.freeRerolls=!before.shop?mod.chaosCount:Math.max(0,next.shop.freeRerolls+mod.chaosCount-old.chaosCount);
- if(next.jokers.some(j=>j.entityId==='j_chicot'&&!j.debuffed)&&next.bossState&&!next.bossState.disabled)disableBoss(next,events);
+ if(next.jokers.some(j=>j.entityId==='j_chicot'&&!j.debuffed)&&next.bossState&&!next.bossState.disabled)disableBoss(next,events,{acceptedRevision:before.revision});
  if(next.apkShop)next.apkShop.context=currentApkShopContext(next);
 }

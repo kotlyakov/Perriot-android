@@ -51,7 +51,7 @@ try{
    await page.reload();await page.locator('#restore-backup').waitFor();await page.locator('#restore-backup').click();await page.locator('#victory_endless').waitFor();
    assert.match(await page.locator('#dialog-title').innerText(),/Победа/);assert.equal(await page.locator('#restore-backup').count(),0);assert.equal(await page.locator('#victory_new').isVisible(),true);assert.equal(await page.locator('#victory_menu').isVisible(),true);assert.equal(await page.locator('#cashout').isDisabled(),true);assert.deepEqual(await saved(page),pending);assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.backup')),backup);
    await page.keyboard.press('Escape');assert.equal(await page.evaluate(()=>cardGameBack()),true);assert.equal(await page.locator('#victory_endless').isVisible(),true);assert.deepEqual(await saved(page),pending);
-   await page.locator('#victory_endless').click();await page.locator('#dialog').waitFor({state:'hidden'});assert.deepEqual(await saved(page),{...pending,winPending:false,revision:pending.revision+1});assert.equal(await page.locator('#cashout').isEnabled(),true);
+   await page.locator('#victory_endless').click();await page.locator('#dialog').waitFor({state:'hidden'});assert.deepEqual(await saved(page),act(pending,'CONTINUE_ENDLESS').state);assert.equal(await page.locator('#cashout').isEnabled(),true);
    if(pending.apkBlinds.bossId==='bl_final_vessel'){
     await page.locator('#cashout').click();await page.locator('#shop_next_round').waitFor();const paid=await saved(page);
     assert.equal(paid.round.target,100000n);assert.equal(paid.round.bossDisabled,true);assert.equal(paid.apkShop.context.ante,9);

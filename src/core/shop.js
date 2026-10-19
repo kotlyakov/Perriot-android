@@ -43,10 +43,10 @@ export function hasConsumableSpace(state,offer){
 }
 export function stampJokerCreationOrdinals(state,cards){
  if(!Number.isSafeInteger(state.nextJokerCreationOrdinal)||state.nextJokerCreationOrdinal<1){
-  const known=[...(state.jokers??[]),...(state.shop?['main','vouchers','boosters'].flatMap(area=>state.shop[area]??[]):[])].map(card=>card?.creationOrdinal).filter(value=>Number.isSafeInteger(value)&&value>=1);
+  const known=[...(state.jokers??[]),...(state.consumables??[]),...(state.shop?['main','vouchers','boosters'].flatMap(area=>state.shop[area]??[]):[])].map(card=>card?.creationOrdinal).filter(value=>Number.isSafeInteger(value)&&value>=1);
   state.nextJokerCreationOrdinal=(known.length?Math.max(...known):0)+1;
  }
- for(const card of cards)if(card?.set==='Joker'&&!Object.hasOwn(card,'creationOrdinal'))card.creationOrdinal=state.nextJokerCreationOrdinal++;
+ for(const card of cards)if((['Joker','Tarot','Planet','Spectral'].includes(card?.set)||supportsConsumableEffect(card))&&!Object.hasOwn(card,'creationOrdinal'))card.creationOrdinal=state.nextJokerCreationOrdinal++;
 }
 export function canBuyShopCard(state,offer){
  const consumable=supportsConsumableEffect(offer);
@@ -78,7 +78,8 @@ export function applyShopAction(state,action,{refill,nextRound}={}) {
     if(!canAfford(state.money,offer.cost,floor))return reject('INSUFFICIENT_FUNDS','Insufficient available money');
     const next=structuredClone(state);
     next.shop.main=next.shop.main.filter(o=>o.id!==offer.id);
-    if(consumable){next.consumables??=[];next.consumables.push(structuredClone(offer));}else{const bought=structuredClone(offer);stampJokerCreationOrdinals(next,[bought]);next.jokers.push(bought);}next.money-=offer.cost;
+    const bought=structuredClone(offer);stampJokerCreationOrdinals(next,[bought]);
+    if(consumable){next.consumables??=[];next.consumables.push(bought);}else next.jokers.push(bought);next.money-=offer.cost;
     if(next.apkShop)next.apkShop.context=currentApkShopContext(next);
     return finish(next,[{type:'shop_card_bought',offerId:offer.id,...(consumable?{consumableId:offer.id}:{jokerId:offer.id}),cost:offer.cost},
       {type:'money_changed',before:state.money,after:next.money,delta:-offer.cost}]);

@@ -1,3 +1,4 @@
+import {resetItem7RoundTargets} from '../../src/core/joker-item7-lifecycle.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createRun,dispatch} from '../../src/core/run.js';
@@ -5,7 +6,7 @@ import {scoreHand} from '../../src/core/score.js';
 import {getCashout} from '../../src/core/cashout.js';
 import {handRecognitionOptions,NATIVE_JOKERS} from '../../src/content/jokers.js';
 import {currentApkShopContext} from '../../src/core/apk-shop-state.js';
-import {nextApkRandom} from '../../src/core/apk-rng.js';
+import {nextApkRandom,nextApkMathRandom} from '../../src/core/apk-rng.js';
 import {createShop} from '../../src/core/shop.js';
 import {serializeState,deserializeState} from '../../src/persistence/save.js';
 import {item7CapacityDeltas} from '../../src/core/joker-item7-lifecycle.js';
@@ -13,6 +14,8 @@ import {APK_BOSSES} from '../../src/content/apk-blinds.js';
 import * as effects from '../../src/core/boss-effects.js';
 const act=(s,type,fields={})=>dispatch(s,{type,expectedRevision:s.revision,...fields});
 const reload=s=>deserializeState(serializeState(s));
+// Native successful settlement resets four targets after scoring, with no boss poll.
+function settledRng(s){const copy=structuredClone(s);resetItem7RoundTargets(copy);return copy.rng;}
 const joker=(id='sale',entityId='j_joker')=>({id,entityId,sellCost:2n});
 const tarot=entityId=>({id:entityId,entityId,originalKey:entityId,set:'Tarot',cost:3n,sellCost:1n});
 function pending(id='bl_final_leaf',ante=8){
@@ -23,7 +26,8 @@ function pending(id='bl_final_leaf',ante=8){
 function active(id='bl_final_leaf',ante=8){const r=act(pending(id,ante),'START_BLIND');assert.equal(r.error,null);return r.state;}
 function held(s,ids){s.hand=ids;s.discardPile=[];s.drawPile=Object.keys(s.cards).filter(id=>!ids.includes(id));return s;}
 function sync(s){s.apkShop.context=currentApkShopContext(s);return s;}
-function disable(s){const events=[];assert.equal(typeof effects.disableBoss,'function');effects.disableBoss(s,events);s.revision++;return events;}
+// Direct helper calls define a trusted fixture boundary outside the action journal.
+function disable(s){const events=[];assert.equal(typeof effects.disableBoss,'function');effects.disableBoss(s,events);s.revision++;delete s.effectReplay;return events;}
 
 test('Leaf and Vessel enter Ante8 despite min10; all five showdown bosses are admitted',()=>{
  assert.equal(effects.bossTarget(pending()),100000n);assert.equal(effects.bossTarget(pending('bl_final_vessel')),300000n);
@@ -74,7 +78,7 @@ test('legacy SELL_JOKER remains shop-only and cannot disable a newly entered Lea
 });
 test('Vessel disable divides target by3 and settles Gold and frozen cashout once if new target is met',()=>{
  const s=active('bl_final_vessel');s.round.score=100000n;s.cards[s.hand[0]].enhancement='gold';sync(s);
- const rng=structuredClone(s.rng),events=disable(s);assert.equal(s.round.target,100000n);assert.equal(s.bossState.disabled,true);assert.equal(s.phase,'round_won');assert.equal(s.money,13n);assert.deepEqual(s.rng,rng);
+ const rng=settledRng(s),events=disable(s);assert.equal(s.round.target,100000n);assert.equal(s.bossState.disabled,true);assert.equal(s.phase,'round_won');assert.equal(s.money,13n);assert.deepEqual(s.rng,rng);
  assert.equal(events.filter(e=>e.type==='round_won').length,1);assert.equal(events.filter(e=>e.type==='gold_card_paid').length,1);assert.equal(getCashout(s).reward,8n);assert.deepEqual(reload(s),s);
  const snapshot=structuredClone(s),again=[];effects.disableBoss(s,again);assert.deepEqual(s,snapshot);assert.deepEqual(again,[]);
  const continued=act(s,'CONTINUE_ENDLESS');assert.equal(continued.error,null);
@@ -133,11 +137,17 @@ test('native resource restoration preserves used actions and handles both admitt
   for(const copy of [s,old]){disable(copy);assert.equal(copy.round.handsRemaining,(deckId==='blue'?5:4)-(id==='bl_water'?1:0));assert.equal(copy.round.discardsRemaining,(deckId==='red'?4:3)-(id==='bl_needle'?1:0));assert.deepEqual(reload(copy),copy);}
  }
 });
-test('all current107 native Jokers sell to disable Leaf without RNG or extra sale income',()=>{
- assert.equal(NATIVE_JOKERS.length,107);
+test('all current150 native Jokers sell to disable Leaf while preserving native sale hooks',()=>{
+ assert.equal(NATIVE_JOKERS.length,150);
  for(const entityId of NATIVE_JOKERS){
   const s=active();s.jokers=[joker('sale',entityId)];const delta=item7CapacityDeltas(s.jokers);s.round.handSize+=delta.handSize;s.bossState.baseHandSize+=delta.handSize;const r=act(s,'SELL_OWNED_CARD',{area:'jokers',cardId:'sale'});
-  assert.equal(r.error,null,entityId);assert.equal(r.state.money,s.money+2n,entityId);assert.equal(r.state.bossState.disabled,true,entityId);assert.deepEqual(r.state.rng,s.rng,entityId);assert.deepEqual(reload(r.state),r.state,entityId);
+  assert.equal(r.error,null,entityId);assert.equal(r.state.money,s.money+2n,entityId);assert.equal(r.state.bossState.disabled,true,entityId);const expectedRng=structuredClone(s.rng);
+  if(entityId==='j_diet_cola'){
+   for(let i=0;i<2;i++)expectedRng.apk.mathState=nextApkMathRandom(expectedRng.apk.mathState).state;
+   assert.equal(r.state.pendingDoubleTags,(s.pendingDoubleTags??0)+1);
+   assert.ok(r.events.some(event=>event.type==='tag_added'));
+  }
+  assert.deepEqual(r.state.rng,expectedRng,entityId);assert.deepEqual(reload(r.state),r.state,entityId);
  }
 });
 test('Leaf sale after settlement preserves captured Golden/Cloud9 sources and does not repay held Gold',()=>{
@@ -168,7 +178,7 @@ test('earned hand-counter snapshot is bounded, strict and matches fresh unchange
 });
 test('old quote migration derives earned hands from its row even after counters were restored',()=>{
  const s=active('bl_needle',2);s.round.score=s.round.target-1n;const won=act(s,'PLAY_HAND',{cardIds:[s.hand[0]]}).state,earned=getCashout(won);disable(won);
- const payload=JSON.parse(serializeState(won));delete payload.state.cashoutQuote.handsRemainingBefore;
+ const payload=JSON.parse(serializeState(won));delete payload.state.effectReplay;delete payload.state.cashoutQuote.handsRemainingBefore;
  const resumed=deserializeState(JSON.stringify(payload));assert.equal(resumed.round.handsRemaining,3);assert.equal(resumed.cashoutQuote.handsRemainingBefore,0);assert.deepEqual(getCashout(resumed),earned);assert.deepEqual(reload(resumed),resumed);
  const legacy=structuredClone(won);delete legacy.cashoutQuote;const quote=getCashout(legacy);assert.equal(quote.hands,3n);
 });
@@ -226,7 +236,7 @@ test('disabled Serpent validates Glass destruction and the terminal play with no
 test('Needle restoration before earning and later quote migration retain actual earned hands',()=>{
  const s=active('bl_needle',2);disable(s);s.round.score=s.round.target-1n;
  const won=act(s,'PLAY_HAND',{cardIds:[s.hand[0]]}).state;assert.equal(won.round.handsRemaining,3);assert.equal(getCashout(won).hands,3n);assert.deepEqual(reload(won),won);
- const later=act(won,'REORDER_JOKERS',{cardIds:won.jokers.map(j=>j.id)}).state;const payload=JSON.parse(serializeState(later));delete payload.state.cashoutQuote.handsRemainingBefore;
+ const later=act(won,'REORDER_JOKERS',{cardIds:won.jokers.map(j=>j.id)}).state;const payload=JSON.parse(serializeState(later));delete payload.state.effectReplay;delete payload.state.cashoutQuote.handsRemainingBefore;
  assert.equal(getCashout(deserializeState(JSON.stringify(payload))).hands,3n);
  const bad=structuredClone(later);bad.cashoutQuote.handsRemainingBefore=4;bad.cashoutQuote.quote.hands=4n;bad.cashoutQuote.quote.total++;assert.throws(()=>serializeState(bad));
 });
@@ -251,7 +261,7 @@ test('disabled Serpent cannot erase a spent play counter after inventory clears 
 test('first post-disable terminal play keeps the original short hand and later won mutations retain that origin',()=>{
  let s=active('bl_serpent',5);s.jokers=[joker('blue','j_blue_joker')];s=act(s,'DISCARD',{cardIds:s.hand.slice(0,5)}).state;disable(s);s.round.score=s.round.target-1n;
  s=act(s,'PLAY_HAND',{cardIds:[s.hand[0]]}).state;assert.equal(s.phase,'round_won');assert.equal(s.hand.length,5);assert.deepEqual(reload(s),s);
- s.consumables=[tarot('c_hanged_man')];s=act(s,'USE_CONSUMABLE',{cardId:'c_hanged_man',targetCardIds:s.hand.slice(0,2)}).state;assert.deepEqual(reload(s),s);
+ delete s.effectReplay;s.consumables=[tarot('c_hanged_man')];s=act(s,'USE_CONSUMABLE',{cardId:'c_hanged_man',targetCardIds:s.hand.slice(0,2)}).state;assert.deepEqual(reload(s),s);
  const quote=getCashout(s);s=act(s,'SELL_OWNED_CARD',{area:'jokers',cardId:'blue'}).state;assert.deepEqual(getCashout(s),quote);assert.deepEqual(reload(s),s);
 });
 test('legacy enabled Serpent captures exact remaining-deck provenance and exhausted decks without inventing a card count',()=>{
@@ -297,7 +307,7 @@ test('Needle fixed origin rejects moving both timing fields earlier and recovers
   for(let i=0;i<2;i++)s=act(s,'REORDER_JOKERS',{cardIds:s.jokers.map(j=>j.id)}).state;
   if(beforeEarning)disable(s);s.round.score=s.round.target-1n;s=act(s,'PLAY_HAND',{cardIds:[s.hand[0]]}).state;if(!beforeEarning)disable(s);
   assert.equal(getCashout(s).hands,beforeEarning?3n:0n);assert.equal(s.bossState.startedRevision,undefined);assert.deepEqual(reload(s),s);
-  const payload=JSON.parse(serializeState(s));delete payload.state.cashoutQuote.handsRemainingBefore;assert.equal(getCashout(deserializeState(JSON.stringify(payload))).hands,beforeEarning?3n:0n);
+  const payload=JSON.parse(serializeState(s));delete payload.state.effectReplay;delete payload.state.cashoutQuote.handsRemainingBefore;assert.equal(getCashout(deserializeState(JSON.stringify(payload))).hands,beforeEarning?3n:0n);
   if(!beforeEarning){
    const bad=structuredClone(s);bad.bossState.disabledRevision=bad.cashoutQuote.earnedRevision-1;bad.bossState.needleDisableOrigin.acceptedRevision=bad.bossState.disabledRevision-1;bad.cashoutQuote.handsRemainingBefore=3;bad.cashoutQuote.quote.hands=3n;bad.cashoutQuote.quote.total+=3n;assert.throws(()=>serializeState(bad));
   }
@@ -306,7 +316,7 @@ test('Needle fixed origin rejects moving both timing fields earlier and recovers
 test('Serpent pre-origin terminal marker stays bound to its frozen win despite later inventory or Hanged mutations',()=>{
  let s=active('bl_serpent',5);s=act(s,'DISCARD',{cardIds:s.hand.slice(0,5)}).state;s.round.score=s.round.target-1n;s=act(s,'PLAY_HAND',{cardIds:[s.hand[0]]}).state;
  disable(s);assert.equal(s.bossState.serpentDisableOrigin.phase,'round_won');assert.equal(s.bossState.serpentInitialCardCount,52);assert.deepEqual(reload(s),s);
- s.consumables=[tarot('c_hanged_man')];s=act(s,'USE_CONSUMABLE',{cardId:'c_hanged_man',targetCardIds:s.hand.slice(0,2)}).state;assert.deepEqual(reload(s),s);
+ delete s.effectReplay;s.consumables=[tarot('c_hanged_man')];s=act(s,'USE_CONSUMABLE',{cardId:'c_hanged_man',targetCardIds:s.hand.slice(0,2)}).state;assert.deepEqual(reload(s),s);
  s=act(s,'REORDER_JOKERS',{cardIds:s.jokers.map(j=>j.id)}).state;assert.deepEqual(reload(s),s);
  for(const mutate of [s=>s.bossState.serpentDisableOrigin.phase='playing',s=>s.bossState.serpentDisableOrigin.earnedRevision--,s=>delete s.bossState.serpentDisableOrigin.earnedRevision,s=>s.bossState.serpentDisableOrigin.handsRemaining--]){const bad=structuredClone(s);mutate(bad);assert.throws(()=>serializeState(bad));}
 });

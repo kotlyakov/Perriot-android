@@ -13,8 +13,9 @@ export function createApkShopContext(options={}){
  const context={ante:1,reducedMotion:false,playedHands:{},ownedCentreIds:[],usedCentreIds:[],usedVoucherIds:[],shopVoucherIds:[],bannedCentreIds:[],unlockedCentreIds:[],lockedCentreIds:[],enhancementIds:[],poolFlags:{},editionRate:1,inflation:0,discountPercent:0,mainSlots:2,boosterSlots:2,modifiers:{},rates:{Joker:20,Tarot:4,Planet:4,Base:0,Spectral:0},visibleHandOrder:ordinaryHands,...structuredClone(options)};
  const object=value=>value&&typeof value==='object'&&!Array.isArray(value);
  if(!object(options))throw new TypeError('Shop context must be an object');
- const supported=new Set(['ante','reducedMotion','playedHands','ownedCentreIds','usedCentreIds','usedVoucherIds','shopVoucherIds','bannedCentreIds','unlockedCentreIds','lockedCentreIds','enhancementIds','poolFlags','editionRate','inflation','discountPercent','mainSlots','boosterSlots','modifiers','rates','visibleHandOrder','tutorialShopSurcharge']);
+ const supported=new Set(['ante','reducedMotion','playedHands','activeCentreIds','ownedCentreIds','usedCentreIds','usedVoucherIds','shopVoucherIds','bannedCentreIds','unlockedCentreIds','lockedCentreIds','enhancementIds','poolFlags','editionRate','inflation','discountPercent','mainSlots','boosterSlots','modifiers','rates','visibleHandOrder','tutorialShopSurcharge']);
  if(Object.keys(options).some(key=>!supported.has(key)))throw new TypeError('Unsupported shop context field');
+ if(context.activeCentreIds!==undefined&&(!Array.isArray(context.activeCentreIds)||context.activeCentreIds.some(id=>typeof id!=='string'||!centres[id])))throw new TypeError('Invalid activeCentreIds');
  for(const field of ['ownedCentreIds','usedCentreIds','usedVoucherIds','shopVoucherIds','bannedCentreIds','unlockedCentreIds','lockedCentreIds','enhancementIds'])if(!Array.isArray(context[field])||context[field].some(id=>typeof id!=='string'||!centres[id]))throw new TypeError('Invalid '+field);
  for(const field of ['usedVoucherIds','shopVoucherIds'])if(context[field].some(id=>centres[id].set!=='Voucher'))throw new TypeError('Invalid voucher identity');
  if(context.enhancementIds.some(id=>centres[id].set!=='Enhanced'))throw new TypeError('Invalid enhancement identity');
@@ -37,7 +38,7 @@ function session(rng,context){
  const element=(values,key)=>{const seed=nextApkSeed(current,key);const next=nextApkMathRandom(createApkMathState(seed.value),values.length);current={...seed.rng,mathState:next.state};return values[next.value-1];};
  const unkeyed=(min,max)=>{const next=nextApkMathRandom(current.mathState,min,max);current={...current,mathState:next.state};return next.value;};
  const juice=()=>{if(!context.reducedMotion)unkeyed(2);};
- const has=id=>context.ownedCentreIds.includes(id);
+ const has=id=>(context.activeCentreIds??context.ownedCentreIds).includes(id);
  const available=c=>{
   let add=c.set==='Enhanced'||((has('j_ring_master')||!used.has(c.key)) && (c.rarity===4 || (context.unlockedCentreIds.includes(c.key)||(!context.lockedCentreIds.includes(c.key)&&c.unlocked!==false&&!c.start_locked))));
   if(add && c.set==='Voucher')add=!context.usedVoucherIds.includes(c.key)&&!context.shopVoucherIds.includes(c.key)&&(!c.requires||c.requires.every(id=>context.usedVoucherIds.includes(id)));
@@ -129,7 +130,7 @@ const telescopeHands=['Flush Five','Flush House','Five of a Kind','Straight Flus
 export function generateApkCelestialPack(rng,context,{size,instancePrefix='celestial'}={}){
  context=createApkShopContext(context);
  if(![3,5].includes(size)||typeof instancePrefix!=='string'||!instancePrefix)throw new TypeError('Invalid Celestial pack options');
- const s=session(rng,context),showman=context.ownedCentreIds.includes('j_ring_master');
+ const s=session(rng,context),showman=(context.activeCentreIds??context.ownedCentreIds).includes('j_ring_master');
  let telescopePlanet=null;
  if(context.usedVoucherIds.includes('v_telescope')){
   let tally=0,hand=null;

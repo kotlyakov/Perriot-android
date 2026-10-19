@@ -1,3 +1,4 @@
+import {resetItem7RoundTargets} from '../../src/core/joker-item7-lifecycle.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -10,6 +11,8 @@ import {serializeState,deserializeState} from '../../src/persistence/save.js';
 const fixtures=JSON.parse(readFileSync(new URL('../../scripts/reference-rng/showdown-fixtures.json',import.meta.url)));
 const act=(s,type,fields={})=>dispatch(s,{type,expectedRevision:s.revision,...fields});
 const reload=s=>deserializeState(serializeState(s));
+// Native successful settlement resets four targets after scoring, with no boss poll.
+function settledRng(s){const copy=structuredClone(s);resetItem7RoundTargets(copy);return copy.rng;}
 function pending(id='bl_final_bell',count=0,seed='AAAAAAA1'){
  const s=createRun(seed,{runId:'bell-acorn',money:10n,referenceRng:true,referenceShop:true});
  s.round.ante=8;s.round.blindId='boss';s.apkShop.context.ante=8;s.apkBlinds.ante=8;s.apkBlinds.tagContext.ante=8;
@@ -39,7 +42,7 @@ test('Bell force clears after supported destruction, disable and terminal play w
  const destroyed=act(s,'USE_CONSUMABLE',{cardId:'hanged',targetCardIds:[s.bossState.forcedCardId]});assert.equal(destroyed.error,null);s=destroyed.state;assert.equal(s.bossState.forcedCardId,null);assert.deepEqual(reload(s),s);
  s=act(s,'DISCARD',{cardIds:[s.hand[0]]}).state;assert.ok(s.hand.includes(s.bossState.forcedCardId));assert.deepEqual(reload(s),s);
  disableBoss(s,[]);s.revision++;assert.equal(s.bossState.forcedCardId,null);assert.deepEqual(reload(s),s);
- const won=active();won.round.score=won.round.target-1n;const rng=structuredClone(won.rng);const result=act(won,'PLAY_HAND',{cardIds:[won.bossState.forcedCardId]});assert.equal(result.state.phase,'round_won');assert.equal(result.state.bossState.forcedCardId,null);assert.deepEqual(result.state.rng,rng);assert.deepEqual(reload(result.state),result.state);
+ const won=active();won.round.score=won.round.target-1n;const rng=settledRng(won);const result=act(won,'PLAY_HAND',{cardIds:[won.bossState.forcedCardId]});assert.equal(result.state.phase,'round_won');assert.equal(result.state.bossState.forcedCardId,null);assert.deepEqual(result.state.rng,rng);assert.deepEqual(reload(result.state),result.state);
 });
 test('Acorn integrated setup matches native nr8 then three shuffles, full raw RNG and reload',()=>{
  for(const row of fixtures.acorn){

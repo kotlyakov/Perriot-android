@@ -1,4 +1,4 @@
-import {applyItem7EndRound} from './joker-item7-lifecycle.js';
+import {applyItem7EndRound,resetItem7RoundTargets} from './joker-item7-lifecycle.js';
 import {applyItem7EconomyContext} from './joker-item7-economy.js';
 import {applyEndRoundCardEffects} from './card-effects.js';
 import {getJokerCashoutBonuses} from './joker-cashout.js';
@@ -82,9 +82,12 @@ export function settleRoundSuccess(state,events,{saved=false,endRoundApplied=fal
  if(state.phase!=='playing'||!(state.round.score>=state.round.target||saved&&state.round.score*4n>=state.round.target))return false;
  if(saved)state.round.savedByBones=true;
  if(state.runStats)state.runStats.unusedDiscards+=state.round.discardsRemaining;
+ if(!endRoundApplied){
+  applyItem7EndRound(state,events);
+  applyItem7EconomyContext(state,{type:'end_of_round'},events);
+ }
  applyEndRoundCardEffects(state,events);
- if(!endRoundApplied)applyItem7EndRound(state,events);
- applyItem7EconomyContext(state,{type:'end_of_round'},events);
+ if(state.rng?.apk)resetItem7RoundTargets(state);
  state.phase='round_won';state.cashoutQuote=captureCashoutQuote(state,state.revision+1);events.push({type:'round_won',score:state.round.score});
  if(state.round.blindId==='boss'&&state.round.ante===(state.winAnte??8)){
   state.won=true;

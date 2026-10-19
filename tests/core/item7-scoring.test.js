@@ -63,15 +63,15 @@ test('item7 scored mutation transaction is pure and Hiker adds only on subsequen
  const result=scoreHand(s,[c]);
  assert.deepEqual(s,before);assert.equal(result.chips,24n);assert.equal(result.item7State.cards.two.permaBonus,30);
 });
-test.skip('item7 Wee grows each retrigger and its new value scores in same hand',()=>{
+test('item7 Wee grows each retrigger and its new value scores in same hand',()=>{
  const c=card('two',2,'hearts',{seal:'red'}),s=scoringState([{id:'w',entityId:'j_wee'}],[c]);
  const result=scoreHand(s,[c]);assert.equal(result.chips,25n);assert.equal(result.item7State.jokers[0].chips,16);
 });
-test.skip('item7 Lucky Cat grows once for a pass with both Lucky outcomes and ignores Blueprint growth',()=>{
- const c=card('two',2,'hearts',{enhancement:'lucky',seal:'red'}),s=scoringState([{id:'l',entityId:'j_lucky_cat'},...Array.from({length:4},(_,i)=>({id:'o'+i,entityId:'j_oops'}))],[c]);
- const result=scoreHand(s,[c]);assert.equal(result.item7State.jokers[0].xMult,1.5);assert.equal(result.trace.filter(e=>e.type==='score_money').reduce((n,e)=>n+e.amount,0n),40n);
+test('item7 Lucky Cat grows once for a pass with both Lucky outcomes and ignores Blueprint growth',()=>{
+ const c=card('two',2,'hearts',{enhancement:'lucky',seal:'red'}),s=scoringState([{id:'b',entityId:'j_blueprint'},{id:'l',entityId:'j_lucky_cat'},...Array.from({length:4},(_,i)=>({id:'o'+i,entityId:'j_oops'}))],[c]);
+ const result=scoreHand(s,[c]);assert.equal(result.item7State.jokers[1].xMult,1.5);assert.deepEqual(result.mult,{n:369n,d:4n});assert.equal(result.trace.filter(e=>e.type==='score_money').reduce((n,e)=>n+e.amount,0n),40n);
 });
-test.skip('item7 Midas followed by Vampire removes enhancement and scores upgraded xMult',()=>{
+test('item7 Midas followed by Vampire removes enhancement and scores upgraded xMult',()=>{
  const c=card('q',12),s=scoringState([{id:'m',entityId:'j_midas_mask'},{id:'v',entityId:'j_vampire'}],[c]);
  const result=scoreHand(s,[c]);assert.equal(result.item7State.cards.q.enhancement,'base');assert.equal(result.item7State.jokers[1].xMult,1.1);assert.equal(result.score,16n);
 });
