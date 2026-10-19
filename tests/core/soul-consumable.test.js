@@ -81,3 +81,5 @@ test('pack generators use actual free capacity and default owned use retains fre
  const owned=stagedGenerator('c_emperor',1),result=applyConsumableAction(owned,{type:'USE_CONSUMABLE',cardId:'pack-source',expectedRevision:owned.revision});
  assert.equal(result.error,null);assert.equal(result.state.consumables.length,2);
 });
+
+test('Soul tooltip describes implemented legendary creation',async()=>{const {describeShopItem}=await import('../../src/content/shop-display.js');const details=describeShopItem({id:'soul-tip',entityId:'c_soul',originalKey:'c_soul',set:'Spectral',edition:'base'});assert.match(details.description,/легендарного джокера/);assert.equal(details.canBuy,true);});
