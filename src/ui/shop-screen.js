@@ -6,7 +6,7 @@ import {getRerollCost,hasJokerSpace,hasConsumableSpace,canBuyShopCard} from '../
 import {canUseConsumable,supportsConsumableEffect} from '../core/consumables.js';
 import {canAfford} from '../core/shop-pricing.js';
 import {canManageInventory,canSellOwned} from '../core/inventory.js';
-import {supportsCelestialBooster} from '../core/celestial-pack.js';
+import {supportsCelestialBooster,supportsArcanaBooster,canUsePackCard} from '../core/celestial-pack.js';
 
 let view=null,packView=null,selected=null,tip=null,held=false,lastMain=null,entryMotion,stageTipListener=false,cancelDrag,cancelReturn,lastAcornRound=null;
 const reduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -63,8 +63,8 @@ function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
    const targets=callbacks.targetCardIds??[],capability=canUseConsumable(state,offer,targets),use=node('button','shop-use','Использовать');use.type='button';use.disabled=busy||!capability.available;use.title=capability.reason??'Использовать расходную карту';
    use.onclick=()=>{if(use.disabled||!canUseConsumable(state,offer,targets).available)return;use.disabled=true;clearSelection();callbacks.onAction?.('USE_CONSUMABLE',{cardId:offer.id,targetCardIds:targets});};wrap.append(use);
   }else if(kind==='pack'){
-   const use=node('button','shop-use','Использовать');use.type='button';use.disabled=busy;
-   use.onclick=()=>{if(use.disabled)return;use.disabled=true;clearSelection();callbacks.onAction?.('USE_PACK_CARD',{cardId:offer.id});};wrap.append(use);
+   const targets=callbacks.targetCardIds??[],capability=canUsePackCard(state,offer,targets),use=node('button','shop-use','Использовать');use.type='button';use.disabled=busy||!capability.available;use.title=capability.reason??'Использовать карту набора';
+   use.onclick=()=>{if(use.disabled||!canUsePackCard(state,offer,targets).available)return;use.disabled=true;clearSelection();callbacks.onAction?.('USE_PACK_CARD',{cardId:offer.id,targetCardIds:targets});};wrap.append(use);
   }
  }
  card.onclick=()=>{if(held){held=false;return;}if(!busy){if(['owned','consumable','pack'].includes(kind))select();showTip(offer,card);}};
@@ -96,7 +96,7 @@ function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
     const stage=document.getElementById('stage'),bounds=wrap.getBoundingClientRect(),stageBounds=stage.getBoundingClientRect();
     ghost=wrap.cloneNode(true);ghost.querySelector('.shop-use')?.remove();rect(ghost,(bounds.left-stageBounds.left)/scale,(bounds.top-stageBounds.top)/scale,w,h);ghost.classList.add('is-dragging');ghost.setAttribute('aria-hidden','true');ghost.style.pointerEvents='none';stage.append(ghost);wrap.style.opacity='0';ghost.querySelector('button').tabIndex=-1;
     zone=inventory?rect(node('div','shop-buy-zone shop-sell-zone'),1375,210,150,225):rect(node('div','shop-buy-zone'),454,15,895,182);zone.id=inventory?'shop_sell_zone':'shop_buy_zone';zone.setAttribute('aria-live','polite');
-    const pack=kind==='booster'&&supportsCelestialBooster(offer.entityId)&&offer.originalKey===offer.entityId&&offer.set==='Booster',supported=pack||kind==='main'&&details.canBuy&&(state.inflation??0n)===0n,consumable=supportsConsumableEffect(offer);
+    const pack=kind==='booster'&&(supportsCelestialBooster(offer.entityId)||supportsArcanaBooster(offer.entityId))&&offer.originalKey===offer.entityId&&offer.set==='Booster',supported=pack||kind==='main'&&details.canBuy&&(state.inflation??0n)===0n,consumable=supportsConsumableEffect(offer);
     const reason=inventory?(canSellOwned(state,offer,area)?null:offer.eternal?'Вечная карта':'Продажа недоступна'):!supported?'Доступен только просмотр':!canAfford(state.money,offer.cost,state.bankruptAt??0n)?'Недостаточно денег':!pack&&!(consumable?hasConsumableSpace(state,offer):hasJokerSpace(state,offer))?(consumable?'Нет места для расходной карты':'Нет места для джокера'):!pack&&!canBuyShopCard(state,offer)?'Покупка недоступна':null;
     zone.dataset.available=String(!reason);zone.append(node('strong','',reason??(inventory?'Продать':'Купить')),hidden?node('span','shop-money','?'):money(inventory?offer.sellCost??0n:offer.cost,inventory?125:800,43));document.getElementById('stage').append(zone);
    }
@@ -147,11 +147,13 @@ export function prepareShopChange(type){
 }
 function renderPack(state,busy,callbacks){
  dismissTip();entryMotion?.cancel();view?.controller?.abort();view?.remove();document.getElementById('shop_sign')?.remove();view=null;lastMain=null;
- if(!packView?.isConnected){packView=node('section','pack-screen');packView.id='pack_screen';packView.setAttribute('aria-label','Небесный набор');document.getElementById('stage').append(packView);}
- packView.replaceChildren();const title=node('h1','pack-title','НЕБЕСНЫЙ НАБОР');title.id='pack_title';const choices=node('p','pack-choices','Выберите '+state.packState.choicesRemaining);choices.id='pack_choices';packView.append(title,choices);
+ const arcana=state.packState.sourceEntityId.startsWith('p_arcana_');
+ if(!packView?.isConnected){packView=node('section','pack-screen');packView.id='pack_screen';document.getElementById('stage').append(packView);}
+ packView.classList.toggle('arcana-pack',arcana);packView.setAttribute('aria-label',arcana?'Набор Таро':'Небесный набор');
+ packView.replaceChildren();const title=node('h1','pack-title',arcana?'НАБОР ТАРО':'НЕБЕСНЫЙ НАБОР');title.id='pack_title';const choices=node('p','pack-choices','Выберите '+state.packState.choicesRemaining);choices.id='pack_choices';packView.append(title,choices);
  const cards=state.packState.cards,spacing=cards.length>1?Math.min(116,520/(cards.length-1)):116,start=327-52-spacing*(cards.length-1)/2;
- cards.forEach((card,index)=>packView.append(choice(card,'pack',index,state,busy,callbacks,start+index*spacing,135,104,143)));
- const skip=rect(node('button','pack-skip','Пропустить'),255,375,145,58);skip.id='pack_skip';skip.disabled=busy;skip.onclick=()=>{clearSelection();callbacks.onAction?.('SKIP_PACK',{});};packView.append(skip);
+ cards.forEach((card,index)=>packView.append(choice(card,'pack',index,state,busy,callbacks,start+index*spacing,arcana?65:135,arcana?90:104,arcana?123:143)));
+ const skip=rect(node('button','pack-skip','Пропустить'),arcana?705:255,arcana?120:375,145,58);skip.id='pack_skip';skip.disabled=busy;skip.onclick=()=>{clearSelection();callbacks.onAction?.('SKIP_PACK',{});};packView.append(skip);
  renderOwned(state,busy,callbacks);
 }
 function renderOwned(state,busy,callbacks){

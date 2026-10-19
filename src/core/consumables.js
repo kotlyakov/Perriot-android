@@ -1,3 +1,4 @@
+import {applyItem7CardsDestroyed} from './joker-item7-lifecycle.js';
 import {createItem7Cards,item7EconomyModifiers,applyItem7EconomyContext} from './joker-item7-economy.js';
 import {captureCashoutQuote} from './cashout.js';
 import {generateApkFoolCard,generateApkTarotConsumables} from './apk-shop.js';
@@ -21,8 +22,8 @@ const generatorTarots=new Map([['c_emperor','Tarot'],['c_high_priestess','Planet
 const wheelKey='c_wheel_of_fortune';
 const sealSpectrals=new Map([['c_talisman','gold'],['c_deja_vu','red'],['c_trance','blue'],['c_medium','purple']]);
 const modifierTargetRule=key=>sealSpectrals.has(key)||key==='c_aura'?{minimum:1,maximum:1}:undefined;
-const creationSpace=(state,card)=>{const cards=state.consumables??[],remaining=cards.filter(c=>c.id!==card.id);return (state.consumableSlots??2)+cards.filter(c=>c.edition==='negative').length-remaining.length;};
-const generatedCount=(state,card)=>Math.min(2,Math.max(0,creationSpace(state,card)));
+const creationSpace=(state,card,{fromPack=false}={})=>{const cards=state.consumables??[],remaining=cards.filter(c=>c.id!==card.id);return (state.consumableSlots??2)+(fromPack?remaining:cards).filter(c=>c.edition==='negative').length-remaining.length;};
+const generatedCount=(state,card,options)=>Math.min(2,Math.max(0,creationSpace(state,card,options)));
 const deckTarots=new Map([
  ['c_hanged_man',{minimum:1,maximum:2}],
  ['c_death',{minimum:2,maximum:2}],
@@ -44,13 +45,13 @@ const enhancementTarots=new Map([
  ['c_tower',{enhancement:'stone',maximum:1}],
  ['c_devil',{enhancement:'gold',maximum:1}],
 ]);
-const hasFoolSpace=(state,card)=>creationSpace(state,card)>0;
+const hasFoolSpace=(state,card,options)=>creationSpace(state,card,options)>0;
 const generatedFoolId=card=>`fool:${card.id}`;
 export function wheelSucceeds(roll,normal=1){return Number.isFinite(roll)&&roll>=0&&roll<=1&&Number.isFinite(normal)&&normal>=0&&roll<normal/4;}
 export function wheelEdition(roll){if(!Number.isFinite(roll)||roll<0||roll>1)throw new RangeError('Invalid Wheel edition roll');return roll>.85?'polychrome':roll>.5?'holographic':roll>0?'foil':'base';}
 const wheelEligible=state=>(state.jokers??[]).filter(joker=>(joker.edition??'base')==='base');
 const wheelOrderKnown=jokers=>jokers.length<=1||jokers.every(joker=>Number.isSafeInteger(joker.creationOrdinal)&&joker.creationOrdinal>=1)&&new Set(jokers.map(joker=>joker.creationOrdinal)).size===jokers.length;
-export function supportsConsumableEffect(card){const centre=centres.get(card?.entityId);return supportsConsumable(card)&&!!(centre?.set==='Planet'&&handIds[centre.handType]||centre?.key==='c_judgement'||centre?.key==='c_black_hole'||centre?.key==='c_fool'||centre?.key===wheelKey||moneyTarots.has(centre?.key)||enhancementTarots.has(centre?.key)||deckTarots.has(centre?.key)||baseTarots.has(centre?.key)||generatorTarots.has(centre?.key)||sealSpectrals.has(centre?.key)||centre?.key==='c_aura');}
+export function supportsConsumableEffect(card){const centre=centres.get(card?.entityId);return supportsConsumable(card)&&!!(centre?.set==='Planet'&&handIds[centre.handType]||centre?.key==='c_judgement'||centre?.key==='c_soul'||centre?.key==='c_black_hole'||centre?.key==='c_fool'||centre?.key===wheelKey||moneyTarots.has(centre?.key)||enhancementTarots.has(centre?.key)||deckTarots.has(centre?.key)||baseTarots.has(centre?.key)||generatorTarots.has(centre?.key)||sealSpectrals.has(centre?.key)||centre?.key==='c_aura');}
 
 export function validConsumableUsage(state){
  const hasUsage=Object.hasOwn(state,'consumableUsage'),hasTotals=Object.hasOwn(state,'consumableUsageTotal');
@@ -78,7 +79,7 @@ export function validConsumableUsage(state){
 }
 
 // Read-only capability query for an owned card. Purchase-and-use must acquire it first.
-export function canUseConsumable(state,card,targetCardIds=[]){
+export function canUseConsumable(state,card,targetCardIds=[],{fromPack=false}={}){
  if(!canManageInventory(state))return blocked('INVALID_PHASE','Расходная карта недоступна в текущей фазе.');
  if(!counter(state.revision)||state.revision===Number.MAX_SAFE_INTEGER)return blocked('INVALID_STATE','Некорректная версия состояния.');
  const cards=state.consumables??[];
@@ -87,7 +88,8 @@ export function canUseConsumable(state,card,targetCardIds=[]){
  if(!owned)return blocked('CARD_NOT_FOUND','Карта больше не принадлежит игроку.');
  const centre=centres.get(owned.entityId);
  if(!supportsConsumableEffect(owned))return blocked('USE_UNAVAILABLE','Эффект этой расходной карты ещё не реализован.');
- if(centre.key==='c_judgement'){
+ if(fromPack&&(generatorTarots.has(centre.key)||centre.key==='c_fool')&&creationSpace(state,owned,{fromPack})<=0)return blocked('USE_UNAVAILABLE','Нет места для новой расходной карты.');
+ if(centre.key==='c_judgement'||centre.key==='c_soul'){
   const capacity=(state.jokerSlots??5)+(state.jokers??[]).filter(j=>j.edition==='negative').length;
   if((state.jokers??[]).length>=capacity)return blocked('USE_UNAVAILABLE','Нет места для нового джокера.');
   if(!owned.debuffed&&(!state.apkShop||!state.rng?.apk))return blocked('USE_UNAVAILABLE','Создание джокера требует нативного генератора.');
@@ -101,9 +103,9 @@ export function canUseConsumable(state,card,targetCardIds=[]){
  if((sealSpectrals.has(centre.key)||centre.key==='c_aura')&&!owned.debuffed&&!state.rng?.apk)return blocked('USE_UNAVAILABLE','Эффект требует нативного генератора.');
  let shopContext=null;
  try{if(state.apkShop){if(!record(state.apkShop.context))throw new TypeError('Missing shop context');shopContext=currentApkShopContext(state);}}catch{return blocked('INVALID_STATE','Некорректное состояние магазина.');}
- if(generatorTarots.has(centre.key)&&!owned.debuffed&&generatedCount(state,owned)>0){
+ if(generatorTarots.has(centre.key)&&!owned.debuffed&&generatedCount(state,owned,{fromPack})>0){
   if(!shopContext)return blocked('USE_UNAVAILABLE','Создание расходных карт требует забега с нативным генератором.');
-  const ids=Array.from({length:generatedCount(state,owned)},(_,index)=>`generated:${state.revision}:${index+1}`),occupied=[...Object.keys(state.cards??{}),...(state.jokers??[]).map(c=>c?.id),...cards.filter(c=>c!==owned).map(c=>c.id),...(state.shop?['main','vouchers','boosters'].flatMap(area=>state.shop[area]??[]):[]).map(c=>c?.id)];
+  const ids=Array.from({length:generatedCount(state,owned,{fromPack})},(_,index)=>`generated:${state.revision}:${index+1}`),occupied=[...Object.keys(state.cards??{}),...(state.jokers??[]).map(c=>c?.id),...cards.filter(c=>c!==owned).map(c=>c.id),...(state.shop?['main','vouchers','boosters'].flatMap(area=>state.shop[area]??[]):[]).map(c=>c?.id)];
   if(ids.some(id=>occupied.includes(id)))return blocked('INVALID_STATE','Идентификатор созданной карты уже используется.');
  }
  if(centre.key===wheelKey&&!owned.debuffed){
@@ -116,9 +118,9 @@ export function canUseConsumable(state,card,targetCardIds=[]){
  if(centre.key==='c_fool'){
   const previous=state.lastTarotPlanet,target=centres.get(previous);
   if(!previous||previous==='c_fool'||!['Tarot','Planet'].includes(target?.set))return blocked('USE_UNAVAILABLE','Сначала используйте другую карту Таро или Планеты.');
-  if(!owned.debuffed&&hasFoolSpace(state,owned)&&shopContext?.bannedCentreIds.includes(previous))return blocked('USE_UNAVAILABLE','Создание из запрещённого пула ещё не реализовано.');
+  if(!owned.debuffed&&hasFoolSpace(state,owned,{fromPack})&&shopContext?.bannedCentreIds.includes(previous))return blocked('USE_UNAVAILABLE','Создание из запрещённого пула ещё не реализовано.');
   const createdId=generatedFoolId(owned),occupied=[...Object.keys(state.cards??{}),...(state.jokers??[]).map(card=>card?.id),...cards.filter(card=>card!==owned).map(card=>card?.id)];
-  if(!owned.debuffed&&hasFoolSpace(state,owned)&&occupied.includes(createdId))return blocked('INVALID_STATE','Идентификатор созданной карты уже используется.');
+  if(!owned.debuffed&&hasFoolSpace(state,owned,{fromPack})&&occupied.includes(createdId))return blocked('INVALID_STATE','Идентификатор созданной карты уже используется.');
  }
  const affected=owned.debuffed?[]:centre.key==='c_black_hole'?Object.keys(APK_HAND_NAMES):centre.set==='Planet'?[handIds[centre.handType]]:[];
  if(!record(state.handLevels)||Object.keys(state.handLevels).length!==Object.keys(APK_HAND_NAMES).length||!Object.keys(APK_HAND_NAMES).every(id=>Number.isSafeInteger(state.handLevels[id])&&state.handLevels[id]>=1)||affected.some(id=>state.handLevels[id]===Number.MAX_SAFE_INTEGER)||!validConsumableUsage(state))return blocked('INVALID_STATE','Некорректный уровень комбинации или счётчик использования.');
@@ -131,12 +133,12 @@ export function canUseConsumable(state,card,targetCardIds=[]){
 }
 
 // Own revision validation as well as dispatch validation, so direct calls remain atomic.
-export function applyConsumableAction(state,action){
+export function applyConsumableAction(state,action,{fromPack=false}={}){
  const reject=(code,message)=>({state,events:[],error:{code,message}});
  if(!action||action.type!=='USE_CONSUMABLE'||!Number.isSafeInteger(action.expectedRevision)||typeof action.cardId!=='string'||!action.cardId)return reject('INVALID_ACTION','Malformed consumable action');
  if(action.expectedRevision!==state.revision)return reject('STALE_ACTION','State revision has changed');
  const card=Array.isArray(state.consumables)?state.consumables.find(c=>c?.id===action.cardId):null;
- const capability=canUseConsumable(state,card,action.targetCardIds);
+ const capability=canUseConsumable(state,card,action.targetCardIds,{fromPack});
  if(!capability.available)return reject(capability.code,capability.reason);
  const centre=centres.get(card.entityId),next=structuredClone(state),events=[];
  if(state.phase==='round_won'&&!next.cashoutQuote)next.cashoutQuote=captureCashoutQuote(state);
@@ -162,8 +164,13 @@ export function applyConsumableAction(state,action){
   const priorDestroyed=next.destroyedCardIds??APK_BASE_CARD_IDS.filter(id=>!Object.hasOwn(next.cards,id));
   next.destroyedCardIds=[...priorDestroyed,...action.targetCardIds];
   next.hangedDestroyedCardIds=[...(next.hangedDestroyedCardIds??[]),...action.targetCardIds];
-  next.hangedShortfallCardIds=[...(next.hangedShortfallCardIds??[]),...action.targetCardIds];
-  next.hangedShortfallEpoch={cardIds:[...next.hangedShortfallCardIds],revision:state.revision+1,ante:state.round.ante,blindId:state.round.blindId,handsRemaining:state.round.handsRemaining,consumed:false};
+  // A consumed round shortfall is obsolete once pack destruction extends history.
+  if(state.packState&&next.hangedShortfallEpoch?.consumed)delete next.hangedShortfallEpoch;
+  if(!state.packState){
+   next.hangedShortfallCardIds=[...(next.hangedShortfallCardIds??[]),...action.targetCardIds];
+   next.hangedShortfallEpoch={cardIds:[...next.hangedShortfallCardIds],revision:state.revision+1,ante:state.round.ante,blindId:state.round.blindId,handsRemaining:state.round.handsRemaining,consumed:false};
+  }
+  applyItem7CardsDestroyed(next,action.targetCardIds.map(id=>state.cards[id]),events,{hangedMan:true});
   for(const cardId of [...action.targetCardIds].reverse()){delete next.cards[cardId];events.push({type:'playing_card_destroyed',cardId,sourceId:card.id});}
   if(next.apkBlinds?.playedCardIds)next.apkBlinds.playedCardIds=next.apkBlinds.playedCardIds.filter(id=>!removed.has(id));
   if(next.bossState?.playedBeforeBoss)next.bossState.playedBeforeBoss=next.bossState.playedBeforeBoss.filter(id=>!removed.has(id));
@@ -207,18 +214,18 @@ export function applyConsumableAction(state,action){
    if(edition!=='base'){juice=nextApkMathRandom(next.rng.apk.mathState);next.rng.apk={...next.rng.apk,mathState:juice.state};}
   }else{const juice=nextApkMathRandom(next.rng.apk.mathState);next.rng.apk={...next.rng.apk,mathState:juice.state};}
  }
- if(!card.debuffed&&centre.key==='c_judgement'){
-  createItem7Cards(next,{set:'Joker',count:1,append:'jud',sourceId:card.id},events);
+ if(!card.debuffed&&(centre.key==='c_judgement'||centre.key==='c_soul')){
+  createItem7Cards(next,{set:'Joker',count:1,append:centre.key==='c_soul'?'sou':'jud',legendary:centre.key==='c_soul',sourceId:card.id},events);
   const juice=nextApkMathRandom(next.rng.apk.mathState);next.rng.apk={...next.rng.apk,mathState:juice.state};
  }
  let created=null;
  let generatedCards=[];
- if(!card.debuffed&&generatorTarots.has(centre.key)&&generatedCount(state,card)>0){
-  const generated=generateApkTarotConsumables(next.rng.apk,currentApkShopContext(next),{set:generatorTarots.get(centre.key),count:generatedCount(state,card),instancePrefix:`generated:${state.revision}`});
+ if(!card.debuffed&&generatorTarots.has(centre.key)&&generatedCount(state,card,{fromPack})>0){
+  const generated=generateApkTarotConsumables(next.rng.apk,currentApkShopContext(next),{set:generatorTarots.get(centre.key),count:generatedCount(state,card,{fromPack}),instancePrefix:`generated:${state.revision}`});
   generatedCards=generated.cards;next.rng.apk=generated.rng;
   for(const created of generatedCards)events.push({type:'consumable_created',sourceId:card.id,cardId:created.id,entityId:created.entityId,set:created.set});
  }
- if(!card.debuffed&&centre.key==='c_fool'&&hasFoolSpace(state,card)){
+ if(!card.debuffed&&centre.key==='c_fool'&&hasFoolSpace(state,card,{fromPack})){
   if(next.apkShop){const generated=generateApkFoolCard(next.rng.apk,currentApkShopContext(next),{centreId:previousTarotPlanet,instanceId:generatedFoolId(card)});created=generated.card;next.rng.apk=generated.rng;}
   else{const copied=centres.get(previousTarotPlanet);created={id:generatedFoolId(card),entityId:copied.key,originalKey:copied.key,set:copied.set,edition:'base',...quoteShopCard({baseCost:BigInt(copied.cost),set:copied.set})};}
   events.push({type:'consumable_created',sourceId:card.id,cardId:created.id,entityId:created.entityId,set:created.set});

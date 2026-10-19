@@ -48,10 +48,10 @@ function session(rng,context){
   if(c.no_pool_flag&&context.poolFlags[c.no_pool_flag] || c.yes_pool_flag&&!context.poolFlags[c.yes_pool_flag] || context.bannedCentreIds.includes(c.key))add=false;
   return add;
  };
- const select=(set,append='',forcedRarity)=>{
+ const select=(set,append='',forcedRarity,legendary=false)=>{
   let source=pools[set];let key=set+append;
-  if(set==='Joker'){const poll=forcedRarity??random('rarity'+context.ante+append);const rarity=poll>0.95?3:poll>0.7?2:1;source=source.filter(c=>c.rarity===rarity);key='Joker'+rarity+append;}
-  key+=context.ante;
+  if(set==='Joker'){const poll=forcedRarity??random('rarity'+context.ante+append);const rarity=legendary?4:poll>0.95?3:poll>0.7?2:1;source=source.filter(c=>c.rarity===rarity);key='Joker'+rarity+(legendary?'':append);}
+  if(!legendary)key+=context.ante;
   let values=source.map(c=>available(c)?c.key:'UNAVAILABLE');
   if(values.every(v=>v==='UNAVAILABLE'))values=[fallback[set]];
   let id=element(values,key),resample=1;
@@ -192,12 +192,12 @@ export function generateApkSealConsumables(rng,context,{requests,instancePrefix,
 }
 
 // create_card callbacks used by Jokers: ordinary pools, no soulable/shop flags.
-export function generateApkEffectCards(rng,context,{set,count,instancePrefix,append='',rarity,materialize=set!=='Joker'}={}){
+export function generateApkEffectCards(rng,context,{set,count,instancePrefix,append='',rarity,legendary=false,materialize=set!=='Joker'}={}){
  context=createApkShopContext(context);
- if(!['Joker','Tarot','Planet','Spectral'].includes(set)||!Number.isSafeInteger(count)||count<0||count>10000||typeof instancePrefix!=='string'||!instancePrefix||typeof append!=='string'||rarity!==undefined&&(typeof rarity!=='number'||!Number.isFinite(rarity)||rarity<0||rarity>1))throw new TypeError('Invalid effect creation request');
+ if(!['Joker','Tarot','Planet','Spectral'].includes(set)||!Number.isSafeInteger(count)||count<0||count>10000||typeof instancePrefix!=='string'||!instancePrefix||typeof append!=='string'||typeof legendary!=='boolean'||legendary&&set!=='Joker'||rarity!==undefined&&(typeof rarity!=='number'||!Number.isFinite(rarity)||rarity<0||rarity>1))throw new TypeError('Invalid effect creation request');
  const s=session(rng,{...context,reducedMotion:false}),cards=[];
  for(let index=0;index<count;index++){
-  const card=s.construct(s.select(set,append,rarity),`${instancePrefix}:${index+1}`,{materialize:set!=='Joker'&&materialize});
+  const card=s.construct(s.select(set,append,rarity,legendary),`${instancePrefix}:${index+1}`,{materialize:set!=='Joker'&&materialize});
   if(set==='Joker'){
    card.edition=s.edition('edi'+append+context.ante);
    if(context.modifiers.all_eternal&&centres[card.entityId].eternal_compat)card.eternal=true;

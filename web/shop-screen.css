@@ -24,3 +24,5 @@
 .heart-debuffed .shop-art{filter:grayscale(1);opacity:.5}
 .joker-debuff-stamp{position:absolute;left:5%;right:5%;top:45%;background:#6c2426;color:#fff1d0;border:2px solid #fff1d0;font:bold 16px Georgia;transform:rotate(-12deg)}
 .bell-forced{outline:3px solid #2bb6cb;outline-offset:2px}
+
+.pack-screen.arcana-pack{top:183px;height:236px}.arcana-pack .pack-title{margin:10px 0 2px;font-size:26px}.arcana-pack .pack-choices{font-size:16px}.arcana-pack .shop-use{top:126px;left:-3px}.arcana-pack .shop-choice.is-selected{translate:0 -8px}

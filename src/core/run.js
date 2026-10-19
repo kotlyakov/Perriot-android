@@ -236,7 +236,7 @@ function dispatchCore(state, action, shopOptions={}) {
     return {state:next,events,error:null};
   }
   if (!['PLAY_HAND','DISCARD','REORDER_HAND','SET_SORT'].includes(action.type)) return reject('UNKNOWN_ACTION','Unsupported action');
-  if (state.phase!=='playing') return reject('INVALID_PHASE','Round is not active');
+  if (state.phase!=='playing'&&!(state.phase==='pack'&&state.packState?.sourceEntityId.startsWith('p_arcana_')&&['SET_SORT','REORDER_HAND'].includes(action.type))) return reject('INVALID_PHASE','Round is not active');
   if(action.type==='SET_SORT'){
     if(!SORT_MODES.includes(action.mode))return reject('INVALID_SORT','Invalid sort');
     const next=structuredClone(state);next.sortMode=action.mode;sortHand(next);next.revision++;

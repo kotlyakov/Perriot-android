@@ -29,10 +29,10 @@ function element(state,cards,key){
  const seed=nextApkSeed(state.rng.apk,key),draw=nextApkMathRandom(createApkMathState(seed.value),cards.length);state.rng.apk={...seed.rng,mathState:draw.state};return cards[draw.value-1];}
 function id(state,source,label){const occupied=new Set([...Object.keys(state.cards??{}),...state.jokers.map(c=>c.id),...(state.consumables??[]).map(c=>c.id),...(state.shop?['main','boosters','vouchers'].flatMap(area=>(state.shop[area]??[]).map(c=>c.id)):[])]);const sourceIndex=[...state.jokers,...(state.consumables??[])].findIndex(c=>c.id===source);const prefix=`item7:${state.revision??0}:${sourceIndex}:${label}`;let index=1;while([...occupied].some(value=>value===`${prefix}:${index}`||value.startsWith(`${prefix}:${index}:`)))index++;return `${prefix}:${index}`;}
 // Called inside an action clone. No substitute pool or generator is permitted.
-export function createItem7Cards(state,{set='Tarot',count=1,append,sourceId,rarity,materialize,reserved=false},events){
+export function createItem7Cards(state,{set='Tarot',count=1,append,sourceId,rarity,legendary=false,materialize,reserved=false},events){
  count=reserved?count:Math.min(count,set==='Joker'?freeJokers(state):item7ConsumableSpace(state));if(count<=0)return [];
  if(!generation.generateApkEffectCards)throw new TypeError('Native effect card generation unavailable');
- const result=generation.generateApkEffectCards(state.rng.apk,currentApkShopContext(state),{set,count,append,rarity,instancePrefix:id(state,sourceId,append),materialize});
+ const result=generation.generateApkEffectCards(state.rng.apk,currentApkShopContext(state),{set,count,append,rarity,legendary,instancePrefix:id(state,sourceId,append),materialize});
  state.rng.apk=result.rng;const area=set==='Joker'?'jokers':'consumables';state[area]??=[];
  for(const card of result.cards){if(set==='Joker'){initializeItem7Joker(state,card);}stampJokerCreationOrdinals(state,[card]);state[area].push(card);events.push({type:set==='Joker'?'joker_created':'consumable_created',sourceId,cardId:card.id,entityId:card.entityId,set:card.set});}
  return result.cards;

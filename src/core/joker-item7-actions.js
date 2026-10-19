@@ -18,7 +18,7 @@ export function finishItem7Action(before,next,action,events){
   if(sold)applyItem7SoldJoker(next,sold,events,{acceptedRevision:before.revision});
   applyItem7EconomyContext(next,{type:'selling_card'},events);
  }
- const context={REROLL_SHOP:'reroll_shop',LEAVE_SHOP:'ending_shop',OPEN_BOOSTER:'open_booster',SKIP_PACK:'skipping_booster'}[action.type];
+ const context={REROLL_SHOP:'reroll_shop',LEAVE_SHOP:'ending_shop',SKIP_PACK:'skipping_booster'}[action.type];
  if(context)applyItem7EconomyContext(next,{type:context},events);
  const oldDelta=item7CapacityDeltas(before.jokers),delta=item7CapacityDeltas(next.jokers),reset=action.type==='LEAVE_SHOP'||action.type==='SKIP_BLIND';
  const applied=events.filter(event=>event.type==='joker_capacity_changed');
