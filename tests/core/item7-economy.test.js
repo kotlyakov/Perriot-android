@@ -40,12 +40,12 @@ import {currentApkShopContext} from '../../src/core/apk-shop-state.js';
 import {applyItem7SoldJoker,createItem7Cards} from '../../src/core/joker-item7-economy.js';
 function nativeRun(){return createRun('ITEM7ECON',{runId:'item7-economy',money:4n,referenceRng:true,referenceShop:true});}
 const judgement={id:'judgement',entityId:'c_judgement',originalKey:'c_judgement',set:'Tarot',edition:'base',cost:3n,sellCost:1n};
-test.skip('Judgement creates a native Joker with jud streams and consumes once',()=>{
+test('Judgement creates a native Joker with jud streams and consumes once',()=>{
  const s=nativeRun();s.consumables=[judgement];s.apkShop.context=currentApkShopContext(s);const before=structuredClone(s);
  const result=dispatch(s,{type:'USE_CONSUMABLE',expectedRevision:s.revision,cardId:judgement.id});
  assert.equal(result.error,null);assert.deepEqual(s,before);assert.equal(result.state.jokers.length,1);assert.equal(result.state.consumables.length,0);assert.ok(result.state.rng.apk.streams.Joker1jud1||result.state.rng.apk.streams.Joker2jud1||result.state.rng.apk.streams.Joker3jud1);assert.equal(result.state.consumableUsage.c_judgement.count,1);
 });
-test.skip('Judgement respects full slots, negative slots and debuff without consuming RNG',()=>{
+test('Judgement respects full slots, negative slots and debuff without consuming RNG',()=>{
  const s=nativeRun();s.jokers=Array.from({length:5},(_,i)=>({...j('j_joker'),id:`joker${i}`,originalKey:'j_joker',set:'Joker',edition:'base'}));s.consumables=[judgement];s.apkShop.context=currentApkShopContext(s);
  assert.equal(canUseConsumable(s,judgement).available,false);s.jokers[0].edition='negative';assert.equal(canUseConsumable(s,judgement).available,true);
  s.consumables[0]={...judgement,debuffed:true};const result=dispatch(s,{type:'USE_CONSUMABLE',expectedRevision:s.revision,cardId:judgement.id});assert.equal(result.error,null);assert.equal(result.state.jokers.length,5);assert.deepEqual(result.state.rng,s.rng);
@@ -70,4 +70,4 @@ test('Astronomer reprices Planet and Celestial offers, retains extra sell value 
 test('repeated creation from the same scoring source uses distinct bounded IDs',()=>{const s=nativeRun();const source='x'.repeat(120);createItem7Cards(s,{append:'8ba',sourceId:source},[]);createItem7Cards(s,{append:'8ba',sourceId:source},[]);assert.equal(new Set(s.consumables.map(c=>c.id)).size,2);assert.ok(s.consumables.every(c=>c.id.length<120));});
 test('Perkeo copies a consumable as negative even at capacity',()=>{const s=nativeRun();s.jokers=[{...j('j_perkeo'),originalKey:'j_perkeo'}];s.consumables=[{...judgement},{...judgement,id:'second'}];applyItem7EconomyContext(s,{type:'ending_shop'},[]);assert.equal(s.consumables.length,3);assert.equal(s.consumables[2].edition,'negative');assert.equal(s.consumables[2].cost,8n);assert.equal(s.consumables[2].sellCost,4n);});
 import {serializeState,deserializeState} from '../../src/persistence/save.js';
-test.skip('Judgement generation survives strict save with monotonic creation ordinal',()=>{const s=nativeRun();s.consumables=[judgement];const result=dispatch(s,{type:'USE_CONSUMABLE',expectedRevision:s.revision,cardId:judgement.id});assert.equal(result.error,null);assert.deepEqual(deserializeState(serializeState(result.state)),result.state);assert.ok(result.state.jokers[0].creationOrdinal<result.state.nextJokerCreationOrdinal);});
+test('Judgement generation survives strict save with monotonic creation ordinal',()=>{const s=nativeRun();s.consumables=[judgement];const result=dispatch(s,{type:'USE_CONSUMABLE',expectedRevision:s.revision,cardId:judgement.id});assert.equal(result.error,null);assert.deepEqual(deserializeState(serializeState(result.state)),result.state);assert.ok(result.state.jokers[0].creationOrdinal<result.state.nextJokerCreationOrdinal);});

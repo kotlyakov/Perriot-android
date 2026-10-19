@@ -13,7 +13,7 @@ import {nextApkRandom} from './apk-rng.js';
 import {randomInt} from './rng.js';
 import {addExact,floorExact,multiplyExact} from './numbers.js';
 
-export function scoreHand(state, playedCards, {legacyRng=false} = {}) {
+export function scoreHand(state, playedCards, {legacyRng=false,armTriggered} = {}) {
   const hasItem7=state.jokers.some(j=>ITEM7_SCORE_JOKERS.includes(j.entityId)||j.entityId==='j_oops'||j.entityId==='j_smeared');
   const hasMechanisms=hasEffectMechanisms(state)||hasItem7;
   const originalState=state,lifecycleEvents=[];if(hasMechanisms){state=structuredClone(state);playedCards=playedCards.map(c=>state.cards?.[c.id]??structuredClone(c));}
@@ -56,9 +56,22 @@ export function scoreHand(state, playedCards, {legacyRng=false} = {}) {
     if (!supportsJoker(joker,{owned:true})) throw new Error('Unsupported joker modifier');
     jokerIds.add(joker.id);
   }
-  if(isBossHandDebuffed(state,playedCards,hand.handId))return {...hand,playedCardIds:playedCards.map(c=>c.id),scoringCardIds:[],...actionProvenance(),heldCardIds:heldCards.map(c=>c.id),...(actionRng&&state.round?{scoringRoundBefore:{handsRemaining:state.round.handsRemaining,discardsRemaining:state.round.discardsRemaining},scoringPilesBefore:{drawPile:[...(state.drawPile??[])],discardPile:[...(state.discardPile??[])],...(state.hangedShortfallCardIds?{hangedShortfallCardIds:[...state.hangedShortfallCardIds],hangedShortfallRevision:state.hangedShortfallEpoch?.revision??state.revision}:{})}}:{}),handDebuffed:true,chips:0n,mult:0n,score:0n,trace:[
+  const handDebuffed=isBossHandDebuffed(state,playedCards,hand.handId);
+  // Every native Blind has a debuff table: debuff_hand resets press_play's
+  // trigger first. Only rejected hands, Arm/Ox, Flint and scored-card debuffs
+  // can set it again before Matador's exclusive debuffed/main paths.
+  const bossActive=!!state.bossState&&!state.bossState.disabled;
+  const blindTriggered=bossActive&&(handDebuffed||state.bossState.id==='bl_flint'||
+    state.bossState.id==='bl_arm'&&(armTriggered??((state.handLevels[hand.handId]??1)>1))||
+    state.bossState.id==='bl_ox'&&state.bossState.oxHand===hand.handId);
+  const debuffedMoney=[];
+  if(handDebuffed)for(let index=0;index<state.jokers.length;index++){
+    const context=jokerEffectContext(state.jokers,index);
+    if(context?.target.entityId==='j_matador')debuffedMoney.push({type:'score_money',phase:'independent',sourceId:context.source.id,amount:8n});
+  }
+  if(handDebuffed)return {...hand,playedCardIds:playedCards.map(c=>c.id),scoringCardIds:[],...actionProvenance(),heldCardIds:heldCards.map(c=>c.id),...(actionRng&&state.round?{scoringRoundBefore:{handsRemaining:state.round.handsRemaining,discardsRemaining:state.round.discardsRemaining},scoringPilesBefore:{drawPile:[...(state.drawPile??[])],discardPile:[...(state.discardPile??[])],...(state.hangedShortfallCardIds?{hangedShortfallCardIds:[...state.hangedShortfallCardIds],hangedShortfallRevision:state.hangedShortfallEpoch?.revision??state.revision}:{})}}:{}),handDebuffed:true,chips:0n,mult:0n,score:0n,trace:[
     {type:'score_step',phase:'base',sourceId:`hand:${hand.handId}`,operation:'base',before:{chips:0n,mult:0n},after:{chips:0n,mult:0n}},
-    {type:'score_total',phase:'total',chips:0n,mult:0n,score:0n}]};
+    ...debuffedMoney,{type:'score_total',phase:'total',chips:0n,mult:0n,score:0n}]};
   let createdPlayingCards=[];
   if(hasMechanisms){
     if(actionRng)state.rng.apk=actionRng;
@@ -75,7 +88,7 @@ export function scoreHand(state, playedCards, {legacyRng=false} = {}) {
   const scoringCardIds=playedCards.filter(card=>splash||nativeScoring.has(card.id)||card.enhancement==='stone').map(card=>card.id);
   const scoringSet = new Set(scoringCardIds);
   const beforeScoreMoney=[];
-  const item7Options={money:(amount,sourceId)=>beforeScoreMoney.push({type:'score_money',phase:'before',sourceId,amount}),create:options=>{if(actionRng)state.rng.apk=actionRng;createItem7Cards(state,options,lifecycleEvents);if(actionRng)actionRng=state.rng.apk;},blindTriggered:!!state.bossState?.triggered,handId:hand.handId,playedCards,scoringCards:playedCards.filter(c=>scoringSet.has(c.id)),isDebuffed:card=>isBossCardDebuffed(state,card),roll:item7Roll,rankGetter:card=>rankGetter(card,'joker_effect')};
+  const item7Options={money:(amount,sourceId)=>beforeScoreMoney.push({type:'score_money',phase:'before',sourceId,amount}),create:options=>{if(actionRng)state.rng.apk=actionRng;createItem7Cards(state,options,lifecycleEvents);if(actionRng)actionRng=state.rng.apk;},blindTriggered,handId:hand.handId,playedCards,scoringCards:playedCards.filter(c=>scoringSet.has(c.id)),isDebuffed:card=>isBossCardDebuffed(state,card),roll:item7Roll,rankGetter:card=>rankGetter(card,'joker_effect')};
   if(hasItem7)item7BeforeScore(state,item7Options);
   const level = state.handLevels[hand.handId] ?? 1;
   if (!Number.isSafeInteger(level) || level < 1) throw new RangeError('Invalid hand level');
@@ -121,7 +134,8 @@ export function scoreHand(state, playedCards, {legacyRng=false} = {}) {
     trace.push({type:'score_step',phase,sourceId,operation:effect.operation,before,after:{chips,mult},...(effectSourceId?{effectSourceId}:{})});
   }
   for (const card of playedCards) {
-    if (!scoringSet.has(card.id) || isBossCardDebuffed(state,card)) continue;
+    if (!scoringSet.has(card.id)) continue;
+    if(isBossCardDebuffed(state,card)){item7Options.blindTriggered=true;continue;}
     const queue=[null,...(card.seal==='red'?[card.id]:[])];
     for(let index=0;index<state.jokers.length;index++){
       const context=jokerEffectContext(state.jokers,index);if(!context)continue;
@@ -207,10 +221,10 @@ export function scoreHand(state, playedCards, {legacyRng=false} = {}) {
   const rankCounts = new Map();
   for (const card of playedCards)if(card.enhancement!=='stone')rankCounts.set(card.rank,(rankCounts.get(card.rank)??0)+1);
   for (let index=0;index<state.jokers.length;index++) {
-    const source=state.jokers[index];if(source.debuffed)continue;
+    const source=state.jokers[index];
     const context=jokerEffectContext(state.jokers,index),joker=context?.target??source;
-    if(source.edition==='foil')apply({operation:'add_chips',amount:50n},'edition',source.id);
-    if(source.edition==='holographic')apply({operation:'add_mult',amount:10n},'edition',source.id);
+    if(!source.debuffed&&source.edition==='foil')apply({operation:'add_chips',amount:50n},'edition',source.id);
+    if(!source.debuffed&&source.edition==='holographic')apply({operation:'add_mult',amount:10n},'edition',source.id);
     const effect=context&&independentEffect(joker.entityId,[...rankCounts.values()],{playedCards,handId:hand.handId,jokers:state.jokers,jokerCount:state.jokers.length,
       handsRemaining:state.round?.handsRemaining,discardsRemaining:state.round?.discardsRemaining,heldCards,jokerSlots:state.jokerSlots??5,
       scoringCards:playedCards.filter(card=>scoringSet.has(card.id)),isCardDebuffed:card=>isBossCardDebuffed(state,card),playingCards:Object.values(state.cards??{}),money:item7Options.currentMoney(),drawCount:state.drawPile?.length??0,
@@ -222,7 +236,7 @@ export function scoreHand(state, playedCards, {legacyRng=false} = {}) {
     if(hasItem7&&APK_SHOP_CATALOG.centres.find(c=>c.key===originalJokerKey(source.entityId))?.rarity===2)for(let otherIndex=0;otherIndex<state.jokers.length;otherIndex++){
       const baseball=jokerEffectContext(state.jokers,otherIndex);if(baseball?.target.entityId==='j_baseball'&&baseball.target!==source)apply({operation:'multiply_mult',amount:{n:3n,d:2n}},'independent',source.id,baseball.source.id);
     }
-    if(source.edition==='polychrome')apply({operation:'multiply_mult',amount:{n:3n,d:2n}},'edition',source.id);
+    if(!source.debuffed&&source.edition==='polychrome')apply({operation:'multiply_mult',amount:{n:3n,d:2n}},'edition',source.id);
   }
   for(const card of playedCards)if(scoringSet.has(card.id)&&card.enhancement==='glass'&&!isBossCardDebuffed(state,card)){
     const roll=glassRoll(),destroyed=roll<item7Probability(state)/4;glassRolls.push({cardId:card.id,roll,destroyed});

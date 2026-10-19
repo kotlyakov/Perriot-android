@@ -12,7 +12,7 @@ export function finishItem7Action(before,next,action,events){
  const soldId=action.type==='SELL_JOKER'?action.jokerId:action.type==='SELL_OWNED_CARD'?action.cardId:null;
  if(soldId){
   const sold=before.jokers.find(j=>j.id===soldId);
-  if(sold)applyItem7SoldJoker(next,sold,events);
+  if(sold)applyItem7SoldJoker(next,sold,events,{acceptedRevision:before.revision});
   applyItem7EconomyContext(next,{type:'selling_card'},events);
  }
  const context={REROLL_SHOP:'reroll_shop',LEAVE_SHOP:'ending_shop',OPEN_BOOSTER:'open_booster',SKIP_PACK:'skipping_booster'}[action.type];
@@ -28,6 +28,6 @@ export function finishItem7Action(before,next,action,events){
  if(mod.bankruptAt!==0n||old.bankruptAt!==0n)next.bankruptAt=mod.bankruptAt;
  if(mod.astronomer!==old.astronomer)repriceItem7Cards(next);
  if(next.shop)next.shop.freeRerolls=!before.shop?mod.chaosCount:Math.max(0,next.shop.freeRerolls+mod.chaosCount-old.chaosCount);
- if(next.jokers.some(j=>j.entityId==='j_chicot'&&!j.debuffed)&&next.bossState&&!next.bossState.disabled)disableBoss(next,events);
+ if(next.jokers.some(j=>j.entityId==='j_chicot'&&!j.debuffed)&&next.bossState&&!next.bossState.disabled)disableBoss(next,events,{acceptedRevision:before.revision});
  if(next.apkShop)next.apkShop.context=currentApkShopContext(next);
 }

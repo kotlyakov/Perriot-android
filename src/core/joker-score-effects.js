@@ -46,13 +46,13 @@ export function item7ScoredEffects(state,context,card,opts){
  const {target:j,copied}=context,key=j.entityId,p=item7Probability(state),out=[];
  if(key==='j_8_ball'&&item7ConsumableSpace(state)>0&&rank(card,opts)===8&&opts.roll('8ball')<p/4)opts.create?.({append:'8ba',sourceId:context.source.id});
  if(key==='j_hiker')card.permaBonus=(card.permaBonus??0)+5;
- if(key==='j_wee'&&!copied&&rank(card,opts)===2)grow(j,'chips',8);
+ if(key==='j_wee'&&rank(card,opts)===2&&!copied)grow(j,'chips',8);
  if(key==='j_lucky_cat'&&!copied&&opts.luckyTriggered)grow(j,'xMult',.25,1);
  if(key==='j_photograph'&&opts.scoringCards.find(c=>face(state,c,opts))?.id===card.id)out.push(effect('multiply_mult',2n));
- if(key==='j_triboulet'&&[12,13].includes(rank(card,opts)))out.push(effect('multiply_mult',2n));
+ if(key==='j_triboulet'&&(rank(card,opts)===12||rank(card,opts)===13))out.push(effect('multiply_mult',2n));
  if(key==='j_bloodstone'&&suit(state,card,'hearts',opts)&&opts.roll('bloodstone')<p/2)out.push(effect('multiply_mult',{n:3n,d:2n}));
  if(key==='j_ancient'&&suit(state,card,state.round?.ancientSuit??'spades',opts))out.push(effect('multiply_mult',{n:3n,d:2n}));
- const idol=state.round?.idolCard??{rank:14,suit:'spades'};
+ const idol=state.round?.idolCard??{};
  if(key==='j_idol'&&rank(card,opts)===idol.rank&&suit(state,card,idol.suit,opts))out.push(effect('multiply_mult',2n));
  if(key==='j_rough_gem'&&suit(state,card,'diamonds',opts))out.push(effect('money',1n));
  if(key==='j_ticket'&&card.enhancement==='gold')out.push(effect('money',4n));
@@ -80,7 +80,10 @@ export function item7IndependentEffect(state,context,opts){
  if(key==='j_card_sharp'&&(state.round?.handUsage?.[opts.handId]??0)>0)return effect('multiply_mult',3n);
  if(key==='j_loyalty_card'&&((j.loyaltyRemaining??5)+5)%6===5)return effect('multiply_mult',4n);
  if(key==='j_vagabond'&&(opts.currentMoney?.()??state.money)<=4n)opts.create?.({append:'vag',sourceId:context.source.id});
- if(key==='j_superposition'&&['straight','straight_flush'].includes(opts.handId)&&opts.scoringCards.some(c=>rank(c,opts)===14))opts.create?.({append:'sup',sourceId:context.source.id});
+ if(key==='j_superposition'&&item7ConsumableSpace(state)>0){
+  let aces=0;for(const card of opts.scoringCards)if(rank(card,opts)===14)aces++;
+  if(aces>0&&['straight','straight_flush'].includes(opts.handId))opts.create?.({append:'sup',sourceId:context.source.id});
+ }
  if(key==='j_seance'&&opts.handId==='straight_flush')opts.create?.({set:'Spectral',append:'sea',sourceId:context.source.id});
  if(key==='j_matador'&&opts.blindTriggered)return effect('money',8n);
  return null;

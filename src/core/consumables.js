@@ -50,7 +50,7 @@ export function wheelSucceeds(roll,normal=1){return Number.isFinite(roll)&&roll>
 export function wheelEdition(roll){if(!Number.isFinite(roll)||roll<0||roll>1)throw new RangeError('Invalid Wheel edition roll');return roll>.85?'polychrome':roll>.5?'holographic':roll>0?'foil':'base';}
 const wheelEligible=state=>(state.jokers??[]).filter(joker=>(joker.edition??'base')==='base');
 const wheelOrderKnown=jokers=>jokers.length<=1||jokers.every(joker=>Number.isSafeInteger(joker.creationOrdinal)&&joker.creationOrdinal>=1)&&new Set(jokers.map(joker=>joker.creationOrdinal)).size===jokers.length;
-export function supportsConsumableEffect(card){const centre=centres.get(card?.entityId);return supportsConsumable(card)&&!!(centre?.set==='Planet'&&handIds[centre.handType]||centre?.key==='c_black_hole'||centre?.key==='c_fool'||centre?.key===wheelKey||moneyTarots.has(centre?.key)||enhancementTarots.has(centre?.key)||deckTarots.has(centre?.key)||baseTarots.has(centre?.key)||generatorTarots.has(centre?.key)||sealSpectrals.has(centre?.key)||centre?.key==='c_aura');}
+export function supportsConsumableEffect(card){const centre=centres.get(card?.entityId);return supportsConsumable(card)&&!!(centre?.set==='Planet'&&handIds[centre.handType]||centre?.key==='c_judgement'||centre?.key==='c_black_hole'||centre?.key==='c_fool'||centre?.key===wheelKey||moneyTarots.has(centre?.key)||enhancementTarots.has(centre?.key)||deckTarots.has(centre?.key)||baseTarots.has(centre?.key)||generatorTarots.has(centre?.key)||sealSpectrals.has(centre?.key)||centre?.key==='c_aura');}
 
 export function validConsumableUsage(state){
  const hasUsage=Object.hasOwn(state,'consumableUsage'),hasTotals=Object.hasOwn(state,'consumableUsageTotal');

@@ -5,7 +5,7 @@ import {scoreHand} from '../../src/core/score.js';
 import {getCashout} from '../../src/core/cashout.js';
 import {handRecognitionOptions,NATIVE_JOKERS} from '../../src/content/jokers.js';
 import {currentApkShopContext} from '../../src/core/apk-shop-state.js';
-import {nextApkRandom} from '../../src/core/apk-rng.js';
+import {nextApkRandom,nextApkMathRandom} from '../../src/core/apk-rng.js';
 import {createShop} from '../../src/core/shop.js';
 import {serializeState,deserializeState} from '../../src/persistence/save.js';
 import {item7CapacityDeltas} from '../../src/core/joker-item7-lifecycle.js';
@@ -133,11 +133,17 @@ test('native resource restoration preserves used actions and handles both admitt
   for(const copy of [s,old]){disable(copy);assert.equal(copy.round.handsRemaining,(deckId==='blue'?5:4)-(id==='bl_water'?1:0));assert.equal(copy.round.discardsRemaining,(deckId==='red'?4:3)-(id==='bl_needle'?1:0));assert.deepEqual(reload(copy),copy);}
  }
 });
-test('all current107 native Jokers sell to disable Leaf without RNG or extra sale income',()=>{
- assert.equal(NATIVE_JOKERS.length,107);
+test('all current150 native Jokers sell to disable Leaf while preserving native sale hooks',()=>{
+ assert.equal(NATIVE_JOKERS.length,150);
  for(const entityId of NATIVE_JOKERS){
   const s=active();s.jokers=[joker('sale',entityId)];const delta=item7CapacityDeltas(s.jokers);s.round.handSize+=delta.handSize;s.bossState.baseHandSize+=delta.handSize;const r=act(s,'SELL_OWNED_CARD',{area:'jokers',cardId:'sale'});
-  assert.equal(r.error,null,entityId);assert.equal(r.state.money,s.money+2n,entityId);assert.equal(r.state.bossState.disabled,true,entityId);assert.deepEqual(r.state.rng,s.rng,entityId);assert.deepEqual(reload(r.state),r.state,entityId);
+  assert.equal(r.error,null,entityId);assert.equal(r.state.money,s.money+2n,entityId);assert.equal(r.state.bossState.disabled,true,entityId);const expectedRng=structuredClone(s.rng);
+  if(entityId==='j_diet_cola'){
+   for(let i=0;i<2;i++)expectedRng.apk.mathState=nextApkMathRandom(expectedRng.apk.mathState).state;
+   assert.equal(r.state.pendingDoubleTags,(s.pendingDoubleTags??0)+1);
+   assert.ok(r.events.some(event=>event.type==='tag_added'));
+  }
+  assert.deepEqual(r.state.rng,expectedRng,entityId);assert.deepEqual(reload(r.state),r.state,entityId);
  }
 });
 test('Leaf sale after settlement preserves captured Golden/Cloud9 sources and does not repay held Gold',()=>{

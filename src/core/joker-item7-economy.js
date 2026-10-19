@@ -33,9 +33,9 @@ export function createItem7Cards(state,{set='Tarot',count=1,append,sourceId,rari
 }
 export function item7SaleCapability(){return {available:true,code:null,reason:null};}
 // The caller has removed the sold card. Native duplication checks capacity before removal.
-export function applyItem7SoldJoker(state,joker,events){
+export function applyItem7SoldJoker(state,joker,events,options={}){
  if(joker.debuffed)return;
- if(joker.entityId==='j_luchador'&&state.bossState&&!state.bossState.disabled&&state.round.blindId==='boss')disableBoss(state,events);
+ if(joker.entityId==='j_luchador'&&state.bossState&&!state.bossState.disabled&&state.round.blindId==='boss')disableBoss(state,events,options);
  if(joker.entityId==='j_diet_cola'){addItem7DoubleTag(state,events);raw(state,2);}
  if(joker.entityId!=='j_invisible'||(joker.invisibleRounds??0)<2||!state.jokers.length||freeJokers(state)<(joker.edition==='negative'?0:1))return;
  const chosen=element(state,state.jokers,'invisible'),copy=structuredClone(chosen);if(chosen.entityId==='j_todo_list')element(state,currentApkShopContext(state).visibleHandOrder,'to_do');copy.id=id(state,joker.id,'invisible');
@@ -43,10 +43,11 @@ export function applyItem7SoldJoker(state,joker,events){
  if(copy.entityId==='j_invisible')copy.invisibleRounds=0;
  const context=currentApkShopContext(state),centre=centres.get(copy.originalKey??copy.entityId);
  Object.assign(copy,quoteShopCard({baseCost:BigInt(centre.cost),inflation:BigInt(context.inflation),discountPercent:BigInt(context.discountPercent),set:'Joker',name:centre.name,extraValue:copy.extraValue??0n,edition:copy.edition==='base'?{}:{[copy.edition==='holographic'?'holo':copy.edition]:true},rental:!!copy.rental}));
- delete copy.creationOrdinal;stampJokerCreationOrdinals(state,[copy]);raw(state,3);state.jokers.push(copy);events.push({type:'joker_created',sourceId:joker.id,cardId:copy.id,entityId:copy.entityId,set:'Joker'});
+ delete copy.creationOrdinal;delete copy.gettingSliced;stampJokerCreationOrdinals(state,[copy]);raw(state,3);state.jokers.push(copy);events.push({type:'joker_created',sourceId:joker.id,cardId:copy.id,entityId:copy.entityId,set:'Joker'});
 }
 export function applyItem7EconomyContext(state,context,events){
- const cards=[...state.jokers];
+ const cards=[...state.jokers],pending=[];let jokerSpace=freeJokers(state),consumableSpace=item7ConsumableSpace(state);
+ const reserve=options=>{const area=options.set==='Joker'?'joker':'consumable',available=area==='joker'?jokerSpace:consumableSpace,count=Math.min(options.count??1,available);if(count<=0)return;if(area==='joker')jokerSpace-=count;else consumableSpace-=count;pending.push({...options,count});};
  for(let index=0;index<cards.length;index++){
   const resolved=jokerEffectContext(cards,index);if(!resolved)continue;
   const {source,target:joker,copied}=resolved,key=joker.entityId;
@@ -64,12 +65,13 @@ export function applyItem7EconomyContext(state,context,events){
    }
   }
   if(context.type==='setting_blind'&&!source.gettingSliced){
-   if(key==='j_riff_raff')createItem7Cards(state,{set:'Joker',count:2,append:'rif',rarity:0,sourceId:source.id,materialize:true},events);
-   if(key==='j_cartomancer')createItem7Cards(state,{append:'car',sourceId:source.id},events);
+   if(key==='j_riff_raff')reserve({set:'Joker',count:2,append:'rif',rarity:0,sourceId:source.id,materialize:true});
+   if(key==='j_cartomancer')reserve({append:'car',sourceId:source.id});
   }
-  if(context.type==='open_booster'&&key==='j_hallucination'&&item7ConsumableSpace(state)>0){const roll=nextApkRandom(state.rng.apk,'halu'+state.round.ante);state.rng.apk=roll.rng;if(roll.value<item7EconomyModifiers(state).probabilityNormal/2)createItem7Cards(state,{append:'hal',sourceId:source.id},events);}
+  if(context.type==='open_booster'&&key==='j_hallucination'&&consumableSpace>0){const roll=nextApkRandom(state.rng.apk,'halu'+state.round.ante);state.rng.apk=roll.rng;if(roll.value<item7EconomyModifiers(state).probabilityNormal/2)reserve({append:'hal',sourceId:source.id});}
   if(context.type==='ending_shop'&&key==='j_perkeo'&&state.consumables?.length){const copy=structuredClone(element(state,state.consumables,'perkeo'));copy.id=id(state,source.id,'perkeo');copy.edition='negative';raw(state,4);state.consumables.push(copy);repriceItem7Cards(state);events.push({type:'consumable_created',sourceId:source.id,cardId:copy.id,entityId:copy.entityId,set:copy.set});}
  }
+ for(const options of pending)createItem7Cards(state,options,events);
 }
 
 // Astronomer acquisition/removal and sell-value changes use the same native quotation.

@@ -25,6 +25,7 @@ export function applyJokerBeforeScore(state,playedIds,events){
   raw(state,3);
   const payload=Object.fromEntries(['rank','suit','enhancement','edition','seal'].filter(key=>Object.hasOwn(source,key)).map(key=>[key,source[key]]));
   const copy=createPlayingCard(state,payload,{area:'hand'});
+  if(Object.hasOwn(source,'permaBonus'))copy.permaBonus=source.permaBonus;
   created.push(copy);createdEvent(events,copy,context);
  }
  raw(state,created.length);
@@ -36,7 +37,7 @@ export function applyJokerBlindStart(state,events){
  const created=[];
  for(let index=0;index<state.jokers.length;index++){
   const context=jokerEffectContext(state.jokers,index);
-  if(context?.target.entityId!=='j_marble'||context.source.gettingSliced)continue;
+  if(context?.target.entityId!=='j_marble'||context.source.gettingSliced||context.target.gettingSliced)continue;
   if(!state.rng?.apk)throw new TypeError('Joker lifecycle requires native RNG');
   const seed=nextApkSeed(state.rng.apk,'marb_fr');
   const draw=nextApkMathRandom(createApkMathState(seed.value),fronts.length);

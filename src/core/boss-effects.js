@@ -1,3 +1,4 @@
+import {item7CapacityDeltas} from './joker-item7-lifecycle.js';
 import {isCardFace} from './card-faces.js';
 import {settleRoundSuccess,captureCashoutQuote} from './cashout.js';
 import {sortHand} from './sort.js';
@@ -101,20 +102,22 @@ export function chooseHookDiscards(rng,cardIds){
 }
 
 // Mutates only the caller's accepted clone; repeated disable never restores twice.
-export function disableBoss(state,events){
+export function disableBoss(state,events,{acceptedRevision=state.revision}={}){
  const boss=state.bossState;
  if(!boss||boss.disabled||!SUPPORTED_BOSSES.includes(boss.id)||!['playing','round_won'].includes(state.phase))return;
  if(state.phase==='round_won')state.cashoutQuote??=captureCashoutQuote(state);
  if(boss.id==='bl_serpent'){
   // Legacy enabled saves with cards left have a uniquely recoverable initial
   // count. An exhausted legacy deck stays explicitly unknown, with zero draws.
-  const actions=(state.deckId==='blue'?5:4)-state.round.handsRemaining+(state.deckId==='red'?4:3)-state.round.discardsRemaining-(state.phase==='round_won'?1:0);
+  const legacyActions=(state.deckId==='blue'?5:4)-state.round.handsRemaining+(state.deckId==='red'?4:3)-state.round.discardsRemaining-(state.phase==='round_won'?1:0);
+  const resourceAdjusted=!!state.round.burglarHandsGranted||Object.values(item7CapacityDeltas(state.jokers)).some(Boolean);
+  const actions=resourceAdjusted?(state.round.handsPlayed??0)+(state.round.discardsUsed??0)-(state.phase==='round_won'?1:0):legacyActions;
   boss.serpentInitialCardCount??=state.drawPile.length?state.drawPile.length+boss.baseHandSize+3*actions:null;
-  boss.serpentDisableOrigin={phase:state.phase,...(state.phase==='round_won'?{earnedRevision:state.cashoutQuote.earnedRevision}:{}),hand:[...state.hand],drawPile:[...state.drawPile],discardPile:[...state.discardPile],destroyedCardIds:[...(state.destroyedCardIds??[])],handsRemaining:state.round.handsRemaining,discardsRemaining:state.round.discardsRemaining};
+  boss.serpentDisableOrigin={phase:state.phase,...(state.phase==='round_won'?{earnedRevision:state.cashoutQuote.earnedRevision}:{}),hand:[...state.hand],drawPile:[...state.drawPile],discardPile:[...state.discardPile],destroyedCardIds:[...(state.destroyedCardIds??[])],handsRemaining:state.round.handsRemaining,discardsRemaining:state.round.discardsRemaining,...(resourceAdjusted?{refillsBefore:actions}: {})};
  }
 
- if(boss.id==='bl_needle')boss.needleDisableOrigin={phase:state.phase,handsRemaining:state.round.handsRemaining,acceptedRevision:state.revision};
- boss.disabled=true;boss.disabledRevision=state.revision+1;state.lastScore=null;
+ if(boss.id==='bl_needle')boss.needleDisableOrigin={phase:state.phase,handsRemaining:state.round.handsRemaining,acceptedRevision,...(state.round.burglarHandsGranted?{burglarHandsGranted:state.round.burglarHandsGranted,handsPlayed:state.round.handsPlayed??0}: {})};
+ boss.disabled=true;boss.disabledRevision=acceptedRevision+1;state.lastScore=null;
  if(boss.id==='bl_water')state.round.discardsRemaining+=boss.discardsSub??(state.deckId==='red'?4:3);
  if(boss.id==='bl_needle')state.round.handsRemaining+=boss.handsSub??(state.deckId==='blue'?4:3);
  if(boss.id==='bl_wall')state.round.target=divideNativeBlindTarget(state.round.target,2);
@@ -140,13 +143,16 @@ export function disableBoss(state,events){
 // the disabled revision alone never selects which counter was earned.
 export function needleRestorationAfterEarning(state,earnedRevision){
  const boss=state.bossState,origin=boss.needleDisableOrigin,handsSub=boss.handsSub??(state.deckId==='blue'?4:3);
- const validRevision=value=>Number.isSafeInteger(value)&&value>=1;
- if(!origin||Object.keys(origin).length!==3||!['phase','handsRemaining','acceptedRevision'].every(key=>Object.hasOwn(origin,key))||!validRevision(origin.acceptedRevision)||boss.disabledRevision!==origin.acceptedRevision+1||boss.disabledRevision>state.revision||handsSub!==(state.deckId==='blue'?4:3))throw new TypeError('Invalid Needle disable origin');
- if(Object.hasOwn(boss,'startedRevision')&&(!validRevision(boss.startedRevision)||boss.startedRevision>origin.acceptedRevision))throw new TypeError('Invalid Needle start boundary');
+ const validRevision=value=>Number.isSafeInteger(value)&&value>=0;
+ const keys=['phase','handsRemaining','acceptedRevision','burglarHandsGranted','handsPlayed'];
+ if(!origin||!['phase','handsRemaining','acceptedRevision'].every(key=>Object.hasOwn(origin,key))||Object.keys(origin).some(key=>!keys.includes(key))||!validRevision(origin.acceptedRevision)||boss.disabledRevision!==origin.acceptedRevision+1||boss.disabledRevision>state.revision||!Number.isSafeInteger(handsSub)||handsSub<0||handsSub>10000)throw new TypeError('Invalid Needle disable origin');
+ if(Object.hasOwn(boss,'startedRevision')&&(!validRevision(boss.startedRevision)||boss.startedRevision>origin.acceptedRevision+1))throw new TypeError('Invalid Needle start boundary');
+ const granted=origin.burglarHandsGranted??0,played=origin.handsPlayed??(origin.phase==='round_won'?1:0),laterGranted=(state.round.burglarHandsGranted??0)-granted;
+ if(!Number.isSafeInteger(granted)||granted<0||granted%3!==0||!Number.isSafeInteger(played)||played<0||laterGranted<0||origin.handsRemaining!==1+granted-played)throw new TypeError('Invalid Needle counters');
  if(origin.phase==='round_won'){
-  if(origin.handsRemaining!==0||state.phase!=='round_won'||state.round.handsRemaining!==handsSub||earnedRevision!==undefined&&origin.acceptedRevision<earnedRevision)throw new TypeError('Invalid post-win Needle restoration');
+  if(state.phase!=='round_won'||state.round.handsRemaining!==origin.handsRemaining+handsSub+laterGranted||earnedRevision!==undefined&&origin.acceptedRevision<earnedRevision)throw new TypeError('Invalid post-win Needle restoration');
  }else if(origin.phase==='playing'){
-  if(origin.handsRemaining!==1||state.round.handsRemaining>1+handsSub||state.phase==='round_won'&&state.round.handsRemaining>handsSub||earnedRevision!==undefined&&boss.disabledRevision>=earnedRevision)throw new TypeError('Invalid pre-win Needle restoration');
+  if(origin.handsRemaining<1||state.round.handsRemaining>origin.handsRemaining+handsSub+laterGranted||state.phase==='round_won'&&state.round.handsRemaining>origin.handsRemaining+handsSub+laterGranted-1||earnedRevision!==undefined&&boss.disabledRevision>=earnedRevision)throw new TypeError('Invalid pre-win Needle restoration');
  }else throw new TypeError('Invalid Needle disable phase');
  return origin.phase==='round_won'?handsSub:0;
 }

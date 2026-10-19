@@ -206,7 +206,22 @@ function dispatchCore(state, action, shopOptions={}) {
     if(next.apkShop)next.roundNumber=(next.round.ante-1)*3+({small:1,big:2,boss:3}[next.round.blindId]);
     next.phase='playing';next.revision++;
     events.push({type:'round_started',blindId:next.round.blindId,target:next.round.target});
-    try{const created=applyItem7FirstDraw(next,events);applyItem7PlayingCardsAdded(next,created,events);drawToLimit(next,events);if(next.apkShop)next.apkShop.context=currentApkShopContext(next);}catch(error){return reject('UNSUPPORTED_BOSS_STATE',error.message);}
+    try{
+      const created=applyItem7FirstDraw(next,events);applyItem7PlayingCardsAdded(next,created,events);drawToLimit(next,events);
+      if(next.bossState?.id==='bl_serpent'){
+        // Chicot can disable before the shuffle, initial deal and later Burglar
+        // callbacks. Bind subsequent refills to the accepted initial hand.
+        next.bossState.serpentInitialHandSize=next.hand.length;
+        if(next.bossState.disabled){
+          const origin=next.bossState.serpentDisableOrigin;
+          origin.hand=[...next.hand];origin.drawPile=[...next.drawPile];
+          origin.discardPile=[...next.discardPile];origin.destroyedCardIds=[...(next.destroyedCardIds??[])];
+          origin.handsRemaining=next.round.handsRemaining;origin.discardsRemaining=next.round.discardsRemaining;
+          origin.refillsBefore=0;
+        }
+      }
+      if(next.apkShop)next.apkShop.context=currentApkShopContext(next);
+    }catch(error){return reject('UNSUPPORTED_BOSS_STATE',error.message);}
     return {state:next,events,error:null};
   }
   if (!['PLAY_HAND','DISCARD','REORDER_HAND','SET_SORT'].includes(action.type)) return reject('UNKNOWN_ACTION','Unsupported action');

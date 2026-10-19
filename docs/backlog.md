@@ -1,3 +1,13 @@
+## 19.10.2026 — №7б: checkpoint1
+
+- DONE П-7Б-SAVE-CONSUMABLE: activeCentreIds включает активные расходники; загрузчик ошибочно требовал только Joker. Потеря продолжения; исправлено RED→GREEN, оставшаяся Empress и deterministic continuation покрыты.
+- DONE П-7Б-BOSS-REVISION: Luchador/Chicot после транзакции записывали будущую disabledRevision. Прокинут acceptedRevision; Needle origin связан с реальными grants/counters, Serpent — с принятым начальным добором.14 targeted boss cases PASS.
+- DONE П-7Б-JUD-CHECKPOINT: «Суд» создаёт один джокер;100seed save/use/reload, full/Negative/debuff/повторное применение покрыты.3 ранее отложенных Judgement теста включены.
+- DONE П-7Б-LEAF-TEST: матрица150 продаж учитывает нативный Double tag и2 Math RNG draws Diet Cola, а не требует RNG no-op для неё.
+- TODO П-7Б-SCORE-REMAINING:3 отложенные регрессии Wee/Lucky Cat/Midas+Vampire; не считать эффекты завершёнными по одной декларации поддержки.
+- TODO П-7Б-SERPENT-EDGES: проверить пустую исходную колоду и Certificate/creation count при начальном доборе; checkpoint не закрывает эти сочетания.
+- TODO П-7Б-RELEASE: полный нативный аудит43 эффектов, browser/Android CI, новый APK; №8 не начинать.
+
 ## 18.10.2026 — №7а завершён
 
 43 новых эффекта (107/150), APK0.4.38-preview/code51. PR34 слит; CI39111229954 SUCCESS,42browser/freshAndroid/signature/alignment. Регрессии7а закрыты и перепроверены; подробности docs/qa/item7a.md. №7б —43 эффекта и Judgement —ожидает выбора пользователя; №8 не начинать.
