@@ -30,8 +30,22 @@ async function dragOpen(page,expectOpen=true){
 }
 const packCard=(page,id)=>page.locator(`[data-offer-id="${id}"] .shop-card`);
 const useButton=(page,id)=>page.locator(`[data-offer-id="${id}"] .shop-use`);
+async function assertTargetGeometry(page,label){
+ await page.waitForFunction(()=>{const box=document.getElementById('stage').getBoundingClientRect();return box.left>=-1&&box.top>=-1&&box.right<=document.documentElement.clientWidth+1&&box.bottom<=document.documentElement.clientHeight+1;});
+ // #hand deliberately has no layout box: all cards are positioned on #stage.
+ // Check its visibility flag and the actual interactive card surfaces instead.
+ assert.equal(await page.locator('#hand').evaluate(node=>node.hidden),false);
+ const cards=page.locator('#hand .playing-card'),count=await cards.count();assert.ok(count>0);
+ for(let index=0;index<count;index++){
+  const card=cards.nth(index);assert.ok(await card.isVisible());assert.ok(await card.isEnabled());
+  const box=await card.boundingBox(),viewport=page.viewportSize();assert.ok(box.width>0&&box.height>0);assert.ok(box.x>=0&&box.y>=0&&box.x+box.width<=viewport.width+1&&box.y+box.height<=viewport.height+1);
+  assert.ok(await card.evaluate(node=>{const box=node.getBoundingClientRect();return node.contains(document.elementFromPoint(box.x+box.width*.15,box.y+box.height*.5));}),'Target card is covered: '+index+' '+label);
+ }
+ await page.screenshot({path:'artifacts/arcana-pack-'+label+'.png'});
+}
+let page;
 try{
- const page=await browser.newPage({viewport:{width:1536,height:688},reducedMotion:'reduce'});page.setDefaultTimeout(8000);const errors=[];page.on('pageerror',error=>errors.push(error.message));
+ page=await browser.newPage({viewport:{width:1536,height:688},reducedMotion:'reduce'});page.setDefaultTimeout(8000);const errors=[];page.on('pageerror',error=>errors.push(error.message));
  await install(page,strengthFixture());const before=await saved(page);await dragOpen(page);let state=await saved(page);
  assert.equal(state.phase,'pack');assert.equal(state.money,before.money-4n);assert.equal(await page.locator('#shop_screen,#shop_sign').count(),0);assert.equal(await page.locator('#pack_screen [data-kind=pack]').count(),3);assert.equal(await page.locator('#pack_title').innerText(),'НАБОР ТАРО');assert.equal(await page.locator('#hand .playing-card:enabled').count(),state.hand.length);
  for(const id of ['play_hand','discard','hands','discards','round_score','blind_panel'])assert.ok(await page.locator('#'+id).isHidden());
@@ -49,7 +63,8 @@ try{
  assert.equal(state.packState.choicesRemaining,1);assert.equal(state.packState.cards.length,4);assert.equal(await page.locator('#pack_screen [data-kind=pack]').count(),4);
  const ownedTarget=state.hand[0],rankBefore=state.cards[ownedTarget].rank;await packCard(page,'owned-strength').click();await page.locator(`#hand [data-card-id="${ownedTarget}"]`).click();assert.ok(await useButton(page,'owned-strength').isEnabled());await useButton(page,'owned-strength').click();await page.waitForFunction(()=>!document.querySelector('[data-offer-id=owned-strength]'));state=await saved(page);assert.equal(state.packState.choicesRemaining,1);assert.equal(state.packState.cards.length,4);assert.equal(state.cards[ownedTarget].rank,rankBefore===14?2:rankBefore+1);
  await page.locator('#sort_suit').click();await page.waitForFunction(()=>document.getElementById('sort_suit').classList.contains('sort-active'));assert.equal((await saved(page)).sortMode,'suit');
- const afterFirst=await page.evaluate(()=>localStorage.getItem('card-cascade.current'));await page.reload();await enterRun(page,{startBlind:false});await page.locator('#pack_screen').waitFor();assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),afterFirst);assert.ok(await page.locator('#hand').isVisible());
+ const afterFirst=await page.evaluate(()=>localStorage.getItem('card-cascade.current'));await page.reload();await enterRun(page,{startBlind:false});await page.locator('#pack_screen').waitFor();assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),afterFirst);await assertTargetGeometry(page,'desktop-mega-reload');
+ await page.setViewportSize({width:915,height:412});await assertTargetGeometry(page,'mobile-mega-reload');const mobileCard=(await saved(page)).packState.cards[0];await packCard(page,mobileCard.id).click();assert.ok(await useButton(page,mobileCard.id).isVisible());await page.locator('#hand .playing-card').first().click();assert.equal(await page.locator('#hand .playing-card').first().getAttribute('aria-pressed'),'true');await page.screenshot({path:'artifacts/arcana-pack-mobile-target.png'});await page.setViewportSize({width:1536,height:688});
  state=await saved(page);const money=state.money;await page.locator('#pack_skip').click();await page.locator('#shop_screen').waitFor();assert.equal((await saved(page)).money,money);assert.equal((await saved(page)).phase,'shop');
 
  // Failed pack purchase and failed target use must leave the durable state intact.
@@ -57,4 +72,4 @@ try{
  state=await saved(page);const oldPack=await page.evaluate(()=>localStorage.getItem('card-cascade.current')),failed=state.packState.cards.find(card=>card.entityId==='c_strength');await packCard(page,failed.id).click();await page.locator(`#hand [data-card-id="${state.hand[0]}"]`).click();await page.evaluate(()=>{Storage.prototype.setItem=()=>{throw Error('Arcana target save failure');};});await useButton(page,failed.id).click();await page.locator('dialog[open]').waitFor();assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),oldPack);assert.equal(await page.locator('#pack_screen [data-kind=pack]').count(),3);
  await page.reload();await enterRun(page,{startBlind:false});await page.locator('#pack_screen').waitFor();assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),oldPack);
  await page.screenshot({path:'artifacts/arcana-pack.png'});assert.deepEqual(errors,[]);await page.close();console.log('Arcana drag purchase/target rules, Strength, owned consumable, Mega continuation/sort/reload/skip, purchase/use persistence rollback PASS');
-}finally{await browser.close();}
+}catch(error){if(page&&!page.isClosed())await page.screenshot({path:'artifacts/arcana-pack-failure.png'}).catch(()=>{});throw error;}finally{await browser.close();}
