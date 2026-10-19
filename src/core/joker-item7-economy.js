@@ -18,17 +18,23 @@ export function item7EconomyModifiers(state){
 function change(joker,key,after,events,fallback){const before=joker[key]??fallback;joker[key]=after;events.push({type:'joker_counter_changed',sourceId:joker.id,counter:key,before,after});}
 function value(card,amount,sourceId,events){const before=card.sellCost;card.extraValue=(card.extraValue??0n)+amount;card.sellCost+=amount;events.push({type:'card_sell_value_changed',sourceId,cardId:card.id,before,after:card.sellCost});}
 export const item7ConsumableSpace=state=>Math.max(0,(state.consumableSlots??2)+(state.consumables??[]).filter(c=>c.edition==='negative').length-(state.consumables??[]).length);
-const freeJokers=state=>Math.max(0,(state.jokerSlots??5)+state.jokers.filter(c=>c.edition==='negative').length-state.jokers.length);
+const freeJokers=state=>(state.jokerSlots??5)+state.jokers.filter(c=>c.edition==='negative').length-state.jokers.length;
 function raw(state,count=1){if(!state.rng?.apk)throw new TypeError('Native RNG required');for(let i=0;i<count;i++)state.rng.apk={...state.rng.apk,mathState:nextApkMathRandom(state.rng.apk.mathState).state};}
-function element(state,cards,key){const seed=nextApkSeed(state.rng.apk,key),draw=nextApkMathRandom(createApkMathState(seed.value),cards.length);state.rng.apk={...seed.rng,mathState:draw.state};return cards[draw.value-1];}
+function element(state,cards,key){
+ // Native pseudorandom_element sorts card tables by sort_id, not display position.
+ if(cards.length>1&&typeof cards[0]==='object'){
+  if(cards.some(card=>!Number.isSafeInteger(card.creationOrdinal)||card.creationOrdinal<1)||new Set(cards.map(card=>card.creationOrdinal)).size!==cards.length)throw new TypeError('Invalid card creation identities');
+  cards=[...cards].sort((a,b)=>a.creationOrdinal-b.creationOrdinal);
+ }
+ const seed=nextApkSeed(state.rng.apk,key),draw=nextApkMathRandom(createApkMathState(seed.value),cards.length);state.rng.apk={...seed.rng,mathState:draw.state};return cards[draw.value-1];}
 function id(state,source,label){const occupied=new Set([...Object.keys(state.cards??{}),...state.jokers.map(c=>c.id),...(state.consumables??[]).map(c=>c.id),...(state.shop?['main','boosters','vouchers'].flatMap(area=>(state.shop[area]??[]).map(c=>c.id)):[])]);const sourceIndex=[...state.jokers,...(state.consumables??[])].findIndex(c=>c.id===source);const prefix=`item7:${state.revision??0}:${sourceIndex}:${label}`;let index=1;while([...occupied].some(value=>value===`${prefix}:${index}`||value.startsWith(`${prefix}:${index}:`)))index++;return `${prefix}:${index}`;}
 // Called inside an action clone. No substitute pool or generator is permitted.
-export function createItem7Cards(state,{set='Tarot',count=1,append,sourceId,rarity,materialize},events){
- count=Math.min(count,set==='Joker'?freeJokers(state):item7ConsumableSpace(state));if(count<=0)return [];
+export function createItem7Cards(state,{set='Tarot',count=1,append,sourceId,rarity,materialize,reserved=false},events){
+ count=reserved?count:Math.min(count,set==='Joker'?freeJokers(state):item7ConsumableSpace(state));if(count<=0)return [];
  if(!generation.generateApkEffectCards)throw new TypeError('Native effect card generation unavailable');
  const result=generation.generateApkEffectCards(state.rng.apk,currentApkShopContext(state),{set,count,append,rarity,instancePrefix:id(state,sourceId,append),materialize});
  state.rng.apk=result.rng;const area=set==='Joker'?'jokers':'consumables';state[area]??=[];
- for(const card of result.cards){if(set==='Joker'){initializeItem7Joker(state,card);stampJokerCreationOrdinals(state,[card]);}state[area].push(card);events.push({type:set==='Joker'?'joker_created':'consumable_created',sourceId,cardId:card.id,entityId:card.entityId,set:card.set});}
+ for(const card of result.cards){if(set==='Joker'){initializeItem7Joker(state,card);}stampJokerCreationOrdinals(state,[card]);state[area].push(card);events.push({type:set==='Joker'?'joker_created':'consumable_created',sourceId,cardId:card.id,entityId:card.entityId,set:card.set});}
  return result.cards;
 }
 export function item7SaleCapability(){return {available:true,code:null,reason:null};}
@@ -44,6 +50,21 @@ export function applyItem7SoldJoker(state,joker,events,options={}){
  const context=currentApkShopContext(state),centre=centres.get(copy.originalKey??copy.entityId);
  Object.assign(copy,quoteShopCard({baseCost:BigInt(centre.cost),inflation:BigInt(context.inflation),discountPercent:BigInt(context.discountPercent),set:'Joker',name:centre.name,extraValue:copy.extraValue??0n,edition:copy.edition==='base'?{}:{[copy.edition==='holographic'?'holo':copy.edition]:true},rental:!!copy.rental}));
  delete copy.creationOrdinal;delete copy.gettingSliced;stampJokerCreationOrdinals(state,[copy]);raw(state,3);state.jokers.push(copy);events.push({type:'joker_created',sourceId:joker.id,cardId:copy.id,entityId:copy.entityId,set:'Joker'});
+}
+// Reserve while discovering native setting_blind callbacks, before a later
+// Dagger/Madness can mark the already scheduled source for dissolution.
+export function queueItem7BlindEconomy(state,context,events,pending){
+ const {source,target}=context,key=target.entityId;
+ if(source.gettingSliced||target.gettingSliced)return;
+ if(key==='j_riff_raff'){
+  const count=Math.min(2,freeJokers(state)-pending.jokerBuffer);
+  if(count>0){pending.jokerBuffer+=count;pending.callbacks.push(()=>createItem7Cards(state,{set:'Joker',count,append:'rif',rarity:0,sourceId:source.id,materialize:true,reserved:true},events));}
+ }
+ if(key==='j_cartomancer'&&item7ConsumableSpace(state)>pending.consumableBuffer){
+  pending.consumableBuffer++;
+  // Cartomancer's first callback schedules its actual constructor one FIFO later.
+  pending.nestedCallbacks.push(()=>createItem7Cards(state,{append:'car',sourceId:source.id,reserved:true},events));
+ }
 }
 export function applyItem7EconomyContext(state,context,events){
  const cards=[...state.jokers],pending=[];let jokerSpace=freeJokers(state),consumableSpace=item7ConsumableSpace(state);
@@ -69,7 +90,7 @@ export function applyItem7EconomyContext(state,context,events){
    if(key==='j_cartomancer')reserve({append:'car',sourceId:source.id});
   }
   if(context.type==='open_booster'&&key==='j_hallucination'&&consumableSpace>0){const roll=nextApkRandom(state.rng.apk,'halu'+state.round.ante);state.rng.apk=roll.rng;if(roll.value<item7EconomyModifiers(state).probabilityNormal/2)reserve({append:'hal',sourceId:source.id});}
-  if(context.type==='ending_shop'&&key==='j_perkeo'&&state.consumables?.length){const copy=structuredClone(element(state,state.consumables,'perkeo'));copy.id=id(state,source.id,'perkeo');copy.edition='negative';raw(state,4);state.consumables.push(copy);repriceItem7Cards(state);events.push({type:'consumable_created',sourceId:source.id,cardId:copy.id,entityId:copy.entityId,set:copy.set});}
+  if(context.type==='ending_shop'&&key==='j_perkeo'&&state.consumables?.length){const copy=structuredClone(element(state,state.consumables,'perkeo'));copy.id=id(state,source.id,'perkeo');copy.edition='negative';delete copy.creationOrdinal;stampJokerCreationOrdinals(state,[copy]);raw(state,4);state.consumables.push(copy);repriceItem7Cards(state);events.push({type:'consumable_created',sourceId:source.id,cardId:copy.id,entityId:copy.entityId,set:copy.set});}
  }
  for(const options of pending)createItem7Cards(state,options,events);
 }

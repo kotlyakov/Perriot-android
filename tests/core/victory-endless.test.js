@@ -1,3 +1,4 @@
+import {resetItem7RoundTargets} from '../../src/core/joker-item7-lifecycle.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createRun,dispatch} from '../../src/core/run.js';
@@ -16,6 +17,8 @@ import {serializeState,deserializeState} from '../../src/persistence/save.js';
 import {createRepository} from '../../src/persistence/repository.js';
 const act=(s,type,fields={})=>dispatch(s,{type,expectedRevision:s.revision,...fields});
 const reload=s=>deserializeState(serializeState(s));
+// Native successful settlement resets four targets after scoring, with no boss poll.
+function settledRng(s){const copy=structuredClone(s);resetItem7RoundTargets(copy);return copy.rng;}
 function active(ante=8,bossId='bl_final_heart',blindId='boss'){
  const s=createRun('AAAAAAA1',{runId:'victory',money:10n,referenceRng:true,referenceShop:true});
  s.round.ante=ante;s.round.blindId=blindId;s.apkShop.context.ante=ante;s.apkBlinds.ante=ante;s.apkBlinds.tagContext.ante=ante;
@@ -53,7 +56,7 @@ test('pending victory rejects all routed actions and capability queries without 
 
 test('Endless acknowledges once, retains completed round/quote/RNG/balance, and rejects stale payout',()=>{
  const s=win().state,before=structuredClone(s),r=act(reload(s),'CONTINUE_ENDLESS');assert.equal(r.error,null);
- assert.deepEqual(r.events,[{type:'endless_continued'}]);assert.deepEqual(r.state,{...before,winPending:false,revision:before.revision+1});assert.deepEqual(reload(r.state),r.state);assert.deepEqual(getCashout(r.state),getCashout(s));
+ assert.deepEqual(r.events,[{type:'endless_continued'}]);assert.deepEqual(r.state,{...before,winPending:false,revision:before.revision+1,effectReplay:r.state.effectReplay});assert.equal(r.state.effectReplay.actions.length,before.effectReplay.actions.length+1);assert.deepEqual(reload(r.state),r.state);assert.deepEqual(getCashout(r.state),getCashout(s));
  assert.equal(act(r.state,'CONTINUE_ENDLESS').error.code,'INVALID_PHASE');assert.equal(dispatch(r.state,{type:'CASH_OUT',expectedRevision:s.revision}).error.code,'STALE_ACTION');assert.deepEqual(s,before);
  for(const phase of ['blind_selection','playing','shop','game_over']){const other=createRun('x',{runId:'x',money:4n});other.phase=phase;assert.equal(act(other,'CONTINUE_ENDLESS').error.code,'INVALID_PHASE');}
 });
@@ -68,7 +71,7 @@ test('failed acknowledgement write keeps pending save and retry preserves exact 
 });
 
 test('disabled Vessel completion uses the same one-time victory settlement',()=>{
- const s=active(8,'bl_final_vessel');s.round.score=100000n;const rng=structuredClone(s.rng),events=[];disableBoss(s,events);s.revision++;
+ const s=active(8,'bl_final_vessel');s.round.score=100000n;const rng=settledRng(s),events=[];disableBoss(s,events);s.revision++;
  assert.equal(s.winPending,true);assert.equal(s.won,true);assert.equal(getCashout(s).reward,8n);assert.deepEqual(s.rng,rng);assert.deepEqual(reload(s),s);
 });
 

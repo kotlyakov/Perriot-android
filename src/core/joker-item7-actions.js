@@ -1,4 +1,4 @@
-import {initializeItem7Joker,item7CapacityDeltas} from './joker-item7-lifecycle.js';
+import {initializeItem7Joker,item7CapacityDeltas,resetItem7RoundTargets} from './joker-item7-lifecycle.js';
 import {item7EconomyModifiers,applyItem7EconomyContext,applyItem7SoldJoker,repriceItem7Cards} from './joker-item7-economy.js';
 import {stampJokerCreationOrdinals} from './shop.js';
 import {disableBoss} from './boss-effects.js';
@@ -9,6 +9,9 @@ export function finishItem7Action(before,next,action,events){
  const oldIds=new Set(before.jokers.map(j=>j.id));
  for(const joker of next.jokers)if(!oldIds.has(joker.id))initializeItem7Joker(next,joker);
  stampJokerCreationOrdinals(next,next.jokers.filter(j=>!oldIds.has(j.id)));
+ const oldConsumableIds=new Set((before.consumables??[]).map(card=>card.id));
+ if(next.rng?.apk)stampJokerCreationOrdinals(next,(next.consumables??[]).filter(card=>!oldConsumableIds.has(card.id)));
+ if(next.jokers.some(j=>!oldIds.has(j.id)&&['j_idol','j_mail','j_ancient','j_castle'].includes(j.entityId)))resetItem7RoundTargets(next,{onlyMissing:true});
  const soldId=action.type==='SELL_JOKER'?action.jokerId:action.type==='SELL_OWNED_CARD'?action.cardId:null;
  if(soldId){
   const sold=before.jokers.find(j=>j.id===soldId);

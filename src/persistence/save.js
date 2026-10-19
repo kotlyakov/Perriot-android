@@ -140,7 +140,7 @@ function decodeBoss(value,state){
   requireValue(state.jokers.every(j=>(j.debuffed===true)===(j.id===chosen))&&(!value.disabled||chosen===null));
  }
  if(value.id==='bl_serpent'){
-  if(Object.hasOwn(value,'serpentInitialHandSize'))integer(value.serpentInitialHandSize,1,10000);
+  if(Object.hasOwn(value,'serpentInitialHandSize'))integer(value.serpentInitialHandSize,0,10000);
   if(Object.hasOwn(value,'serpentInitialCardCount')&&value.serpentInitialCardCount!==null)integer(value.serpentInitialCardCount,0,Object.keys(state.cards).length+(state.destroyedCardIds?.length??0));
   if(value.disabled){
    requireValue(Object.hasOwn(value,'disabledRevision')&&Object.hasOwn(value,'serpentInitialCardCount'));
@@ -523,7 +523,7 @@ function decode(payload) {
     for(const card of state.consumables)decodeOffer(card,jokerIds,true,true);
   }
   if(Object.hasOwn(state,'shop'))decodeShop(state.shop,jokerIds);
-  const jokerCards=[...state.jokers,...(state.shop?['main','vouchers','boosters'].flatMap(area=>state.shop[area]??[]):[])].filter(card=>card.set==='Joker'||SUPPORTED_JOKERS.includes(card.entityId));
+  const jokerCards=[...state.jokers,...(state.consumables??[]),...(state.shop?['main','vouchers','boosters'].flatMap(area=>state.shop[area]??[]):[])].filter(card=>['Joker','Tarot','Planet','Spectral'].includes(centres.get(card.entityId)?.set));
   const creationOrdinals=jokerCards.filter(card=>Object.hasOwn(card,'creationOrdinal')).map(card=>card.creationOrdinal);
   requireValue(new Set(creationOrdinals).size===creationOrdinals.length);
   if(Object.hasOwn(state,'nextJokerCreationOrdinal'))requireValue(creationOrdinals.every(value=>value<state.nextJokerCreationOrdinal));
@@ -627,7 +627,7 @@ function decodeEffectReplay(payload){
   }
   const expected=replayEffectActions(before,journal.actions);
   if(journal.version===1)requireValue(expected.lastScore!==null);
-  else requireValue(hasEffectMechanisms(before)||hasEffectMechanisms(expected)||journal.actions.some(a=>a.type==='USE_CONSUMABLE'));
+  else requireValue(hasEffectMechanisms(before)||hasEffectMechanisms(expected)||journal.actions.some(a=>a.type==='USE_CONSUMABLE')||before.rng?.apk&&journal.actions.some(a=>a.type==='PLAY_HAND'));
   const actual={...raw};delete actual.effectReplay;
   requireValue(canonical(actual)===canonical(encodeState(expected).state));
   expected.effectReplay={version:journal.version,before,actions:structuredClone(journal.actions)};return expected;

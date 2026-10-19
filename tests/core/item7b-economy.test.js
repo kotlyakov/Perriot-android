@@ -43,3 +43,51 @@ test('two copying Riff-raff callbacks reserve original available slots before ne
  applyItem7EconomyContext(s,{type:'setting_blind'},[]);
  assert.equal(s.jokers.length,5);assert.equal(s.jokers[4].edition,'negative');
 });
+
+test('Invisible chooses the same physical Joker after visual reordering',()=>{
+ for(let seed=0;seed<20;seed++){
+  const a=fresh();a.rng.apk=createApkRng('INVISIBLE-ORDER'+seed);a.nextJokerCreationOrdinal=4;
+  a.jokers=[j('j_joker','old',{creationOrdinal:1}),j('j_egg','new',{creationOrdinal:3})];
+  const b=structuredClone(a);b.jokers.reverse();
+  for(const s of [a,b])applyItem7SoldJoker(s,j('j_invisible','sold',{invisibleRounds:2}),[]);
+  assert.equal(a.jokers.at(-1).entityId,b.jokers.at(-1).entityId);
+  assert.deepEqual(a.rng,b.rng);
+ }
+});
+
+test('Perkeo selects by physical creation order and gives each copy a new identity',()=>{
+ for(let seed=0;seed<20;seed++){
+  const a=fresh();a.rng.apk=createApkRng('PERKEO-ORDER'+seed);a.nextJokerCreationOrdinal=5;a.jokers=[j('j_perkeo','perkeo',{creationOrdinal:1})];
+  a.consumables=[{id:'tarot',entityId:'c_empress',originalKey:'c_empress',set:'Tarot',edition:'base',cost:3n,sellCost:1n,creationOrdinal:2},{id:'planet',entityId:'c_mercury',originalKey:'c_mercury',set:'Planet',edition:'base',cost:3n,sellCost:1n,creationOrdinal:4}];
+  const b=structuredClone(a);b.consumables.reverse();
+  for(const s of [a,b])applyItem7EconomyContext(s,{type:'ending_shop'},[]);
+  assert.equal(a.consumables.at(-1).entityId,b.consumables.at(-1).entityId);
+  assert.equal(a.consumables.at(-1).creationOrdinal,5);
+  assert.equal(a.consumables.at(-1).edition,'negative');
+  assert.deepEqual(a.rng,b.rng);
+ }
+});
+
+test('unknown or duplicate physical selection order fails before drawing or copying',()=>{
+ for(const ordinals of [[undefined,undefined],[1,undefined],[1,1],[1,0]]){
+  const s=fresh();s.jokers=ordinals.map((creationOrdinal,i)=>j('j_joker','candidate'+i,creationOrdinal===undefined?{}:{creationOrdinal}));
+  const before=structuredClone(s),events=[];
+  assert.throws(()=>applyItem7SoldJoker(s,j('j_invisible','sold',{invisibleRounds:2}),events),/creation identit/i);
+  assert.deepEqual(s,before);assert.deepEqual(events,[]);
+ }
+});
+
+test('negative Invisible cannot copy when inventory was already over capacity before sale',()=>{
+ const s=fresh();s.jokers=Array.from({length:6},(_,i)=>j('j_joker','j'+i,{creationOrdinal:i+1}));s.nextJokerCreationOrdinal=8;
+ const before=structuredClone(s),events=[];
+ applyItem7SoldJoker(s,j('j_invisible','sold',{edition:'negative',invisibleRounds:2}),events);
+ assert.deepEqual(s,before);assert.deepEqual(events,[]);
+});
+
+test('ambiguous Invisible sale rejects the complete reducer transaction atomically',async()=>{
+ const {dispatch}=await import('../../src/core/run.js');
+ const s=fresh();s.jokers=[j('j_invisible','sold',{invisibleRounds:2}),j('j_joker','first'),j('j_egg','second')];
+ const before=structuredClone(s);
+ const result=dispatch(s,{type:'SELL_OWNED_CARD',expectedRevision:s.revision,area:'jokers',cardId:'sold'});
+ assert.equal(result.error?.code,'INVALID_STATE');assert.equal(result.state,s);assert.deepEqual(result.events,[]);assert.deepEqual(s,before);
+});

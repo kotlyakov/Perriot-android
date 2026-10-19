@@ -53,8 +53,8 @@ export function item7CapacityDeltas(jokers=[]){
 }
 // Call once after blind counters and boss state exist. Slices are queued until all
 // activations inspect their original neighbours, matching native event callbacks.
-export function applyItem7BlindStart(state,events,{deferRemoval=false}={}){
- const sliced=new Set();
+export function applyItem7BlindStart(state,events,{deferRemoval=false,onContext}={}){
+ const sliced=new Set(),pending={sliced:[],jokerBuffer:0,consumableBuffer:0,callbacks:[],nestedCallbacks:[]};
  for(const context of contexts(state)){
   const {source,target,copied}=context;if(source.gettingSliced||target.gettingSliced)continue;
   initializeItem7Joker(state,target);const id=target.entityId;
@@ -65,9 +65,10 @@ export function applyItem7BlindStart(state,events,{deferRemoval=false}={}){
    const choices=state.jokers.filter(j=>j!==target&&!j.eternal&&!j.gettingSliced).sort((a,b)=>(a.creationOrdinal??state.jokers.indexOf(a))-(b.creationOrdinal??state.jokers.indexOf(b)));
    if(choices.length){const victim=choices[random(state,'madness',1,choices.length)-1];victim.gettingSliced=true;sliced.add(victim);}
   }
-  if(id==='j_ceremonial'&&!copied){const next=state.jokers[state.jokers.indexOf(target)+1];if(next&&!next.eternal&&!next.gettingSliced){next.gettingSliced=true;sliced.add(next);change(target,'mult',target.mult+Number(next.sellCost??0n)*2,events);}}
+  if(id==='j_ceremonial'&&!copied){const next=state.jokers[state.jokers.indexOf(target)+1];if(next&&!next.eternal&&!next.gettingSliced){next.gettingSliced=true;sliced.add(next);pending.jokerBuffer--;change(target,'mult',target.mult+Number(next.sellCost??0n)*2,events);}}
+  onContext?.(context,pending);
  }
- const pending={sliced:[...sliced]};if(!deferRemoval)finishItem7BlindStart(state,events,pending);return pending;
+ pending.sliced=[...sliced];if(!deferRemoval)finishItem7BlindStart(state,events,pending);return pending;
 }
 export function finishItem7BlindStart(state,events,pending){for(const joker of pending.sliced)if(state.jokers.includes(joker))remove(state,joker,events,'sliced');}
 export function applyItem7AfterScore(state,events){
@@ -130,14 +131,14 @@ function resetToDoHand(state,joker){
  const hands=(state.apkShop?.context?.visibleHandOrder??ordinaryHands).filter(hand=>hand!==joker.toDoPokerHand);
  if(hands.length)joker.toDoPokerHand=hands[random(state,'to_do',1,hands.length)-1];
 }
-// Call at round setup before first-draw contexts. Native uses physical deck order;
-// only owned target effects opt into these streams until global parity is enabled.
+// Native initializes all targets even when their Jokers are unowned, then
+// refreshes them after each completed round. Acquisition must keep that target.
 export function resetItem7RoundTargets(state,{onlyMissing=false}={}){
- const active=(id,field)=>state.jokers.some(j=>j.entityId===id)&&(!onlyMissing||!Object.hasOwn(state.round,field));
+ const active=(id,field)=>!onlyMissing||!Object.hasOwn(state.round,field);
  const cards=canonicalCards(state.cards).map(id=>state.cards[id]).filter(card=>card.enhancement!=='stone');
  const pick=key=>cards.length?cards[random(state,key+state.round.ante,1,cards.length)-1]:null;
  if(active('j_idol','idolCard')){const card=pick('idol');state.round.idolCard={rank:card?.rank??state.round.idolCard?.rank??null,suit:card?.suit??'spades'};}
  if(active('j_mail','mailRank'))state.round.mailRank=pick('mail')?.rank??state.round.mailRank??null;
- if(active('j_ancient','ancientSuit')){const suits=['spades','hearts','clubs','diamonds'].filter(s=>s!==(state.round.ancientSuit??'spades'));state.round.ancientSuit=suits[random(state,'anc'+state.round.ante,1,suits.length)-1];}
+ if(active('j_ancient','ancientSuit')){const suits=['spades','hearts','clubs','diamonds'].filter(s=>s!==state.round.ancientSuit);state.round.ancientSuit=suits[random(state,'anc'+state.round.ante,1,suits.length)-1];}
  if(active('j_castle','castleSuit'))state.round.castleSuit=pick('cas')?.suit??'spades';
 }
