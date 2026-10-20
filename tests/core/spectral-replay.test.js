@@ -7,7 +7,7 @@ import {currentApkShopContext} from '../../src/core/apk-shop-state.js';
 const act=(s,type,fields={})=>{const r=dispatch(s,{type,expectedRevision:s.revision,...fields});assert.equal(r.error,null);return r.state;};
 const reload=s=>assert.deepEqual(deserializeState(serializeState(s)),s);
 const owned=(key,id=key)=>({id,entityId:key,originalKey:key,set:'Spectral',edition:'base',cost:4n,sellCost:2n});
-function fresh(keys,boss,jokers=[]){let s=createRun('SPECTRALREPLAY',{runId:'spectralreplay',money:12n,referenceRng:true,referenceShop:true});if(boss){s.round.blindId='boss';const ante=boss==='bl_final_heart'?8:5;s.round.ante=ante;s.roundNumber=ante*3;s.apkBlinds.ante=ante;s.apkBlinds.tagContext.ante=ante;s.apkShop.context.ante=ante;s.apkBlinds.bossId=boss;s.apkBlinds.bossesUsed[boss]=1;s.round.target=bossTarget(s);}s.jokers=jokers;s.nextJokerCreationOrdinal=jokers.length+1;s.apkShop.context=currentApkShopContext(s);s=act(s,'START_BLIND');s.consumables=keys.map((key,i)=>owned(key,'owned'+i));s.apkShop.context=currentApkShopContext(s);return s;}
+function fresh(keys,boss,jokers=[]){let s=createRun('SPECTRALREPLAY',{runId:'spectralreplay',money:12n,referenceRng:true,referenceShop:true});if(boss){s.round.blindId='boss';const ante=boss.startsWith('bl_final_')?8:5;s.round.ante=ante;s.roundNumber=ante*3;s.apkBlinds.ante=ante;s.apkBlinds.tagContext.ante=ante;s.apkShop.context.ante=ante;s.apkBlinds.bossId=boss;s.apkBlinds.bossesUsed[boss]=1;s.round.target=bossTarget(s);}s.jokers=jokers;s.nextJokerCreationOrdinal=jokers.length+1;s.apkShop.context=currentApkShopContext(s);s=act(s,'START_BLIND');s.consumables=keys.map((key,i)=>owned(key,'owned'+i));s.apkShop.context=currentApkShopContext(s);return s;}
 test('owned Spectral transformations retain authenticated save through subsequent play and discard',()=>{
  for(const key of ['c_familiar','c_grim','c_incantation','c_cryptid','c_sigil','c_ouija','c_immolate']){
   let s=fresh([key]);s=act(s,'USE_CONSUMABLE',{cardId:'owned0',targetCardIds:key==='c_cryptid'?[s.hand[0]]:[]});reload(s);
@@ -30,4 +30,8 @@ test('exhausting the last held cards with no draw pile settles round loss',()=>{
 
 test('Heart keeps the disabled Joker through an empty-hand consumable redraw',()=>{
  const jokers=['j_joker','j_greedy_joker'].map((key,i)=>({id:'j'+i,entityId:key,originalKey:key,set:'Joker',edition:'base',cost:4n,sellCost:2n,creationOrdinal:i+1}));let s=fresh(['c_immolate','c_immolate'],'bl_final_heart',jokers);const disabled=s.bossState.heartDebuffedJokerId,stream=s.rng.apk.streams.crimson_heart;s=act(s,'USE_CONSUMABLE',{cardId:'owned0'});s=act(s,'USE_CONSUMABLE',{cardId:'owned1'});assert.equal(s.hand.length,8);assert.equal(s.bossState.heartDebuffedJokerId,disabled);assert.equal(s.rng.apk.streams.crimson_heart,stream);reload(s);
+});
+
+test('Bell empty-hand consumable redraw records the accepted revision and a live forced target',()=>{
+ let s=fresh(['c_immolate','c_immolate'],'bl_final_bell');s=act(s,'USE_CONSUMABLE',{cardId:'owned0'});s=act(s,'USE_CONSUMABLE',{cardId:'owned1'});assert.equal(s.hand.length,8);assert.equal(s.bossState.bellChoice.revision,s.revision);assert.ok(s.hand.includes(s.bossState.forcedCardId));reload(s);
 });

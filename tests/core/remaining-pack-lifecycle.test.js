@@ -43,3 +43,6 @@ test('forged pack family, modifier, choice count and creation identity fail save
  const standard=open('p_standard_normal_1');for(const mutate of [s=>s.packState.cards[0].seal='bad',s=>s.packState.cards[0].frontKey='H_1',s=>s.packState.choicesRemaining=2,s=>s.packState.cards[0].set='Tarot']){const s=structuredClone(standard);mutate(s);assert.throws(()=>reload(s),/Invalid save data/);}
  const spectral=open('p_spectral_normal_1');delete spectral.packState.handDraw;assert.throws(()=>reload(spectral),/Invalid save data/);
 });
+test('Spectral target hand supports sorting and exact reordering without spending a pack choice',()=>{
+ let s=open('p_spectral_mega_1');let r=act(s,'SET_SORT',{mode:'suit'});assert.equal(r.error,null);s=r.state;assert.equal(s.sortMode,'suit');const order=[...s.hand].reverse();r=act(s,'REORDER_HAND',{cardIds:order});assert.equal(r.error,null);assert.deepEqual(r.state.hand,order);assert.equal(r.state.packState.choicesRemaining,2);assert.deepEqual(reload(r.state),r.state);for(const type of ['PLAY_HAND','DISCARD'])assert.equal(act(r.state,type,{cardIds:order.slice(0,1)}).error.code,'INVALID_PHASE');
+});
