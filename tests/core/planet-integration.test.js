@@ -21,9 +21,10 @@ test('Black Hole upgrades all twelve hands and save corruption in usage is rejec
  const s=createRun('BH',{runId:'bh',money:4n,referenceRng:true,referenceShop:true});s.consumables=[card('c_black_hole')];const r=act(s,'USE_CONSUMABLE',{cardId:'c_black_hole'});assert.equal(r.error,null);assert.ok(Object.values(r.state.handLevels).every(n=>n===2));assert.deepEqual(reload(r.state),r.state);
  for(const mutate of [s=>s.consumableUsageTotal.all++,s=>s.consumableUsage.c_black_hole.order=999,s=>s.lastTarotPlanet='c_black_hole',s=>s.consumableUsage.c_black_hole.count=-1]){const bad=structuredClone(r.state);mutate(bad);assert.throws(()=>serializeState(bad));}
 });
-test('legacy state without usage fields migrates on first implemented use and unsupported Tarot remains unavailable',()=>{
+test('legacy state usage migrates; supported Ankh can be bought but requires an owned Joker',()=>{
  const s=createRun('legacy12',{runId:'legacy12',money:4n});delete s.consumableUsage;delete s.consumableUsageTotal;delete s.lastTarotPlanet;s.consumables=[card('c_mercury')];const saved=reload(s),r=act(saved,'USE_CONSUMABLE',{cardId:'c_mercury'});assert.equal(r.error,null);assert.equal(r.state.handLevels.pair,2);assert.deepEqual(reload(r.state),r.state);
- const native=shop();native.shop.main=[card('c_ankh')];assert.equal(act(native,'BUY_SHOP_CARD',{offerId:'c_ankh'}).error.code,'UNSUPPORTED_CONTENT');
+ const native=shop();native.shop.main=[card('c_ankh')];const bought=act(native,'BUY_SHOP_CARD',{offerId:'c_ankh'});assert.equal(bought.error,null);assert.equal(bought.state.money,native.money-4n);assert.equal(bought.state.consumables[0].entityId,'c_ankh');assert.deepEqual(reload(bought.state),bought.state);
+ const before=structuredClone(bought.state),unavailable=act(bought.state,'USE_CONSUMABLE',{cardId:'c_ankh'});assert.equal(unavailable.error.code,'USE_UNAVAILABLE');assert.equal(unavailable.state,bought.state);assert.deepEqual(bought.state,before);
 });
 
 test('debuffed Planet and Black Hole are consumed and counted without changing levels',()=>{

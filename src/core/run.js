@@ -1,3 +1,4 @@
+import {realHandSize,changeHandSize,restoreBossHandSize} from './hand-size.js';
 import {applyItem7FirstDraw} from './joker-item7-creation.js';
 import {applyItem7PlayingCardsAdded,item7CapacityDeltas} from './joker-item7-lifecycle.js';
 import {item7EconomyModifiers} from './joker-item7-economy.js';
@@ -73,7 +74,7 @@ export function createRun(seed, {runId,deckId='red',money,referenceRng=false,ref
 
 function drawToLimit(state, events,action='START_BLIND') {
   const boss=state.bossState;
-  if(boss&&!boss.disabled&&boss.id==='bl_final_heart'&&action!=='DISCARD'){
+  if(boss&&!boss.disabled&&boss.id==='bl_final_heart'&&['START_BLIND','PLAY_HAND'].includes(action)){
     // Heart's choice consumes no card-dependent RNG. Resolve its passive
     // transition before dealing so the final hand fills the actual capacity.
     const before=item7CapacityDeltas(state.jokers);
@@ -81,11 +82,12 @@ function drawToLimit(state, events,action='START_BLIND') {
     for(const joker of state.jokers)joker.debuffed=joker.id===choice.jokerId;
     boss.heartDebuffedJokerId=choice.jokerId;
     const after=item7CapacityDeltas(state.jokers),handSize=after.handSize-before.handSize,discards=after.discards-before.discards;
-    state.round.handSize+=handSize;boss.baseHandSize+=handSize;
+    changeHandSize(state,handSize,{events,draw:action!=='START_BLIND'});
     state.round.discardsRemaining=Math.max(0,state.round.discardsRemaining+discards);
     if(handSize||discards)events.push({type:'joker_capacity_changed',handSize,discards});
   }
-  const serpent=!state.bossState?.disabled&&state.bossState?.id==='bl_serpent'&&action!=='START_BLIND';
+  if(state.round.handSize===0&&state.hand.length===0){state.phase='game_over';events.push({type:'round_lost',score:state.round.score});return;}
+  const serpent=!state.bossState?.disabled&&state.bossState?.id==='bl_serpent'&&(action==='USE_CONSUMABLE'?((state.round.handsPlayed??0)>0||(state.round.discardsUsed??0)>0):action!=='START_BLIND');
   const count=Math.min(serpent?3:Math.max(0,state.round.handSize-state.hand.length),state.drawPile.length);
   const ids=state.rng.apk?Array.from({length:count},()=>state.drawPile.pop()):state.drawPile.splice(0,count);
   if(boss && !boss.disabled && ['bl_house','bl_wheel','bl_fish','bl_mark'].includes(boss.id)){
@@ -113,9 +115,10 @@ export function dispatch(state,action,shopOptions={}){
   let result;try{result=dispatchCore(state,action,shopOptions);}catch(error){return {state,events:[],error:{code:'INVALID_STATE',message:error.message}};}
   if(result.error||result.state===state)return result;
   const next=result.state;
-  try{finishItem7Action(state,next,action,result.events);}catch(error){return {state,events:[],error:{code:'INVALID_STATE',message:error.message}};}
+  try{finishAction(state,next,action,result.events);}catch(error){return {state,events:[],error:{code:'INVALID_STATE',message:error.message}};}
+  const spectralUse=action.type==='USE_CONSUMABLE'&&state.consumables?.some(card=>card.id===action.cardId&&card.set==='Spectral')||action.type==='USE_PACK_CARD'&&state.packState?.cards.some(card=>card.id===action.cardId&&card.set==='Spectral');
   let journal;
-  if(action.type==='PLAY_HAND'&&(hasEffectMechanisms(state)||state.rng?.apk&&next.phase==='round_won')){
+  if(action.type==='PLAY_HAND'&&(!state.effectReplay||state.effectReplay.version===1)&&(hasEffectMechanisms(state)||state.rng?.apk&&next.phase==='round_won')){
     const before=structuredClone(state);delete before.effectReplay;before.lastScore=null;
     journal={version:hasEffectMechanisms(state)?1:2,before,actions:[structuredClone(action)]};
   }else if(state.effectReplay){
@@ -123,16 +126,32 @@ export function dispatch(state,action,shopOptions={}){
     const legacyAction=['DISCARD','REORDER_HAND','SET_SORT','CONTINUE_ENDLESS'].includes(action.type);
     const version=state.effectReplay.version===1&&next.lastScore!==null&&legacyAction?1:2;
     journal={...structuredClone(state.effectReplay),version,actions:[...structuredClone(state.effectReplay.actions),structuredClone(action)]};
-  }else if(action.type==='DISCARD'&&hasEffectMechanisms(state)&&result.events.some(event=>event.type==='joker_counter_changed')){
+  }else if(spectralUse||action.type==='DISCARD'&&hasEffectMechanisms(state)&&result.events.some(event=>event.type==='joker_counter_changed')){
     const before=structuredClone(state);delete before.effectReplay;
     journal={version:2,before,actions:[structuredClone(action)]};
   }
   if(journal)next.effectReplay=journal;else delete next.effectReplay;
   return result;
 }
+function loseRound(next,events){const end=applyItem7EndRound(next,events,{gameOver:true});applyItem7EconomyContext(next,{type:'end_of_round'},events);if(end.saved)settleRoundSuccess(next,events,{saved:true,endRoundApplied:true});else next.phase='game_over';
+      // APK state_events.lua:112-124 sets won even on a losing win-Ante Boss.
+      if(next.round.blindId==='boss'&&next.round.ante===(next.winAnte??8))next.won=true;
+      if(next.phase==='game_over')events.push({type:'round_lost',score:next.round.score});
+}
+function finishAction(before,next,action,events){
+  finishItem7Action(before,next,action,events);
+  // Native SELECTING_HAND re-enters DRAW_TO_HAND after the last held card dies.
+  if(action.type==='USE_CONSUMABLE'&&next.phase==='playing'&&!next.hand.length){
+    if(next.drawPile.length)drawToLimit(next,events,'USE_CONSUMABLE');
+    else if(!settleRoundSuccess(next,events))loseRound(next,events);
+    if(next.phase!=='playing'&&next.bossState?.id==='bl_final_bell'){next.bossState.forcedCardId=null;next.bossState.bellChoice=null;}
+    if(next.phase!=='playing'&&next.bossState?.id==='bl_final_acorn')next.bossState.hiddenJokerIds=[];
+    if(next.apkShop)next.apkShop.context=currentApkShopContext(next);
+  }
+}
 export function replayEffectActions(before,actions){
   let state=structuredClone(before);
-  for(const action of actions){const result=dispatchCore(state,action);if(result.error)throw new TypeError('Invalid effect action history');if(result.state!==state)finishItem7Action(state,result.state,action,result.events);state=result.state;}
+  for(const action of actions){const result=dispatchCore(state,action);if(result.error)throw new TypeError('Invalid effect action history');if(result.state!==state)finishAction(state,result.state,action,result.events);state=result.state;}
   return state;
 }
 function dispatchCore(state, action, shopOptions={}) {
@@ -157,8 +176,8 @@ function dispatchCore(state, action, shopOptions={}) {
     const next=structuredClone(state);
     // Preserve the earned target's native disable provenance after active boss cleanup.
     if(next.bossState?.disabled&&['bl_wall','bl_final_vessel'].includes(next.bossState.id))next.round.bossDisabled=true;
-    if(next.bossState){next.round.handSize=next.bossState.baseHandSize;if(next.bossState.id==='bl_final_heart')for(const joker of next.jokers)joker.debuffed=false;delete next.bossState;next.apkBlinds.playedCardIds=[];next.mostPlayedHand=resolveMostPlayedHand(next.apkShop.context.playedHands);}next.money+=quote.total;delete next.cashoutQuote;next.phase='shop';next.revision++;
-    next.drawPile=Object.keys(next.cards);next.hand=[];next.discardPile=[];next.lastScore=null;if(state.hangedShortfallCardIds)next.hangedShortfallEpoch={...(state.hangedShortfallEpoch??{cardIds:[...state.hangedShortfallCardIds],revision:state.revision,ante:state.round.ante,blindId:state.round.blindId,handsRemaining:state.round.handsRemaining}),consumed:true,consumedBy:action.type};delete next.hangedShortfallCardIds;
+    if(next.bossState){restoreBossHandSize(next);if(next.bossState.id==='bl_final_heart')for(const joker of next.jokers)joker.debuffed=false;delete next.bossState;next.apkBlinds.playedCardIds=[];next.mostPlayedHand=resolveMostPlayedHand(next.apkShop.context.playedHands);}next.money+=quote.total;delete next.cashoutQuote;next.phase='shop';next.revision++;
+    next.drawPile=Object.keys(next.cards);next.hand=[];next.discardPile=[];next.lastScore=null;if(state.hangedShortfallCardIds)next.hangedShortfallEpoch={...(state.hangedShortfallEpoch??{cardIds:[...state.hangedShortfallCardIds],revision:state.revision,ante:state.round.ante,blindId:state.round.blindId,handsRemaining:state.round.handsRemaining}),consumed:true,consumedBy:action.type};delete next.hangedShortfallCardIds;consumeSpectralShortfall(state,next,action.type);
     if(next.apkShop){
       try{
         const context=currentApkShopContext(next);
@@ -185,8 +204,8 @@ function dispatchCore(state, action, shopOptions={}) {
     if(state.round.blindId==='boss'&&!canEnterBoss(state))return reject('BOSS_UNAVAILABLE','Boss lifecycle is unavailable');
     const next=structuredClone(state);const events=[];
     if(next.round.blindId==='boss'){
-      next.bossState={version:1,disabled:false,id:next.apkBlinds.bossId,playedBeforeBoss:[...next.apkBlinds.playedCardIds],baseHandSize:next.round.handSize};
-      if(next.bossState.id==='bl_manacle')next.round.handSize--;
+      next.bossState={version:1,disabled:false,id:next.apkBlinds.bossId,playedBeforeBoss:[...next.apkBlinds.playedCardIds],baseHandSize:realHandSize(next)};
+      if(next.bossState.id==='bl_manacle')changeHandSize(next,-1,{updateBoss:false});
       if(next.bossState.id==='bl_serpent')next.bossState.serpentInitialCardCount=next.drawPile.length;
       if(next.bossState.id==='bl_water'){next.bossState.discardsSub=next.round.discardsRemaining;next.round.discardsRemaining=0;}
       if(next.bossState.id==='bl_needle'){next.bossState.startedRevision=next.revision+1;next.bossState.handsSub=next.round.handsRemaining-1;next.round.handsRemaining=1;}
@@ -204,6 +223,9 @@ function dispatchCore(state, action, shopOptions={}) {
     }});
     for(const callback of [...pendingSlices.callbacks,...pendingSlices.nestedCallbacks])callback();
     finishItem7BlindStart(next,events,pendingSlices);
+    const beforeCapacity=item7CapacityDeltas(state.jokers),afterCapacity=item7CapacityDeltas(next.jokers);
+    const handDelta=afterCapacity.handSize-beforeCapacity.handSize;
+    changeHandSize(next,handDelta);if(handDelta)events.push({type:'joker_capacity_changed',handSize:handDelta,discards:0});
     if(next.rng.apk){
       const shuffled=shuffleApkDeck(next.drawPile.map(id=>next.cards[id]),next.rng.apk,'nr'+next.round.ante);next.drawPile=shuffled.cardIds;next.rng.apk=shuffled.rng;
     }else for(let i=next.drawPile.length-1;i>0;i--) {
@@ -343,11 +365,8 @@ function dispatchCore(state, action, shopOptions={}) {
     if (!next.discoveredHands.includes(score.handId)) next.discoveredHands.push(score.handId);
     if(next.apkShop){const name=APK_HAND_NAMES[score.handId];next.apkShop.context.playedHands[name]=(next.apkShop.context.playedHands[name]??0)+1;}
     events.push({type:'hand_played',cardIds:[...playedIds]},...structuredClone(score.trace));
-    if(!settleRoundSuccess(next,events)&&next.round.handsRemaining===0){const end=applyItem7EndRound(next,events,{gameOver:true});applyItem7EconomyContext(next,{type:'end_of_round'},events);if(end.saved)settleRoundSuccess(next,events,{saved:true,endRoundApplied:true});else next.phase='game_over';
-      // APK state_events.lua:112-124 sets won even on a losing win-Ante Boss.
-      if(next.round.blindId==='boss'&&next.round.ante===(next.winAnte??8))next.won=true;
-      if(next.phase==='game_over')events.push({type:'round_lost',score:next.round.score});}
-    if(next.phase!=='playing'&&next.bossState?.id==='bl_serpent'&&next.bossState.disabled)next.bossState.serpentTerminalUnfilledCardIds=[...playedIds,...(state.hangedShortfallCardIds??[])];
+    if(!settleRoundSuccess(next,events)&&next.round.handsRemaining===0)loseRound(next,events);
+    if(next.phase!=='playing'&&next.bossState?.id==='bl_serpent'&&next.bossState.disabled)next.bossState.serpentTerminalUnfilledCardIds=[...playedIds,...(state.hangedShortfallCardIds??[]),...(state.spectralShortfallCardIds??[])];
   } else {
     const removed=applyItem7Discard(next,playedIds,events);applyItem7CardsDestroyed(next,removed,events);
     for(const card of removed){delete next.cards[card.id];next.discardPile=next.discardPile.filter(id=>id!==card.id);next.destroyedCardIds=[...(next.destroyedCardIds??[]),card.id];}
@@ -358,7 +377,7 @@ function dispatchCore(state, action, shopOptions={}) {
   // Native empty Bell pool errors. Convert at the dispatcher boundary so the
   // accepted clone, counters and RNG are never committed on that error.
   if(next.phase==='playing')try{drawToLimit(next,events,action.type);}catch(error){return reject('UNSUPPORTED_BOSS_STATE',error.message);}
-  if(state.hangedShortfallCardIds)next.hangedShortfallEpoch={...(state.hangedShortfallEpoch??{cardIds:[...state.hangedShortfallCardIds],revision:state.revision,ante:state.round.ante,blindId:state.round.blindId,handsRemaining:state.round.handsRemaining}),consumed:true,consumedBy:action.type};delete next.hangedShortfallCardIds;
+  if(state.hangedShortfallCardIds)next.hangedShortfallEpoch={...(state.hangedShortfallEpoch??{cardIds:[...state.hangedShortfallCardIds],revision:state.revision,ante:state.round.ante,blindId:state.round.blindId,handsRemaining:state.round.handsRemaining}),consumed:true,consumedBy:action.type};delete next.hangedShortfallCardIds;consumeSpectralShortfall(state,next,action.type);
   if(next.apkShop)next.apkShop.context=currentApkShopContext(next);
   next.revision++;
   return {state:next,events,error:null};
@@ -367,3 +386,8 @@ function dispatchCore(state, action, shopOptions={}) {
 
 
 
+
+function consumeSpectralShortfall(state,next,action){
+ if(state.spectralShortfallCardIds)next.spectralShortfallEpoch={...(state.spectralShortfallEpoch??{cardIds:[...state.spectralShortfallCardIds],revision:state.revision,ante:state.round.ante,blindId:state.round.blindId,handsRemaining:state.round.handsRemaining}),consumed:true,consumedBy:action};
+ delete next.spectralShortfallCardIds;
+}

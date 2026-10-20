@@ -49,8 +49,15 @@ test('save rejects impossible Celestial contents and size/choice combinations',(
  const mega=act(shop('p_celestial_mega_1'),'OPEN_BOOSTER',{offerId:'pack'}).state,wrongChoice=JSON.parse(serializeState(mega));wrongChoice.state.packState.choicesRemaining=1;assert.throws(()=>deserializeState(JSON.stringify(wrongChoice)),/Invalid save data/);
 });
 
-test('unsupported packs, bad phases, missing cards and insufficient funds reject atomically',()=>{
- for(const change of [s=>{s.shop.boosters=[offer('p_buffoon_normal_1','pack')];},s=>{s.money=0n;},s=>{s.phase='playing';}]){const state=shop();change(state);const before=structuredClone(state),result=act(state,'OPEN_BOOSTER',{offerId:'pack'});assert.ok(result.error);assert.equal(result.state,state);assert.deepEqual(state,before);}
+test('unknown packs, bad phases, missing cards and insufficient funds reject atomically',()=>{
+ for(const change of [s=>{Object.assign(s.shop.boosters[0],{entityId:'p_unknown_booster',originalKey:'p_unknown_booster'});},s=>{s.money=0n;},s=>{s.phase='playing';}]){const state=shop();change(state);const before=structuredClone(state),result=act(state,'OPEN_BOOSTER',{offerId:'pack'});assert.ok(result.error);assert.equal(result.state,state);assert.deepEqual(state,before);}
  const opened=act(shop(),'OPEN_BOOSTER',{offerId:'pack'}).state;
  for(const action of [{type:'USE_PACK_CARD',cardId:'missing'},{type:'SKIP_PACK',extra:true}]){const before=structuredClone(opened),result=act(opened,action.type,action);assert.ok(result.error);assert.equal(result.state,opened);assert.deepEqual(opened,before);}
+});
+
+test('remaining Standard, Buffoon and Spectral families open, pay once, reload and skip',()=>{
+ for(const [key,count,hasHand] of [['p_standard_normal_1',3,false],['p_buffoon_normal_1',2,false],['p_spectral_normal_1',2,true]]){
+  const s=shop(key),before=structuredClone(s),opened=act(s,'OPEN_BOOSTER',{offerId:'pack'});assert.equal(opened.error,null,key);const n=opened.state;assert.equal(n.money,s.money-4n);assert.equal(n.packState.cards.length,count);assert.equal(n.packState.choicesRemaining,1);assert.equal(n.hand.length,hasHand?s.round.handSize:0);assert.deepEqual(reload(n),n);assert.deepEqual(s,before);
+  const skipped=act(n,'SKIP_PACK');assert.equal(skipped.error,null);assert.equal(skipped.state.phase,'shop');assert.equal(skipped.state.hand.length,0);assert.equal(skipped.state.money,n.money);assert.deepEqual(skipped.state.rng,n.rng);assert.deepEqual(reload(skipped.state),skipped.state);
+ }
 });

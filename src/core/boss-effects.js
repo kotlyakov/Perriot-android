@@ -1,7 +1,7 @@
+import {changeHandSize} from './hand-size.js';
 import {item7CapacityDeltas} from './joker-item7-lifecycle.js';
 import {isCardFace} from './card-faces.js';
 import {settleRoundSuccess,captureCashoutQuote} from './cashout.js';
-import {sortHand} from './sort.js';
 import {canonicalCards,identityCard} from './apk-deck.js';
 import {nativeBlindTarget,divideNativeBlindTarget} from './blind-progression.js';
 import {nextApkRandom,nextApkSeed,createApkMathState,nextApkMathRandom,validateApkRng} from './apk-rng.js';
@@ -128,13 +128,15 @@ export function disableBoss(state,events,{acceptedRevision=state.revision}={}){
  if(boss.hiddenFaceRanks)boss.hiddenFaceRanks={};if(boss.pareidoliaHiddenCardIds)boss.pareidoliaHiddenCardIds=[];
  if(boss.playedHands)boss.playedHands=[];
  if(Object.hasOwn(boss,'firstHand'))boss.firstHand=null;
- if(boss.id==='bl_final_heart'){for(const joker of state.jokers)joker.debuffed=false;boss.heartDebuffedJokerId=null;}
+ if(boss.id==='bl_final_heart'){
+  const before=item7CapacityDeltas(state.jokers);
+  for(const joker of state.jokers)joker.debuffed=false;boss.heartDebuffedJokerId=null;
+  const after=item7CapacityDeltas(state.jokers),handSize=after.handSize-before.handSize,discards=after.discards-before.discards;
+  changeHandSize(state,handSize,{events,draw:true});state.round.discardsRemaining=Math.max(0,state.round.discardsRemaining+discards);
+  if(handSize||discards)events.push({type:'joker_capacity_changed',handSize,discards});
+ }
  if(boss.id==='bl_manacle'){
-  state.round.handSize=boss.baseHandSize;
-  if(state.drawPile.length){
-   const id=state.rng.apk?state.drawPile.pop():state.drawPile.shift();
-   state.hand.push(id);sortHand(state);events.push({type:'cards_drawn',cardIds:[id]});
-  }
+  changeHandSize(state,1,{events,draw:true,updateBoss:false});
  }
  settleRoundSuccess(state,events);
 }

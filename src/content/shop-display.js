@@ -1,5 +1,5 @@
 import russianNames from './shop-names-ru.js';
-import {EDITION_DESCRIPTIONS} from './card-modifier-display.js';
+import {EDITION_DESCRIPTIONS,describeCardModifiers} from './card-modifier-display.js';
 import {supportsJoker,originalJokerKey} from './jokers.js';
 import {supportsConsumableEffect} from '../core/consumables.js';
 const names={j_joker:'Джокер',j_jolly:'Весёлый джокер',j_zany:'Чудаковатый джокер',j_mad:'Безумный джокер',j_crazy:'Сумасшедший джокер',j_droll:'Забавный джокер',j_sly:'Хитрый джокер',j_wily:'Коварный джокер',j_clever:'Умный джокер',j_devious:'Лукавый джокер',j_crafty:'Изобретательный джокер',j_half:'Половинчатый джокер',j_splash:'Всплеск',j_abstract:'Абстрактный джокер',j_duo:'Дуэт',j_trio:'Трио',j_family:'Семейство',j_order:'Порядок',j_tribe:'Племя',j_greedy_joker:'Жадный джокер',j_lusty_joker:'Влюбчивый джокер',j_wrathful_joker:'Гневный джокер',j_gluttenous_joker:'Прожорливый джокер',j_scary_face:'Страшное лицо',j_even_steven:'Чётный Стивен',j_odd_todd:'Нечётный Тодд',j_scholar:'Учёный',j_fibonacci:'Фибоначчи',j_arrowhead:'Наконечник стрелы',j_onyx_agate:'Ониксовый агат',j_smiley:'Улыбка',j_walkie_talkie:'Рация'};
@@ -166,7 +166,31 @@ descriptions.c_judgement='Создаёт случайного джокера, е
 descriptions.c_emperor='Создаёт до 2 случайных карт Таро, если есть свободные места.';
 descriptions.c_high_priestess='Создаёт до 2 случайных карт Планет, если есть свободные места.';
 descriptions.c_wheel_of_fortune='Шанс 1 из 4 добавить случайному джокеру без издания фольгу, голографию или полихромию.';
+Object.assign(descriptions,{
+ c_familiar:'Уничтожает 1 случайную карту в руке и добавляет в руку 3 случайные усиленные фигурные карты.',
+ c_grim:'Уничтожает 1 случайную карту в руке и добавляет в руку 2 случайных усиленных туза.',
+ c_incantation:'Уничтожает 1 случайную карту в руке и добавляет в руку 4 случайные усиленные карты рангов от 2 до 10.',
+ c_wraith:'Создаёт случайного редкого джокера, если есть свободное место, и устанавливает деньги в $0.',
+ c_sigil:'Меняет масть всех карт в руке на одну случайную масть.',
+ c_ouija:'Меняет ранг всех карт в руке на один случайный ранг и уменьшает размер руки на 1.',
+ c_ectoplasm:'Добавляет Негатив случайному джокеру без издания. Уменьшает размер руки: на 1 при первом использовании, на 2 при втором и так далее.',
+ c_immolate:'Уничтожает 5 случайных карт в руке и даёт $20.',
+ c_ankh:'Создаёт копию случайного вашего джокера и уничтожает остальных, кроме Вечных. Негатив копии убирается.',
+ c_hex:'Добавляет Полихромию случайному джокеру без издания и уничтожает остальных, кроме Вечных.',
+ c_cryptid:'Добавляет в руку 2 точные копии 1 выбранной карты.',
+});
+// Standard pack offers retain their native front identity in storage. Expand it
+// only for the existing playing-card renderer and tooltip.
+export function displayPlayingCard(offer){
+ if(Number.isInteger(offer.rank)&&offer.suit)return offer;
+ const match=/^([CDHS])_([2-9TJQKA])$/.exec(offer.frontKey??'');
+ if(!match||!['Base','Enhanced'].includes(offer.set))return null;
+ return {...offer,suit:({C:'clubs',D:'diamonds',H:'hearts',S:'spades'})[match[1]],rank:({T:10,J:11,Q:12,K:13,A:14})[match[2]]??Number(match[2])};
+}
 export function describeShopItem(offer,{owned=false}={}){
+ const playing=displayPlayingCard(offer);if(playing)offer=playing;
+ if(playing){const rank=({11:'Валет',12:'Дама',13:'Король',14:'Туз'})[offer.rank]??String(offer.rank),suit=({spades:'пик',hearts:'червей',clubs:'треф',diamonds:'бубен'})[offer.suit];return {name:offer.enhancement==='stone'?'Каменная карта':rank+' '+suit,description:[...(offer.enhancement==='stone'?[]:[`+${offer.rank===14?11:Math.min(offer.rank,10)} очков.`]),...describeCardModifiers(offer)].join(' '),canBuy:false};}
+
  const key=originalJokerKey(offer.entityId);
  const base=(key==='j_selzer'?descriptions[key]+` Осталось рук: ${offer.repeatHandsRemaining??10}.`:descriptions[key])??'В этой предварительной версии доступен просмотр карты.';
  const edition=offer.edition==='negative'?`Негатив: дополнительное место для ${supportsJoker(offer,{owned})?'этого джокера':'этой расходной карты'}.`:EDITION_DESCRIPTIONS[offer.edition];
