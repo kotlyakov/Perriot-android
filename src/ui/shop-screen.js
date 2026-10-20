@@ -10,7 +10,7 @@ import {supportsBooster,canUsePackCard} from '../core/celestial-pack.js';
 
 import {cardMarkup,applyCardModifiers} from './field.js';
 
-let view=null,packView=null,selected=null,tip=null,held=false,lastMain=null,entryMotion,stageTipListener=false,cancelDrag,cancelReturn,lastAcornRound=null;
+let view=null,packView=null,selected=null,tip=null,lastMain=null,entryMotion,stageTipListener=false,cancelDrag,cancelReturn,lastAcornRound=null;
 const reduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
 const node=(tag,className,text)=>{const n=document.createElement(tag);if(className)n.className=className;if(text!==undefined)n.textContent=text;return n;};
 export function shopMoneyFontSize(value,width,max=27){return Math.min(max,width/(String(value).length+1)/.66);}
@@ -69,9 +69,10 @@ function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
    use.onclick=()=>{if(use.disabled||!canUsePackCard(state,offer,targets).available)return;use.disabled=true;clearSelection();callbacks.onAction?.('USE_PACK_CARD',{cardId:offer.id,targetCardIds:targets});};wrap.append(use);
   }
  }
- card.onclick=()=>{if(held){held=false;return;}if(!busy){if(['owned','consumable','pack'].includes(kind))select();showTip(offer,card);}};
+ // Pointer selection is committed on release; captured touch need not emit a click.
+ card.onclick=e=>{if(e.detail===0&&!e.pointerType&&!e.sourceCapabilities?.firesTouchEvents&&!busy){if(['owned','consumable','pack'].includes(kind))select();showTip(offer,card);}};
  card.onpointerdown=e=>{
-  if(busy||card.disabled||e.button!==0)return;cancelDrag?.();cancelReturn?.();held=false;showTip(offer,card);
+  if(busy||card.disabled||e.button!==0)return;cancelDrag?.();cancelReturn?.();showTip(offer,card);
   const inventory=kind==='owned'||kind==='consumable',area=kind==='owned'?'jokers':'consumables';
   const purchasable=state.phase==='shop'&&!inventory,draggable=purchasable||inventory&&canManageInventory(state);
   const startX=e.clientX,startY=e.clientY,scale=document.getElementById('stage').getBoundingClientRect().width/1536;let dragged=false,zone,ghost;
@@ -89,12 +90,12 @@ function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
    }else{returning?.remove();wrap.style.opacity='';}
    card.removeEventListener('pointermove',move);card.removeEventListener('pointerup',end);card.removeEventListener('pointercancel',cancel);card.removeEventListener('lostpointercapture',cancel);card.removeEventListener('keydown',escape);cancelDrag=null;if(card.hasPointerCapture?.(e.pointerId))card.releasePointerCapture(e.pointerId);
   }
-  function cancel(){held=dragged||held;cleanup(dragged);clearSelection();}
+  function cancel(){cleanup(dragged);clearSelection();}
   function escape(ev){if(ev.key==='Escape'){ev.preventDefault();cancel();}}
   function move(ev){
    if(ev.pointerId!==e.pointerId||!draggable)return;
    if(!dragged&&Math.hypot(ev.clientX-startX,ev.clientY-startY)>8){
-    dragged=true;held=true;clearSelection();
+    dragged=true;clearSelection();
     const stage=document.getElementById('stage'),bounds=wrap.getBoundingClientRect(),stageBounds=stage.getBoundingClientRect();
     ghost=wrap.cloneNode(true);ghost.querySelector('.shop-use')?.remove();rect(ghost,(bounds.left-stageBounds.left)/scale,(bounds.top-stageBounds.top)/scale,w,h);ghost.classList.add('is-dragging');ghost.setAttribute('aria-hidden','true');ghost.style.pointerEvents='none';stage.append(ghost);wrap.style.opacity='0';ghost.querySelector('button').tabIndex=-1;
     zone=inventory?rect(node('div','shop-buy-zone shop-sell-zone'),1375,210,150,225):rect(node('div','shop-buy-zone'),454,15,895,182);zone.id=inventory?'shop_sell_zone':'shop_buy_zone';zone.setAttribute('aria-live','polite');
@@ -107,6 +108,7 @@ function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
   function end(ev){
    if(ev.pointerId!==e.pointerId)return;
    const bounds=zone?.getBoundingClientRect(),drop=dragged&&bounds&&ev.clientX>=bounds.left&&ev.clientX<=bounds.right&&ev.clientY>=bounds.top&&ev.clientY<=bounds.bottom,available=zone?.dataset.available==='true';cleanup(dragged&&!(drop&&available));
+   if(!dragged){if(!busy){if(['owned','consumable','pack'].includes(kind))select();showTip(offer,card);}return;}
    if(drop){if(available)callbacks.onAction?.(inventory?'SELL_OWNED_CARD':kind==='booster'?'OPEN_BOOSTER':'BUY_SHOP_CARD',inventory?{area,cardId:offer.id}:{offerId:offer.id});else callbacks.onNotice?.(inventory?'Эту карту нельзя продать.':'Покупка недоступна: проверьте эффект карты, деньги и свободные места.');}
    else if(dragged&&inventory){
     const siblings=[...document.querySelectorAll(`#shop_owned [data-kind=${kind}]`)],cardBounds=card.getBoundingClientRect();
