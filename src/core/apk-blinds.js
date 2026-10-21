@@ -11,7 +11,7 @@ export function chooseApkBoss(rng, options = {}) {
     throw new TypeError('Unsupported APK boss selection context');
   }
   const { ante = 1, winAnte = 8, bossesUsed = {}, bannedKeys = [] } = options;
-  if (!Number.isSafeInteger(ante) || ante < 0 || !Number.isSafeInteger(winAnte) || winAnte < 1) {
+  if (!Number.isSafeInteger(ante) || ante < -1 || !Number.isSafeInteger(winAnte) || winAnte < 1) {
     throw new RangeError('Invalid boss ante or winAnte');
   }
   if (!object(bossesUsed) || Object.entries(bossesUsed).some(([id, count]) =>

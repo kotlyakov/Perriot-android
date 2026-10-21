@@ -23,7 +23,7 @@ test('native first non-finite Ante39 is explicit, without a finite safe-integer 
  assert.equal(typeof progression.nativeBlindTarget,'function');
  assert.equal(fixtures.targets.at(-1).base,'NaN');
  for(const ante of [39,40,1000])for(const mult of [1,1.5,2,6])assert.ok(Number.isNaN(progression.nativeBlindTarget(ante,mult)));
- for(const ante of [0,-1,1.5,NaN,Infinity])assert.throws(()=>progression.nativeBlindTarget(ante),RangeError);
+ for(const ante of [-2,1.5,NaN,Infinity])assert.throws(()=>progression.nativeBlindTarget(ante),RangeError);
  for(const multiplier of [0,-1,NaN,Infinity,'6'])assert.throws(()=>progression.nativeBlindTarget(8,multiplier),RangeError);
 });
 test('target helper admits showdown multipliers independently of lifecycle admission',()=>{

@@ -11,7 +11,7 @@ export function quoteShopCard({baseCost,inflation=0n,discountPercent=0n,
   extraValue=0n,couponed=false,area=''}={}) {
   integer(baseCost,'baseCost');integer(inflation,'inflation');
   integer(discountPercent,'discountPercent',0n,100n);
-  integer(ante,'ante',1n);integer(extraValue,'extraValue');
+  integer(ante,'ante',-1n);integer(extraValue,'extraValue');
   let extra=inflation;
   for(const [id,amount] of [['foil',2n],['holo',3n],['polychrome',5n],['negative',5n]])
     if(edition[id])extra+=amount;

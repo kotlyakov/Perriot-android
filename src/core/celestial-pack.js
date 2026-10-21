@@ -1,3 +1,4 @@
+import {takeTagPack} from './tag-effects.js';
 import catalogue from '../content/apk-shop-catalog.js';
 import {generateApkCelestialPack} from './apk-shop.js';
 import {currentApkShopContext} from './apk-shop-state.js';
@@ -29,7 +30,7 @@ export function canUsePackCard(state,card,targetCardIds=[]){
 }
 function closePack(state){
  if(handPack(state.packState.sourceEntityId)){state.drawPile.unshift(...[...state.hand].reverse());state.hand=[];}
- delete state.packState;state.phase='shop';
+ const returnPhase=state.packState.returnPhase??'shop';delete state.packState;state.phase=returnPhase;
 }
 const reject=(state,code,message)=>({state,events:[],error:{code,message}});
 
@@ -82,4 +83,21 @@ export function applyCelestialPackAction(state,action){
  if(closed)closePack(used.state);else used.state.phase='pack';
  used.state.apkShop.context=currentApkShopContext(used.state);
  return {state:used.state,events:[{type:'pack_card_used',cardId:card.id,entityId:card.entityId},...used.events,...(closed?[{type:'booster_closed'}]:[])],error:null};
+}
+
+// A tag opens the existing pack lifecycle without charging or inventing a shop.
+export function openPendingTagPack(state,events=[]){
+ if(state.phase!=='blind_selection'||!state.pendingTagPacks?.length)return state;
+ const staged=structuredClone(state),boosterId=takeTagPack(staged);
+ const savedShop=staged.shop,revision=staged.revision;
+ staged.phase='shop';staged.shop={main:[],vouchers:[],boosters:[{id:'tag_pack_'+revision,entityId:boosterId,originalKey:boosterId,set:'Booster',edition:'base',cost:0n,sellCost:0n}],rerollBase:5n,rerollIncrease:0n,freeRerolls:0};
+ // The same ante is retained while a free pack interrupts blind selection.
+ staged.tagPackOpening=true;
+ const opened=applyCelestialPackAction(staged,{type:'OPEN_BOOSTER',expectedRevision:revision,offerId:'tag_pack_'+revision});
+ if(opened.error)throw new TypeError(opened.error.message);
+ const next=opened.state;delete next.tagPackOpening;next.packState.returnPhase='blind_selection';next.revision=revision;
+ if(savedShop===undefined)delete next.shop;else next.shop=savedShop;
+ next.apkShop.context=currentApkShopContext(next);
+ events.push(...opened.events.filter(event=>event.type!=='money_changed'));
+ return next;
 }

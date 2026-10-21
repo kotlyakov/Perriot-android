@@ -1,3 +1,5 @@
+import {applyVoucherAction,applyBossRerollAction,voucherModifiers} from './vouchers.js';
+import {applyTagRoundEnd,applyTagRoundStart,applyTagShopStart,applyTagShopFinal,createTagShopHooks,consumeTagInvestment} from './tag-effects.js';
 import {realHandSize,changeHandSize,restoreBossHandSize} from './hand-size.js';
 import {applyItem7FirstDraw} from './joker-item7-creation.js';
 import {applyItem7PlayingCardsAdded,item7CapacityDeltas} from './joker-item7-lifecycle.js';
@@ -12,7 +14,7 @@ import {hasEffectMechanisms} from './playing-card-modifiers.js';
 import {handRecognitionOptions,SCORED_RETRIGGER_JOKERS,originalJokerKey} from '../content/jokers.js';
 import {applySkipBlind} from './skip-blind.js';
 import {applyConsumableAction} from './consumables.js';
-import {applyCelestialPackAction} from './celestial-pack.js';
+import {applyCelestialPackAction,openPendingTagPack} from './celestial-pack.js';
 import {canEnterBoss,chooseHookDiscards,chooseHeartJoker,chooseBellCard,shuffleAcornJokers,isBossCardDebuffed,resolveMostPlayedHand} from './boss-effects.js';
 import {applyInventoryAction} from './inventory.js';
 import {chooseNextAnteBlinds} from './blind-progression.js';
@@ -114,11 +116,12 @@ function drawToLimit(state, events,action='START_BLIND') {
 export function dispatch(state,action,shopOptions={}){
   let result;try{result=dispatchCore(state,action,shopOptions);}catch(error){return {state,events:[],error:{code:'INVALID_STATE',message:error.message}};}
   if(result.error||result.state===state)return result;
-  const next=result.state;
+  let next=result.state;
+  try{next=openPendingTagPack(next,result.events);result.state=next;}catch(error){return {state,events:[],error:{code:'INVALID_STATE',message:error.message}};}
   try{finishAction(state,next,action,result.events);}catch(error){return {state,events:[],error:{code:'INVALID_STATE',message:error.message}};}
   const spectralUse=action.type==='USE_CONSUMABLE'&&state.consumables?.some(card=>card.id===action.cardId&&card.set==='Spectral')||action.type==='USE_PACK_CARD'&&state.packState?.cards.some(card=>card.id===action.cardId&&card.set==='Spectral');
   let journal;
-  if(action.type==='PLAY_HAND'&&(!state.effectReplay||state.effectReplay.version===1)&&(hasEffectMechanisms(state)||state.rng?.apk&&next.phase==='round_won')){
+  if(action.type==='PLAY_HAND'&&(!state.effectReplay||state.effectReplay.version===1)&&(hasEffectMechanisms(state)||state.apkShop?.context.usedVoucherIds.includes('v_observatory')||state.rng?.apk&&next.phase==='round_won')){
     const before=structuredClone(state);delete before.effectReplay;before.lastScore=null;
     journal={version:hasEffectMechanisms(state)?1:2,before,actions:[structuredClone(action)]};
   }else if(state.effectReplay){
@@ -133,7 +136,7 @@ export function dispatch(state,action,shopOptions={}){
   if(journal)next.effectReplay=journal;else delete next.effectReplay;
   return result;
 }
-function loseRound(next,events){const end=applyItem7EndRound(next,events,{gameOver:true});applyItem7EconomyContext(next,{type:'end_of_round'},events);if(end.saved)settleRoundSuccess(next,events,{saved:true,endRoundApplied:true});else next.phase='game_over';
+function loseRound(next,events){applyTagRoundEnd(next,events);const end=applyItem7EndRound(next,events,{gameOver:true});applyItem7EconomyContext(next,{type:'end_of_round'},events);if(end.saved)settleRoundSuccess(next,events,{saved:true,endRoundApplied:true});else next.phase='game_over';
       // APK state_events.lua:112-124 sets won even on a losing win-Ante Boss.
       if(next.round.blindId==='boss'&&next.round.ante===(next.winAnte??8))next.won=true;
       if(next.phase==='game_over')events.push({type:'round_lost',score:next.round.score});
@@ -151,7 +154,7 @@ function finishAction(before,next,action,events){
 }
 export function replayEffectActions(before,actions){
   let state=structuredClone(before);
-  for(const action of actions){const result=dispatchCore(state,action);if(result.error)throw new TypeError('Invalid effect action history');if(result.state!==state)finishAction(state,result.state,action,result.events);state=result.state;}
+  for(const action of actions){const result=dispatchCore(state,action);if(result.error)throw new TypeError('Invalid effect action history');if(result.state!==state)finishAction(state,result.state,action,result.events);state=openPendingTagPack(result.state,result.events);}
   return state;
 }
 function dispatchCore(state, action, shopOptions={}) {
@@ -168,6 +171,8 @@ function dispatchCore(state, action, shopOptions={}) {
   if(['REORDER_JOKERS','REORDER_CONSUMABLES','SELL_OWNED_CARD'].includes(action.type))return applyInventoryAction(state,action);
   if(action.type==='USE_CONSUMABLE')return applyConsumableAction(state,action);
   if(['OPEN_BOOSTER','USE_PACK_CARD','SKIP_PACK'].includes(action.type))return applyCelestialPackAction(state,action);
+  if(action.type==='BUY_VOUCHER')return applyVoucherAction(state,action);
+  if(action.type==='REROLL_BOSS')return applyBossRerollAction(state,action);
   if(action.type==='SKIP_BLIND')return applySkipBlind(state,action);
   if(['BUY_SHOP_CARD','SELL_JOKER','REROLL_SHOP','LEAVE_SHOP'].includes(action.type))return applyShopAction(state,action,shopOptions);
   if(action.type==='CASH_OUT') {
@@ -177,6 +182,7 @@ function dispatchCore(state, action, shopOptions={}) {
     // Preserve the earned target's native disable provenance after active boss cleanup.
     if(next.bossState?.disabled&&['bl_wall','bl_final_vessel'].includes(next.bossState.id))next.round.bossDisabled=true;
     if(next.bossState){restoreBossHandSize(next);if(next.bossState.id==='bl_final_heart')for(const joker of next.jokers)joker.debuffed=false;delete next.bossState;next.apkBlinds.playedCardIds=[];next.mostPlayedHand=resolveMostPlayedHand(next.apkShop.context.playedHands);}next.money+=quote.total;delete next.cashoutQuote;next.phase='shop';next.revision++;
+    if(next.apkShop){const nextCounters=voucherModifiers(next);next.round.handsRemaining=Math.max(1,(next.deckId==='blue'?5:4)+nextCounters.hands);next.round.discardsRemaining=Math.max(0,(next.deckId==='red'?4:3)+nextCounters.discards);}
     next.drawPile=Object.keys(next.cards);next.hand=[];next.discardPile=[];next.lastScore=null;if(state.hangedShortfallCardIds)next.hangedShortfallEpoch={...(state.hangedShortfallEpoch??{cardIds:[...state.hangedShortfallCardIds],revision:state.revision,ante:state.round.ante,blindId:state.round.blindId,handsRemaining:state.round.handsRemaining}),consumed:true,consumedBy:action.type};delete next.hangedShortfallCardIds;consumeSpectralShortfall(state,next,action.type);
     if(next.apkShop){
       try{
@@ -190,10 +196,12 @@ function dispatchCore(state, action, shopOptions={}) {
           const selected=chooseNextAnteBlinds(next,next.rng.apk);
           next.nextAnteBlinds=selected.selection;next.rng.apk=selected.rng;
         }
-        const generated=generateApkShop(next.rng.apk,context,{voucherId:next.apkShop.voucherId,
+        const tagEvents=[];consumeTagInvestment(next,tagEvents);
+        const generated=generateApkShop(next.rng.apk,context,{mainHooks:createTagShopHooks(next,tagEvents),voucherId:next.apkShop.voucherId,
           firstShopBuffoon:next.apkShop.firstShopBuffoon,instancePrefix:'shop_'+next.revision});
-        next.shop=createShop({offers:generated.offers});stampJokerCreationOrdinals(next,next.shop.main);next.rng.apk=generated.rng;
-        next.apkShop.firstShopBuffoon=generated.firstShopBuffoon;
+        next.shop=createShop({offers:generated.offers,rerollBase:voucherModifiers(next).rerollBase});applyTagShopStart(next,tagEvents);stampJokerCreationOrdinals(next,next.shop.main);next.rng.apk=generated.rng;
+        next.apkShop.firstShopBuffoon=generated.firstShopBuffoon;applyTagShopFinal(next,tagEvents);
+        if(next.round.blindId==='boss')delete next.bossRerollUsed;
         next.apkShop.context=currentApkShopContext(next);
       }catch{return reject('UNSUPPORTED_SHOP_STATE','Shop generation inputs are unsupported');}
     }
@@ -202,7 +210,7 @@ function dispatchCore(state, action, shopOptions={}) {
   if (action.type==='START_BLIND') {
     if (state.phase!=='blind_selection') return reject('INVALID_PHASE','Not selecting a blind');
     if(state.round.blindId==='boss'&&!canEnterBoss(state))return reject('BOSS_UNAVAILABLE','Boss lifecycle is unavailable');
-    const next=structuredClone(state);const events=[];
+    const next=structuredClone(state);const events=[];applyTagRoundStart(next,events);
     if(next.round.blindId==='boss'){
       next.bossState={version:1,disabled:false,id:next.apkBlinds.bossId,playedBeforeBoss:[...next.apkBlinds.playedCardIds],baseHandSize:realHandSize(next)};
       if(next.bossState.id==='bl_manacle')changeHandSize(next,-1,{updateBoss:false});

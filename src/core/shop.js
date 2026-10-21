@@ -1,3 +1,7 @@
+import {voucherModifiers} from './vouchers.js';
+import {createTagShopHooks} from './tag-effects.js';
+import {createPlayingCard} from './apk-deck.js';
+import {applyItem7PlayingCardsAdded} from './joker-item7-lifecycle.js';
 import {canEnterBoss,bossTarget} from './boss-effects.js';
 import {nativeBlindTarget,blindBase,canLeaveApkShop,chooseNextAnteBlinds} from './blind-progression.js';
 import {chooseApkOrbitalHand} from './apk-tags.js';
@@ -29,7 +33,7 @@ export function createShop({offers,rerollBase=5n,freeRerolls=0}={}) {
 }
 export function getRerollCost(shop) {
   if(!validShop(shop))throw new TypeError('Invalid shop');
-  return shop.freeRerolls>0?0n:shop.rerollBase+shop.rerollIncrease;
+  return shop.freeRerolls>0?0n:shop.rerollCostOverride??shop.rerollBase+shop.rerollIncrease;
 }
 export function hasJokerSpace(state,offer) {
   const slots=state.jokerSlots??5;
@@ -48,9 +52,10 @@ export function stampJokerCreationOrdinals(state,cards){
  }
  for(const card of cards)if((['Joker','Tarot','Planet','Spectral'].includes(card?.set)||supportsConsumableEffect(card))&&!Object.hasOwn(card,'creationOrdinal'))card.creationOrdinal=state.nextJokerCreationOrdinal++;
 }
+export function isPlayingShopCard(offer){return ['Base','Enhanced'].includes(offer?.set)&&typeof offer.frontKey==='string'&&/^[CDHS]_[2-9AJKQT]$/.test(offer.frontKey);}
 export function canBuyShopCard(state,offer){
- const consumable=supportsConsumableEffect(offer);
- return state.phase==='shop'&&(state.inflation??0n)===0n&&(consumable||supportsJoker(offer))&&canAfford(state.money,offer.cost,state.bankruptAt??0n)&&(consumable?hasConsumableSpace(state,offer):hasJokerSpace(state,offer));
+ const consumable=supportsConsumableEffect(offer),playing=isPlayingShopCard(offer);
+ return state.phase==='shop'&&(state.inflation??0n)===0n&&(playing||consumable||supportsJoker(offer))&&canAfford(state.money,offer.cost,state.bankruptAt??0n)&&(playing?Object.keys(state.cards??{}).length<10000:consumable?hasConsumableSpace(state,offer):hasJokerSpace(state,offer));
 }
 
 // Caller supplies verified offers and RNG producer; no inferred original pool here.
@@ -68,18 +73,18 @@ export function applyShopAction(state,action,{refill,nextRound}={}) {
   if(action.type==='BUY_SHOP_CARD') {
     const offer=state.shop.main.find(o=>o.id===action.offerId);
     if(!offer)return reject('OFFER_NOT_FOUND','Shop offer is no longer available');
-    const consumable=supportsConsumableEffect(offer);
-    if(!consumable&&!supportsJoker(offer) || (state.inflation??0n)!==0n)
+    const consumable=supportsConsumableEffect(offer),playing=isPlayingShopCard(offer);
+    if(!playing&&!consumable&&!supportsJoker(offer) || (state.inflation??0n)!==0n)
       return reject('UNSUPPORTED_CONTENT','Purchase effect is not implemented');
-    if(state.apkShop&&(offer.originalKey!==offer.entityId||!(consumable?['Tarot','Planet','Spectral'].includes(offer.set):offer.set==='Joker')))return reject('INVALID_STATE','Invalid native offer identity');
+    if(state.apkShop&&(offer.originalKey!==offer.entityId||!(playing?['Base','Enhanced'].includes(offer.set):consumable?['Tarot','Planet','Spectral'].includes(offer.set):offer.set==='Joker')))return reject('INVALID_STATE','Invalid native offer identity');
     if(state.cards&&Object.hasOwn(state.cards,offer.id))return reject('INVALID_STATE','Instance ID collides with a playing card');
     if([...state.jokers,...(state.consumables??[])].some(j=>j.id===offer.id))return reject('INVALID_STATE','Instance ID already owned');
-    if(!(consumable?hasConsumableSpace(state,offer):hasJokerSpace(state,offer)))return reject('NO_SPACE','Inventory area is full');
+    if(!(playing?Object.keys(state.cards??{}).length<10000:consumable?hasConsumableSpace(state,offer):hasJokerSpace(state,offer)))return reject('NO_SPACE','Inventory area is full');
     if(!canAfford(state.money,offer.cost,floor))return reject('INSUFFICIENT_FUNDS','Insufficient available money');
     const next=structuredClone(state);
     next.shop.main=next.shop.main.filter(o=>o.id!==offer.id);
     const bought=structuredClone(offer);stampJokerCreationOrdinals(next,[bought]);
-    if(consumable){next.consumables??=[];next.consumables.push(bought);}else next.jokers.push(bought);next.money-=offer.cost;
+    if(playing){const [suit,rank]=offer.frontKey.split('_'),value=({A:14,K:13,Q:12,J:11,T:10})[rank]??Number(rank);const card=createPlayingCard(next,{rank:value,suit:({C:'clubs',D:'diamonds',H:'hearts',S:'spades'})[suit],edition:offer.edition,...(offer.enhancement?{enhancement:offer.enhancement}:{})});applyItem7PlayingCardsAdded(next,[card],[]);}else if(consumable){next.consumables??=[];next.consumables.push(bought);}else next.jokers.push(bought);next.money-=offer.cost;
     if(next.apkShop)next.apkShop.context=currentApkShopContext(next);
     return finish(next,[{type:'shop_card_bought',offerId:offer.id,...(consumable?{consumableId:offer.id}:{jokerId:offer.id}),cost:offer.cost},
       {type:'money_changed',before:state.money,after:next.money,delta:-offer.cost}]);
@@ -100,9 +105,9 @@ export function applyShopAction(state,action,{refill,nextRound}={}) {
     if(!canAfford(state.money,cost,floor))return reject('INSUFFICIENT_FUNDS','Insufficient available money');
     const native=!!state.apkShop;
     if(!native&&(typeof refill!=='function' || !state.rng?.shop))return reject('REFILL_UNAVAILABLE','No verified refill producer');
-    let produced;
+    let produced;const generationState=structuredClone(state),tagEvents=[];
     try {
-      produced=native?rerollApkShop(state.rng.apk,currentApkShopContext(state),{previousMain:state.shop.main,instancePrefix:'reroll_'+(state.revision+1)}):
+      produced=native?rerollApkShop(state.rng.apk,currentApkShopContext(state),{mainHooks:createTagShopHooks(generationState,tagEvents),previousMain:state.shop.main,instancePrefix:'reroll_'+(state.revision+1)}):
         refill({rng:structuredClone(state.rng.shop),offers:structuredClone(state.shop.main)});
       if(!produced || !validMain(produced.main) || !produced.rng)return reject('INVALID_REFILL','Invalid refill output');
       if(native)validateApkRng(produced.rng);
@@ -112,13 +117,14 @@ export function applyShopAction(state,action,{refill,nextRound}={}) {
       const proposed={...state.shop,main:produced.main};
       if(!validShop(proposed) || produced.main.some(o=>state.jokers.some(j=>j.id===o.id)))return reject('INVALID_REFILL','Duplicate refill instance ID');
     }catch{return reject('INVALID_REFILL','Refill producer failed');}
-    const next=structuredClone(state);next.shop.main=structuredClone(produced.main);
+    const next=generationState;next.shop.main=structuredClone(produced.main);
     stampJokerCreationOrdinals(next,next.shop.main);
     next.rng[native?'apk':'shop']=structuredClone(produced.rng);next.money-=cost;
     if(native)next.apkShop.context=currentApkShopContext(next);
+    delete next.shop.rerollCostOverride;
     if(next.shop.freeRerolls>0)next.shop.freeRerolls--;
     else next.shop.rerollIncrease++;
-    return finish(next,[{type:'shop_rerolled',cost,offerIds:next.shop.main.map(o=>o.id),nextCost:getRerollCost(next.shop)},
+    return finish(next,[...tagEvents,{type:'shop_rerolled',cost,offerIds:next.shop.main.map(o=>o.id),nextCost:getRerollCost(next.shop)},
       {type:'money_changed',before:state.money,after:next.money,delta:-cost}]);
   }
   if(action.type==='LEAVE_SHOP') {
@@ -138,7 +144,8 @@ export function applyShopAction(state,action,{refill,nextRound}={}) {
           }
         }catch{return reject('NEXT_BLIND_UNAVAILABLE','Invalid next ante selection');}
       }
-      next.round={...next.round,ante,blindId:newAnte?'small':boss?'boss':'big',target:newAnte?blindBase(ante):boss?bossTarget(next):nativeBlindTarget(ante,1.5),score:0n,handsRemaining:next.deckId==='blue'?5:4,discardsRemaining:next.deckId==='red'?4:3};
+      const vouchers=voucherModifiers(next);delete next.round.targetAnte;
+      next.round={...next.round,ante,blindId:newAnte?'small':boss?'boss':'big',target:newAnte?blindBase(ante):boss?bossTarget(next):nativeBlindTarget(ante,1.5),score:0n,handsRemaining:(next.deckId==='blue'?5:4)+vouchers.hands,discardsRemaining:(next.deckId==='red'?4:3)+vouchers.discards};
       delete next.round.bossDisabled;
       next.hand=[];next.discardPile=[];next.apkShop.context=currentApkShopContext(next);
       return finish(next,[{type:'shop_left',nextBlindId:next.round.blindId}]);

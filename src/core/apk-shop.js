@@ -27,7 +27,7 @@ export function createApkShopContext(options={}){
  if(!object(context.modifiers)||Object.entries(context.modifiers).some(([key,value])=>!modifierKeys.includes(key)||typeof value!=='boolean'))throw new TypeError('Invalid or unsupported shop modifier');
  if(options.rates!==undefined&&(!object(options.rates)||Object.keys(options.rates).some(key=>!['Joker','Tarot','Planet','Base','Spectral'].includes(key))))throw new TypeError('Unknown shop type rate');
  context.rates={Joker:20,Tarot:4,Planet:4,Base:0,Spectral:0,...options.rates};
- if(!Number.isSafeInteger(context.ante)||context.ante<1)throw new RangeError('Invalid shop ante');
+ if(!Number.isSafeInteger(context.ante)||context.ante< -1)throw new RangeError('Invalid shop ante');
  for(const field of ['mainSlots','boosterSlots','inflation','discountPercent'])if(!Number.isSafeInteger(context[field])||context[field]<0)throw new RangeError(`Invalid ${field}`);
  if(context.discountPercent>100 || !Number.isFinite(context.editionRate) || context.editionRate<0 || Object.values(context.rates).some(rate=>!Number.isFinite(rate)||rate<0)||!Number.isFinite(Object.values(context.rates).reduce((a,b)=>a+b,0))||Object.values(context.rates).reduce((a,b)=>a+b,0)<=0)throw new RangeError('Invalid shop rates or pricing');
  return context;
@@ -48,10 +48,10 @@ export function session(rng,context){
   if(c.no_pool_flag&&context.poolFlags[c.no_pool_flag] || c.yes_pool_flag&&!context.poolFlags[c.yes_pool_flag] || context.bannedCentreIds.includes(c.key))add=false;
   return add;
  };
- const select=(set,append='',forcedRarity,legendary=false)=>{
+ const select=(set,append='',forcedRarity,legendary=false,{noAnte=false}={})=>{
   let source=pools[set];let key=set+append;
   if(set==='Joker'){const poll=forcedRarity??random('rarity'+context.ante+append);const rarity=legendary?4:poll>0.95?3:poll>0.7?2:1;source=source.filter(c=>c.rarity===rarity);key='Joker'+rarity+(legendary?'':append);}
-  if(!legendary)key+=context.ante;
+  if(!legendary&&!noAnte)key+=context.ante;
   let values=source.map(c=>available(c)?c.key:'UNAVAILABLE');
   if(values.every(v=>v==='UNAVAILABLE'))values=[fallback[set]];
   let id=element(values,key),resample=1;
@@ -59,10 +59,11 @@ export function session(rng,context){
   return id;
  };
  const edition=(key='edisho'+context.ante)=>{const poll=random(key);return poll>0.997?'negative':poll>1-0.006*context.editionRate?'polychrome':poll>1-0.02*context.editionRate?'holographic':poll>1-0.04*context.editionRate?'foil':'base';};
- const construct=(id,instanceId,{main=false,materialize=false,frontKey}={})=>{
+ const construct=(id,instanceId,{main=false,materialize=false,frontKey,editionKey}={})=>{
   const c=centres[id];if(!c)throw new Error('Unknown APK centre '+id);
   const offer={id:instanceId,entityId:id,originalKey:id,set:c.set,edition:'base'};
   if(frontKey)offer.frontKey=frontKey;
+  if(c.set==='Enhanced')offer.enhancement=id.slice(2);
   if(id==='j_todo_list')offer.toDoPokerHand=element(context.visibleHandOrder,'to_do');
   for(const centre of catalogue.centres)if(centre.name===c.name)used.add(centre.key);
   for(let i=0;i<3;i++)unkeyed();
@@ -72,7 +73,7 @@ export function session(rng,context){
    if((m.all_eternal||m.enable_eternals_in_shop&&poll>0.7)&&c.eternal_compat)offer.eternal=true;
    else if(m.enable_perishables_in_shop&&poll>0.4&&poll<=0.7&&c.perishable_compat)offer.perishable=true;
    if(m.enable_rentals_in_shop&&random('ssjr'+context.ante)>0.7)offer.rental=true;
-   offer.edition=edition();
+   offer.edition=edition(editionKey??'edisho'+context.ante);
   }
   return reprice(offer);
  };
@@ -80,7 +81,9 @@ export function session(rng,context){
   const c=centres[offer.entityId];const edition=offer.edition==='base'?{}:{[offer.edition==='holographic'?'holo':offer.edition]:true};
   Object.assign(offer,quoteShopCard({baseCost:BigInt(c.cost??1),inflation:BigInt(context.inflation),discountPercent:BigInt(context.discountPercent),set:c.set,name:c.name,edition,ante:BigInt(context.ante),boosterAnteScaling:!!context.modifiers.booster_ante_scaling,tutorialShopSurcharge:!!context.tutorialShopSurcharge,astronomer:has('j_astronomer'),rental:!!offer.rental}));return offer;
  };
- const main=(prefix,reroll=false)=>Array.from({length:context.mainSlots},(_,index)=>{
+ const main=(prefix,reroll=false,hooks={})=>Array.from({length:context.mainSlots},(_,index)=>{
+  const instanceId=`${prefix}_main_${index+1}`,forced=hooks.create?.(api,instanceId);
+  if(forced){hooks.modify?.(api,forced);if(reroll)juice();return forced;}
   const total=Object.values(context.rates).reduce((a,b)=>a+b,0);const poll=random('cdt'+context.ante)*total;
   // Lua constructs its entire range table before inspecting any range.
   const illusion=context.usedVoucherIds.includes('v_illusion');const enhanced=illusion&&random('illusion')>0.6;
@@ -96,15 +99,15 @@ export function session(rng,context){
   }
   const offer=construct(id,`${prefix}_main_${index+1}`,{main:true,frontKey});
   if(['Base','Enhanced'].includes(type)&&illusion&&random('illusion')>0.8){const ep=random('illusion');offer.edition=ep>0.85?'polychrome':ep>0.5?'holographic':'foil';reprice(offer);}
-  if(reroll)juice();return offer;
+  hooks.modify?.(api,offer);if(reroll)juice();return offer;
  });
- return {random,element,unkeyed,select,construct,main,edition,reprice,usedHas:id=>used.has(id),get rng(){return current;}};
+ const api={random,element,unkeyed,select,construct,main,edition,reprice,usedHas:id=>used.has(id),get rng(){return current;}};return api;
 }
 export function chooseApkVoucher(rng,context){context=createApkShopContext(context);const s=session(rng,context);return {voucherId:s.select('Voucher'),rng:s.rng};}
-export function generateApkShop(rng,context,{voucherId,firstShopBuffoon=false,instancePrefix='shop'}={}){
+export function generateApkShop(rng,context,{voucherId,firstShopBuffoon=false,instancePrefix='shop',mainHooks}={}){
  context=createApkShopContext(context);
  if(voucherId!==null&&centres[voucherId]?.set!=='Voucher')throw new TypeError('Stored voucherId required');
- const s=session(rng,context);const main=s.main(instancePrefix);
+ const s=session(rng,context);const main=s.main(instancePrefix,false,mainHooks);
  const vouchers=voucherId===null?[]:[s.construct(voucherId,`${instancePrefix}_voucher`,{materialize:true})];
  const boosters=Array.from({length:context.boosterSlots},(_,index)=>{
   let id;
@@ -119,11 +122,11 @@ export function generateApkShop(rng,context,{voucherId,firstShopBuffoon=false,in
  });
  return {offers:{main,vouchers,boosters},rng:s.rng,firstShopBuffoon};
 }
-export function rerollApkShop(rng,context,{previousMain=[],instancePrefix='reroll'}={}){
+export function rerollApkShop(rng,context,{previousMain=[],instancePrefix='reroll',mainHooks}={}){
  context=createApkShopContext(context);
  const removed=new Set(previousMain.map(o=>o.entityId));
  const retained=context.usedCentreIds.filter(id=>!removed.has(id)||context.ownedCentreIds.includes(id));
- const s=session(rng,{...context,usedCentreIds:retained});return {main:s.main(instancePrefix,true),rng:s.rng};
+ const s=session(rng,{...context,usedCentreIds:retained});return {main:s.main(instancePrefix,true,mainHooks),rng:s.rng};
 }
 
 const telescopeHands=['Flush Five','Flush House','Five of a Kind','Straight Flush','Four of a Kind','Full House','Flush','Straight','Three of a Kind','Two Pair','Pair','High Card'];

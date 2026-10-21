@@ -1,14 +1,39 @@
 import {canEnterBoss} from '../core/boss-effects.js';
 import {canLeaveApkShop} from '../core/blind-progression.js';
-import {describeShopItem,displayPlayingCard} from '../content/shop-display.js';
+import {describeShopItem as describeCatalogueItem,displayPlayingCard} from '../content/shop-display.js';
 import {appendTooltipContents} from './tooltip-text.js';
-import {getRerollCost,hasJokerSpace,hasConsumableSpace,canBuyShopCard} from '../core/shop.js';
-import {canUseConsumable,supportsConsumableEffect} from '../core/consumables.js';
+import {getRerollCost,canBuyShopCard} from '../core/shop.js';
+import {canUseConsumable} from '../core/consumables.js';
 import {canAfford} from '../core/shop-pricing.js';
 import {canManageInventory,canSellOwned} from '../core/inventory.js';
 import {supportsBooster,canUsePackCard} from '../core/celestial-pack.js';
 
+import {canBuyVoucher} from '../core/vouchers.js';
+
 import {cardMarkup,applyCardModifiers} from './field.js';
+
+const voucherDescriptions={
+ v_overstock_norm:'В магазине на 1 карту больше.',v_overstock_plus:'В магазине ещё на 1 карту больше.',
+ v_clearance_sale:'Все карты и наборы в магазине дешевле на 25%.',v_liquidation:'Все карты и наборы в магазине дешевле на 50%.',
+ v_hone:'Фольга, голографические и полихромные издания появляются в 2 раза чаще.',v_glow_up:'Фольга, голографические и полихромные издания появляются в 4 раза чаще.',
+ v_reroll_surplus:'Переброс магазина дешевле на $2.',v_reroll_glut:'Переброс магазина дешевле ещё на $2.',
+ v_crystal_ball:'Даёт 1 дополнительное место для расходных карт.',v_omen_globe:'В наборах Таро могут появляться Спектральные карты.',
+ v_telescope:'В Небесном наборе всегда есть планета для вашей самой часто сыгранной комбинации.',v_observatory:'Каждая планета среди ваших расходных карт даёт ×1,5 к множителю своей комбинации.',
+ v_grabber:'Даёт 1 дополнительную руку в каждом раунде.',v_nacho_tong:'Даёт ещё 1 дополнительную руку в каждом раунде.',
+ v_wasteful:'Даёт 1 дополнительный сброс в каждом раунде.',v_recyclomancy:'Даёт ещё 1 дополнительный сброс в каждом раунде.',
+ v_tarot_merchant:'Карты Таро появляются в магазине чаще.',v_tarot_tycoon:'Карты Таро появляются в магазине значительно чаще.',
+ v_planet_merchant:'Планеты появляются в магазине чаще.',v_planet_tycoon:'Планеты появляются в магазине значительно чаще.',
+ v_seed_money:'Увеличивает предел процентов за раунд до $10.',v_money_tree:'Увеличивает предел процентов за раунд до $20.',
+ v_blank:'Ничего не делает.',v_antimatter:'Даёт 1 дополнительное место для джокера.',
+ v_magic_trick:'Позволяет покупать игральные карты в магазине.',v_illusion:'Игральные карты в магазине могут иметь усиление и издание.',
+ v_hieroglyph:'Уменьшает анте на 1 и количество рук в каждом раунде на 1.',v_petroglyph:'Уменьшает анте на 1 и количество сбросов в каждом раунде на 1.',
+ v_directors_cut:'За $10 позволяет заменить босса один раз за анте.',v_retcon:'За $10 позволяет заменять босса без ограничения числа замен.',
+ v_paint_brush:'Увеличивает размер руки на 1 карту.',v_palette:'Увеличивает размер руки ещё на 1 карту.',
+};
+function describeShopItem(offer,options){
+ const details=describeCatalogueItem(offer,options);
+ return {...details,...(voucherDescriptions[offer.entityId]?{description:voucherDescriptions[offer.entityId],canBuy:true}:{}),...(displayPlayingCard(offer)?{canBuy:true}:{})};
+}
 
 let view=null,packView=null,selected=null,tip=null,lastMain=null,entryMotion,stageTipListener=false,cancelDrag,cancelReturn,lastAcornRound=null;
 const reduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -54,7 +79,7 @@ function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
  const debuffed=kind==='owned'&&state.phase==='playing'&&offer.debuffed===true;
  const details=hidden?{name:'Скрытый джокер',canBuy:false}:describeShopItem(offer,{owned:kind==='owned'}),card=node('button','shop-card shop-'+(kind==='owned'?'owned-card':kind));card.type='button';card.disabled=busy;card.setAttribute('aria-label',details.name+(debuffed?' — ослаблен':''));card.setAttribute('aria-pressed',String(selected?.id===offer.id));
  if(hidden){card.classList.add('acorn-hidden');const back=node('span','acorn-back');back.setAttribute('aria-hidden','true');back.innerHTML='<svg viewBox="0 0 104 143"><path d="M7 7H97V136H7Z M14 14H90V129H14Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M52 28L80 72L52 115L24 72Z" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="52" cy="72" r="12" fill="currentColor"/></svg>';card.append(back);}
- else if(kind==='pack'&&displayPlayingCard(offer)){const playing=displayPlayingCard(offer);card.classList.add('playing-card','pack-playing-card');card.innerHTML=cardMarkup(playing);applyCardModifiers(card,playing);}else card.append(artwork(offer,kind),node('span','shop-card-name',details.name));
+ else if(['pack','main'].includes(kind)&&displayPlayingCard(offer)){const playing=displayPlayingCard(offer);card.classList.add('playing-card','pack-playing-card');card.innerHTML=cardMarkup(playing);applyCardModifiers(card,playing);}else card.append(artwork(offer,kind),node('span','shop-card-name',details.name));
  if(debuffed){card.classList.add('heart-debuffed');card.append(node('span','joker-debuff-stamp','Ослаблен'));}
  if(!hidden&&offer.edition&&offer.edition!=='base')card.dataset.edition=offer.edition;
  if(!['owned','consumable','pack'].includes(kind)){const plaque=node('div','shop-price');plaque.append(money(offer.cost));wrap.append(plaque);}
@@ -99,8 +124,8 @@ function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
     const stage=document.getElementById('stage'),bounds=wrap.getBoundingClientRect(),stageBounds=stage.getBoundingClientRect();
     ghost=wrap.cloneNode(true);ghost.querySelector('.shop-use')?.remove();rect(ghost,(bounds.left-stageBounds.left)/scale,(bounds.top-stageBounds.top)/scale,w,h);ghost.classList.add('is-dragging');ghost.setAttribute('aria-hidden','true');ghost.style.pointerEvents='none';stage.append(ghost);wrap.style.opacity='0';ghost.querySelector('button').tabIndex=-1;
     zone=inventory?rect(node('div','shop-buy-zone shop-sell-zone'),1375,210,150,225):rect(node('div','shop-buy-zone'),454,15,895,182);zone.id=inventory?'shop_sell_zone':'shop_buy_zone';zone.setAttribute('aria-live','polite');
-    const pack=kind==='booster'&&supportsBooster(offer.entityId)&&offer.originalKey===offer.entityId&&offer.set==='Booster',supported=pack||kind==='main'&&details.canBuy&&(state.inflation??0n)===0n,consumable=supportsConsumableEffect(offer);
-    const reason=inventory?(canSellOwned(state,offer,area)?null:offer.eternal?'Вечная карта':'Продажа недоступна'):!supported?'Доступен только просмотр':!canAfford(state.money,offer.cost,state.bankruptAt??0n)?'Недостаточно денег':!pack&&!(consumable?hasConsumableSpace(state,offer):hasJokerSpace(state,offer))?(consumable?'Нет места для расходной карты':'Нет места для джокера'):!pack&&!canBuyShopCard(state,offer)?'Покупка недоступна':null;
+    const pack=kind==='booster'&&supportsBooster(offer.entityId)&&offer.originalKey===offer.entityId&&offer.set==='Booster',voucher=kind==='voucher',supported=pack||voucher||kind==='main'&&details.canBuy&&(state.inflation??0n)===0n;
+    const reason=inventory?(canSellOwned(state,offer,area)?null:offer.eternal?'Вечная карта':'Продажа недоступна'):!supported?'Доступен только просмотр':!canAfford(state.money,offer.cost,state.bankruptAt??0n)?'Недостаточно денег':voucher&&!canBuyVoucher(state,offer)?'Ваучер уже получен или недоступен':!pack&&!voucher&&!canBuyShopCard(state,offer)?'Покупка недоступна: проверьте свободные места':null;
     zone.dataset.available=String(!reason);zone.append(node('strong','',reason??(inventory?'Продать':'Купить')),hidden?node('span','shop-money','?'):money(inventory?offer.sellCost??0n:offer.cost,inventory?125:800,43));document.getElementById('stage').append(zone);
    }
    if(dragged){ev.preventDefault();ghost.style.translate=(ev.clientX-startX)/scale+'px '+(ev.clientY-startY)/scale+'px';const b=zone.getBoundingClientRect();zone.classList.toggle('is-over',ev.clientX>=b.left&&ev.clientX<=b.right&&ev.clientY>=b.top&&ev.clientY<=b.bottom);}
@@ -109,7 +134,7 @@ function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
    if(ev.pointerId!==e.pointerId)return;
    const bounds=zone?.getBoundingClientRect(),drop=dragged&&bounds&&ev.clientX>=bounds.left&&ev.clientX<=bounds.right&&ev.clientY>=bounds.top&&ev.clientY<=bounds.bottom,available=zone?.dataset.available==='true';cleanup(dragged&&!(drop&&available));
    if(!dragged){if(!busy){if(['owned','consumable','pack'].includes(kind))select();showTip(offer,card);}return;}
-   if(drop){if(available)callbacks.onAction?.(inventory?'SELL_OWNED_CARD':kind==='booster'?'OPEN_BOOSTER':'BUY_SHOP_CARD',inventory?{area,cardId:offer.id}:{offerId:offer.id});else callbacks.onNotice?.(inventory?'Эту карту нельзя продать.':'Покупка недоступна: проверьте эффект карты, деньги и свободные места.');}
+   if(drop){if(available)callbacks.onAction?.(inventory?'SELL_OWNED_CARD':kind==='booster'?'OPEN_BOOSTER':kind==='voucher'?'BUY_VOUCHER':'BUY_SHOP_CARD',inventory?{area,cardId:offer.id}:{offerId:offer.id});else callbacks.onNotice?.(inventory?'Эту карту нельзя продать.':'Покупка недоступна: проверьте эффект карты, деньги и свободные места.');}
    else if(dragged&&inventory){
     const siblings=[...document.querySelectorAll(`#shop_owned [data-kind=${kind}]`)],cardBounds=card.getBoundingClientRect();
     const inRow=ev.clientY>=cardBounds.top-25*scale&&ev.clientY<=cardBounds.bottom+25*scale;
