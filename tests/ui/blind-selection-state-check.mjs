@@ -14,7 +14,7 @@ try{for(const [width,height] of [[1536,688],[915,412],[360,800]]){
  for(const id of ['small','big']){
   const tag=page.locator('#tag_'+id);await tag.click();const tip=page.locator('#blind_tag_tooltip');assert.equal(await tip.isVisible(),true);assert.ok((await tip.innerText()).length>20);
   const box=await tip.boundingBox();assert.ok(box.x>=-1&&box.y>=-1&&box.x+box.width<=width+1&&box.y+box.height<=height+1);
-  assert.equal(await page.locator('#skip_'+id).isDisabled(),true);assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),saved);
+  assert.equal(await page.locator('#skip_'+id).isDisabled(),id!=='small');assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),saved);
   await page.keyboard.press('Escape');assert.equal(await page.locator('#blind_tag_tooltip').count(),0);
  }
  await page.locator('#tag_small').click();await page.reload();await enterRun(page,{startBlind:false});assert.equal(await page.locator('#blind_tag_tooltip').count(),0);assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),saved);
