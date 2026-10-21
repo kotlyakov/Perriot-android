@@ -1,6 +1,6 @@
 import {takeTagPack} from './tag-effects.js';
 import catalogue from '../content/apk-shop-catalog.js';
-import {generateApkCelestialPack} from './apk-shop.js';
+import {generateApkCelestialPack,session} from './apk-shop.js';
 import {currentApkShopContext} from './apk-shop-state.js';
 import {generateApkArcanaPack,supportsArcanaBooster} from './arcana-pack-generation.js';
 import {supportsRemainingBooster,getRemainingBoosterConfig,generateApkRemainingPack} from './booster-generation.js';
@@ -90,6 +90,8 @@ export function openPendingTagPack(state,events=[]){
  if(state.phase!=='blind_selection'||!state.pendingTagPacks?.length)return state;
  const staged=structuredClone(state),boosterId=takeTagPack(staged);
  const savedShop=staged.shop,revision=staged.revision;
+ const constructor=session(staged.rng.apk,{...currentApkShopContext(staged),reducedMotion:false});
+ constructor.construct(boosterId,'tag_pack_'+revision,{materialize:true});staged.rng.apk=constructor.rng;
  staged.phase='shop';staged.shop={main:[],vouchers:[],boosters:[{id:'tag_pack_'+revision,entityId:boosterId,originalKey:boosterId,set:'Booster',edition:'base',cost:0n,sellCost:0n}],rerollBase:5n,rerollIncrease:0n,freeRerolls:0};
  // The same ante is retained while a free pack interrupts blind selection.
  staged.tagPackOpening=true;
