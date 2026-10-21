@@ -35,12 +35,17 @@ test('Mega targeted use retains hand and second choice through reload; skip pays
 test('pack Hanged Man removes targets permanently, no refill or stale round shortfall, close and reload',()=>{
  const s=withCard(open('p_arcana_mega_1'),'c_hanged_man'),targets=s.hand.slice(0,2),r=act(s,'USE_PACK_CARD',{cardId:s.packState.cards[0].id,targetCardIds:targets});assert.equal(r.error,null);assert.equal(r.state.hand.length,6);assert.equal(r.state.hangedShortfallCardIds,undefined);assert.ok(targets.every(id=>!r.state.cards[id]));assert.deepEqual(reload(r.state),r.state);const closed=act(r.state,'SKIP_PACK');assert.equal(closed.error,null);assert.equal(closed.state.drawPile.length,50);assert.deepEqual(reload(closed.state),closed.state);
 });
-test('invalid targets, insufficient funds, stale actions and unsupported Omen reject without mutation',()=>{
+test('invalid targets, insufficient funds and stale actions reject without mutation',()=>{
  const s=open();
  // Use a known targeted card to avoid relying on random contents.
  const targeted=withCard(s,'c_death'),before=structuredClone(targeted),r=act(targeted,'USE_PACK_CARD',{cardId:targeted.packState.cards[0].id,targetCardIds:[targeted.hand[0]]});assert.ok(r.error);assert.deepEqual(targeted,before);
- for(const change of [s=>s.money=0n,s=>s.apkShop.context.usedVoucherIds=['v_omen_globe']]){const s=shop();change(s);const before=structuredClone(s),r=act(s,'OPEN_BOOSTER',{offerId:'pack'});assert.ok(r.error);assert.equal(r.state,s);assert.deepEqual(s,before);}
+ for(const change of [s=>s.money=0n]){const s=shop();change(s);const before=structuredClone(s),r=act(s,'OPEN_BOOSTER',{offerId:'pack'});assert.ok(r.error);assert.equal(r.state,s);assert.deepEqual(s,before);}
  assert.equal(dispatch(s,{type:'SKIP_PACK',expectedRevision:s.revision-1}).error.code,'STALE_ACTION');
+});
+test('Omen Arcana opening generates normally and admits a usable Spectral card across reload',()=>{
+ const s=shop();s.apkShop.context.usedVoucherIds=['v_omen_globe'];const before=structuredClone(s),generated=generateApkArcanaPack(s.rng.apk,currentApkShopContext(s),{boosterId:'p_arcana_normal_1',instancePrefix:'pack_'+(s.revision+1)});
+ const opened=act(s,'OPEN_BOOSTER',{offerId:'pack'});assert.equal(opened.error,null);assert.deepEqual(opened.state.packState.cards,generated.cards);assert.deepEqual(opened.state.rng.apk,generated.rng);assert.equal(opened.state.money,s.money-4n);assert.deepEqual(s,before);assert.deepEqual(reload(opened.state),opened.state);
+ const spectral=withCard(opened.state,'c_familiar');assert.deepEqual(reload(spectral),spectral);const used=act(spectral,'USE_PACK_CARD',{cardId:spectral.packState.cards[0].id});assert.equal(used.error,null);assert.equal(Object.keys(used.state.cards).length,Object.keys(spectral.cards).length+2);assert.equal(used.state.consumableUsage.c_familiar.count,1);assert.equal(used.state.phase,'shop');assert.deepEqual(reload(used.state),used.state);
 });
 test('full owned slots block pack generators without spending choice; other pack Tarots bypass slots',()=>{
  for(const key of ['c_emperor','c_high_priestess','c_fool']){

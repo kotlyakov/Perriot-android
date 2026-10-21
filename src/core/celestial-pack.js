@@ -2,6 +2,11 @@ import catalogue from '../content/apk-shop-catalog.js';
 import {generateApkCelestialPack} from './apk-shop.js';
 import {currentApkShopContext} from './apk-shop-state.js';
 import {generateApkArcanaPack,supportsArcanaBooster} from './arcana-pack-generation.js';
+import {supportsRemainingBooster,getRemainingBoosterConfig,generateApkRemainingPack} from './booster-generation.js';
+import {createPlayingCard} from './apk-deck.js';
+import {hasJokerSpace,stampJokerCreationOrdinals} from './shop.js';
+import {supportsJoker} from '../content/jokers.js';
+import {applyItem7PlayingCardsAdded} from './joker-item7-lifecycle.js';
 import {sortHand} from './sort.js';
 import {applyItem7EconomyContext} from './joker-item7-economy.js';
 import {canUseConsumable,applyConsumableAction} from './consumables.js';
@@ -10,14 +15,20 @@ import {canAfford} from './shop-pricing.js';
 export {supportsArcanaBooster};
 const centres=new Map(catalogue.centres.map(card=>[card.key,card]));
 export const supportsCelestialBooster=id=>centres.get(id)?.set==='Booster'&&centres.get(id)?.kind==='Celestial';
-const config=id=>({size:id.includes('_normal_')?3:5,choices:id.includes('_mega_')?2:1});
+export const supportsBooster=id=>supportsCelestialBooster(id)||supportsArcanaBooster(id)||supportsRemainingBooster(id);
+const config=id=>supportsRemainingBooster(id)?getRemainingBoosterConfig(id):{size:id.includes('_normal_')?3:5,choices:id.includes('_mega_')?2:1,kind:centres.get(id)?.kind};
+const handPack=id=>['Arcana','Spectral'].includes(config(id).kind);
+function physicalCard(offer){const [suit,rank]=offer.frontKey.split('_'),value=({A:14,K:13,Q:12,J:11,T:10})[rank]??Number(rank);return {suit:({C:'clubs',D:'diamonds',H:'hearts',S:'spades'})[suit],rank:value,...(offer.enhancement?{enhancement:offer.enhancement}:{}),...(offer.seal?{seal:offer.seal}:{}),edition:offer.edition??'base'};}
 export function canUsePackCard(state,card,targetCardIds=[]){
  if(state.phase!=='pack'||!state.packState?.cards.some(c=>c.id===card?.id))return {available:false,code:'CARD_NOT_FOUND',reason:'Карта набора недоступна.'};
- const staged={...state,phase:'shop',consumables:[...(state.consumables??[]),card]};
+ const kind=config(state.packState.sourceEntityId).kind;
+ if(kind==='Buffoon')return supportsJoker(card)&&hasJokerSpace(state,card)?{available:true,code:null,reason:null}:{available:false,code:'USE_UNAVAILABLE',reason:'Нет места для джокера или эффект недоступен.'};
+ if(kind==='Standard')return Object.keys(state.cards).length<10000?{available:true,code:null,reason:null}:{available:false,code:'USE_UNAVAILABLE',reason:'Достигнут предел размера колоды.'};
+ const staged={...state,phase:'pack',consumables:[...(state.consumables??[]),card]};
  return canUseConsumable(staged,card,targetCardIds,{fromPack:true});
 }
 function closePack(state){
- if(supportsArcanaBooster(state.packState.sourceEntityId)){state.drawPile.unshift(...[...state.hand].reverse());state.hand=[];}
+ if(handPack(state.packState.sourceEntityId)){state.drawPile.unshift(...[...state.hand].reverse());state.hand=[];}
  delete state.packState;state.phase='shop';
 }
 const reject=(state,code,message)=>({state,events:[],error:{code,message}});
@@ -31,17 +42,17 @@ export function applyCelestialPackAction(state,action){
   const offer=state.shop.boosters?.find(card=>card?.id===action.offerId);
   if(!offer)return reject(state,'OFFER_NOT_FOUND','Booster offer is no longer available');
   const arcana=supportsArcanaBooster(offer.entityId);
-  if(!(arcana||supportsCelestialBooster(offer.entityId))||offer.originalKey!==offer.entityId||offer.set!=='Booster')return reject(state,'UNSUPPORTED_CONTENT','This Booster effect is not implemented');
+  if(!supportsBooster(offer.entityId)||offer.originalKey!==offer.entityId||offer.set!=='Booster')return reject(state,'UNSUPPORTED_CONTENT','This Booster effect is not implemented');
   if(typeof offer.cost!=='bigint'||!canAfford(state.money,offer.cost,state.bankruptAt??0n))return reject(state,'INSUFFICIENT_FUNDS','Insufficient available money');
-  if(arcana&&state.apkShop.context.usedVoucherIds.includes('v_omen_globe'))return reject(state,'UNSUPPORTED_CONTENT','Omen Globe requires remaining Spectral effects (item 8b)');
   const next=structuredClone(state),events=[];
   // Native open callbacks finish before the delayed card-generation callback.
   applyItem7EconomyContext(next,{type:'open_booster'},events);
   const options={instancePrefix:'pack_'+(state.revision+1)};
-  const generated=arcana?generateApkArcanaPack(next.rng.apk,currentApkShopContext(next),{...options,boosterId:offer.entityId}):generateApkCelestialPack(next.rng.apk,currentApkShopContext(next),{...options,...config(offer.entityId)});
+  const generated=supportsRemainingBooster(offer.entityId)?generateApkRemainingPack(next.rng.apk,currentApkShopContext(next),{...options,boosterId:offer.entityId}):arcana?generateApkArcanaPack(next.rng.apk,currentApkShopContext(next),{...options,boosterId:offer.entityId}):generateApkCelestialPack(next.rng.apk,currentApkShopContext(next),{...options,...config(offer.entityId)});
   next.shop.boosters=next.shop.boosters.filter(card=>card.id!==offer.id);next.money-=offer.cost;next.rng.apk=generated.rng;next.phase='pack';next.revision++;
   next.packState={version:1,sourceEntityId:offer.entityId,cards:generated.cards,choicesRemaining:config(offer.entityId).choices};
-  if(arcana){const count=Math.min(next.drawPile.length,Math.max(0,next.round.handSize-next.hand.length)),ids=Array.from({length:count},()=>next.drawPile.pop());next.hand.push(...ids);sortHand(next);next.packState.handDraw={cardIds:ids,handSize:next.round.handSize};if(ids.length)events.push({type:'cards_drawn',cardIds:ids});}
+  if(config(offer.entityId).kind==='Buffoon')stampJokerCreationOrdinals(next,next.packState.cards);
+  if(handPack(offer.entityId)){const count=Math.min(next.drawPile.length,Math.max(0,next.round.handSize-next.hand.length)),ids=Array.from({length:count},()=>next.drawPile.pop());next.hand.push(...ids);sortHand(next);next.packState.handDraw={cardIds:ids,handSize:next.round.handSize};if(ids.length)events.push({type:'cards_drawn',cardIds:ids});}
   next.apkShop.context=currentApkShopContext(next);
   return {state:next,events:[{type:'booster_opened',offerId:offer.id,entityId:offer.entityId,cardIds:generated.cards.map(card=>card.id),choices:next.packState.choicesRemaining},{type:'money_changed',before:state.money,after:next.money,delta:-offer.cost},...events],error:null};
  }
@@ -54,7 +65,17 @@ export function applyCelestialPackAction(state,action){
  if(Object.keys(action).some(key=>!['type','expectedRevision','cardId','targetCardIds'].includes(key))||typeof action.cardId!=='string'||!action.cardId)return reject(state,'INVALID_ACTION','Malformed pack action');
  const card=state.packState.cards.find(candidate=>candidate.id===action.cardId);if(!card)return reject(state,'CARD_NOT_FOUND','Pack card is no longer available');
  const capability=canUsePackCard(state,card,action.targetCardIds);if(!capability.available)return reject(state,capability.code,capability.reason);
- const staged=structuredClone(state);staged.phase='shop';staged.consumables??=[];staged.consumables.push(structuredClone(card));
+ const kind=config(state.packState.sourceEntityId).kind;
+ if(kind==='Standard'||kind==='Buffoon'){
+  const next=structuredClone(state),events=[];
+  if(kind==='Standard'){const created=createPlayingCard(next,physicalCard(card));next.drawPile.pop();next.drawPile.unshift(created.id);applyItem7PlayingCardsAdded(next,[created],events);events.push({type:'playing_card_created',sourceId:card.id,cardId:created.id,card:structuredClone(created)});}
+  else next.jokers.push(structuredClone(card));
+  next.packState.cards=next.packState.cards.filter(c=>c.id!==card.id);next.packState.choicesRemaining--;next.revision++;
+  const closed=next.packState.choicesRemaining===0;if(closed)closePack(next);
+  next.apkShop.context=currentApkShopContext(next);
+  return {state:next,events:[{type:'pack_card_taken',cardId:card.id,entityId:card.entityId},...events,...(closed?[{type:'booster_closed'}]:[])],error:null};
+ }
+ const staged=structuredClone(state);staged.phase='pack';staged.consumables??=[];staged.consumables.push(structuredClone(card));
  const used=applyConsumableAction(staged,{type:'USE_CONSUMABLE',expectedRevision:state.revision,cardId:card.id,targetCardIds:action.targetCardIds},{fromPack:true});if(used.error)return reject(state,used.error.code,used.error.message);
  used.state.packState.cards=used.state.packState.cards.filter(candidate=>candidate.id!==card.id);used.state.packState.choicesRemaining--;
  const closed=used.state.packState.choicesRemaining===0||used.state.packState.cards.length===0;

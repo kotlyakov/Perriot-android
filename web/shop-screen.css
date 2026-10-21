@@ -26,3 +26,5 @@
 .bell-forced{outline:3px solid #2bb6cb;outline-offset:2px}
 
 .pack-screen.arcana-pack{top:183px;height:236px}.arcana-pack .pack-title{margin:10px 0 2px;font-size:26px}.arcana-pack .pack-choices{font-size:16px}.arcana-pack .shop-use{top:126px;left:-3px}.arcana-pack .shop-choice.is-selected{translate:0 -8px}
+
+.shop-card.pack-playing-card{width:100%;height:100%;padding:0}.pack-playing-card .face{left:50%;width:64px}.pack-playing-card .stone-face{left:50%;transform:translateX(-50%);width:70px}.pack-playing-card[data-enhancement]::after{left:18px;right:18px}

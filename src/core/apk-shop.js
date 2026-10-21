@@ -32,7 +32,7 @@ export function createApkShopContext(options={}){
  if(context.discountPercent>100 || !Number.isFinite(context.editionRate) || context.editionRate<0 || Object.values(context.rates).some(rate=>!Number.isFinite(rate)||rate<0)||!Number.isFinite(Object.values(context.rates).reduce((a,b)=>a+b,0))||Object.values(context.rates).reduce((a,b)=>a+b,0)<=0)throw new RangeError('Invalid shop rates or pricing');
  return context;
 }
-function session(rng,context){
+export function session(rng,context){
  let current=rng;const used=new Set([...context.ownedCentreIds,...context.usedCentreIds]);
  const random=key=>{const next=nextApkRandom(current,key);current=next.rng;return next.value;};
  const element=(values,key)=>{const seed=nextApkSeed(current,key);const next=nextApkMathRandom(createApkMathState(seed.value),values.length);current={...seed.rng,mathState:next.state};return values[next.value-1];};
@@ -98,7 +98,7 @@ function session(rng,context){
   if(['Base','Enhanced'].includes(type)&&illusion&&random('illusion')>0.8){const ep=random('illusion');offer.edition=ep>0.85?'polychrome':ep>0.5?'holographic':'foil';reprice(offer);}
   if(reroll)juice();return offer;
  });
- return {random,unkeyed,select,construct,main,edition,reprice,usedHas:id=>used.has(id),get rng(){return current;}};
+ return {random,element,unkeyed,select,construct,main,edition,reprice,usedHas:id=>used.has(id),get rng(){return current;}};
 }
 export function chooseApkVoucher(rng,context){context=createApkShopContext(context);const s=session(rng,context);return {voucherId:s.select('Voucher'),rng:s.rng};}
 export function generateApkShop(rng,context,{voucherId,firstShopBuffoon=false,instancePrefix='shop'}={}){

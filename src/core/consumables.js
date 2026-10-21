@@ -1,3 +1,4 @@
+import {supportsSpectralEffect,spectralCapability,applySpectralEffect} from './spectral-consumables.js';
 import {applyItem7CardsDestroyed} from './joker-item7-lifecycle.js';
 import {createItem7Cards,item7EconomyModifiers,applyItem7EconomyContext} from './joker-item7-economy.js';
 import {captureCashoutQuote} from './cashout.js';
@@ -6,7 +7,7 @@ import {quoteShopCard} from './shop-pricing.js';
 import catalogue from '../content/apk-shop-catalog.js';
 import {supportsConsumable,canManageInventory} from './inventory.js';
 import {APK_HAND_NAMES,currentApkShopContext} from './apk-shop-state.js';
-import {APK_BASE_CARD_IDS} from './apk-deck.js';
+import {APK_BASE_CARD_IDS,playingCardOrdinal} from './apk-deck.js';
 import {nextApkMathRandom,nextApkRandom} from './apk-rng.js';
 import {originalJokerKey} from '../content/jokers.js';
 
@@ -51,7 +52,7 @@ export function wheelSucceeds(roll,normal=1){return Number.isFinite(roll)&&roll>
 export function wheelEdition(roll){if(!Number.isFinite(roll)||roll<0||roll>1)throw new RangeError('Invalid Wheel edition roll');return roll>.85?'polychrome':roll>.5?'holographic':roll>0?'foil':'base';}
 const wheelEligible=state=>(state.jokers??[]).filter(joker=>(joker.edition??'base')==='base');
 const wheelOrderKnown=jokers=>jokers.length<=1||jokers.every(joker=>Number.isSafeInteger(joker.creationOrdinal)&&joker.creationOrdinal>=1)&&new Set(jokers.map(joker=>joker.creationOrdinal)).size===jokers.length;
-export function supportsConsumableEffect(card){const centre=centres.get(card?.entityId);return supportsConsumable(card)&&!!(centre?.set==='Planet'&&handIds[centre.handType]||centre?.key==='c_judgement'||centre?.key==='c_soul'||centre?.key==='c_black_hole'||centre?.key==='c_fool'||centre?.key===wheelKey||moneyTarots.has(centre?.key)||enhancementTarots.has(centre?.key)||deckTarots.has(centre?.key)||baseTarots.has(centre?.key)||generatorTarots.has(centre?.key)||sealSpectrals.has(centre?.key)||centre?.key==='c_aura');}
+export function supportsConsumableEffect(card){const centre=centres.get(card?.entityId);return supportsConsumable(card)&&!!(centre?.set==='Planet'&&handIds[centre.handType]||centre?.key==='c_judgement'||centre?.key==='c_soul'||centre?.key==='c_black_hole'||centre?.key==='c_fool'||centre?.key===wheelKey||moneyTarots.has(centre?.key)||enhancementTarots.has(centre?.key)||deckTarots.has(centre?.key)||baseTarots.has(centre?.key)||generatorTarots.has(centre?.key)||sealSpectrals.has(centre?.key)||centre?.key==='c_aura'||supportsSpectralEffect(centre?.key));}
 
 export function validConsumableUsage(state){
  const hasUsage=Object.hasOwn(state,'consumableUsage'),hasTotals=Object.hasOwn(state,'consumableUsageTotal');
@@ -88,6 +89,7 @@ export function canUseConsumable(state,card,targetCardIds=[],{fromPack=false}={}
  if(!owned)return blocked('CARD_NOT_FOUND','Карта больше не принадлежит игроку.');
  const centre=centres.get(owned.entityId);
  if(!supportsConsumableEffect(owned))return blocked('USE_UNAVAILABLE','Эффект этой расходной карты ещё не реализован.');
+ const spectral=spectralCapability(state,owned,targetCardIds);if(!spectral.available)return spectral;
  if(fromPack&&(generatorTarots.has(centre.key)||centre.key==='c_fool')&&creationSpace(state,owned,{fromPack})<=0)return blocked('USE_UNAVAILABLE','Нет места для новой расходной карты.');
  if(centre.key==='c_judgement'||centre.key==='c_soul'){
   const capacity=(state.jokerSlots??5)+(state.jokers??[]).filter(j=>j.edition==='negative').length;
@@ -143,11 +145,12 @@ export function applyConsumableAction(state,action,{fromPack=false}={}){
  const centre=centres.get(card.entityId),next=structuredClone(state),events=[];
  if(state.phase==='round_won'&&!next.cashoutQuote)next.cashoutQuote=captureCashoutQuote(state);
  const previousTarotPlanet=state.lastTarotPlanet??null;
+ try{applySpectralEffect(next,card,action.targetCardIds??[],events);}catch{return reject('INVALID_STATE','Некорректное состояние спектрального эффекта.');}
  // Older Mark saves have no draw-time rank snapshot. Capture it before a
  // targeted transformation; current rank may cease to be a face afterwards.
  if(!card.debuffed&&next.bossState?.id==='bl_mark'&&(baseTarots.has(centre.key)||centre.key==='c_death')&&!next.bossState.hiddenFaceRanks){
   next.bossState.hiddenFaceRanks=Object.fromEntries(next.bossState.hiddenCardIds.map(id=>{
-   const rank=state.cards[id].rank;return [id,rank>=11&&rank<=13?rank:Number(id.match(/_(\d+)$/)?.[1])];
+   const rank=state.cards[id].rank;return [id,playingCardOrdinal(id)>52||rank>=11&&rank<=13?rank:Number(id.match(/_(\d+)$/)?.[1])];
   }));
  }
  if(!card.debuffed&&baseTarots.has(centre.key))for(const cardId of action.targetCardIds){
