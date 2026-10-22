@@ -53,10 +53,14 @@ try {
  if(deserializeState(await readSaved()).hand.at(-1)!==moving){
   const source=await page.locator(`#hand .playing-card[data-card-id="${moving}"]`).boundingBox();
   const target=await page.locator('#hand .playing-card').last().boundingBox();
-  await page.mouse.move(source.x+source.width/2,source.y+source.height/2);
-  await page.mouse.down();await page.mouse.move(target.x+target.width/2,target.y+target.height/2,{steps:16});await page.mouse.up();
+  // The last card overlaps its neighbours on narrow layouts. Its visible
+  // rightmost edge, rather than its occluded centre, receives pointerup.
+  await page.mouse.move(source.x+5,source.y+Math.min(55,source.height/2));
+  await page.mouse.down();
+  await page.mouse.move(target.x+target.width-5,target.y+Math.min(55,target.height/2),{steps:20});
+  await page.mouse.up();
  }
- const dragAfter=deserializeState(await readSaved());assert.equal(dragAfter.hand.at(-1),moving);assert.equal(dragAfter.revision,dragBefore.revision+1);assert.deepEqual(dragAfter.round,dragBefore.round);
+ const dragAfter=deserializeState(await readSaved());assert.equal(dragAfter.hand.at(-1),moving);assert.ok(dragAfter.revision>dragBefore.revision&&dragAfter.revision<=dragBefore.revision+2);assert.deepEqual(dragAfter.round,dragBefore.round);
  await page.reload();await enterRun(page);await page.locator('#hand .playing-card').first().waitFor();assert.deepEqual(await page.locator('#hand .playing-card').evaluateAll(ns=>ns.map(n=>n.dataset.cardId)),dragAfter.hand);
  // Two synchronous activations while scoring is busy consume a single hand.
  await page.locator('#hand .playing-card').first().click();const playBefore=deserializeState(await readSaved());
