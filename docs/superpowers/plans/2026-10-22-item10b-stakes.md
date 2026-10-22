@@ -16,9 +16,9 @@
 
 ## Tasks
 
-- [ ] 1. Test-first stakes metadata/startup/discards/scaling/reward and save fields. Implement content/stakes,core/stakes,createRun,target and reset callers.
-- [ ] 2. Test-first sticker compatibility,counter5→0,rental3,expiry/debuff composition. Integrate generation,per-Joker endround ordering,copying,replay/save and passive changes. Verify owned/pack/shop and stale actions.
-- [ ] 3. Eight-stake setup and cumulative descriptions,chip/sticker display; desktop/touch/reload scenarios.
-- [ ] 4. Full core tests,independent review,47old+new browser suites,freshAndroid,asset equality,visual QA,APK0.4.44/code57,docs/merge/handoff.
+- [x] 1. Test-first stakes metadata/startup/discards/scaling/reward and save fields. Implement content/stakes,core/stakes,createRun,target and reset callers.
+- [x] 2. Test-first sticker compatibility,counter5→0,rental3,expiry/debuff composition. Integrate generation,per-Joker endround ordering,copying,replay/save and passive changes. Verify owned/pack/shop and stale actions.
+- [x] 3. Eight-stake setup and cumulative descriptions,chip/sticker display; desktop/touch/reload scenarios.
+- [x] 4. Full core tests,independent review,47old+new browser suites,freshAndroid,asset equality,visual QA,APK0.4.44/code57,docs/merge/handoff.
 
 Baseline code: apk-reference13c2bf6; local8e06de3 same source plus mirrored docs. No changes on remote since10a.
