@@ -1,3 +1,4 @@
+import {PROFILE_LIMIT,validateAccount} from './profile-envelope.js';
 import {isPerished} from '../core/joker-stickers.js';
 import {hasJokerStickers} from '../core/round-end-jokers.js';
 import {stakeScaling,runDiscards,validStake} from '../core/stakes.js';
@@ -684,7 +685,7 @@ function decodeEffectReplay(payload){
   const legacyActions=['PLAY_HAND','DISCARD','REORDER_HAND','SET_SORT','CONTINUE_ENDLESS'];
   for(const action of journal.actions){
     requireValue(action&&typeof action==='object'&&!Array.isArray(action)&&Object.hasOwn(fields,action.type));
-    requireValue(Object.keys(action).every(k=>['type','expectedRevision',...fields[action.type]].includes(k)));
+    requireValue(Object.keys(action).every(k=>['type','expectedRevision','profileUnlockedCentreIds','profileLockedCentreIds',...fields[action.type]].includes(k)));
     if(journal.version===1)requireValue(legacyActions.includes(action.type));
   }
   const expected=replayEffectActions(before,journal.actions);
@@ -700,8 +701,16 @@ export function serializeState(state){
   return text;
 }
 export function deserializeState(text) {
-  requireValue(typeof text==='string' && text.length<=LIMIT && new TextEncoder().encode(text).length<=LIMIT);
-  return decode(JSON.parse(text));
+  requireValue(typeof text==='string' && text.length<=PROFILE_LIMIT && new TextEncoder().encode(text).length<=PROFILE_LIMIT);
+  const payload=JSON.parse(text);
+  if(Object.hasOwn(payload,'account')){
+    object(payload,['format','version','state','account']);validateAccount(payload.account,deserializeState);
+    const current=payload.account.profiles[payload.account.activeId].current;
+    requireValue(current!==null&&JSON.stringify(payload.state)===JSON.stringify(JSON.parse(current).state));
+    const {account,...run}=payload;return decode(run);
+  }
+  requireValue(text.length<=LIMIT&&new TextEncoder().encode(text).length<=LIMIT);
+  return decode(payload);
 }
 
 

@@ -37,7 +37,7 @@ import {applyShopAction,createShop,stampJokerCreationOrdinals} from './shop.js';
 import {createApkShopContext,chooseApkVoucher,generateApkShop} from './apk-shop.js';
 import {APK_HAND_NAMES,currentApkShopContext} from './apk-shop-state.js';
 
-export function createRun(seed, {runId,deckId='red',stake=1,money,referenceRng=false,referenceShop=false,reducedMotion=false}={}) {
+export function createRun(seed, {runId,deckId='red',stake=1,money,referenceRng=false,referenceShop=false,reducedMotion=false,unlockedCentreIds=[],lockedCentreIds=[]}={}) {
   if (typeof seed!=='string' || !seed || seed.length>1000) throw new TypeError('Invalid seed');
   if (typeof runId!=='string' || !runId || runId.length>120 || !Object.hasOwn(DECKS,deckId) || typeof money!=='bigint'||!validStake(stake)) throw new TypeError('Invalid run options');
   if(typeof referenceRng!=='boolean'||typeof referenceShop!=='boolean'||typeof reducedMotion!=='boolean'||referenceShop&&!referenceRng)throw new TypeError('Invalid reference shop options');
@@ -67,7 +67,7 @@ export function createRun(seed, {runId,deckId='red',stake=1,money,referenceRng=f
     let rng=createApkRng(seed);
     if(referenceShop){
       const boss=chooseApkBoss(rng);rng=boss.rng;
-      const context=createApkShopContext({reducedMotion,...(stake>1?{modifiers:stakeShopModifiers(stake)}:{}),...(rules.vouchers?{usedVoucherIds:[...rules.vouchers]}:{})}),voucher=chooseApkVoucher(rng,context);rng=voucher.rng;
+      const context=createApkShopContext({reducedMotion,unlockedCentreIds,lockedCentreIds,...(stake>1?{modifiers:stakeShopModifiers(stake)}:{}),...(rules.vouchers?{usedVoucherIds:[...rules.vouchers]}:{})}),voucher=chooseApkVoucher(rng,context);rng=voucher.rng;
       const tagContext=createApkTagContext(),small=chooseApkTag(rng,tagContext),big=chooseApkTag(small.rng,tagContext);rng=big.rng;
       state.apkBlinds={version:1,ante:1,bossId:boss.bossId,bossesUsed:boss.bossesUsed,
         tags:{small:small.tagId,big:big.tagId},orbitalHands:{},tagContext,playedCardIds:[]};
@@ -171,10 +171,20 @@ export function replayEffectActions(before,actions){
   return state;
 }
 function dispatchCore(state, action, shopOptions={}) {
-  const reject=(code,message)=>({state,events:[],error:{code,message}});
+  const originalState=state;
+  const reject=(code,message)=>({state:originalState,events:[],error:{code,message}});
   if (!action || typeof action.type!=='string' || !Number.isSafeInteger(action.expectedRevision)) return reject('INVALID_ACTION','Malformed action');
   if (action.expectedRevision!==state.revision) return reject('STALE_ACTION','State revision has changed');
   if (!Number.isSafeInteger(state.revision) || state.revision<0 || state.revision===Number.MAX_SAFE_INTEGER) return reject('INVALID_STATE','Invalid revision');
+  if(action.profileUnlockedCentreIds!==undefined||action.profileLockedCentreIds!==undefined){
+    if(!state.apkShop)return reject('INVALID_ACTION','Profile generation requires reference shop');
+    try{
+      const context=createApkShopContext({...state.apkShop.context,
+        ...(action.profileUnlockedCentreIds!==undefined?{unlockedCentreIds:action.profileUnlockedCentreIds}:{}),
+        ...(action.profileLockedCentreIds!==undefined?{lockedCentreIds:action.profileLockedCentreIds}:{})});
+      state={...state,apkShop:{...state.apkShop,context}};
+    }catch{return reject('INVALID_ACTION','Invalid profile unlock context');}
+  }
   if(state.winPending&&action.type!=='CONTINUE_ENDLESS')return reject('VICTORY_PENDING','Acknowledge victory first');
   if(action.type==='CONTINUE_ENDLESS'){
     if(state.phase!=='round_won'||!state.winPending)return reject('INVALID_PHASE','No victory acknowledgement pending');
@@ -367,7 +377,7 @@ function dispatchCore(state, action, shopOptions={}) {
     if(!next.bossState?.disabled&&next.bossState?.id==='bl_tooth')next.money-=BigInt(playedIds.length);
     if(!next.bossState?.disabled&&next.bossState?.id==='bl_ox'&&score.handId===next.bossState.oxHand)next.money=0n;
     next.money+=score.trace.reduce((sum,event)=>sum+(event.type==='score_money'?event.amount:0n),0n);
-    if(next.money!==beforeMoney)events.push({type:'money_changed',before:beforeMoney,after:next.money,delta:next.money-beforeMoney});
+    if(next.money!==beforeMoney)events.push({type:'money_changed',reason:'scoring',before:beforeMoney,after:next.money,delta:next.money-beforeMoney});
     if(next.apkBlinds?.playedCardIds)for(const id of playedIds)if(Object.hasOwn(next.cards,id)&&!next.apkBlinds.playedCardIds.includes(id))next.apkBlinds.playedCardIds.push(id);
     const sixthDestroyed=(score.lifecycleEvents??[]).filter(event=>event.type==='playing_card_destroyed'&&event.reason==='sixth_sense'&&event.card.enhancement!=='glass').map(event=>event.card);
     if(sixthDestroyed.length){
