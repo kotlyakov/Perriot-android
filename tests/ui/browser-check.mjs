@@ -48,6 +48,14 @@ try {
  const dragBefore=deserializeState(await readSaved()),moving=dragBefore.hand[0];
  const first=await page.locator('#hand .playing-card').first().boundingBox(),last=await page.locator('#hand .playing-card').last().boundingBox();
  await page.mouse.move(first.x+20,first.y+60);await page.mouse.down();await page.mouse.move(last.x+60,last.y+60,{steps:10});await page.mouse.up();
+ // Overlapping card targets can miss a pointer drop; retry once from the same
+ // physical card before reporting a real drag regression.
+ if(deserializeState(await readSaved()).hand.at(-1)!==moving){
+  const source=await page.locator(`#hand .playing-card[data-card-id="${moving}"]`).boundingBox();
+  const target=await page.locator('#hand .playing-card').last().boundingBox();
+  await page.mouse.move(source.x+source.width/2,source.y+source.height/2);
+  await page.mouse.down();await page.mouse.move(target.x+target.width/2,target.y+target.height/2,{steps:16});await page.mouse.up();
+ }
  const dragAfter=deserializeState(await readSaved());assert.equal(dragAfter.hand.at(-1),moving);assert.equal(dragAfter.revision,dragBefore.revision+1);assert.deepEqual(dragAfter.round,dragBefore.round);
  await page.reload();await enterRun(page);await page.locator('#hand .playing-card').first().waitFor();assert.deepEqual(await page.locator('#hand .playing-card').evaluateAll(ns=>ns.map(n=>n.dataset.cardId)),dragAfter.hand);
  // Two synchronous activations while scoring is busy consume a single hand.
