@@ -10,7 +10,7 @@ const centreIds=new Set([...catalogue.centres.map(c=>c.key),'e_foil','e_holo','e
 export function createApkTagContext(options={}){
  if(!options||typeof options!=='object'||Array.isArray(options)||Object.keys(options).some(k=>!['ante','discoveredCentreIds','bannedKeys','visibleHandOrder'].includes(k)))throw new TypeError('Invalid tag context');
  const context={ante:1,discoveredCentreIds:[],bannedKeys:[],visibleHandOrder:ordinaryHands,...structuredClone(options)};
- if(!Number.isSafeInteger(context.ante)||context.ante<1)throw new RangeError('Invalid tag ante');
+ if(!Number.isSafeInteger(context.ante)||context.ante< -1)throw new RangeError('Invalid tag ante');
  for(const [field,valid] of [['discoveredCentreIds',id=>centreIds.has(id)],['bannedKeys',id=>Object.hasOwn(APK_TAGS_BY_ID,id)],['visibleHandOrder',id=>handNames.has(id)]]){
   const values=context[field];if(!Array.isArray(values)||values.some(id=>typeof id!=='string'||!valid(id))||new Set(values).size!==values.length||values.length>10000)throw new TypeError('Invalid '+field);
  }

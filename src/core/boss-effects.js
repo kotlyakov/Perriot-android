@@ -13,8 +13,8 @@ export const SUPPORTED_BOSSES=Object.freeze(APK_BOSSES.map(boss=>boss.id));
 const suits={bl_club:'clubs',bl_goad:'spades',bl_window:'diamonds',bl_head:'hearts'};
 export function canEnterBoss(state){
  const ante=state.round?.ante,boss=APK_BLINDS_BY_ID[state.apkBlinds?.bossId],winAnte=state.winAnte??8;
- const showdown=ante>=2&&ante%winAnte===0;
- if(!Number.isSafeInteger(ante)||ante<1||winAnte!==8||!boss||!SUPPORTED_BOSSES.includes(boss.id)||(boss.showdown!==showdown||!boss.showdown&&boss.minAnte>ante)||!Array.isArray(state.apkBlinds.playedCardIds)||!state.rng?.apk)return false;
+ const glyphs=(state.apkShop?.context.usedVoucherIds??[]).filter(id=>['v_hieroglyph','v_petroglyph'].includes(id)).length,selectionAnte=glyphs?(state.apkBlinds?.bossSelectionAnte??state.apkBlinds?.ante??ante):ante,showdown=selectionAnte>=2&&selectionAnte%winAnte===0;
+ if(!Number.isSafeInteger(ante)||ante< -1||ante<1&&!glyphs||winAnte!==8||!boss||!SUPPORTED_BOSSES.includes(boss.id)||(boss.showdown!==showdown||!boss.showdown&&boss.minAnte>Math.max(1,selectionAnte))||!Array.isArray(state.apkBlinds.playedCardIds)||!state.rng?.apk)return false;
  if(boss.id==='bl_ox'&&state.phase!=='shop'&&!Object.hasOwn(APK_HAND_NAMES,state.mostPlayedHand))return false;
  try{
   canonicalCards(state.cards);
@@ -25,7 +25,7 @@ export function canEnterBoss(state){
  }catch{return false;}return true;
 }
 export function bossTarget(state){
- const ante=state.round?.ante,boss=APK_BLINDS_BY_ID[state.apkBlinds?.bossId];
+ const ante=state.round?.targetAnte??state.round?.ante,boss=APK_BLINDS_BY_ID[state.apkBlinds?.bossId];
  if(!boss||!APK_BOSSES.includes(boss))throw new RangeError('Unsupported boss target');
  const target=nativeBlindTarget(ante,boss.mult);
  return (state.bossState?.disabled||state.round.bossDisabled)&&['bl_wall','bl_final_vessel'].includes(boss.id)?divideNativeBlindTarget(target,boss.id==='bl_wall'?2:3):target;

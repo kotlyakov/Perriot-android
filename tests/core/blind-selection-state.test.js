@@ -28,5 +28,5 @@ test('legacy saves remain untouched and malformed selection states are rejected'
 });
 
 test('unsupported boss and skip actions cannot change the run or selections',()=>{
- const s=run();for(const type of ['SKIP_BLIND','START_BOSS']){const result=dispatch(s,{type,expectedRevision:0});assert.equal(result.state,s);assert.ok(result.error);assert.deepEqual(result.events,[]);}
+ const s=run();for(const type of ['START_BOSS']){const result=dispatch(s,{type,expectedRevision:0});assert.equal(result.state,s);assert.ok(result.error);assert.deepEqual(result.events,[]);}
 });

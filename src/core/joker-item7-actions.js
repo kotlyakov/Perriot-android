@@ -22,7 +22,7 @@ export function finishItem7Action(before,next,action,events){
  const context={REROLL_SHOP:'reroll_shop',LEAVE_SHOP:'ending_shop',SKIP_PACK:'skipping_booster'}[action.type];
  if(context)applyItem7EconomyContext(next,{type:context},events);
  if(next.jokers.some(j=>j.entityId==='j_chicot'&&!j.debuffed)&&next.bossState&&!next.bossState.disabled)disableBoss(next,events,{acceptedRevision:before.revision});
- const oldDelta=item7CapacityDeltas(before.jokers),delta=item7CapacityDeltas(next.jokers),reset=action.type==='LEAVE_SHOP'||action.type==='SKIP_BLIND';
+ const oldDelta=item7CapacityDeltas(before.jokers),delta=item7CapacityDeltas(next.jokers),reset=['LEAVE_SHOP','SKIP_BLIND'].includes(action.type)||action.type==='CASH_OUT'&&!!next.apkShop;
  const applied=events.filter(event=>event.type==='joker_capacity_changed');
  const handDelta=delta.handSize-oldDelta.handSize-applied.reduce((sum,event)=>sum+event.handSize,0);
  changeHandSize(next,handDelta,{events,draw:true});

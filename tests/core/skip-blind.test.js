@@ -18,10 +18,10 @@ test('Handy and Garbage credit actual persistent totals; Orbital upgrades the se
  for(const [tag,counter] of [['tag_handy','handsPlayed'],['tag_garbage','unusedDiscards']]){const s=ante2(tag);s.runStats??={handsPlayed:0,unusedDiscards:0,skips:0};s.runStats[counter]=7;const r=act(s,'SKIP_BLIND');assert.equal(r.error,null);assert.equal(r.state.money,22n);assert.deepEqual(deserializeState(serializeState(r.state)),r.state);}
  const s=ante2('tag_orbital');s.apkBlinds.orbitalHands.small='Flush';const r=act(s,'SKIP_BLIND');assert.equal(r.error,null);assert.equal(r.state.handLevels.flush,4);assert.equal(r.state.handLevels.pair,1);assert.deepEqual(r.state.rng,s.rng);assert.deepEqual(deserializeState(serializeState(r.state)),r.state);
 });
-test('deferred and unsupported rewards all reject unchanged; full 24-tag selection remains',()=>{
+test('all 24 tag rewards are available without mutating their source state',()=>{
  assert.equal(APK_TAGS.length,24);
  const supported=new Set(['tag_economy','tag_skip','tag_handy','tag_garbage','tag_orbital','tag_boss']);
- for(const tag of APK_TAGS.filter(t=>!supported.has(t.id))){const s=ante2(tag.id),before=structuredClone(s),r=act(s,'SKIP_BLIND');assert.equal(r.error?.code,'SKIP_UNAVAILABLE',tag.id);assert.strictEqual(r.state,s);assert.deepEqual(s,before);assert.match(r.error.message,/./);}
+ for(const tag of APK_TAGS.filter(t=>!supported.has(t.id))){const s=ante2(tag.id),before=structuredClone(s),r=act(s,'SKIP_BLIND');assert.equal(r.error,null,tag.id);assert.notStrictEqual(r.state,s);assert.deepEqual(s,before);}
  const legacy=run();delete legacy.runStats;assert.equal(act(legacy,'SKIP_BLIND').error.code,'SKIP_UNAVAILABLE');
  const s=ante2('tag_economy');s.round.blindId='big';s.apkBlinds.bossId='bl_final_bell';s.apkBlinds.tags.big='tag_economy';assert.equal(act(s,'SKIP_BLIND').error.code,'SKIP_UNAVAILABLE');assert.equal(act(run(),'SKIP_BLIND',{blindId:'big'}).error.code,'SKIP_UNAVAILABLE');
 });

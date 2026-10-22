@@ -15,7 +15,7 @@ try{for(const [width,height] of [[1536,688],[915,412],[360,800]]){
  const page=await browser.newPage({viewport:{width,height},reducedMotion:'reduce'}),errors=[];
  page.on('pageerror',e=>errors.push(e.message));await page.goto(process.env.PREVIEW_URL);await enterRun(page);
  await page.evaluate(s=>localStorage.setItem('card-cascade.current',s),serializeState(shop()));await page.reload();await enterRun(page);
- assert.match(await page.locator('.shop-voucher-label').innerText(),/2 АНТЕ/);
+ assert.match(await page.locator('.shop-voucher-label').innerText(),/АНТЕ 2/);
  assert.equal(await page.locator('#shop_next_round').isEnabled(),true);
  await page.locator('#shop_next_round').click();await page.locator('#select_small').waitFor();
  assert.equal(await page.locator('#select_small_target').innerText(),'800');

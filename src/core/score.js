@@ -1,3 +1,4 @@
+import {getObservatorySources} from './vouchers.js';
 import {applyItem7SixthSense} from './joker-item7-creation.js';
 import {createItem7Cards,item7ConsumableSpace} from './joker-item7-economy.js';
 import APK_SHOP_CATALOG from '../content/apk-shop-catalog.js';
@@ -260,6 +261,7 @@ export function scoreHand(state, playedCards, {legacyRng=false,armTriggered} = {
   for(const card of playedCards)if(scoringSet.has(card.id)&&card.enhancement==='glass'&&!isBossCardDebuffed(state,card)){
     const roll=glassRoll(),destroyed=sixthDestroyed.some(c=>c.id===card.id)||roll<item7Probability(state)/4;glassRolls.push({cardId:card.id,roll,destroyed});
   }
+  for(const source of getObservatorySources(state,hand.handId))apply({operation:'multiply_mult',amount:source.xMult},'observatory',source.sourceId);
   const score = floorExact(multiplyExact(chips,mult));
   trace.push({type:'score_total',phase:'total',chips,mult,score});
   const bellGlass=(actionRng||glassRolls.length>0&&glassKind==='apk')&&!state.bossState?.disabled&&state.bossState?.id==='bl_final_bell';

@@ -1,3 +1,5 @@
+import {voucherModifiers} from './vouchers.js';
+import {getTagInvestmentBonus,applyTagRoundEnd} from './tag-effects.js';
 import {applyItem7EndRound,resetItem7RoundTargets} from './joker-item7-lifecycle.js';
 import {applyItem7EconomyContext} from './joker-item7-economy.js';
 import {applyEndRoundCardEffects} from './card-effects.js';
@@ -32,13 +34,14 @@ export function getCashout(state) {
    if(state.round.handsRemaining!==earnedHands||state.money!==snapshot.moneyBefore||context.sources.length!==current.sources.length||context.sources.some((row,i)=>row.id!==current.sources[i].id||row.entityId!==current.sources[i].entityId)||context.nineCardIds.length!==current.nineCardIds.length||context.nineCardIds.some((id,i)=>id!==current.nineCardIds[i])||JSON.stringify(context.item7??null)!==JSON.stringify(current.item7??null))throw new TypeError('Invalid fresh cashout context');
   }
   const earned=typeof snapshot.moneyBefore==='bigint'&&snapshot.moneyBefore>0n?snapshot.moneyBefore/5n:0n;
-  const interest=(earned>5n?5n:earned)*BigInt(1+(context.item7?.moonIds.length??0)),rows=q?.jokerBonuses??[];
-  if(typeof snapshot.moneyBefore!=='bigint'||!q||q.reward!==reward||q.hands!==BigInt(earnedHands)||q.interest!==interest||typeof q.total!=='bigint'||!Array.isArray(rows)||rows.length>10000||new Set(rows.map(row=>row?.sourceId)).size!==rows.length||rows.some(row=>!row||typeof row.sourceId!=='string'||!row.sourceId||typeof row.amount!=='bigint'||row.amount<=0n||!BONUS_KEYS.includes(row.entityId))||rows.length!==expectedRows.length||rows.some((row,i)=>row.sourceId!==expectedRows[i].sourceId||row.entityId!==expectedRows[i].entityId||row.amount!==expectedRows[i].amount)||q.total!==reward+BigInt(earnedHands)+interest+rows.reduce((sum,row)=>sum+row.amount,0n))throw new TypeError('Invalid cashout snapshot');
+  const interest=(earned>voucherModifiers(state).interestCap?voucherModifiers(state).interestCap:earned)*BigInt(1+(context.item7?.moonIds.length??0)),rows=q?.jokerBonuses??[];
+  if(typeof snapshot.moneyBefore!=='bigint'||!q||q.reward!==reward||q.hands!==BigInt(earnedHands)||q.interest!==interest||(q.tagReward??0n)!==getTagInvestmentBonus(state)||typeof q.total!=='bigint'||!Array.isArray(rows)||rows.length>10000||new Set(rows.map(row=>row?.sourceId)).size!==rows.length||rows.some(row=>!row||typeof row.sourceId!=='string'||!row.sourceId||typeof row.amount!=='bigint'||row.amount<=0n||!BONUS_KEYS.includes(row.entityId))||rows.length!==expectedRows.length||rows.some((row,i)=>row.sourceId!==expectedRows[i].sourceId||row.entityId!==expectedRows[i].entityId||row.amount!==expectedRows[i].amount)||q.total!==reward+BigInt(earnedHands)+interest+(q.tagReward??0n)+rows.reduce((sum,row)=>sum+row.amount,0n))throw new TypeError('Invalid cashout snapshot');
   return structuredClone(q);
  }
- const earned=state.money>0n?state.money/5n:0n,interest=(earned>5n?5n:earned)*BigInt(1+state.jokers.filter(j=>!j.debuffed&&j.entityId==='j_to_the_moon').length);
+ const earned=state.money>0n?state.money/5n:0n,interest=(earned>voucherModifiers(state).interestCap?voucherModifiers(state).interestCap:earned)*BigInt(1+state.jokers.filter(j=>!j.debuffed&&j.entityId==='j_to_the_moon').length);
  const jokerBonuses=getJokerCashoutBonuses(state),bonus=jokerBonuses.reduce((total,row)=>total+row.amount,0n);
- return {reward,hands,interest,total:reward+hands+interest+bonus,...(jokerBonuses.length?{jokerBonuses}:{})};
+ const tagReward=getTagInvestmentBonus(state);
+ return {reward,hands,interest,total:reward+hands+interest+bonus+tagReward,...(tagReward?{tagReward}:{}),...(jokerBonuses.length?{jokerBonuses}:{})};
 }
 
 
@@ -88,7 +91,7 @@ export function settleRoundSuccess(state,events,{saved=false,endRoundApplied=fal
  }
  applyEndRoundCardEffects(state,events);
  if(state.rng?.apk)resetItem7RoundTargets(state);
- state.phase='round_won';state.cashoutQuote=captureCashoutQuote(state,state.revision+1);events.push({type:'round_won',score:state.round.score});
+ applyTagRoundEnd(state,events);state.phase='round_won';state.cashoutQuote=captureCashoutQuote(state,state.revision+1);events.push({type:'round_won',score:state.round.score});
  if(state.round.blindId==='boss'&&state.round.ante===(state.winAnte??8)){
   state.won=true;
   if(!state.winNotified){state.winNotified=true;state.winPending=true;events.push({type:'victory_pending'});}

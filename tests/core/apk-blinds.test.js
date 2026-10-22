@@ -68,7 +68,7 @@ test('inputs stay immutable and RNG plus usage survives JSON resume', () => {
 test('invalid state and exhausted eligible pool fail explicitly without mutation', () => {
   assert.equal(typeof api.chooseApkBoss, 'function');
   const rng = createApkRng('INVALID'); const before = JSON.stringify(rng);
-  for (const options of [null, { ante: 1.1 }, { ante: -1 }, { winAnte: 0 }, { bossesUsed: [] }, { bossesUsed: { bl_hook: -1 } }, { bossesUsed: { bl_small: 0 } }, { bannedKeys: ['missing'] }, { forcedBoss: 'bl_hook' }]) {
+  for (const options of [null, { ante: 1.1 }, { ante: -2 }, { winAnte: 0 }, { bossesUsed: [] }, { bossesUsed: { bl_hook: -1 } }, { bossesUsed: { bl_small: 0 } }, { bannedKeys: ['missing'] }, { forcedBoss: 'bl_hook' }]) {
     assert.throws(() => api.chooseApkBoss(rng, options));
   }
   assert.throws(() => api.chooseApkBoss({}, {}));

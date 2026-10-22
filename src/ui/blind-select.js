@@ -1,3 +1,4 @@
+import {canRerollBoss,hasVoucher} from '../core/vouchers.js';
 import {getSkipAvailability} from '../core/skip-blind.js';
 import {APK_BLINDS_BY_ID} from '../content/apk-blinds.js';
 import {nativeBlindTarget} from '../core/blind-progression.js';
@@ -9,10 +10,10 @@ let overlay,controller;
 const russianHands=Object.fromEntries(Object.entries(APK_HAND_NAMES).map(([id,name])=>[name,HAND_NAMES[id]]));
 function node(tag,className,text){const el=document.createElement(tag);if(className)el.className=className;if(text!==undefined)el.textContent=text;return el;}
 /** Ordinary unskipped Small/Big selection. Boss and skip tags remain unavailable. */
-export function renderBlindSelect(state,busy,onSelect,onSkip){
+export function renderBlindSelect(state,busy,onSelect,onSkip,onRerollBoss){
  if(state.phase!=='blind_selection'){removeBlindSelect();return;}
  if(overlay&&(overlay.dataset.blindId!==state.round.blindId || overlay.dataset.selection!==JSON.stringify(state.apkBlinds??null)))removeBlindSelect();
- if(overlay){for(const id of ['small','big']){const button=overlay.querySelector('#skip_'+id);if(button){const skip=getSkipAvailability(state,id);button.disabled=busy||!skip.available;button.title=skip.reason??'Получить награду и перейти к следующему блайнду';button.onclick=()=>{if(!button.disabled)onSkip?.(id);};}}const select=overlay.querySelector('#select_'+state.round.blindId);select.disabled=Boolean(busy);select.onclick=()=>{if(!select.disabled)onSelect?.();};overlay.querySelector('#select_'+state.round.blindId+'_target').textContent=displayBlindTarget(state.round.target);return overlay;}
+ if(overlay){updateRewards(state,busy,onRerollBoss);for(const id of ['small','big']){const button=overlay.querySelector('#skip_'+id);if(button){const skip=getSkipAvailability(state,id);button.disabled=busy||!skip.available;button.title=skip.reason??'Получить награду и перейти к следующему блайнду';button.onclick=()=>{if(!button.disabled)onSkip?.(id);};}}const select=overlay.querySelector('#select_'+state.round.blindId);select.disabled=Boolean(busy);select.onclick=()=>{if(!select.disabled)onSelect?.();};overlay.querySelector('#select_'+state.round.blindId+'_target').textContent=displayBlindTarget(state.round.target);return overlay;}
  overlay=node('section','blind-selection');overlay.id='blind_selection';overlay.dataset.blindId=state.round.blindId;overlay.dataset.selection=JSON.stringify(state.apkBlinds??null);
  controller=new AbortController();
  const closeTip=()=>{overlay?.querySelector('#blind_tag_tooltip')?.remove();overlay?.querySelectorAll('.blind-tag').forEach(b=>b.setAttribute('aria-expanded','false'));};
@@ -40,9 +41,26 @@ export function renderBlindSelect(state,busy,onSelect,onSkip){
   }else card.append(node('p','blind-choice-unavailable',passed?'Пройден':'В разработке'));
   overlay.append(card);
  }
+ updateRewards(state,busy,onRerollBoss);
  document.getElementById('stage').append(overlay);
  if(!matchMedia('(prefers-reduced-motion: reduce)').matches)overlay.animate([{transform:'translateY(688px)'},{transform:'translateY(0)'}],{duration:360,easing:'cubic-bezier(.16,1,.3,1)'});
  return overlay;
+}
+function updateRewards(state,busy,onRerollBoss){
+ overlay.querySelector('#boss_reroll')?.remove();overlay.querySelector('#pending_tags')?.remove();
+ if(hasVoucher(state,'v_directors_cut')||hasVoucher(state,'v_retcon')){
+  const button=node('button','red','Заменить босса · $10');button.id='boss_reroll';button.type='button';
+  Object.assign(button.style,{position:'absolute',left:'942px',top:'154px',width:'220px',height:'45px',fontSize:'17px',pointerEvents:'auto'});
+  button.disabled=busy||!canRerollBoss(state);button.title=state.bossRerollUsed&&!hasVoucher(state,'v_retcon')?'Замена босса уже использована в этом анте':state.money<10n?'Недостаточно денег':'Заменить выбранного босса';
+  button.onclick=()=>{if(!button.disabled)onRerollBoss?.();};overlay.append(button);
+ }
+ const pending=[...(state.pendingTags??[]),...Array.from({length:state.pendingDoubleTags??0},()=> 'tag_double')];
+ if(pending.length){
+  const rewards=node('p','blind-pending-tags');rewards.id='pending_tags';rewards.setAttribute('aria-label','Ожидающие награды');
+  const counts=new Map();for(const id of pending)counts.set(id,(counts.get(id)??0)+1);
+  rewards.textContent=[...counts].map(([id,count])=>(APK_TAGS_BY_ID[id]?.name??'Награда')+(count>1?' ×'+count:'')).join(' · ');
+  Object.assign(rewards.style,{position:'absolute',left:'474px',top:'170px',width:hasVoucher(state,'v_directors_cut')||hasVoucher(state,'v_retcon')?'454px':'688px',margin:'0',fontSize:'16px',textAlign:'center',maxHeight:'36px',overflow:'hidden'});rewards.title=rewards.textContent;overlay.append(rewards);
+ }
 }
 export function removeBlindSelect(){controller?.abort();controller=undefined;overlay?.remove();overlay=undefined;}
 

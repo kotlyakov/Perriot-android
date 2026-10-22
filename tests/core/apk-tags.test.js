@@ -25,5 +25,5 @@ test('tag selection preserves sparse positions, resamples and never mutates inpu
 test('orbital hand selection uses the supplied visible order and rejects malformed contexts',()=>{
  const context=tags.createApkTagContext({visibleHandOrder:['Pair']});
  const out=tags.chooseApkOrbitalHand(createApkRng('ORBITAL1'),context);assert.equal(out.hand,'Pair');assert.ok(Object.hasOwn(out.rng.streams,'orbital'));
- for(const options of [{ante:0},{discoveredCentreIds:['unknown']},{bannedKeys:['fake']},{visibleHandOrder:[]},{visibleHandOrder:['Pair','Pair']},{anything:true}])assert.throws(()=>tags.createApkTagContext(options));
+ for(const options of [{ante:-2},{discoveredCentreIds:['unknown']},{bannedKeys:['fake']},{visibleHandOrder:[]},{visibleHandOrder:['Pair','Pair']},{anything:true}])assert.throws(()=>tags.createApkTagContext(options));
 });
