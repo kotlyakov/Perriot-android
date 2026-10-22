@@ -111,7 +111,7 @@ test('disabled owned Jokers still count for Abstract, Stencil, Negative capacity
 test('owned boolean debuff support permits sale while shop support and malformed modifiers stay closed',()=>{
  const j=joker('disabled','j_joker',{debuffed:true});assert.equal(supportsJoker(j,{owned:true}),true);assert.equal(supportsJoker(j),false);
  for(const debuffed of ['true',1,null])assert.equal(supportsJoker({...j,debuffed},{owned:true}),false);
- for(const extra of [{rental:true},{perishable:true},{edition:'unknown'},{entityId:'j_unsupported'}])assert.equal(supportsJoker({...j,...extra},{owned:true}),false);
+ for(const extra of [{rental:'true'},{perishable:true},{edition:'unknown'},{entityId:'j_unsupported'}])assert.equal(supportsJoker({...j,...extra},{owned:true}),false);
  const shop=pending();shop.phase='shop';shop.round.blindId='big';shop.round.target=75000n;shop.round.score=75000n;
  shop.shop=createShop({offers:{main:[{...j,cost:1n}],vouchers:[],boosters:[]}});shop.jokers=[];
  assert.equal(act(shop,'BUY_SHOP_CARD',{offerId:j.id}).error.code,'UNSUPPORTED_CONTENT');

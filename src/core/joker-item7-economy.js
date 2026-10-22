@@ -66,10 +66,11 @@ export function queueItem7BlindEconomy(state,context,events,pending){
   pending.nestedCallbacks.push(()=>createItem7Cards(state,{append:'car',sourceId:source.id,reserved:true},events));
  }
 }
-export function applyItem7EconomyContext(state,context,events){
+export function applyItem7EconomyContext(state,context,events,{jokerId}={}){
  const cards=[...state.jokers],pending=[];let jokerSpace=freeJokers(state),consumableSpace=item7ConsumableSpace(state);
  const reserve=options=>{const area=options.set==='Joker'?'joker':'consumable',available=area==='joker'?jokerSpace:consumableSpace,count=Math.min(options.count??1,available);if(count<=0)return;if(area==='joker')jokerSpace-=count;else consumableSpace-=count;pending.push({...options,count});};
  for(let index=0;index<cards.length;index++){
+  if(jokerId!==undefined&&cards[index].id!==jokerId)continue;
   const resolved=jokerEffectContext(cards,index);if(!resolved)continue;
   const {source,target:joker,copied}=resolved,key=joker.entityId;
   if(context.type==='using_consumeable'&&context.set==='Planet'&&!copied&&key==='j_constellation')change(joker,'xMult',(joker.xMult??1)+.1,events,1);

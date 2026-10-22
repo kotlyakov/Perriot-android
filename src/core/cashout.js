@@ -1,3 +1,5 @@
+import {applyRoundEndJokers} from './round-end-jokers.js';
+import {blindReward} from './stakes.js';
 import {DECKS} from '../content/decks.js';
 import {addItem7DoubleTag} from './joker-double-tags.js';
 import {voucherModifiers} from './vouchers.js';
@@ -14,7 +16,7 @@ export function getCashout(state) {
     !Number.isSafeInteger(state.round.handsRemaining) || state.round.handsRemaining<0 || state.round.handsRemaining>10000 ||
     typeof state.round.score!=='bigint' || typeof state.round.target!=='bigint' || state.round.target<=0n || (state.round.score<state.round.target&&!(state.round.savedByBones===true&&state.round.score*4n>=state.round.target)))throw new TypeError('Invalid cashout state');
  if(state.round.blindId==='boss' && (!state.bossState || state.bossState.id!==state.apkBlinds?.bossId || !canEnterBoss(state)))throw new TypeError('Invalid boss payout');
- const reward=state.round.blindId==='boss'?BigInt(APK_BLINDS_BY_ID[state.bossState.id].dollars):state.round.blindId==='big'?4n:3n;
+ const reward=blindReward(state);
  const green=state.deckId==='green',hands=BigInt(state.round.handsRemaining),handReward=hands*(green?2n:1n),discards=green?BigInt(state.round.discardsRemaining):0n;
  if(state.cashoutQuote){
   const snapshot=state.cashoutQuote,q=snapshot.quote,context=snapshot.bonusContext;
@@ -90,8 +92,7 @@ export function settleRoundSuccess(state,events,{saved=false,endRoundApplied=fal
  if(saved)state.round.savedByBones=true;
  if(state.runStats)state.runStats.unusedDiscards+=state.round.discardsRemaining;
  if(!endRoundApplied){
-  applyItem7EndRound(state,events);
-  applyItem7EconomyContext(state,{type:'end_of_round'},events);
+  applyRoundEndJokers(state,events);
  }
  applyEndRoundCardEffects(state,events);
  if(state.rng?.apk)resetItem7RoundTargets(state);

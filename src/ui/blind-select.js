@@ -1,3 +1,4 @@
+import {stakeScaling,blindReward} from '../core/stakes.js';
 import {deckBlindScale} from '../content/decks.js';
 import {canRerollBoss,hasVoucher} from '../core/vouchers.js';
 import {getSkipAvailability} from '../core/skip-blind.js';
@@ -10,7 +11,7 @@ import {appendTooltipContents} from './tooltip-text.js';
 let overlay,controller;
 const russianHands=Object.fromEntries(Object.entries(APK_HAND_NAMES).map(([id,name])=>[name,HAND_NAMES[id]]));
 function node(tag,className,text){const el=document.createElement(tag);if(className)el.className=className;if(text!==undefined)el.textContent=text;return el;}
-export function blindChoiceTarget(state,id){return id===state.round.blindId?state.round.target:nativeBlindTarget(state.round.ante,(id==='big'?1.5:id==='boss'?APK_BLINDS_BY_ID[state.apkBlinds.bossId].mult:1)*deckBlindScale(state.deckId));}
+export function blindChoiceTarget(state,id){return id===state.round.blindId?state.round.target:nativeBlindTarget(state.round.ante,(id==='big'?1.5:id==='boss'?APK_BLINDS_BY_ID[state.apkBlinds.bossId].mult:1)*deckBlindScale(state.deckId),stakeScaling(state));}
 /** Ordinary unskipped Small/Big selection. Boss and skip tags remain unavailable. */
 export function renderBlindSelect(state,busy,onSelect,onSkip,onRerollBoss){
  if(state.phase!=='blind_selection'){removeBlindSelect();return;}
@@ -29,7 +30,7 @@ export function renderBlindSelect(state,busy,onSelect,onSkip,onRerollBoss){
   if(current || state.apkBlinds && !passed){
    const boss=id==='boss'?APK_BLINDS_BY_ID[state.apkBlinds.bossId]:null;
    const token=node('div','blind-choice-token',boss?boss.name:id==='big'?'БОЛЬШОЙ\nБЛАЙНД':'МАЛЫЙ\nБЛАЙНД');token.setAttribute('aria-hidden','true');card.append(token);
-   const target=node('div','blind-choice-target');target.append(node('span','','Минимум очков'));const score=node('strong','scarlet',displayBlindTarget(blindChoiceTarget(state,id)));score.id='select_'+id+'_target';target.append(score);const reward=node('span');reward.append(node('span','','Награда: '),node('strong','gold',id==='big'?'$$$$':boss?'$'.repeat(boss.dollars):'$$$'));target.append(reward);card.append(target);
+   const target=node('div','blind-choice-target');target.append(node('span','','Минимум очков'));const score=node('strong','scarlet',displayBlindTarget(blindChoiceTarget(state,id)));score.id='select_'+id+'_target';target.append(score);const reward=node('span');reward.append(node('span','','Награда: '),node('strong','gold',blindReward(state,id)?'$'.repeat(Number(blindReward(state,id))):'$0'));target.append(reward);card.append(target);
    if(boss)card.append(node('p','blind-boss-description',boss.description));
    else{
     const lower=node('div','blind-choice-skip');lower.append(node('span','','ИЛИ'));

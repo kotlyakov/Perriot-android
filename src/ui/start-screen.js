@@ -1,11 +1,12 @@
 import {DECKS} from '../content/decks.js';
+import {STAKES} from '../content/stakes.js';
 
 let screen, previousFocus;
 function element(tag,className,text){const node=document.createElement(tag);if(className)node.className=className;if(text!==undefined)node.textContent=text;return node;}
 function button(id,label,className,action){const node=element('button',className,label);node.id=id;node.type='button';node.onclick=action;return node;}
 function enter(node){if(!matchMedia('(prefers-reduced-motion: reduce)').matches)node.animate([{transform:'translateY(688px)'},{transform:'translateY(0)'}],{duration:360,easing:'cubic-bezier(.16,1,.3,1)'});}
 
-/** UI only: onNew receives {deckId, seed}; caller creates the blind-selection state. */
+/** UI only: onNew receives {deckId, seed, stake}; caller creates the blind-selection state. */
 export function renderStartScreen({hasSave=false,onContinue,onNew,onSettings}){
  removeStartScreen();previousFocus=document.activeElement;
  screen=element('section','start-screen');screen.id='start_screen';screen.setAttribute('aria-label','Главное меню Пьеро');
@@ -38,11 +39,19 @@ export function renderStartScreen({hasSave=false,onContinue,onNew,onSettings}){
   const previous=button('setup_deck_prev','‹','orange',()=>cycle(-1)),next=button('setup_deck_next','›','orange',()=>cycle(1));
   previous.setAttribute('aria-label','Предыдущая колода');next.setAttribute('aria-label','Следующая колода');
   choices.append(previous,selector,next);panel.append(choices);
-  const access=element('p','start-preview-access','Режим предпросмотра: все колоды доступны без условий открытия.');panel.append(access);
+  const access=element('p','start-preview-access','Режим предпросмотра: все колоды и ставки доступны без условий открытия.');panel.append(access);
   function refreshDeck(){const meta=DECKS[deckId];deckName.textContent=meta.name;effect.textContent=meta.description??`${meta.bonus} ${meta.effect} ${meta.timing}`;deck.dataset.deck=deckId;selector.value=deckId;}
   refreshDeck();
+  let stake=1;
+  const stakeRow=element('div','start-stake-settings'),chip=element('span','start-stake-chip');chip.setAttribute('aria-hidden','true');
+  const stakeSelect=element('select');stakeSelect.id='setup_stake';stakeSelect.setAttribute('aria-label','Сложность');stakeSelect.setAttribute('aria-describedby','setup_stake_description');
+  for(const item of STAKES){const option=element('option','',item.name);option.value=String(item.level);stakeSelect.append(option);}
+  const stakeDescription=element('p','start-stake-description');stakeDescription.id='setup_stake_description';
+  function refreshStake(){const item=STAKES.find(item=>item.level===stake);chip.dataset.stake=item.id;chip.style.setProperty('--stake-color',item.color);chip.textContent=String(item.level);stakeDescription.textContent=item.description+(stake>1?' Включает предыдущие ставки.':'');}
+  stakeSelect.onchange=()=>{stake=Number(stakeSelect.value);refreshStake();};refreshStake();
+  stakeRow.append(chip,stakeSelect,stakeDescription);panel.append(stakeRow);
   const seedLabel=element('label','start-seed-label','Зерно забега (необязательно)');const seed=element('input');seed.id='setup_seed';seed.type='text';seed.maxLength=8;seed.oninput=()=>{seed.value=seed.value.toUpperCase().slice(0,8);};seed.autocomplete='off';seed.spellcheck=false;seed.placeholder='Случайный забег';seedLabel.append(seed);panel.append(seedLabel);
-  const actions=element('div','start-setup-actions');actions.append(button('setup_back','Назад','orange',()=>{panel.remove();newButton.focus({preventScroll:true});}),button('setup_play','Играть','blue',()=>onNew?.({deckId,seed:seed.value.trim().toUpperCase().slice(0,8)||undefined})));panel.append(actions);
+  const actions=element('div','start-setup-actions');actions.append(button('setup_back','Назад','orange',()=>{panel.remove();newButton.focus({preventScroll:true});}),button('setup_play','Играть','blue',()=>onNew?.({deckId,stake,seed:seed.value.trim().toUpperCase().slice(0,8)||undefined})));panel.append(actions);
   screen.append(panel);enter(panel);newTab.focus({preventScroll:true});
  }
  return screen;

@@ -4,14 +4,15 @@ import {createApkTagContext,chooseApkTag} from './apk-tags.js';
 
 // APK misc_functions.lua get_blind_amount: default scaling uses binary64,
 // including logarithmic modulo truncation. Multiply before converting to BigInt.
-export function nativeBlindTarget(ante,multiplier=1){
+export function nativeBlindTarget(ante,multiplier=1,scaling=1){
  if(!Number.isSafeInteger(ante)||ante< -1)throw new RangeError('Unsupported ante');
  if(!Number.isFinite(multiplier)||multiplier<=0)throw new RangeError('Invalid blind multiplier');
- const bases=[300,800,2000,5000,11000,20000,35000,50000];
+ if(![1,2,3].includes(scaling))throw new RangeError('Invalid blind scaling');
+ const bases=({1:[300,800,2000,5000,11000,20000,35000,50000],2:[300,900,2600,8000,20000,36000,60000,100000],3:[300,1000,3200,9000,25000,60000,110000,200000]})[scaling];
  let amount=ante<1?100:bases[ante-1];
  if(ante>8){
   const c=ante-8;
-  amount=Math.floor(50000*(1.6+(0.75*c)**(1+0.2*c))**c);
+  amount=Math.floor(bases[7]*(1.6+(0.75*c)**(1+0.2*c))**c);
   amount-=amount%(10**Math.floor(Math.log10(amount)-1));
  }
  const target=amount*multiplier;

@@ -1,3 +1,4 @@
+import {stakeScaling,runDiscards,validStake} from './stakes.js';
 import {DECKS,deckHands,deckDiscards,deckHandSize,deckBlindScale} from '../content/decks.js';
 import {voucherModifiers} from './vouchers.js';
 import {createTagShopHooks} from './tag-effects.js';
@@ -146,7 +147,7 @@ export function applyShopAction(state,action,{refill,nextRound}={}) {
         }catch{return reject('NEXT_BLIND_UNAVAILABLE','Invalid next ante selection');}
       }
       const vouchers=voucherModifiers(next);delete next.round.targetAnte;
-      next.round={...next.round,ante,blindId:newAnte?'small':boss?'boss':'big',target:newAnte?nativeBlindTarget(ante,deckBlindScale(next.deckId)):boss?bossTarget(next):nativeBlindTarget(ante,1.5*deckBlindScale(next.deckId)),score:0n,handsRemaining:deckHands(next.deckId)+vouchers.hands,discardsRemaining:deckDiscards(next.deckId)+vouchers.discards};
+      next.round={...next.round,ante,blindId:newAnte?'small':boss?'boss':'big',target:newAnte?nativeBlindTarget(ante,deckBlindScale(next.deckId),stakeScaling(next)):boss?bossTarget(next):nativeBlindTarget(ante,1.5*deckBlindScale(next.deckId),stakeScaling(next)),score:0n,handsRemaining:deckHands(next.deckId)+vouchers.hands,discardsRemaining:runDiscards(next)+vouchers.discards};
       delete next.round.bossDisabled;
       next.hand=[];next.discardPile=[];next.apkShop.context=currentApkShopContext(next);
       return finish(next,[{type:'shop_left',nextBlindId:next.round.blindId}]);

@@ -1,3 +1,6 @@
+import {isPerished} from '../core/joker-stickers.js';
+import {hasJokerStickers} from '../core/round-end-jokers.js';
+import {stakeScaling,runDiscards,validStake} from '../core/stakes.js';
 import {DECKS,deckHands,deckDiscards,deckHandSize,deckBlindScale} from '../content/decks.js';
 import {voucherModifiers} from '../core/vouchers.js';
 import {validateTagState} from '../core/tag-effects.js';
@@ -40,7 +43,7 @@ function optionalObject(value,required,optional=[]) {
   requireValue(required.every(key=>Object.hasOwn(value,key)) && Object.keys(value).every(key=>required.includes(key) || optional.includes(key)));
 }
 function decodeOffer(value,ids,owned=false,consumable=false) {
-  optionalObject(value,owned?['id','entityId']:['id','entityId','cost','sellCost'],['cost','sellCost','edition','eternal','rental','perishable','debuffed','originalKey','set','frontKey','toDoPokerHand','creationOrdinal','repeatHandsRemaining','mult','chips','xMult','yorickDiscards','cainoXMult','turtleHandSize','invisibleRounds','rocketDollars','loyaltyRemaining','extraValue','enhancement','seal','couponed']);
+  optionalObject(value,owned?['id','entityId']:['id','entityId','cost','sellCost'],['cost','sellCost','edition','eternal','rental','perishable','perishRounds','debuffed','originalKey','set','frontKey','toDoPokerHand','creationOrdinal','repeatHandsRemaining','mult','chips','xMult','yorickDiscards','cainoXMult','turtleHandSize','invisibleRounds','rocketDollars','loyaltyRemaining','extraValue','enhancement','seal','couponed']);
   id(value.id);id(value.entityId);requireValue(!ids.has(value.id));ids.add(value.id);
   // Mutable currency counters are serialized decimals; ownership checks need
   // their decoded native type, just like the ability validator below.
@@ -150,7 +153,7 @@ function decodeBoss(value,state){
  if(value.id==='bl_final_heart'){
   const chosen=value.heartDebuffedJokerId;
   requireValue(chosen===null||typeof chosen==='string'&&state.jokers.some(j=>j.id===chosen));
-  requireValue(state.jokers.every(j=>(j.debuffed===true)===(j.id===chosen))&&(!value.disabled||chosen===null));
+  requireValue(state.jokers.every(j=>(j.debuffed===true)===(j.id===chosen||isPerished(j)))&&(!value.disabled||chosen===null));
  }
  if(value.id==='bl_serpent'){
   if(Object.hasOwn(value,'serpentInitialHandSize'))integer(value.serpentInitialHandSize,0,10000);
@@ -163,9 +166,9 @@ function decodeBoss(value,state){
     integer(origin.earnedRevision,1,value.disabledRevision-1);
     requireValue(state.phase==='round_won'&&origin.earnedRevision===state.cashoutQuote?.earnedRevision&&origin.handsRemaining===state.round.handsRemaining&&origin.discardsRemaining===state.round.discardsRemaining);
    }else requireValue(origin.earnedRevision===undefined);
-   integer(origin.handsRemaining,state.round.handsRemaining,Object.hasOwn(origin,'refillsBefore')?10000:deckHands(state.deckId));integer(origin.discardsRemaining,state.round.discardsRemaining,Object.hasOwn(origin,'refillsBefore')?10000:deckDiscards(state.deckId));
+   integer(origin.handsRemaining,state.round.handsRemaining,Object.hasOwn(origin,'refillsBefore')?10000:deckHands(state.deckId));integer(origin.discardsRemaining,state.round.discardsRemaining,Object.hasOwn(origin,'refillsBefore')?10000:runDiscards(state));
    if(Object.hasOwn(origin,'refillsBefore'))integer(origin.refillsBefore,0,10000);
-   const actions=origin.refillsBefore??(deckHands(state.deckId)-origin.handsRemaining+deckDiscards(state.deckId)-origin.discardsRemaining-(origin.phase==='round_won'?1:0));
+   const actions=origin.refillsBefore??(deckHands(state.deckId)-origin.handsRemaining+runDiscards(state)-origin.discardsRemaining-(origin.phase==='round_won'?1:0));
    requireValue(actions>=0);
    const count=value.serpentInitialCardCount;
    if(count===null)requireValue(origin.drawPile?.length===0);
@@ -446,7 +449,7 @@ function decodeScore(value,state) {
     let rng={...(hasAction?structuredClone(value.actionRng.after):state.rng.apk),streams:{...(hasAction?value.actionRng.after.streams:state.rng.apk.streams)},mathState:[...(hasAction?value.actionRng.after.mathState:value.glassRngAfter.mathState)]};
     if(stream===null)delete rng.streams.cerulean_bell;else rng.streams.cerulean_bell=stream;
     const polls=(state.phase==='playing'?1:0)+value.scoringRoundBefore.discardsRemaining-state.round.discardsRemaining;
-    integer(polls,0,deckDiscards(state.deckId)+1);
+    integer(polls,0,runDiscards(state)+1);
     // Every Bell poll reseeds raw RNG. Only the final candidate pool affects
     // the final target/raw state; prior seed advances come from round counters.
     for(let i=1;i<polls;i++)rng=nextApkSeed(rng,'cerulean_bell').rng;
@@ -499,7 +502,7 @@ function decode(payload) {
   requireValue(state.lastScore===null||!hasEffectMechanisms(state));
   const sortMode=state.sortMode;
   if(Object.hasOwn(state,'sortMode'))requireValue(['rank','suit'].includes(sortMode));
-  optionalObject(state,['schemaVersion','runId','seed','revision','phase','deckId','cards','hand','drawPile','discardPile','jokers','handLevels','discoveredHands','rng','money','round','lastScore'],['shop','bankruptAt','jokerSlots','apkShop','sortMode','roundNumber','apkBlinds','bossState','nextAnteBlinds','runStats','consumables','consumableSlots','mostPlayedHand','consumableUsage','consumableUsageTotal','lastTarotPlanet','packState','destroyedCardIds','hangedDestroyedCardIds','hangedShortfallCardIds','hangedShortfallEpoch','nextJokerCreationOrdinal','cashoutQuote','winAnte','won','winNotified','winPending','nextPlayingCardOrdinal','lastPlayedHand','handUsage','startingDeckSize','pendingDoubleTags','spectralDestroyedCardIds','spectralShortfallCardIds','spectralShortfallEpoch','spectralHandSizeDelta','ectoMinus','pendingTags','pendingTagPacks','activeTagHandSize','bossRerollUsed']);
+  optionalObject(state,['schemaVersion','runId','seed','revision','phase','deckId','cards','hand','drawPile','discardPile','jokers','handLevels','discoveredHands','rng','money','round','lastScore'],['stake','shop','bankruptAt','jokerSlots','apkShop','sortMode','roundNumber','apkBlinds','bossState','nextAnteBlinds','runStats','consumables','consumableSlots','mostPlayedHand','consumableUsage','consumableUsageTotal','lastTarotPlanet','packState','destroyedCardIds','hangedDestroyedCardIds','hangedShortfallCardIds','hangedShortfallEpoch','nextJokerCreationOrdinal','cashoutQuote','winAnte','won','winNotified','winPending','nextPlayingCardOrdinal','lastPlayedHand','handUsage','startingDeckSize','pendingDoubleTags','spectralDestroyedCardIds','spectralShortfallCardIds','spectralShortfallEpoch','spectralHandSizeDelta','ectoMinus','pendingTags','pendingTagPacks','activeTagHandSize','bossRerollUsed']);
   // Only the default win Ante is supported by the current blind-selection contract.
   if(Object.hasOwn(state,'winAnte'))requireValue(state.winAnte===8);
   for(const key of ['won','winNotified','winPending'])if(Object.hasOwn(state,key))requireValue(typeof state[key]==='boolean');
@@ -508,6 +511,7 @@ function decode(payload) {
   requireValue(validConsumableUsage(state));
   if(Object.hasOwn(state,'lastPlayedHand'))requireValue(Object.hasOwn(HANDS,state.lastPlayedHand));
   if(Object.hasOwn(state,'mostPlayedHand'))requireValue(state.mostPlayedHand===null||Object.hasOwn(HANDS,state.mostPlayedHand));
+  if(Object.hasOwn(state,'stake'))requireValue(validStake(state.stake));
   requireValue(state.schemaVersion===1 && PHASES.includes(state.phase) && Object.hasOwn(DECKS,state.deckId));
   requireValue(typeof state.runId==='string' && state.runId.length>=1 && state.runId.length<=120);
   requireValue(typeof state.seed==='string' && state.seed.length>=1 && state.seed.length<=1000);integer(state.revision);
@@ -569,7 +573,7 @@ function decode(payload) {
   if(Object.hasOwn(state,'nextJokerCreationOrdinal'))integer(state.nextJokerCreationOrdinal,1,Number.MAX_SAFE_INTEGER);
   requireValue(state.jokers.length<=(state.jokerSlots??5)+state.jokers.filter(j=>j.edition==='negative').length);
   const jokerIds=new Set(cardIds);
-  for(const joker of state.jokers)decodeOffer(joker,jokerIds,true);
+  for(const joker of state.jokers){decodeOffer(joker,jokerIds,true);requireValue(!isPerished(joker)||joker.debuffed===true);}
   if(Object.hasOwn(state,'consumableSlots'))integer(state.consumableSlots,0,10000);
   if(Object.hasOwn(state,'consumables')){
     // Capacity limits acquisition, not persisted inventory: consuming a
@@ -621,7 +625,7 @@ function decode(payload) {
     requireValue(canEnterBoss(state)&&Object.is(round.target,bossTarget(state)));
     requireValue(['playing','round_won','game_over'].includes(state.phase)?!!state.bossState:!state.bossState&&realHandSize(state)===expectedHandSize(state));
   }
-  if(state.apkShop&&round.blindId!=='boss')requireValue(Object.is(round.target,nativeBlindTarget(round.targetAnte??round.ante,(round.blindId==='big'?1.5:1)*deckBlindScale(state.deckId))));
+  if(state.apkShop&&round.blindId!=='boss')requireValue(Object.is(round.target,nativeBlindTarget(round.targetAnte??round.ante,(round.blindId==='big'?1.5:1)*deckBlindScale(state.deckId),stakeScaling(state))));
   if(state.phase==='round_won')requireValue(round.score>=round.target);
   if(['shop','pack'].includes(state.phase))requireValue((freeTagPack(state)?round.score===0n:round.score>=round.target) && (state.packState?.handDraw?state.hand.length<=state.packState.handDraw.handSize+(state.packState.handDraw.createdCardIds?.length??0)+(state.packState.handDraw.extraDrawIds?.length??0):state.hand.length===0) && state.discardPile.length===0 && state.drawPile.length+state.hand.length===cardIds.length && state.lastScore===null);
   if(state.phase==='game_over')requireValue((round.handsRemaining===0||state.hand.length===0&&(round.handSize===0||state.drawPile.length===0)) && !(round.score>=round.target));
@@ -685,7 +689,7 @@ function decodeEffectReplay(payload){
   }
   const expected=replayEffectActions(before,journal.actions);
   if(journal.version===1)requireValue(expected.lastScore!==null);
-  else requireValue(hasEffectMechanisms(before)||hasEffectMechanisms(expected)||journal.actions.some(a=>['USE_CONSUMABLE','USE_PACK_CARD'].includes(a.type))||before.rng?.apk&&journal.actions.some(a=>a.type==='PLAY_HAND'));
+  else requireValue(hasEffectMechanisms(before)||hasEffectMechanisms(expected)||hasJokerStickers(before)||journal.actions.some(a=>['USE_CONSUMABLE','USE_PACK_CARD'].includes(a.type))||before.rng?.apk&&journal.actions.some(a=>a.type==='PLAY_HAND'));
   const actual={...raw};delete actual.effectReplay;
   requireValue(canonical(actual)===canonical(encodeState(expected).state));
   expected.effectReplay={version:journal.version,before,actions:structuredClone(journal.actions)};return expected;

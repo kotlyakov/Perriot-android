@@ -29,7 +29,7 @@ test('remaining packs match all independent native cards, pricing, streams and f
   const {cards,rng}=generateApkRemainingPack(input,ctx,{boosterId:booster(expected.kind,expected.size),instancePrefix:'oracle'});
   const label=[expected.seed,expected.kind,expected.size,expected.mode].join('/');
   const summary=cards.map(c=>Object.fromEntries(Object.entries(c).filter(([key])=>!['id','originalKey','set','enhancement'].includes(key)).map(([key,value])=>[key,typeof value==='bigint'?Number(value):value])));
-  assert.deepEqual(summary,expected.cards,label+'/cards');
+  assert.deepEqual(summary,expected.cards.map(card=>({...card,...(card.perishable?{perishRounds:5}:{})})),label+'/cards');
   assert.deepEqual(rng.streams,expected.streams,label+'/streams');
   let state=rng.mathState;for(const value of expected.followingMath){const next=nextApkMathRandom(state);assert.equal(next.value,value,label+'/math');state=next.state;}
   assert.deepEqual({input,ctx},before,label+'/immutable');

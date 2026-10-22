@@ -20,7 +20,7 @@ test('repeat marker is nonnumeric, source attributed and leaves HUD untouched',a
 });
 
 test('four supported descriptions retain purchase restrictions and owned Heart display',()=>{
- for(const entityId of keys){assert.equal(describeShopItem({entityId}).canBuy,true);for(const flag of ['perishable','rental','debuffed'])assert.equal(describeShopItem({entityId,[flag]:true}).canBuy,false);assert.equal(describeShopItem({entityId,debuffed:true},{owned:true}).canBuy,true);assert.equal(describeShopItem({entityId,eternal:true}).canBuy,true);}
+ for(const entityId of keys){assert.equal(describeShopItem({entityId}).canBuy,true);assert.equal(describeShopItem({entityId,rental:true}).canBuy,true);for(const flag of ['perishable','debuffed'])assert.equal(describeShopItem({entityId,[flag]:true}).canBuy,false);assert.equal(describeShopItem({entityId,debuffed:true},{owned:true}).canBuy,true);assert.equal(describeShopItem({entityId,eternal:true}).canBuy,true);}
 });
 
 test('normal native pools preserve four centre locks, ban and duplicate gating',async()=>{

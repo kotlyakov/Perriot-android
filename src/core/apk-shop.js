@@ -71,7 +71,7 @@ export function session(rng,context){
   if(main&&c.set==='Joker'){
    const m=context.modifiers;const poll=random('etperpoll'+context.ante);
    if((m.all_eternal||m.enable_eternals_in_shop&&poll>0.7)&&c.eternal_compat)offer.eternal=true;
-   else if(m.enable_perishables_in_shop&&poll>0.4&&poll<=0.7&&c.perishable_compat)offer.perishable=true;
+   else if(m.enable_perishables_in_shop&&poll>0.4&&poll<=0.7&&c.perishable_compat){offer.perishable=true;offer.perishRounds=5;}
    if(m.enable_rentals_in_shop&&random('ssjr'+context.ante)>0.7)offer.rental=true;
    offer.edition=edition(editionKey??'edisho'+context.ante);
   }
