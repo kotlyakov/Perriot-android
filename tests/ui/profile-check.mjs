@@ -44,7 +44,7 @@ try{
   assert.equal(await page.locator('#setup_deck_blue').isDisabled(),true,'Fresh profile locks Blue');
   assert.equal(await page.locator('#setup_stake option[value="2"]').isDisabled(),true,'Fresh Red only admits White');
   await page.locator('#setup_deck_next').click();assert.equal(await page.locator('#setup_play').isDisabled(),true,'Locked deck cannot start from arrow browsing');
-  assert.match(await page.locator('.start-preview-access').textContent(),/Открыть|откр|побед|карт/i);
+  assert.equal(await page.locator('.start-preview-access').textContent(),'Обнаружьте 20 предметов коллекции.');
   await page.locator('#setup_deck_prev').click();assert.equal(await page.locator('#setup_play').isDisabled(),false);
   await page.locator('#setup_play').click();await page.locator('#select_small').waitFor();
   await page.locator('#select_small').click();await page.locator('#hand .playing-card').first().click();await page.locator('#play_hand').click();
