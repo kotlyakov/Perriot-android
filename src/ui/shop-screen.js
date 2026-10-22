@@ -2,8 +2,8 @@ import {canEnterBoss} from '../core/boss-effects.js';
 import {canLeaveApkShop} from '../core/blind-progression.js';
 import {describeShopItem as describeCatalogueItem,displayPlayingCard} from '../content/shop-display.js';
 import {appendTooltipContents} from './tooltip-text.js';
-import {getRerollCost,canBuyShopCard} from '../core/shop.js';
-import {canUseConsumable} from '../core/consumables.js';
+import {getRerollCost,canBuyShopCard,hasJokerSpace,hasConsumableSpace,isPlayingShopCard} from '../core/shop.js';
+import {canUseConsumable,supportsConsumableEffect} from '../core/consumables.js';
 import {canAfford} from '../core/shop-pricing.js';
 import {canManageInventory,canSellOwned} from '../core/inventory.js';
 import {supportsBooster,canUsePackCard} from '../core/celestial-pack.js';
@@ -134,7 +134,7 @@ function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
     ghost=wrap.cloneNode(true);ghost.querySelector('.shop-use')?.remove();rect(ghost,(bounds.left-stageBounds.left)/scale,(bounds.top-stageBounds.top)/scale,w,h);ghost.classList.add('is-dragging');ghost.setAttribute('aria-hidden','true');ghost.style.pointerEvents='none';stage.append(ghost);wrap.style.opacity='0';ghost.querySelector('button').tabIndex=-1;
     zone=inventory?rect(node('div','shop-buy-zone shop-sell-zone'),1375,210,150,225):rect(node('div','shop-buy-zone'),454,15,895,182);zone.id=inventory?'shop_sell_zone':'shop_buy_zone';zone.setAttribute('aria-live','polite');
     const pack=kind==='booster'&&supportsBooster(offer.entityId)&&offer.originalKey===offer.entityId&&offer.set==='Booster',voucher=kind==='voucher',supported=pack||voucher||kind==='main'&&details.canBuy&&(state.inflation??0n)===0n;
-    const reason=inventory?(canSellOwned(state,offer,area)?null:offer.eternal?'Вечная карта':'Продажа недоступна'):!supported?'Доступен только просмотр':!canAfford(state.money,offer.cost,state.bankruptAt??0n)?'Недостаточно денег':voucher&&!canBuyVoucher(state,offer)?'Ваучер уже получен или недоступен':!pack&&!voucher&&!canBuyShopCard(state,offer)?'Покупка недоступна: проверьте свободные места':null;
+    const reason=inventory?(canSellOwned(state,offer,area)?null:offer.eternal?'Вечная карта':'Продажа недоступна'):!supported?'Доступен только просмотр':!canAfford(state.money,offer.cost,state.bankruptAt??0n)?'Недостаточно денег':voucher&&!canBuyVoucher(state,offer)?'Ваучер уже получен или недоступен':!pack&&!voucher&&!isPlayingShopCard(offer)&&!(supportsConsumableEffect(offer)?hasConsumableSpace(state,offer):hasJokerSpace(state,offer))?(supportsConsumableEffect(offer)?'Нет места для расходной карты':'Нет места для джокера'):!pack&&!voucher&&!canBuyShopCard(state,offer)?'Покупка недоступна: проверьте свободные места':null;
     zone.dataset.available=String(!reason);zone.append(node('strong','',reason??(inventory?'Продать':'Купить')),hidden?node('span','shop-money','?'):money(inventory?offer.sellCost??0n:offer.cost,inventory?125:800,43));document.getElementById('stage').append(zone);
    }
    if(dragged){ev.preventDefault();ghost.style.translate=(ev.clientX-startX)/scale+'px '+(ev.clientY-startY)/scale+'px';const b=zone.getBoundingClientRect();zone.classList.toggle('is-over',ev.clientX>=b.left&&ev.clientX<=b.right&&ev.clientY>=b.top&&ev.clientY<=b.bottom);}
