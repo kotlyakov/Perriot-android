@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {mkdir} from 'node:fs/promises';
+import {bossTarget} from '../../src/core/boss-effects.js';
+import {getCashout} from '../../src/core/cashout.js';
 import {createRun,dispatch} from '../../src/core/run.js';
 import {serializeState,deserializeState} from '../../src/persistence/save.js';
 import {enterRun} from './enter-run.mjs';
@@ -57,6 +59,9 @@ try{
   state=createRun('ITEM9_PACK_UI',{runId:'item9-pack-ui',money:30n,referenceRng:true,referenceShop:true,reducedMotion:true});state.apkBlinds.tags.small='tag_charm';
   await install(page,state,'#blind_selection');await (touch?page.locator('#skip_small').tap():page.locator('#skip_small').click());await page.locator('#pack_screen').waitFor();state=await saved(page);assert.equal(state.packState.returnPhase,'blind_selection');assert.equal(state.money,30n);
   await page.reload();await enterRun(page,{startBlind:false});await page.locator('#pack_screen').waitFor();await (touch?page.locator('#pack_skip').tap():page.locator('#pack_skip').click());await page.locator('#blind_selection').waitFor();state=await saved(page);assert.equal(state.phase,'blind_selection');assert.equal(state.round.blindId,'big');assert.equal(state.money,30n);
+  state=createRun('ITEM9_INVEST_UI',{runId:'item9-invest-ui',money:50n,referenceRng:true,referenceShop:true,reducedMotion:true});state.round.blindId='boss';state.round.target=bossTarget(state);state.roundNumber=3;state.pendingTags=['tag_investment'];for(const id of Object.keys(state.handLevels))state.handLevels[id]=1000;
+  state=dispatch(state,{type:'START_BLIND',expectedRevision:state.revision}).state;const played=dispatch(state,{type:'PLAY_HAND',expectedRevision:state.revision,cardIds:[state.hand[0]]});assert.equal(played.error,null);state=played.state;assert.equal(state.phase,'round_won');const quote=getCashout(state);assert.equal(quote.tagReward,25n);
+  await install(page,state,'#post_round');assert.match(await page.locator('.payout-investment').innerText(),/Инвестиционная награда/);assert.match(await page.locator('.payout-investment').innerText(),/\$25/);assert.equal(await page.locator('#cashout').innerText(),'Обналичить: $'+quote.total);await page.screenshot({path:`artifacts/item9-investment-${width}.png`});await (touch?page.locator('#cashout').tap():page.locator('#cashout').click());await page.locator('#shop_screen').waitFor();assert.equal((await saved(page)).money,state.money+quote.total);assert.ok(!(await saved(page)).pendingTags?.includes('tag_investment'));
   assert.deepEqual(errors,[]);await page.close();
  }
  console.log('item9 voucher drag, boss reroll, pending rewards and free pack resume: PASS');

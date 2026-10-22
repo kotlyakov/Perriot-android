@@ -23,10 +23,11 @@ export function renderPostRound(state,busy,cashout){
   const token=document.createElement('div');token.className='token';token.textContent=state.round.blindId==='boss'?APK_BLINDS_BY_ID[state.apkBlinds.bossId].name:state.round.blindId==='big'?'БОЛЬШОЙ\nБЛАЙНД':'МАЛЫЙ\nБЛАЙНД';
   const target=document.createElement('div');target.className='payout-target';target.textContent='Минимум очков';const score=document.createElement('strong');score.className='scarlet';score.textContent=displayBlindTarget(state.round.target);target.append(score);
   const amount=document.createElement('strong');amount.className='gold';amount.textContent='$'.repeat(Number(quote.reward));reward.append(token,target,amount);panel.append(reward);
-  const rowContainer=quote.jokerBonuses?document.createElement('div'):panel;if(quote.jokerBonuses){rowContainer.className='payout-bonus-list';panel.append(rowContainer);}
+  const hasBonuses=!!quote.jokerBonuses||!!quote.tagReward,rowContainer=hasBonuses?document.createElement('div'):panel;if(hasBonuses){rowContainer.className='payout-bonus-list';panel.append(rowContainer);}
   function row(className,value,label,total){const item=document.createElement('div');item.className='payout-row '+className;const n=document.createElement('strong');n.textContent=value;const text=document.createElement('span');text.textContent=label;const dollars=document.createElement('strong');dollars.className='gold';dollars.textContent='$'+total;item.append(n,text,dollars);rowContainer.append(item);return item;}
   row('payout-hands',quote.hands,'Осталось рук ($1 каждая)',quote.hands);
   for(const bonus of quote.jokerBonuses??[]){const item=row('payout-joker',1,describeShopItem({entityId:bonus.entityId}).name,bonus.amount);item.dataset.jokerId=bonus.sourceId;}
+  if(quote.tagReward)row('payout-investment',quote.tagReward/25n,'Инвестиционная награда',quote.tagReward);
   if(quote.interest)row('payout-interest',quote.interest,'Проценты ($1 за каждые $5)',quote.interest);
  }else{
   const entry=document.createElement('div');entry.id='shop_entry';const title=document.createElement('h2');title.textContent='Магазин';const text=document.createElement('p');text.textContent='Награда получена. Переход сохранён.';const scope=document.createElement('p');scope.className='shop-scope';scope.textContent='Промежуточная сборка: покупки, обновление магазина и следующий блайнд будут добавлены на следующем этапе.';entry.append(title,text,scope);panel.append(entry);
