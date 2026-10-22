@@ -1,3 +1,4 @@
+import {DECKS,deckHands,deckDiscards,deckHandSize,deckBlindScale} from '../content/decks.js';
 import {APK_TAGS_BY_ID} from '../content/apk-tags.js';
 import {APK_HAND_NAMES} from './apk-shop-state.js';
 import {canEnterBoss,bossTarget} from './boss-effects.js';
@@ -57,7 +58,7 @@ export function applySkipBlind(state,action){
   if(delta)events.push({type:'money_changed',before,after:next.money,delta});
  }
  const blindId=skipped==='small'?'big':'boss',vouchers=voucherModifiers(next);
- next.round={...next.round,blindId,target:blindId==='boss'?bossTarget(next):nativeBlindTarget(next.round.ante,1.5),score:0n,handsRemaining:(next.deckId==='blue'?5:4)+vouchers.hands,discardsRemaining:(next.deckId==='red'?4:3)+vouchers.discards};
+ next.round={...next.round,blindId,target:blindId==='boss'?bossTarget(next):nativeBlindTarget(next.round.ante,1.5*deckBlindScale(next.deckId)),score:0n,handsRemaining:deckHands(next.deckId)+vouchers.hands,discardsRemaining:deckDiscards(next.deckId)+vouchers.discards};
  next.lastScore=null;next.revision++;
  events.unshift({type:'blind_skipped',blindId:skipped,nextBlindId:blindId,tagId});
  return {state:next,events,error:null};

@@ -1,3 +1,4 @@
+import {DECKS,deckHands,deckDiscards,deckHandSize,deckBlindScale} from '../content/decks.js';
 import {voucherModifiers} from '../core/vouchers.js';
 import {validateTagState} from '../core/tag-effects.js';
 import {realHandSize} from '../core/hand-size.js';
@@ -17,7 +18,7 @@ import { SUPPORTED_JOKERS,SCORED_RETRIGGER_JOKERS,originalJokerKey,supportsJoker
 import { evaluateHand } from '../core/hands.js';
 import { randomInt } from '../core/rng.js';
 import { scoreHand } from '../core/score.js';
-import {compareExact,equalExact,exact,floorExact,multiplyExact} from '../core/numbers.js';
+import {addExact,compareExact,equalExact,exact,floorExact,multiplyExact} from '../core/numbers.js';
 import catalogue from '../content/apk-shop-catalog.js';
 import {createApkShopContext} from '../core/apk-shop.js';
 import {APK_BASE_CARD_IDS,canonicalCards,identityCard,playingCardOrdinal,validatePlayingCardIdentities} from '../core/apk-deck.js';
@@ -25,7 +26,7 @@ const centres=new Map(catalogue.centres.map(c=>[c.key,c]));
 const handNames=new Set(catalogue.centres.filter(c=>c.set==='Planet').map(c=>c.handType));
 
 const freeTagPack=state=>state.phase==='pack'&&state.packState?.returnPhase==='blind_selection';
-const expectedHandSize=state=>8+(state.spectralHandSizeDelta??0)+item7CapacityDeltas(state.jokers).handSize+voucherModifiers(state).handSize+(state.activeTagHandSize??0);
+const expectedHandSize=state=>deckHandSize(state.deckId)+(state.spectralHandSizeDelta??0)+item7CapacityDeltas(state.jokers).handSize+voucherModifiers(state).handSize+(state.activeTagHandSize??0);
 
 const LIMIT=2*1024*1024;
 const PHASES=['blind_selection','playing','round_won','game_over','shop','pack'];
@@ -162,9 +163,9 @@ function decodeBoss(value,state){
     integer(origin.earnedRevision,1,value.disabledRevision-1);
     requireValue(state.phase==='round_won'&&origin.earnedRevision===state.cashoutQuote?.earnedRevision&&origin.handsRemaining===state.round.handsRemaining&&origin.discardsRemaining===state.round.discardsRemaining);
    }else requireValue(origin.earnedRevision===undefined);
-   integer(origin.handsRemaining,state.round.handsRemaining,Object.hasOwn(origin,'refillsBefore')?10000:state.deckId==='blue'?5:4);integer(origin.discardsRemaining,state.round.discardsRemaining,Object.hasOwn(origin,'refillsBefore')?10000:state.deckId==='red'?4:3);
+   integer(origin.handsRemaining,state.round.handsRemaining,Object.hasOwn(origin,'refillsBefore')?10000:deckHands(state.deckId));integer(origin.discardsRemaining,state.round.discardsRemaining,Object.hasOwn(origin,'refillsBefore')?10000:deckDiscards(state.deckId));
    if(Object.hasOwn(origin,'refillsBefore'))integer(origin.refillsBefore,0,10000);
-   const actions=origin.refillsBefore??((state.deckId==='blue'?5:4)-origin.handsRemaining+(state.deckId==='red'?4:3)-origin.discardsRemaining-(origin.phase==='round_won'?1:0));
+   const actions=origin.refillsBefore??(deckHands(state.deckId)-origin.handsRemaining+deckDiscards(state.deckId)-origin.discardsRemaining-(origin.phase==='round_won'?1:0));
    requireValue(actions>=0);
    const count=value.serpentInitialCardCount;
    if(count===null)requireValue(origin.drawPile?.length===0);
@@ -323,7 +324,11 @@ function decodeScore(value,state) {
     const before=exactPair(event.before),after=exactPair(event.after);
     requireValue(event.type==='score_step' && before.chips===previous.chips && equalExact(before.mult,previous.mult));
     if(i===0) requireValue(event.phase==='base' && event.operation==='base' && event.sourceId===`hand:${value.handId}`);
-    else {
+    else if(event.operation==='balance'){
+      requireValue(state.deckId==='plasma'&&event.phase==='deck'&&event.sourceId==='deck:plasma'&&i===value.trace.length-2);
+      const balanced=floorExact(multiplyExact(addExact(before.chips,before.mult),{n:1n,d:2n}));
+      requireValue(after.chips===balanced&&equalExact(after.mult,balanced));
+    }else {
       requireValue(['add_chips','add_mult','multiply_mult'].includes(event.operation));
       requireValue(event.operation==='add_chips' ? after.chips>=before.chips && equalExact(after.mult,before.mult) : compareExact(after.mult,before.mult)>=0 && after.chips===before.chips);
       requireValue(event.phase==='scored_card' ? value.scoringCardIds.includes(event.sourceId) : event.phase==='held_card' ? value.heldCardIds?.includes(event.sourceId) : ['independent','edition'].includes(event.phase) && state.jokers.some(j=>j.id===event.sourceId));
@@ -441,7 +446,7 @@ function decodeScore(value,state) {
     let rng={...(hasAction?structuredClone(value.actionRng.after):state.rng.apk),streams:{...(hasAction?value.actionRng.after.streams:state.rng.apk.streams)},mathState:[...(hasAction?value.actionRng.after.mathState:value.glassRngAfter.mathState)]};
     if(stream===null)delete rng.streams.cerulean_bell;else rng.streams.cerulean_bell=stream;
     const polls=(state.phase==='playing'?1:0)+value.scoringRoundBefore.discardsRemaining-state.round.discardsRemaining;
-    integer(polls,0,state.deckId==='red'?5:4);
+    integer(polls,0,deckDiscards(state.deckId)+1);
     // Every Bell poll reseeds raw RNG. Only the final candidate pool affects
     // the final target/raw state; prior seed advances come from round counters.
     for(let i=1;i<polls;i++)rng=nextApkSeed(rng,'cerulean_bell').rng;
@@ -503,7 +508,7 @@ function decode(payload) {
   requireValue(validConsumableUsage(state));
   if(Object.hasOwn(state,'lastPlayedHand'))requireValue(Object.hasOwn(HANDS,state.lastPlayedHand));
   if(Object.hasOwn(state,'mostPlayedHand'))requireValue(state.mostPlayedHand===null||Object.hasOwn(HANDS,state.mostPlayedHand));
-  requireValue(state.schemaVersion===1 && PHASES.includes(state.phase) && ['red','blue'].includes(state.deckId));
+  requireValue(state.schemaVersion===1 && PHASES.includes(state.phase) && Object.hasOwn(DECKS,state.deckId));
   requireValue(typeof state.runId==='string' && state.runId.length>=1 && state.runId.length<=120);
   requireValue(typeof state.seed==='string' && state.seed.length>=1 && state.seed.length<=1000);integer(state.revision);
   requireValue(state.cards!==null && typeof state.cards==='object' && !Array.isArray(state.cards));
@@ -616,20 +621,21 @@ function decode(payload) {
     requireValue(canEnterBoss(state)&&Object.is(round.target,bossTarget(state)));
     requireValue(['playing','round_won','game_over'].includes(state.phase)?!!state.bossState:!state.bossState&&realHandSize(state)===expectedHandSize(state));
   }
-  if(state.apkShop&&round.blindId!=='boss')requireValue(Object.is(round.target,nativeBlindTarget(round.targetAnte??round.ante,round.blindId==='big'?1.5:1)));
+  if(state.apkShop&&round.blindId!=='boss')requireValue(Object.is(round.target,nativeBlindTarget(round.targetAnte??round.ante,(round.blindId==='big'?1.5:1)*deckBlindScale(state.deckId))));
   if(state.phase==='round_won')requireValue(round.score>=round.target);
   if(['shop','pack'].includes(state.phase))requireValue((freeTagPack(state)?round.score===0n:round.score>=round.target) && (state.packState?.handDraw?state.hand.length<=state.packState.handDraw.handSize+(state.packState.handDraw.createdCardIds?.length??0)+(state.packState.handDraw.extraDrawIds?.length??0):state.hand.length===0) && state.discardPile.length===0 && state.drawPile.length+state.hand.length===cardIds.length && state.lastScore===null);
   if(state.phase==='game_over')requireValue((round.handsRemaining===0||state.hand.length===0&&(round.handSize===0||state.drawPile.length===0)) && !(round.score>=round.target));
   if(state.phase==='playing')requireValue(round.handsRemaining>0 && !(round.score>=round.target) && (state.hand.length+(state.hangedShortfallCardIds?.length??0)+(state.spectralShortfallCardIds?.length??0)>=round.handSize || state.drawPile.length===0 || state.bossState?.id==='bl_serpent'));
   if(state.phase==='blind_selection')requireValue(state.hand.length===0 && state.discardPile.length===0 && round.score===0n);
   if(Object.hasOwn(state,'cashoutQuote')){
-    requireValue(state.phase==='round_won');optionalObject(state.cashoutQuote,['moneyBefore','earnedRevision','bonusContext','quote'],['handsRemainingBefore']);
+    requireValue(state.phase==='round_won');optionalObject(state.cashoutQuote,['moneyBefore','earnedRevision','bonusContext','quote'],['handsRemainingBefore','discardsRemainingBefore']);
     integer(state.cashoutQuote.earnedRevision);optionalObject(state.cashoutQuote.bonusContext,['sources','nineCardIds'],['item7']);
     requireValue(Array.isArray(state.cashoutQuote.bonusContext.sources));for(const row of state.cashoutQuote.bonusContext.sources){object(row,['id','entityId']);id(row.id);}
     requireValue(Array.isArray(state.cashoutQuote.bonusContext.nineCardIds));for(const key of state.cashoutQuote.bonusContext.nineCardIds)id(key);
     const snapshot=state.cashoutQuote,q=snapshot.quote; snapshot.moneyBefore=decimal(snapshot.moneyBefore,true);
-    optionalObject(q,['reward','hands','interest','total'],['jokerBonuses','tagReward']);
-    if(Object.hasOwn(q,'tagReward'))q.tagReward=decimal(q.tagReward);
+    optionalObject(q,['reward','hands','interest','total'],['jokerBonuses','tagReward','handReward','discards']);
+    for(const key of ['tagReward','handReward','discards'])if(Object.hasOwn(q,key))q[key]=decimal(q[key]);
+    if(Object.hasOwn(snapshot,'discardsRemainingBefore'))integer(snapshot.discardsRemainingBefore,0,10000);
     for(const key of ['reward','hands','interest','total'])q[key]=decimal(q[key]);
     if(!Object.hasOwn(snapshot,'handsRemainingBefore'))snapshot.handsRemainingBefore=Number(q.hands);
     integer(snapshot.handsRemainingBefore,0,10000);
@@ -649,7 +655,7 @@ function encodeState(state) {
   const payload={format:'card-cascade-save',version:1,state:{...state,money:state.money.toString(),round:{...state.round,target:Number.isNaN(state.round.target)?{native:'NaN'}:state.round.target.toString(),score:state.round.score.toString()},lastScore:encodeScore(state.lastScore)}};
   if(Object.hasOwn(state,'cashoutQuote')){
     getCashout(state);const snapshot=state.cashoutQuote,q=snapshot.quote;
-    payload.state.cashoutQuote={handsRemainingBefore:Object.hasOwn(snapshot,'handsRemainingBefore')?snapshot.handsRemainingBefore:Number(q.hands),earnedRevision:snapshot.earnedRevision,bonusContext:structuredClone(snapshot.bonusContext),moneyBefore:snapshot.moneyBefore.toString(),quote:{...q,...Object.fromEntries(['reward','hands','interest','total',...(Object.hasOwn(q,'tagReward')?['tagReward']:[])].map(key=>[key,q[key].toString()])),...(q.jokerBonuses?{jokerBonuses:q.jokerBonuses.map(row=>({...row,amount:row.amount.toString()}))}:{})}};
+    payload.state.cashoutQuote={handsRemainingBefore:Object.hasOwn(snapshot,'handsRemainingBefore')?snapshot.handsRemainingBefore:Number(q.hands),...(Object.hasOwn(snapshot,'discardsRemainingBefore')?{discardsRemainingBefore:snapshot.discardsRemainingBefore}:{}),earnedRevision:snapshot.earnedRevision,bonusContext:structuredClone(snapshot.bonusContext),moneyBefore:snapshot.moneyBefore.toString(),quote:{...q,...Object.fromEntries(['reward','hands','interest','total',...['tagReward','handReward','discards'].filter(key=>Object.hasOwn(q,key))].map(key=>[key,q[key].toString()])),...(q.jokerBonuses?{jokerBonuses:q.jokerBonuses.map(row=>({...row,amount:row.amount.toString()}))}:{})}};
   }
   if(Object.hasOwn(state,'bankruptAt')) {requireValue(typeof state.bankruptAt==='bigint');payload.state.bankruptAt=state.bankruptAt.toString();}
   if(state.consumables)payload.state.consumables=state.consumables.map(encodeOffer);

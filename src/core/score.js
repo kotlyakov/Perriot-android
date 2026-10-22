@@ -262,6 +262,10 @@ export function scoreHand(state, playedCards, {legacyRng=false,armTriggered} = {
     const roll=glassRoll(),destroyed=sixthDestroyed.some(c=>c.id===card.id)||roll<item7Probability(state)/4;glassRolls.push({cardId:card.id,roll,destroyed});
   }
   for(const source of getObservatorySources(state,hand.handId))apply({operation:'multiply_mult',amount:source.xMult},'observatory',source.sourceId);
+  if(state.deckId==='plasma'){
+    const before={chips,mult},balanced=floorExact(multiplyExact(addExact(chips,mult),{n:1n,d:2n}));
+    chips=balanced;mult=balanced;trace.push({type:'score_step',phase:'deck',sourceId:'deck:plasma',operation:'balance',before,after:{chips,mult}});
+  }
   const score = floorExact(multiplyExact(chips,mult));
   trace.push({type:'score_total',phase:'total',chips,mult,score});
   const bellGlass=(actionRng||glassRolls.length>0&&glassKind==='apk')&&!state.bossState?.disabled&&state.bossState?.id==='bl_final_bell';

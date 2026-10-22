@@ -29,11 +29,17 @@ export function renderStartScreen({hasSave=false,onContinue,onNew,onSettings}){
   const row=element('div','start-deck-row');
   const deck=element('div','start-deck-back');deck.setAttribute('aria-hidden','true');deck.append(element('span','','♠'));
   const info=element('div','start-deck-info');const deckName=element('h3'),effect=element('p');info.append(deckName,effect);row.append(deck,info);panel.append(row);
-  let deckId='red';const choices=element('div','start-deck-choices');choices.setAttribute('role','group');choices.setAttribute('aria-label','Выбрать колоду');
-  const deckButtons=[];
-  for(const id of ['red','blue']){const choice=button('setup_deck_'+id,DECKS[id].name,id,()=>{deckId=id;refreshDeck();});deckButtons.push(choice);choices.append(choice);}
-  panel.append(choices);
-  function refreshDeck(){const meta=DECKS[deckId];deckName.textContent=meta.name;effect.textContent=`${meta.bonus} ${meta.effect} ${meta.timing}`;deck.dataset.deck=deckId;for(const choice of deckButtons)choice.setAttribute('aria-pressed',String(choice.id==='setup_deck_'+deckId));}
+  const deckIds=Object.keys(DECKS);let deckId='red';
+  const choices=element('div','start-deck-choices');choices.setAttribute('role','group');choices.setAttribute('aria-label','Выбрать колоду');
+  const selector=element('select');selector.id='setup_deck_select';selector.setAttribute('aria-label','Колода');
+  for(const id of deckIds){const option=element('option','',DECKS[id].name);option.id='setup_deck_'+id;option.value=id;selector.append(option);}
+  selector.onchange=()=>{deckId=selector.value;refreshDeck();};
+  function cycle(direction){deckId=deckIds[(deckIds.indexOf(deckId)+direction+deckIds.length)%deckIds.length];refreshDeck();}
+  const previous=button('setup_deck_prev','‹','orange',()=>cycle(-1)),next=button('setup_deck_next','›','orange',()=>cycle(1));
+  previous.setAttribute('aria-label','Предыдущая колода');next.setAttribute('aria-label','Следующая колода');
+  choices.append(previous,selector,next);panel.append(choices);
+  const access=element('p','start-preview-access','Режим предпросмотра: все колоды доступны без условий открытия.');panel.append(access);
+  function refreshDeck(){const meta=DECKS[deckId];deckName.textContent=meta.name;effect.textContent=meta.description??`${meta.bonus} ${meta.effect} ${meta.timing}`;deck.dataset.deck=deckId;selector.value=deckId;}
   refreshDeck();
   const seedLabel=element('label','start-seed-label','Зерно забега (необязательно)');const seed=element('input');seed.id='setup_seed';seed.type='text';seed.maxLength=8;seed.oninput=()=>{seed.value=seed.value.toUpperCase().slice(0,8);};seed.autocomplete='off';seed.spellcheck=false;seed.placeholder='Случайный забег';seedLabel.append(seed);panel.append(seedLabel);
   const actions=element('div','start-setup-actions');actions.append(button('setup_back','Назад','orange',()=>{panel.remove();newButton.focus({preventScroll:true});}),button('setup_play','Играть','blue',()=>onNew?.({deckId,seed:seed.value.trim().toUpperCase().slice(0,8)||undefined})));panel.append(actions);

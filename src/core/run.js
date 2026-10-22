@@ -1,3 +1,5 @@
+import {DECKS,deckHands,deckDiscards,deckHandSize,deckBlindScale} from '../content/decks.js';
+import {prepareStartingDeck,finishStartingDeck} from './deck-effects.js';
 import {applyVoucherAction,applyBossRerollAction,voucherModifiers} from './vouchers.js';
 import {applyTagRoundEnd,applyTagRoundStart,applyTagShopStart,applyTagShopFinal,createTagShopHooks,consumeTagInvestment} from './tag-effects.js';
 import {realHandSize,changeHandSize,restoreBossHandSize} from './hand-size.js';
@@ -34,8 +36,10 @@ import {APK_HAND_NAMES,currentApkShopContext} from './apk-shop-state.js';
 
 export function createRun(seed, {runId,deckId='red',money,referenceRng=false,referenceShop=false,reducedMotion=false}={}) {
   if (typeof seed!=='string' || !seed || seed.length>1000) throw new TypeError('Invalid seed');
-  if (typeof runId!=='string' || !runId || runId.length>120 || !['red','blue'].includes(deckId) || typeof money!=='bigint') throw new TypeError('Invalid run options');
+  if (typeof runId!=='string' || !runId || runId.length>120 || !Object.hasOwn(DECKS,deckId) || typeof money!=='bigint') throw new TypeError('Invalid run options');
   if(typeof referenceRng!=='boolean'||typeof referenceShop!=='boolean'||typeof reducedMotion!=='boolean'||referenceShop&&!referenceRng)throw new TypeError('Invalid reference shop options');
+  if(!['red','blue'].includes(deckId)){referenceRng=true;referenceShop=true;}
+  const rules=DECKS[deckId];
   const cards = {};
   for (const suit of ['clubs','diamonds','hearts','spades']) {
     for (let rank=2;rank<=14;rank++) {
@@ -48,21 +52,24 @@ export function createRun(seed, {runId,deckId='red',money,referenceRng=false,ref
     hand:[],drawPile:Object.keys(cards),discardPile:[],jokers:[],
     handLevels:Object.fromEntries(Object.keys(HANDS).map(id=>[id,1])),
     discoveredHands:Object.keys(HANDS).slice(0,9),
-    rng:{deck:createRng(`${seed}:deck`),effects:createRng(`${seed}:effects`)},money,
-    round:{handsPlayed:0,blindId:'small',ante:1,target:300n,score:0n,handsRemaining:deckId==='blue'?5:4,discardsRemaining:deckId==='red'?4:3,handSize:8},
+    rng:{deck:createRng(`${seed}:deck`),effects:createRng(`${seed}:effects`)},money:money+BigInt(rules.dollars??0),
+    round:{handsPlayed:0,blindId:'small',ante:1,target:300n*BigInt(deckBlindScale(deckId)),score:0n,handsRemaining:deckHands(deckId),discardsRemaining:deckDiscards(deckId),handSize:deckHandSize(deckId)},
     lastScore:null,sortMode:'rank',mostPlayedHand:'high_card',nextJokerCreationOrdinal:1,
     consumableUsage:{},consumableUsageTotal:{tarot:0,planet:0,spectral:0,tarot_planet:0,all:0},lastTarotPlanet:null,
   };
+  if(rules.jokerSlots)state.jokerSlots=5+rules.jokerSlots;
+  if(rules.consumableSlots||rules.vouchers?.includes('v_crystal_ball'))state.consumableSlots=2+(rules.consumableSlots??0)+(rules.vouchers?.includes('v_crystal_ball')?1:0);
   if(referenceRng){
     let rng=createApkRng(seed);
     if(referenceShop){
       const boss=chooseApkBoss(rng);rng=boss.rng;
-      const context=createApkShopContext({reducedMotion}),voucher=chooseApkVoucher(rng,context);rng=voucher.rng;
+      const context=createApkShopContext({reducedMotion,...(rules.vouchers?{usedVoucherIds:[...rules.vouchers]}:{})}),voucher=chooseApkVoucher(rng,context);rng=voucher.rng;
       const tagContext=createApkTagContext(),small=chooseApkTag(rng,tagContext),big=chooseApkTag(small.rng,tagContext);rng=big.rng;
       state.apkBlinds={version:1,ante:1,bossId:boss.bossId,bossesUsed:boss.bossesUsed,
         tags:{small:small.tagId,big:big.tagId},orbitalHands:{},tagContext,playedCardIds:[]};
       state.runStats={handsPlayed:0,unusedDiscards:0,skips:0};state.roundNumber=1;state.apkShop={version:1,voucherId:voucher.voucherId,firstShopBuffoon:false,context};
     }
+    rng=prepareStartingDeck(state,rng);
     const shuffled=shuffleApkDeck(cards,rng,'shuffle');state.drawPile=shuffled.cardIds;state.rng.apk=shuffled.rng;
     resetItem7RoundTargets(state);
     // The initial blind screen fixes all three orbital hands after the deck shuffle.
@@ -71,6 +78,8 @@ export function createRun(seed, {runId,deckId='red',money,referenceRng=false,ref
       state.apkBlinds.orbitalHands[id]=selected.hand;state.rng.apk=selected.rng;
     }
   }
+  finishStartingDeck(state);
+  if(state.apkShop&&!['red','blue'].includes(deckId))state.apkShop.context=currentApkShopContext(state);
   return state;
 }
 
@@ -182,7 +191,7 @@ function dispatchCore(state, action, shopOptions={}) {
     // Preserve the earned target's native disable provenance after active boss cleanup.
     if(next.bossState?.disabled&&['bl_wall','bl_final_vessel'].includes(next.bossState.id))next.round.bossDisabled=true;
     if(next.bossState){restoreBossHandSize(next);if(next.bossState.id==='bl_final_heart')for(const joker of next.jokers)joker.debuffed=false;delete next.bossState;next.apkBlinds.playedCardIds=[];next.mostPlayedHand=resolveMostPlayedHand(next.apkShop.context.playedHands);}next.money+=quote.total;delete next.cashoutQuote;next.phase='shop';next.revision++;
-    if(next.apkShop){const nextCounters=voucherModifiers(next);next.round.handsRemaining=Math.max(1,(next.deckId==='blue'?5:4)+nextCounters.hands);next.round.discardsRemaining=Math.max(0,(next.deckId==='red'?4:3)+nextCounters.discards);}
+    if(next.apkShop){const nextCounters=voucherModifiers(next);next.round.handsRemaining=Math.max(1,deckHands(next.deckId)+nextCounters.hands);next.round.discardsRemaining=Math.max(0,deckDiscards(next.deckId)+nextCounters.discards);}
     next.drawPile=Object.keys(next.cards);next.hand=[];next.discardPile=[];next.lastScore=null;if(state.hangedShortfallCardIds)next.hangedShortfallEpoch={...(state.hangedShortfallEpoch??{cardIds:[...state.hangedShortfallCardIds],revision:state.revision,ante:state.round.ante,blindId:state.round.blindId,handsRemaining:state.round.handsRemaining}),consumed:true,consumedBy:action.type};delete next.hangedShortfallCardIds;consumeSpectralShortfall(state,next,action.type);
     if(next.apkShop){
       try{

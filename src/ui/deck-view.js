@@ -13,6 +13,7 @@ export function createDeckView(state){
  const deck=DECKS[state.deckId];
  const root=document.createElement('div');root.className='deck-view';
  root.innerHTML=`<div class="deck-tabs" role="tablist" aria-label="Состав колоды"><button role="tab" data-mode="remaining">Осталось</button><button role="tab" data-mode="full">Вся колода</button></div><aside class="deck-stats"><div class="deck-info"><strong>${deck.name}</strong><p><em>${deck.bonus}</em> ${deck.effect}<br>${deck.timing}</p></div><div class="deck-base"><strong>Базовые карты</strong><div class="deck-categories"></div><div class="deck-suits"></div></div><div class="deck-ranks"></div></aside><div class="deck-grid" aria-label="Карты текущей колоды"></div>`;
+ if(deck.description){root.querySelector('.deck-info').classList.add('extended-deck-info');root.querySelector('.deck-info p').textContent=deck.description;}
  const grid=root.querySelector('.deck-grid');
  const hidden=state.bossState?.hiddenCardIds??[];
  const cards=Object.values(state.cards),available=new Set([...state.drawPile,...hidden]);
