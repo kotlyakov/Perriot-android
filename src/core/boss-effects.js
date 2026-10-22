@@ -1,3 +1,5 @@
+import {setJokerBossDebuff} from './joker-stickers.js';
+import {stakeScaling,runDiscards,validStake} from './stakes.js';
 import {DECKS,deckHands,deckDiscards,deckHandSize,deckBlindScale} from '../content/decks.js';
 import {changeHandSize} from './hand-size.js';
 import {item7CapacityDeltas} from './joker-item7-lifecycle.js';
@@ -21,14 +23,14 @@ export function canEnterBoss(state){
   canonicalCards(state.cards);
   if(['bl_final_heart','bl_final_acorn'].includes(boss.id)){
    const jokers=canonicalJokers(state.jokers);
-   if(boss.id==='bl_final_heart'&&jokers.length>1&&jokers.every(joker=>joker.debuffed))return false;
+   if(boss.id==='bl_final_heart'&&state.phase==='blind_selection'&&jokers.length>1&&jokers.every(joker=>joker.debuffed))return false;
   }
  }catch{return false;}return true;
 }
 export function bossTarget(state){
  const ante=state.round?.targetAnte??state.round?.ante,boss=APK_BLINDS_BY_ID[state.apkBlinds?.bossId];
  if(!boss||!APK_BOSSES.includes(boss))throw new RangeError('Unsupported boss target');
- const target=nativeBlindTarget(ante,boss.mult*deckBlindScale(state.deckId));
+ const target=nativeBlindTarget(ante,boss.mult*deckBlindScale(state.deckId),stakeScaling(state));
  return (state.bossState?.disabled||state.round.bossDisabled)&&['bl_wall','bl_final_vessel'].includes(boss.id)?divideNativeBlindTarget(target,boss.id==='bl_wall'?2:3):target;
 }
 // Creation ordinals persist through reorder/sale; display order is never an RNG key.
@@ -110,7 +112,7 @@ export function disableBoss(state,events,{acceptedRevision=state.revision}={}){
  if(boss.id==='bl_serpent'){
   // Legacy enabled saves with cards left have a uniquely recoverable initial
   // count. An exhausted legacy deck stays explicitly unknown, with zero draws.
-  const legacyActions=deckHands(state.deckId)-state.round.handsRemaining+deckDiscards(state.deckId)-state.round.discardsRemaining-(state.phase==='round_won'?1:0);
+  const legacyActions=deckHands(state.deckId)-state.round.handsRemaining+runDiscards(state)-state.round.discardsRemaining-(state.phase==='round_won'?1:0);
   const resourceAdjusted=!!state.round.burglarHandsGranted||Object.values(item7CapacityDeltas(state.jokers)).some(Boolean);
   const actions=resourceAdjusted?(state.round.handsPlayed??0)+(state.round.discardsUsed??0)-(state.phase==='round_won'?1:0):legacyActions;
   boss.serpentInitialCardCount??=state.drawPile.length?state.drawPile.length+boss.baseHandSize+3*actions:null;
@@ -119,7 +121,7 @@ export function disableBoss(state,events,{acceptedRevision=state.revision}={}){
 
  if(boss.id==='bl_needle')boss.needleDisableOrigin={phase:state.phase,handsRemaining:state.round.handsRemaining,acceptedRevision,...(state.round.burglarHandsGranted?{burglarHandsGranted:state.round.burglarHandsGranted,handsPlayed:state.round.handsPlayed??0}: {})};
  boss.disabled=true;boss.disabledRevision=acceptedRevision+1;state.lastScore=null;
- if(boss.id==='bl_water')state.round.discardsRemaining+=boss.discardsSub??deckDiscards(state.deckId);
+ if(boss.id==='bl_water')state.round.discardsRemaining+=boss.discardsSub??runDiscards(state);
  if(boss.id==='bl_needle')state.round.handsRemaining+=boss.handsSub??(deckHands(state.deckId)-1);
  if(boss.id==='bl_wall')state.round.target=divideNativeBlindTarget(state.round.target,2);
  if(boss.id==='bl_final_vessel')state.round.target=divideNativeBlindTarget(state.round.target,3);
@@ -131,7 +133,7 @@ export function disableBoss(state,events,{acceptedRevision=state.revision}={}){
  if(Object.hasOwn(boss,'firstHand'))boss.firstHand=null;
  if(boss.id==='bl_final_heart'){
   const before=item7CapacityDeltas(state.jokers);
-  for(const joker of state.jokers)joker.debuffed=false;boss.heartDebuffedJokerId=null;
+  for(const joker of state.jokers)setJokerBossDebuff(joker,false);boss.heartDebuffedJokerId=null;
   const after=item7CapacityDeltas(state.jokers),handSize=after.handSize-before.handSize,discards=after.discards-before.discards;
   changeHandSize(state,handSize,{events,draw:true});state.round.discardsRemaining=Math.max(0,state.round.discardsRemaining+discards);
   if(handSize||discards)events.push({type:'joker_capacity_changed',handSize,discards});

@@ -75,9 +75,10 @@ export function applyItem7AfterScore(state,events){
  // Loyalty follows the global play clock even while its effect is debuffed.
  for(const j of state.jokers)if(j.entityId==='j_loyalty_card')change(j,'loyaltyRemaining',((j.loyaltyRemaining??5)+5)%6,events);
  own(state,j=>{if(j.entityId==='j_ice_cream'){if(j.chips<=5)remove(state,j,events,'depleted');else change(j,'chips',j.chips-5,events);}});}
-export function applyItem7EndRound(state,events,{gameOver=false}={}){
+export function applyItem7EndRound(state,events,{gameOver=false,jokerId}={}){
  let saved=false;
  own(state,j=>{
+  if(jokerId!==undefined&&j.id!==jokerId)return;
   const id=j.entityId;
   if(id==='j_todo_list')resetToDoHand(state,j);
   if(id==='j_hit_the_road')change(j,'xMult',1,events);

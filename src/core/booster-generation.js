@@ -42,7 +42,7 @@ export function generateApkRemainingPack(rng,context,{boosterId,instancePrefix='
   }else if(kind==='Buffoon'){
    const centre=centres.get(id),m=context.modifiers,poll=s.random('packetper'+context.ante);
    if((m.all_eternal||m.enable_eternals_in_shop&&poll>0.7)&&centre.eternal_compat)card.eternal=true;
-   if(!card.eternal&&m.enable_perishables_in_shop&&poll>0.4&&poll<=0.7&&centre.perishable_compat)card.perishable=true;
+   if(!card.eternal&&m.enable_perishables_in_shop&&poll>0.4&&poll<=0.7&&centre.perishable_compat){card.perishable=true;card.perishRounds=5;}
    if(m.enable_rentals_in_shop&&s.random('packssjr'+context.ante)>0.7)card.rental=true;
    card.edition=s.edition('edibuf'+context.ante);s.reprice(card);
   }

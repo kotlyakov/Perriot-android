@@ -35,6 +35,15 @@ function describeShopItem(offer,options){
  return {...details,...(voucherDescriptions[offer.entityId]?{description:voucherDescriptions[offer.entityId],canBuy:true}:{}),...(displayPlayingCard(offer)?{canBuy:true}:{})};
 }
 
+// The same sticker details label the card and explain its persistent rules.
+export function jokerStickers(offer){
+ const rows=[];
+ if(offer.eternal)rows.push({id:'eternal',label:'Вечный',description:'Нельзя продать или уничтожить.'});
+ if(offer.perishable){const rounds=offer.perishRounds??5;rows.push({id:'perishable',label:'Временный · '+rounds,description:rounds===0?'Срок действия истёк. Эффект джокера отключён.':`Действует ещё ${rounds} раундов. После этого эффект джокера отключится.`});}
+ if(offer.rental)rows.push({id:'rental',label:'Аренда',description:'Снимает $3 в конце каждого раунда.'});
+ return rows;
+}
+
 let view=null,packView=null,selected=null,tip=null,lastMain=null,entryMotion,stageTipListener=false,cancelDrag,cancelReturn,lastAcornRound=null;
 const reduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
 const node=(tag,className,text)=>{const n=document.createElement(tag);if(className)n.className=className;if(text!==undefined)n.textContent=text;return n;};
@@ -52,10 +61,10 @@ function dismissTip(){tip?.remove();tip=null;}
 function clearSelection(){selected=null;dismissTip();for(const root of [view,packView,document.getElementById('shop_owned')]){root?.querySelectorAll('.shop-choice').forEach(n=>{n.classList.remove('is-selected');n.querySelector('.shop-card')?.setAttribute('aria-pressed','false');});root?.querySelectorAll('.shop-buy,.shop-use').forEach(n=>n.remove());}}
 function showTip(offer,card){
  dismissTip();if(card.classList.contains('acorn-hidden'))return;const details=describeShopItem(offer,{owned:card.classList.contains('shop-owned-card')});tip=node('aside','shop-tooltip');tip.setAttribute('role','tooltip');tip.id='shop_tooltip';
- appendTooltipContents(tip,details.name,[details.description]);
+ appendTooltipContents(tip,details.name,[details.description,...jokerStickers(offer).map(row=>row.label+': '+row.description)]);
  const stage=document.getElementById('stage'),scale=stage.getBoundingClientRect().width/1536,b=card.getBoundingClientRect(),s=stage.getBoundingClientRect();
  const x=(b.left-s.left)/scale,y=(b.top-s.top)/scale;
- Object.assign(tip.style,{left:Math.min(1300,Math.max(450,x+card.offsetWidth+12))+'px',top:Math.min(475,Math.max(12,y))+'px'});stage.append(tip);
+ Object.assign(tip.style,{left:Math.min(1300,Math.max(450,x+card.offsetWidth+12))+'px',top:Math.min(475,Math.max(12,y))+'px'});stage.append(tip);tip.style.top=Math.max(12,Math.min(y,688-tip.offsetHeight-12))+'px';
 }
 // Independently drawn printing blocks: each catalogue identity gets its own ink,
 // plate number and geometry. These are not source-game illustrations.
@@ -84,12 +93,14 @@ function ticketArtwork(offer,details){
 function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
  const wrap=rect(node('div','shop-choice'),x,y,w,h);wrap.dataset.offerId=offer.id;wrap.dataset.kind=kind;
  const hidden=kind==='owned'&&!state.bossState?.disabled&&state.bossState?.hiddenJokerIds?.includes(offer.id);
- const debuffed=kind==='owned'&&state.phase==='playing'&&offer.debuffed===true;
- const details=hidden?{name:'Скрытый джокер',canBuy:false}:describeShopItem(offer,{owned:kind==='owned'}),card=node('button','shop-card shop-'+(kind==='owned'?'owned-card':kind));card.type='button';card.disabled=busy;card.setAttribute('aria-label',details.name+(debuffed?' — ослаблен':''));card.setAttribute('aria-pressed',String(selected?.id===offer.id));
+ const expired=offer.perishable===true&&offer.perishRounds===0;
+ const debuffed=kind==='owned'&&(offer.debuffed===true||expired),stickers=hidden?[]:jokerStickers(offer);
+ const details=hidden?{name:'Скрытый джокер',canBuy:false}:describeShopItem(offer,{owned:kind==='owned'}),card=node('button','shop-card shop-'+(kind==='owned'?'owned-card':kind));card.type='button';card.disabled=busy;card.setAttribute('aria-label',[details.name,...stickers.map(row=>row.label),...(debuffed?['ослаблен']:[])].join(' — '));card.setAttribute('aria-pressed',String(selected?.id===offer.id));
  if(kind==='voucher'){card.classList.add('shop-ticket');card.append(...ticketArtwork(offer,details));}
  else if(hidden){card.classList.add('acorn-hidden');const back=node('span','acorn-back');back.setAttribute('aria-hidden','true');back.innerHTML='<svg viewBox="0 0 104 143"><path d="M7 7H97V136H7Z M14 14H90V129H14Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M52 28L80 72L52 115L24 72Z" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="52" cy="72" r="12" fill="currentColor"/></svg>';card.append(back);}
  else if(['pack','main'].includes(kind)&&displayPlayingCard(offer)){const playing=displayPlayingCard(offer);card.classList.add('playing-card','pack-playing-card');card.innerHTML=cardMarkup(playing);applyCardModifiers(card,playing);}else card.append(artwork(offer,kind),node('span','shop-card-name',details.name));
- if(debuffed){card.classList.add('heart-debuffed');card.append(node('span','joker-debuff-stamp','Ослаблен'));}
+ if(debuffed){card.classList.add('heart-debuffed');card.append(node('span','joker-debuff-stamp',expired?'Срок истёк':'Ослаблен'));}
+ if(stickers.length){const badges=node('span','joker-stickers');for(const row of stickers){const badge=node('span','joker-sticker',row.label);badge.dataset.sticker=row.id;badges.append(badge);}card.append(badges);}
  if(!hidden&&offer.edition&&offer.edition!=='base')card.dataset.edition=offer.edition;
  if(!['owned','consumable','pack','voucher'].includes(kind)){const plaque=node('div','shop-price');plaque.append(money(offer.cost));wrap.append(plaque);}
  wrap.append(card);
