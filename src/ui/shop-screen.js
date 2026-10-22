@@ -76,7 +76,7 @@ function artwork(offer,kind){
 function ticketArtwork(offer,details){
  const main=node('span','ticket-main'),stub=node('span','ticket-stub');
  main.append(node('span','ticket-heading','ПЬЕРО · БИЛЕТ'),node('span','shop-card-name',details.name));
- const serial=node('span','ticket-number',offer.entityId.replace(/^v_/,'').replaceAll('_',' ').toUpperCase());main.append(serial);
+ const serial=node('span','ticket-number','БИЛЕТ УЛУЧШЕНИЯ');main.append(serial);
  stub.append(node('span','ticket-price-label','ЦЕНА'),money(offer.cost,52,23));
  const seam=node('span','ticket-perforation');seam.setAttribute('aria-hidden','true');
  return [main,stub,seam];
