@@ -1,3 +1,4 @@
+import {DECKS,deckHands,deckDiscards,deckHandSize,deckBlindScale} from '../content/decks.js';
 import {changeHandSize} from './hand-size.js';
 import {item7CapacityDeltas} from './joker-item7-lifecycle.js';
 import {isCardFace} from './card-faces.js';
@@ -27,7 +28,7 @@ export function canEnterBoss(state){
 export function bossTarget(state){
  const ante=state.round?.targetAnte??state.round?.ante,boss=APK_BLINDS_BY_ID[state.apkBlinds?.bossId];
  if(!boss||!APK_BOSSES.includes(boss))throw new RangeError('Unsupported boss target');
- const target=nativeBlindTarget(ante,boss.mult);
+ const target=nativeBlindTarget(ante,boss.mult*deckBlindScale(state.deckId));
  return (state.bossState?.disabled||state.round.bossDisabled)&&['bl_wall','bl_final_vessel'].includes(boss.id)?divideNativeBlindTarget(target,boss.id==='bl_wall'?2:3):target;
 }
 // Creation ordinals persist through reorder/sale; display order is never an RNG key.
@@ -109,7 +110,7 @@ export function disableBoss(state,events,{acceptedRevision=state.revision}={}){
  if(boss.id==='bl_serpent'){
   // Legacy enabled saves with cards left have a uniquely recoverable initial
   // count. An exhausted legacy deck stays explicitly unknown, with zero draws.
-  const legacyActions=(state.deckId==='blue'?5:4)-state.round.handsRemaining+(state.deckId==='red'?4:3)-state.round.discardsRemaining-(state.phase==='round_won'?1:0);
+  const legacyActions=deckHands(state.deckId)-state.round.handsRemaining+deckDiscards(state.deckId)-state.round.discardsRemaining-(state.phase==='round_won'?1:0);
   const resourceAdjusted=!!state.round.burglarHandsGranted||Object.values(item7CapacityDeltas(state.jokers)).some(Boolean);
   const actions=resourceAdjusted?(state.round.handsPlayed??0)+(state.round.discardsUsed??0)-(state.phase==='round_won'?1:0):legacyActions;
   boss.serpentInitialCardCount??=state.drawPile.length?state.drawPile.length+boss.baseHandSize+3*actions:null;
@@ -118,8 +119,8 @@ export function disableBoss(state,events,{acceptedRevision=state.revision}={}){
 
  if(boss.id==='bl_needle')boss.needleDisableOrigin={phase:state.phase,handsRemaining:state.round.handsRemaining,acceptedRevision,...(state.round.burglarHandsGranted?{burglarHandsGranted:state.round.burglarHandsGranted,handsPlayed:state.round.handsPlayed??0}: {})};
  boss.disabled=true;boss.disabledRevision=acceptedRevision+1;state.lastScore=null;
- if(boss.id==='bl_water')state.round.discardsRemaining+=boss.discardsSub??(state.deckId==='red'?4:3);
- if(boss.id==='bl_needle')state.round.handsRemaining+=boss.handsSub??(state.deckId==='blue'?4:3);
+ if(boss.id==='bl_water')state.round.discardsRemaining+=boss.discardsSub??deckDiscards(state.deckId);
+ if(boss.id==='bl_needle')state.round.handsRemaining+=boss.handsSub??(deckHands(state.deckId)-1);
  if(boss.id==='bl_wall')state.round.target=divideNativeBlindTarget(state.round.target,2);
  if(boss.id==='bl_final_vessel')state.round.target=divideNativeBlindTarget(state.round.target,3);
  if(boss.hiddenCardIds)boss.hiddenCardIds=[];
@@ -144,7 +145,7 @@ export function disableBoss(state,events,{acceptedRevision=state.revision}={}){
 // The captured native phase/counter and accepted boundary authenticate timing;
 // the disabled revision alone never selects which counter was earned.
 export function needleRestorationAfterEarning(state,earnedRevision){
- const boss=state.bossState,origin=boss.needleDisableOrigin,handsSub=boss.handsSub??(state.deckId==='blue'?4:3);
+ const boss=state.bossState,origin=boss.needleDisableOrigin,handsSub=boss.handsSub??(deckHands(state.deckId)-1);
  const validRevision=value=>Number.isSafeInteger(value)&&value>=0;
  const keys=['phase','handsRemaining','acceptedRevision','burglarHandsGranted','handsPlayed'];
  if(!origin||!['phase','handsRemaining','acceptedRevision'].every(key=>Object.hasOwn(origin,key))||Object.keys(origin).some(key=>!keys.includes(key))||!validRevision(origin.acceptedRevision)||boss.disabledRevision!==origin.acceptedRevision+1||boss.disabledRevision>state.revision||!Number.isSafeInteger(handsSub)||handsSub<0||handsSub>10000)throw new TypeError('Invalid Needle disable origin');

@@ -105,6 +105,12 @@ button{font-weight:700}.title{font-weight:800;font-size:26px}.token{font-weight:
 .playing-card.hidden-card:disabled{background:#ca3d2a!important;background-image:repeating-linear-gradient(45deg,transparent 0 7px,#f0e5c850 7px 8px,transparent 8px 14px),repeating-linear-gradient(-45deg,transparent 0 7px,#f0e5c850 7px 8px,transparent 8px 14px)!important}
 .playing-card.hidden-card[data-deck=blue]:disabled{background-color:#087bad!important}
 
+/* Own printed deck backs share the same colour in setup, pile and hidden cards. */
+[data-deck=red]{--deck-color:#ca3d2a}[data-deck=blue]{--deck-color:#087bad}[data-deck=yellow]{--deck-color:#b78a20}[data-deck=green]{--deck-color:#368862}[data-deck=black]{--deck-color:#272d36}[data-deck=magic]{--deck-color:#784fa3}[data-deck=nebula]{--deck-color:#344287}[data-deck=ghost]{--deck-color:#8b9699}[data-deck=abandoned]{--deck-color:#765b42}[data-deck=checkered]{--deck-color:#a8424b}[data-deck=zodiac]{--deck-color:#5360a1}[data-deck=painted]{--deck-color:#ad5b8b}[data-deck=anaglyph]{--deck-color:#327d82}[data-deck=plasma]{--deck-color:#a45ca7}[data-deck=erratic]{--deck-color:#887447}
+.deck-back[data-deck],.start-deck-back[data-deck]{background-color:var(--deck-color,#ca3d2a)}.deck-back[data-deck]:not([data-deck=red]):not([data-deck=blue]) .deck-seal{background-color:var(--deck-color,#ad3828)}
+.playing-card.hidden-card[data-deck]:disabled{background-color:var(--deck-color,#ca3d2a)!important}
+.deck-back[data-deck=checkered],.start-deck-back[data-deck=checkered]{background-image:conic-gradient(#f0e5c855 25%,transparent 0 50%,#f0e5c855 0 75%,transparent 0);background-size:28px 28px}.deck-back[data-deck=plasma],.start-deck-back[data-deck=plasma]{background-image:repeating-radial-gradient(ellipse at center,#f0e5c850 0 3px,transparent 4px 14px)}.deck-back[data-deck=painted],.start-deck-back[data-deck=painted]{background-image:repeating-linear-gradient(145deg,#f0e5c850 0 3px,transparent 4px 17px),linear-gradient(135deg,transparent 30%,#36886299 30% 50%,#b78a2099 50% 70%,#087bad99 70%)}.deck-back[data-deck=anaglyph],.start-deck-back[data-deck=anaglyph]{background-image:repeating-linear-gradient(60deg,#d25d5580 0 5px,transparent 5px 15px,#45b5c880 15px 20px,transparent 20px 30px)}
+
 .payout-bonus-list{position:absolute;left:16px;right:18px;top:191px;bottom:14px;overflow:auto}.payout-bonus-list .payout-row{position:static;min-height:45px;margin-bottom:4px}.payout-bonus-list .payout-joker>strong:first-child{color:#f6c35d}
 /* Printing finishes and wax seals are independent of the card enhancement. */
 .playing-card[data-edition]::before{content:"";position:absolute;inset:0;z-index:2;border-radius:5px;pointer-events:none}
@@ -113,3 +119,5 @@ button{font-weight:700}.title{font-weight:800;font-size:26px}.token{font-weight:
 .playing-card[data-edition=polychrome]::before{background:conic-gradient(from 40deg,#ef789970,#f2d57275,#78d68b65,#7bd0ef75,#ab8ee570,#ef789970);box-shadow:inset 0 0 0 3px #faf0bbaa;mix-blend-mode:hard-light}
 .playing-seal{position:absolute;right:7px;top:45px;z-index:3;display:grid;place-items:center;width:25px;height:25px;border:3px double #fff0c3;border-radius:50%;background:#a33f38;color:#fff2cf;font-size:18px;line-height:20px;font-weight:800;box-shadow:1px 2px 0 #3b2518aa;pointer-events:none}
 .playing-seal[data-seal=gold]{background:#ac791d}.playing-seal[data-seal=blue]{background:#397aa6}.playing-seal[data-seal=purple]{background:#86519b}.boss-debuffed .playing-seal{opacity:.45}
+
+.deck-info.extended-deck-info strong{font-size:16px;line-height:19px;min-height:38px;white-space:normal;display:flex;align-items:center;justify-content:center;padding:0 3px}.deck-info.extended-deck-info p{font-size:13px;line-height:15px;padding:4px;overflow:auto;touch-action:pan-y}

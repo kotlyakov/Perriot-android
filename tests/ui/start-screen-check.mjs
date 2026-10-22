@@ -32,9 +32,9 @@ async function startup(page,width,height,touch){
  await settleStartup(page);
  assert.equal(await saved(page),null,'Opening setup must not create a run');
  if(await page.evaluate(()=>matchMedia('(prefers-reduced-motion: reduce)').matches))assert.equal(await page.locator('.start-setup').evaluate(n=>n.getAnimations().length),0);
- await inside(page,'#setup_play,#setup_back,#setup_seed,#setup_deck_red,#setup_deck_blue',width,height);
+ await inside(page,'#setup_play,#setup_back,#setup_seed,#setup_deck_prev,#setup_deck_select,#setup_deck_next',width,height);
  assert.equal(await page.locator('#setup_continue_tab').isDisabled(),true);
- await click(page.locator('#setup_deck_blue'));await page.locator('#setup_seed').fill('menu1234');
+ await page.locator('#setup_deck_select').selectOption('blue');await page.locator('#setup_seed').fill('menu1234');
  assert.equal(await page.locator('#setup_seed').inputValue(),'MENU1234');
  assert.equal(await page.locator('#setup_seed').getAttribute('maxlength'),'8');
  assert.equal(await saved(page),null,'Selecting a deck or seed must not create a run');

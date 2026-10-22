@@ -2,7 +2,7 @@ import {showNumbers} from './field.js';
 import {divideExact,exactText,subtractExact} from '../core/numbers.js';
 export {exactText};
 export function integerText(value){return exactText(typeof value==='number'?BigInt(Math.trunc(value)):value);}
-export function scoreDelta(event){const mult=event.operation.includes('mult'),key=mult?'mult':'chips',multiply=event.operation.startsWith('multiply') || event.operation.startsWith('mul_') || event.operation.startsWith('x_');const before=event.before[key],after=event.after[key];return {kind:mult?'mult':'chips',multiply,text:(multiply?'×':'+')+exactText(multiply?divideExact(after,before):subtractExact(after,before))};}
+export function scoreDelta(event){if(event.operation==='balance')return {kind:'balance',multiply:false,text:'Баланс'};const mult=event.operation.includes('mult'),key=mult?'mult':'chips',multiply=event.operation.startsWith('multiply') || event.operation.startsWith('mul_') || event.operation.startsWith('x_');const before=event.before[key],after=event.after[key];return {kind:mult?'mult':'chips',multiply,text:(multiply?'×':'+')+exactText(multiply?divideExact(after,before):subtractExact(after,before))};}
 export function scoreMoneyText(event){return '+$'+integerText(event.amount);}
 const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 export async function animateScore(events){const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -19,6 +19,7 @@ export async function animateScore(events){const reduced=matchMedia('(prefers-re
      const card=document.querySelector(`.played-card[data-card-id="${event.sourceId}"]`);if(card){const pop=document.createElement('span');pop.className='score-pop money gold';pop.textContent=scoreMoneyText(event);pop.dataset.sourceId=event.sourceId;pop.dataset.operation='add_money';Object.assign(pop.style,{left:parseFloat(card.style.left)+57.5+'px',top:parseFloat(card.style.top)-27+'px'});document.getElementById('stage').append(pop);if(!reduced){card.animate([{translate:'0 0'},{translate:'0 -8px'},{translate:'0 0'}],{duration:230});pop.animate([{opacity:1,translate:'0 0'},{opacity:0,translate:'0 -30px'}],{duration:520}).finished.then(()=>pop.remove());}else pop.remove();}if(!reduced)await pause(260);continue;
    }
    showNumbers(event.after.chips,event.after.mult,true);
+   if(event.operation==='balance'){if(!reduced)await pause(260);continue;}
    const joker=document.querySelector(`#shop_owned [data-offer-id="${event.effectSourceId??event.sourceId}"]`);
    const card=joker??document.querySelector(`.played-card[data-card-id="${event.sourceId}"]`)??document.querySelector(`.playing-card[data-card-id="${event.sourceId}"]`)??document.querySelector(`#shop_owned [data-offer-id="${event.sourceId}"]`);
    if(card && event.operation!=='base'){
