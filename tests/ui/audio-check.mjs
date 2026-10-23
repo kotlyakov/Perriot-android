@@ -28,17 +28,20 @@ try {
  const energy=await page.evaluate(async()=>{
   const {createGameAudio}=await import('/src/ui/audio.js');
   const context=new OfflineAudioContext(1,48000,48000);
-  const audio=createGameAudio({contextFactory:()=>context});
-  audio.setVolumes({music:0,effects:1});
-  const rendering=context.startRendering();audio.unlock();audio.play('buy');
-  const pcm=(await rendering).getChannelData(0);audio.dispose();
+  // Offline contexts begin suspended: emulate an activated output while rendering
+  // real oscillator/gain nodes into a real PCM buffer. Lifecycle is tested below.
+  const output={state:'running',currentTime:0,destination:context.destination,createGain:()=>context.createGain(),createOscillator:()=>context.createOscillator()};
+  const audio=createGameAudio({contextFactory:()=>output});
+  audio.setVolumes({music:0,effects:1});audio.unlock();audio.play('buy');
+  const pcm=(await context.startRendering()).getChannelData(0);audio.dispose();
   return {peak:Math.max(...pcm.map(Math.abs)),finite:pcm.every(Number.isFinite)};
  });
  assert.ok(energy.peak>.001&&energy.peak<1);assert.equal(energy.finite,true);
+ await page.mouse.click(10,10); // Grant a real activation before testing live AudioContext.
  const lifecycle=await page.evaluate(async()=>{
   const {createGameAudio}=await import('/src/ui/audio.js');
   const context=new AudioContext(),audio=createGameAudio({contextFactory:()=>context});
-  audio.setVolumes({music:0,effects:.5});audio.unlock();await context.resume();
+  audio.setVolumes({music:0,effects:.5});audio.unlock();await Promise.race([context.resume(),new Promise((_,reject)=>setTimeout(()=>reject(Error('Audio activation timed out')),3000))]);
   audio.setActive(false);await context.suspend();const paused=context.state;
   audio.setActive(true);await context.resume();const resumed=context.state;
   audio.dispose();await new Promise(resolve=>setTimeout(resolve,30));
@@ -48,7 +51,9 @@ try {
  for(const mode of ['locked','muted','hidden']){
   const peak=await page.evaluate(async mode=>{
    const {createGameAudio}=await import('/src/ui/audio.js');
-   const context=new OfflineAudioContext(1,24000,48000),audio=createGameAudio({contextFactory:()=>context});
+   const context=new OfflineAudioContext(1,24000,48000);
+   const output={state:'running',currentTime:0,destination:context.destination,createGain:()=>context.createGain(),createOscillator:()=>context.createOscillator()};
+   const audio=createGameAudio({contextFactory:()=>output});audio.setVolumes({music:0,effects:1});
    if(mode!=='locked')audio.unlock();
    if(mode==='muted')audio.setVolumes({music:0,effects:0});
    if(mode==='hidden')audio.setActive(false);
