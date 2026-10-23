@@ -41,7 +41,10 @@ try {
  await page.evaluate(()=>localStorage.setItem('card-cascade.current','damaged'));
  await page.reload();await enterRun(page);await page.locator('#restore-backup').waitFor();
  assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),'damaged');
- await page.locator('#restore-backup').click();await page.locator('#hand .playing-card').first().waitFor();
+ // Restoring a profile opens its start menu above the already rendered hand.
+ // Enter the restored run before using raw mouse coordinates for the drag.
+ await page.locator('#restore-backup').click();await enterRun(page);await page.locator('#hand .playing-card').first().waitFor();
+ assert.equal(await page.locator('#start_screen').count(),0,'Restored run must be entered before dragging cards');
  assert.notEqual(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),'damaged');
  // Drag changes the real saved hand order without consuming an action.
  const readSaved=()=>page.evaluate(()=>localStorage.getItem('card-cascade.current'));
