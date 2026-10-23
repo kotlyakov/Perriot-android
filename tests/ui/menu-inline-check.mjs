@@ -9,12 +9,17 @@ const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_PATH
 try {
  const page=await browser.newPage({viewport:{width:1024,height:650}}),errors=[];
  page.on('pageerror',e=>errors.push(e.message));
+ // The conversation is HTTPS; localhost gives its nested srcdoc the same secure crypto APIs.
+ await page.goto(process.env.PREVIEW_URL);
+ assert.equal(await page.evaluate(()=>isSecureContext&&typeof crypto.randomUUID==='function'),true);
  // Emulate the host's outer sandbox; application preview is a second nested frame.
  await page.setContent('<iframe sandbox="allow-scripts allow-same-origin allow-modals" style="width:100%;height:600px;border:0"></iframe>');
  const host=page.frames()[1];
  await host.setContent(await readFile('artifacts/menu-review-fragment.html','utf8'));
  const app=host.frameLocator('iframe');
  await app.locator('#options_settings').waitFor();
+ await host.locator('[data-review="party"]').click();
+ await app.locator('#menu_tab_hands').waitFor();
  await host.locator('[data-review="settings"]').click();
  await app.locator('#menu_tab_audio').click();
  await host.locator('[data-review="collection"]').click();

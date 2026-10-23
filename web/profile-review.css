@@ -28,6 +28,7 @@
 .collection-view .collection-controls strong{font-size:17px}
 .collection-view .collection-grid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:repeat(3,minmax(0,1fr));gap:8px;align-content:stretch}
 .collection-view .collection-grid .collection-card{height:auto;min-height:0;padding:5px 4px;gap:4px;font-size:12px;line-height:1.15;overflow:visible;border-width:2px;overflow-wrap:anywhere}
+.collection-view .collection-card{text-shadow:none}
 .collection-view .collection-card strong{max-height:none;overflow:visible;font-weight:600}
 .collection-view .collection-symbol{font-size:23px;flex:none}
 .collection-view .collection-card[aria-pressed=true]{outline:3px solid #e7b76d;outline-offset:1px}
