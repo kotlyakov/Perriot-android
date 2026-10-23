@@ -1,21 +1,65 @@
-/* Logical coordinates stay in the uniformly scaled 1536 × 688 stage. */
-.start-challenges .challenge-body{height:382px;margin:10px 0;grid-template-columns:325px minmax(0,1fr);gap:18px}
-.challenge-browser{display:grid;grid-template-rows:minmax(0,1fr) 32px;gap:8px;min-height:0}
-.start-challenges .challenge-list{display:grid;grid-template-rows:repeat(10,minmax(0,1fr));gap:4px;overflow:visible;padding:0 3px;touch-action:manipulation}
-.start-challenges .challenge-list button{min-height:0;height:100%;padding:2px 9px;font-size:16px;line-height:1.1;white-space:normal;box-shadow:0 2px #102626}
-.start-challenges .challenge-details{display:grid;grid-template-rows:32px 36px 36px minmax(0,1fr) 32px;gap:7px;min-height:0;padding:12px 14px;overflow:visible;touch-action:manipulation}
-.start-challenges .challenge-details h3{font-size:22px;line-height:1.2;margin:0;align-self:center}
+/* Content-specific windows in the uniformly scaled 1536 × 688 stage. */
+.start-setup{top:24px;left:318px;width:900px;height:630px;padding:16px 24px;display:grid;grid-template-rows:44px 170px 30px 72px 40px 48px 42px;gap:6px}
+.start-setup [hidden]{display:none!important}
+.start-tabs{align-items:center;gap:12px}.start-tabs button{width:250px;height:40px;margin:0;font-size:21px}
+.start-deck-choices{display:grid;grid-template-columns:48px minmax(0,1fr) 48px;gap:10px;align-items:center}
+.start-deck-choices>button{width:48px;height:60px;padding:0;font-size:36px;margin:0}
+.start-deck-row{height:170px;margin:0;padding:8px 15px;display:grid;grid-template-columns:112px minmax(0,1fr) 26px;gap:20px;border:4px solid #0e2425;border-radius:10px;background:#12292ad9}
+.start-deck-back{width:92px;height:130px;margin:0 0 0 10px;font-size:60px}
+.start-deck-info{width:auto;min-width:0;border:0;background:#173d37;overflow:visible}
+.start-deck-info h3{margin:7px 4px;font-size:23px;line-height:27px}
+.start-deck-info p{min-height:88px;margin:0;padding:8px 10px;font-size:18px;line-height:22px}
+.start-deck-wins{display:flex;flex-direction:column;align-items:center;gap:3px}
+.start-win-marker{width:15px;height:15px;border:2px dashed #f0e5c8;border-radius:50%;background:var(--stake-color);color:white;font-size:10px;line-height:11px;text-shadow:0 1px 2px #000}
+.start-preview-access{margin:0;font-size:13px;line-height:16px;align-self:center}
+.start-stake-settings{display:block;min-height:0;margin:0}
+.start-stake-choices{height:100%;display:grid;grid-template-columns:48px minmax(0,1fr) 48px;gap:10px;align-items:center;margin:0 58px}
+.start-stake-choices>button{width:48px;height:40px;margin:0;padding:0;font-size:30px}
+.start-stake-center{display:grid;grid-template-columns:42px minmax(0,1fr);grid-template-rows:30px minmax(0,1fr);column-gap:12px;align-items:center}
+.start-stake-chip{grid-row:1/3;width:40px;height:40px}
+.start-stake-center #setup_stake_cycle{width:100%;height:28px;min-height:0;padding:1px 5px;margin:0;background:transparent;box-shadow:none;font-size:18px;line-height:24px}
+.start-stake-description{font-size:14px;line-height:17px;text-align:center;margin:0}
+.start-seed-label{margin:0;font-size:17px;gap:14px}
+.start-setup .start-seed-label[hidden]{display:flex!important;visibility:hidden}
+.start-seed-label input{height:36px;font-size:18px}
+.start-setup-actions{display:grid;grid-template-columns:200px minmax(0,1fr);align-items:center;gap:16px}
+.start-seed-toggle{display:flex;align-items:center;justify-content:center;gap:10px;font-size:19px;cursor:pointer}
+.start-seed-toggle input{width:25px;height:25px;accent-color:#448d74;cursor:pointer}
+.start-setup-actions button{height:46px;margin:0;font-size:25px}
+.start-back-footer{padding-top:3px}.start-back-footer button{width:100%;height:38px;margin:0;padding:2px 12px;font-size:22px}
+.start-setup[data-mode=continue] .start-deck-row{grid-column:1/-1;margin:0 58px}
+.start-setup[data-mode=continue] .start-deck-info h3{font-size:21px;margin:4px}
+.start-deck-info .start-continue-summary{display:grid;min-height:0;gap:2px;padding:5px 10px;font-size:15px;line-height:18px;text-align:left}
+.start-continue-summary>span{display:flex;justify-content:space-between;gap:10px}.start-continue-summary strong{overflow-wrap:anywhere;max-width:65%}
+.start-setup[data-mode=continue] .start-setup-actions{grid-template-columns:1fr}
+.start-setup[data-mode=continue] .start-stake-choices{grid-template-columns:1fr}
+.start-challenge-overview{top:64px;height:550px;grid-template-rows:44px minmax(0,1fr) 42px;gap:20px}
+.challenge-overview{margin:10px 90px;padding:22px 35px;border:4px solid #0e2425;border-radius:10px;background:#12292ad9;display:grid;align-content:center;gap:18px}
+.challenge-overview h3{font-size:29px;margin:0 0 8px}.challenge-overview button{height:58px;font-size:24px;margin:0 20px}
+.challenge-progress{position:relative;height:46px;display:grid;place-items:center;font-size:19px;border-radius:7px;overflow:hidden;background:#173d37}
+.challenge-progress progress{position:absolute;inset:0;width:100%;height:100%;accent-color:#448d74;opacity:.6}.challenge-progress span{z-index:1;font-weight:700}
+.start-challenges{left:198px;top:30px;width:1140px;height:610px;grid-template-rows:minmax(0,1fr) 42px;gap:14px}
+.start-challenges .start-tabs{display:none}
+.start-challenges .challenge-body{height:auto;min-height:0;margin:0;grid-template-columns:315px minmax(0,1fr);gap:18px}
+.challenge-browser{display:grid;grid-template-rows:minmax(0,1fr) 32px;gap:10px;min-height:0}
+.start-challenges .challenge-list{display:grid;grid-template-rows:repeat(10,minmax(0,1fr));gap:6px;overflow:visible;padding:0 3px;touch-action:manipulation}
+.start-challenges .challenge-list button{min-height:0;height:100%;padding:3px 9px;font-size:17px;line-height:1.1;white-space:normal;box-shadow:0 2px #102626}
+.start-challenges .challenge-details{display:grid;grid-template-rows:30px 34px 72px 34px minmax(0,1fr) 30px 42px;gap:8px;min-height:0;padding:12px 14px;overflow:visible;touch-action:manipulation}
+.start-challenges .challenge-details h3{font-size:23px;line-height:27px;margin:0;align-self:center}
 .start-challenges .challenge-access{font-size:14px;line-height:17px;margin:0;align-self:center}
+.challenge-inventory{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.challenge-inventory>div{padding:5px 7px;border-radius:6px;background:#173d37;font-size:12px;line-height:14px;overflow-wrap:anywhere}
+.challenge-inventory strong{display:block;color:#d7c49a;margin-bottom:3px}
 .challenge-detail-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.start-challenges .challenge-detail-tabs button{height:33px;margin:0;padding:3px 7px;min-width:0;font-size:16px;box-shadow:0 3px #102626}
+.start-challenges .challenge-detail-tabs button{height:32px;margin:0;padding:3px 7px;min-width:0;font-size:17px;box-shadow:0 3px #102626}
 .challenge-detail-tabs [aria-selected=true]{outline:2px solid #f0e5c8;outline-offset:1px}
 .challenge-detail-content{min-height:0;display:flow-root;overflow:visible;padding:0 2px}
 .start-challenges .challenge-detail-content p{font-size:17px;line-height:22px;margin:0 0 8px;overflow-wrap:anywhere}
 .challenge-paging{display:grid;grid-template-columns:46px minmax(0,1fr) 46px;align-items:center;gap:8px;text-align:center;font-size:16px}
-.start-challenges .challenge-paging button{height:30px;min-height:0;margin:0;padding:0;font-size:26px;line-height:1;box-shadow:0 3px #102626}
-/* Native selects retain their compatibility IDs; the visible controls use game buttons. */
-.start-deck-choices #setup_deck_cycle{width:380px;font-size:21px}
-.start-stake-choices{display:grid;grid-template-columns:34px minmax(0,1fr) 34px;gap:6px}
-.start-stake-choices button{height:39px;min-height:0;margin:0;padding:2px 4px;font-size:18px;line-height:1.1}
-.start-stake-choices #setup_stake_cycle{font-size:16px}
-.start-deck-choices select[hidden],.start-stake-settings select[hidden]{display:none}
+.start-challenges .challenge-paging button{height:28px;min-height:0;margin:0;padding:0;font-size:26px;line-height:1;box-shadow:0 3px #102626}
+.start-challenges #challenge_play{height:40px;margin:0;padding:3px 12px;font-size:24px}
+/* Keep positions stable when Continue hides edit controls. */
+.start-setup>.start-tabs{grid-row:1}.start-setup>.start-deck-choices{grid-row:2}.start-setup>.start-preview-access{grid-row:3}.start-setup>.start-stake-settings{grid-row:4}.start-setup>.start-seed-label{grid-row:5}.start-setup>.start-setup-actions{grid-row:6}.start-setup>.start-back-footer{grid-row:7}
+.start-challenge-overview>.challenge-overview{grid-row:2}.start-challenge-overview>.start-back-footer{grid-row:3}
+.start-challenges>.challenge-body{grid-row:1}.start-challenges>.start-back-footer{grid-row:2}
+.challenge-browser{grid-template-rows:minmax(0,1fr) 32px 22px}.challenge-completed{margin:0;font-size:15px;line-height:22px;text-align:center}

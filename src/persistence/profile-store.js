@@ -60,5 +60,5 @@ export function createProfileStore(io){
   const recovered=decode(recoveryText);io.write('current',recoveryText);account=recovered;observed=recoveryText;writable=true;recoveryText=undefined;
   return result(account.profiles[account.activeId].current?'current':'empty').state;
  }
- return {load,save,reset,selectProfile,restoreBackup,get activeId(){return account?.activeId;},getProfile:()=>structuredClone(account?.profiles[account.activeId].profile),getProfiles:()=>PROFILE_IDS.map(id=>({id,name:account?.profiles[id].name??'П'+id}))};
+ return {load,save,reset,selectProfile,restoreBackup,get activeId(){return account?.activeId;},getProfile:(id=account?.activeId)=>structuredClone(account?.profiles[id]?.profile),getProfiles:()=>PROFILE_IDS.map(id=>({id,name:account?.profiles[id].name??'П'+id}))};
 }

@@ -13,36 +13,68 @@ export function tabbedWindow(items,draw){
  function select(id){for(const b of tabs.children)b.setAttribute('aria-selected',String(b.id==='menu_tab_'+id));body.replaceChildren();draw(id,body);}
  select(items[0][0]);return root;
 }
-export function createOptionsView(actions={}){
- const root=el('section','options-menu');
- for(const [key,label]of [['settings','Настройки'],['restart','Новый забег'],['menu','Главное меню'],['stats','Статистика'],['collection','Коллекция'],['deck','Колода']]){
-  const b=button('options_'+key,label,actions[key]??(()=>{}));b.disabled=!actions[key];root.append(b);
+// Source structure: UI_definitions options2317, settings2373/2407.
+export function createOptionsView(actions={},context={}){
+ const root=el('section','options-menu');root.dataset.window='options';
+ const add=(key,label)=>{const b=button('options_'+key,label,actions[key]??(()=>{}));b.disabled=!actions[key];root.append(b);};
+ add('settings','Настройки');
+ if(context.inRun!==false){
+  if(context.seeded&&context.seed){const row=el('div','options-seed'),value=el('strong','',context.seed),copy=button('options_copy_seed','Копировать',()=>actions.copySeed?.(context.seed));row.append(el('span','','Сид:'),value,copy);root.append(row);}
+  add('restart','Новая партия');add('menu','Главное меню');
  }
- return root;
+ add('stats','Статистика');if(context.inRun!==false)add('collection','Коллекция');add('deck','Настройка колоды');
+ if(context.inRun===false)add('credits','Авторы');return root;
 }
 export function createSettingsView({values={music:.35,effects:.7},onVolume=()=>{},onNotice=()=>{}}={}){
- return tabbedWindow([['game','Игра'],['graphics','Графика'],['audio','Звук']],(tab,body)=>{
-  if(tab==='audio'){
-   for(const [key,label]of [['music','Музыка'],['effects','Звуковые эффекты']]){
-    const row=el('label','settings-row',label),input=el('input'),out=el('output');input.id='audio_'+key;input.type='range';input.min=0;input.max=100;input.value=Math.round(values[key]*100);out.textContent=input.value+'%';
-    input.oninput=()=>{try{const next=onVolume(key,Number(input.value)/100);if(next)values=next;else values={...values,[key]:Number(input.value)/100};}catch{onNotice('Не удалось сохранить настройки звука');}input.value=Math.round(values[key]*100);out.textContent=input.value+'%';};row.append(input,out);body.append(row);
-   }
-   body.append(el('p','menu-note','0% — выключено. Настройки звука сохраняются отдельно от партии.'));
-  }else if(tab==='graphics'){
-   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;body.append(el('h2','', 'Отображение'),el('p','settings-summary','Оформление: Печатная мастерская'),el('p','settings-summary','Шрифт: Rubik'),el('p','settings-summary','Движение: '+(reduced?'уменьшено настройкой устройства':'обычное')),el('p','menu-note','CRT, выбор качества и другие параметры графики ещё не реализованы.'));
-  }else body.append(el('h2','','Партия'),el('p','settings-summary','Язык: русский'),el('p','settings-summary','Сохранение после каждого действия'),el('p','menu-note','Изменение скорости игры пока не реализовано.'));
- });
+ const view=tabbedWindow([['game','Игра'],['graphics','Графика'],['audio','Звук']],(tab,body)=>{
+  body.classList.add('native-settings');
+  function slider(key,label,value,enabled=false){const row=el('label','settings-row'),caption=el('span','',label),input=el('input'),out=el('output');input.id='audio_'+key;input.type='range';input.min=0;input.max=100;input.value=Math.round(value*100);input.disabled=!enabled;out.textContent=input.value+'%';row.append(caption,out,input);if(enabled)input.oninput=()=>{try{const next=onVolume(key,Number(input.value)/100);if(next)values=next;else values={...values,[key]:Number(input.value)/100};}catch{onNotice('Не удалось сохранить настройки звука');}input.value=Math.round(values[key]*100);out.textContent=input.value+'%';};body.append(row);}
+  function cycle(label,value){const row=el('div','settings-cycle'),caption=el('span','',label),controls=el('div');const prev=button('','‹',()=>{}),next=button('','›',()=>{});prev.disabled=next.disabled=true;controls.append(prev,el('strong','',value),next);row.append(caption,controls);body.append(row);}
+  function toggle(label,checked=false){const row=el('label','settings-toggle'),input=el('input');input.type='checkbox';input.checked=checked;input.disabled=true;row.append(input,el('span','',label));body.append(row);}
+  if(tab==='audio'){slider('master','Общая громкость',1);slider('music','Музыка',values.music,true);slider('effects','Звуковые эффекты',values.effects,true);}
+  else if(tab==='graphics'){cycle('Тени','Включены');cycle('Сглаживание пикселей','По умолчанию');slider('crt','CRT',0);}
+  else{cycle('Скорость игры','1×');cycle('Кнопки розыгрыша / сброса','Играть слева');slider('screenshake','Тряска экрана',0);toggle('Наклейки ставок на картах');toggle('Контрастные масти');toggle('Уменьшенное движение',matchMedia('(prefers-reduced-motion: reduce)').matches);}
+  body.append(el('p','menu-note','Серые параметры пока недоступны. Музыка и звуковые эффекты сохраняются.'));
+ });view.dataset.window='settings';return view;
 }
-export function createRunInfoView(state){
- return tabbedWindow(runInfoTabs(state),(tab,body)=>{
+export function createRunInfoView(state,{blindChoices=[]}={}){
+ const view=tabbedWindow(runInfoTabs(state),(tab,body)=>{
   if(tab==='hands'){
-   const grid=el('div','run-hands');for(const r of handInfoRows(state)){const row=el('div','run-hand');row.append(el('strong','',r.name),el('span','','Ур. '+r.level),el('b','cyan',r.chips),el('span','','×'),el('b','scarlet',r.mult));grid.append(row);}body.append(grid);
+   const grid=el('div','run-hands');for(const r of handInfoRows(state)){const row=el('div','run-hand');row.append(el('span','hand-level','Ур. '+r.level),el('strong','',r.name),el('b','hand-chips',r.chips),el('span','','×'),el('b','hand-mult',r.mult),el('span','','#'),el('span','hand-played',state.handUsage?.[r.id]??0));grid.append(row);}body.append(grid);
   }else if(tab==='blinds'){
-   const grid=el('div','run-blinds');for(const [id,label] of [['small','Малый блайнд'],['big','Большой блайнд'],['boss','Босс']]){const p=el('article','run-blind');p.append(el('h2','',label),el('p','',id==='boss'?(APK_BLINDS_BY_ID[state.apkBlinds?.bossId]?.nameRu??APK_BLINDS_BY_ID[state.apkBlinds?.bossId]?.name??'Босс'):id==='small'?'Первый блайнд анте':'Второй блайнд анте'));p.append(el('strong','',state.round.blindId===id?'Текущий блайнд':'Анте '+state.round.ante));grid.append(p);}body.append(grid);
+   const grid=el('div','run-blinds');for(const [id,label] of [['small','Малый блайнд'],['big','Большой блайнд'],['boss','Босс']]){const p=el('article','run-blind');p.append(el('h2','',label),el('p','',id==='boss'?(APK_BLINDS_BY_ID[state.apkBlinds?.bossId]?.nameRu??APK_BLINDS_BY_ID[state.apkBlinds?.bossId]?.name??'Босс'):id==='small'?'Первый блайнд анте':'Второй блайнд анте'));const meta=blindChoices.find(b=>b.id===id);p.append(el('div','run-blind-token',id==='boss'?'♠':id==='big'?'●●':'●'));if(meta){p.append(el('small','','Набрать минимум'),el('strong','run-blind-target',meta.target),el('p','run-blind-description',meta.description??''),el('span','gold','Награда: $'+meta.reward));}p.append(el('strong','run-blind-status',state.round.blindId===id?'Текущий блайнд':'Анте '+state.round.ante));grid.append(p);}body.append(grid);
   }else if(tab==='vouchers'){
    const ids=state.apkShop?.context.usedVoucherIds??[];if(!ids.length){body.append(el('p','menu-empty','В этой партии билетов пока нет.'));return;}
    let page=0;const list=el('div','run-vouchers'),pager=el('nav','menu-paging');body.append(list,pager);
    const paint=()=>{list.replaceChildren();for(const id of ids.slice(page*4,page*4+4)){const meta=describeShopItem({entityId:id}),row=el('article','run-voucher');row.append(el('strong','',meta.name),el('p','',meta.description));list.append(row);}pager.replaceChildren(button('voucher_prev','‹',()=>{page--;paint();}),el('span','',`${page+1} / ${Math.ceil(ids.length/4)}`),button('voucher_next','›',()=>{page++;paint();}));pager.firstChild.disabled=page===0;pager.lastChild.disabled=(page+1)*4>=ids.length;};paint();
   }else {const s=STAKES.find(s=>s.level===(state.stake??1));body.append(el('h2','',s?.name??'Белая ставка'),el('p','settings-summary',s?.description??''),el('p','menu-note','Действуют ограничения предыдущих ставок.'));}
- });
+ });view.dataset.window='party';return view;
+}
+
+// Native win/game_over hierarchy: mascot left, summary right, actions depend on outcome.
+export function createEndView(state,actions={},won=false){
+ const root=el('section','end-window');root.dataset.window='end';root.dataset.outcome=won?'won':'lost';
+ const mascot=el('aside','end-mascot','♠');mascot.setAttribute('aria-label','Пьеро');
+ const panel=el('div','end-panel'),heading=el('h2','end-heading',won?'Вы победили!':'Партия окончена');panel.append(heading);
+ const top=el('div','end-best');
+ const score=(label,value)=>{const row=el('div','end-score');row.append(el('span','',label),el('strong','',value??'—'));return row;};
+ // Missing historical counters are explicit, never replaced with invented totals.
+ top.append(score('Лучшая рука',state.runSummary?.bestHand),score('Любимая комбинация',Object.entries(state.handUsage??{}).sort((a,b)=>b[1]-a[1])[0]?.[0]?HAND_NAMES[Object.entries(state.handUsage).sort((a,b)=>b[1]-a[1])[0][0]]:'—'));panel.append(top);
+ const columns=el('div','end-columns'),left=el('div','end-counters'),right=el('div','end-progress');
+ for(const [label,key]of [['Сыграно карт','cardsPlayed'],['Сброшено карт','cardsDiscarded'],['Куплено карт','cardsPurchased'],['Перебросов','rerolls'],['Новых открытий','newCollection']])left.append(score(label,state.runSummary?.[key]));
+ left.append(score('Сид',state.seed),button('end_copy_seed','Копировать',()=>actions.copySeed?.(state.seed)));
+ right.append(score('Анте',state.round.ante),score('Раунд',state.roundNumber??1));
+ const controls=el('div','end-controls');controls.append(button(won?'victory_new':'loss_new','Новая партия',actions.restart),button(won?'victory_menu':'loss_menu','Главное меню',actions.menu));
+ if(won)right.append(controls);else {right.append(score('Поражение от',state.round.blindId==='boss'?(APK_BLINDS_BY_ID[state.apkBlinds?.bossId]?.nameRu??'Босс'):state.round.blindId==='big'?'Большой блайнд':'Малый блайнд'));}
+ columns.append(left,right);panel.append(columns);if(won)panel.append(button('victory_endless','Бесконечный режим',actions.endless));else panel.append(controls);
+ if(!state.runSummary)panel.append(el('p','end-note','— показатель не записан в этой версии сохранения.'));
+ root.append(mascot,panel);return root;
+}
+export function createCustomizeView(){
+ const view=tabbedWindow([['spades','Пики'],['hearts','Червы'],['clubs','Трефы'],['diamonds','Бубны']],(tab,body)=>{
+  const suit={spades:'♠',hearts:'♥',clubs:'♣',diamonds:'♦'}[tab],cards=el('div','customize-faces');
+  for(const rank of ['K','Q','J']){const card=el('div','customize-face');card.append(el('strong','',rank),el('span','',suit));cards.append(card);}body.append(cards);
+  const cycle=el('div','customize-cycle');for(const label of ['‹','Печатная мастерская','›']){const b=button('',label,()=>{});b.disabled=true;cycle.append(b);}body.append(cycle);
+  const label=el('label','settings-toggle'),toggle=el('input');toggle.type='checkbox';toggle.disabled=true;label.append(toggle,el('span','','Контрастные масти'));body.append(label,el('p','menu-note','Другие рисунки и контрастный режим пока недоступны.'));
+ });view.dataset.window='customize';return view;
 }
