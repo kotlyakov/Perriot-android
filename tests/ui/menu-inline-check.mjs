@@ -34,6 +34,10 @@ try {
  await app.locator('#start_new').click();
  await app.locator('#setup_seed').fill('13031990');
  await app.locator('#setup_challenge_tab').click();
+ const panel=app.locator('.start-setup');
+ await panel.evaluate(async node=>{await Promise.all(node.getAnimations().map(a=>a.finished));});
+ const bounds=await panel.evaluate(node=>{const b=node.getBoundingClientRect();return {top:b.top,bottom:b.bottom,height:innerHeight};});
+ assert.ok(bounds.top>=0&&bounds.bottom<=bounds.height+1,JSON.stringify(bounds));
  await page.screenshot({path:'artifacts/windows-inline-preview.png'});
  assert.deepEqual(errors,[]);
  console.log('Inline compressed real application: nested sandbox startup/navigation PASS');
