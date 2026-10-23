@@ -243,3 +243,8 @@
 
 Dusk1/Hack1/Sock1/Chad2 additional evaluations in owned order, first scoring physical ID unchanged by debuff. Repeated Lucky rows and per-pass numeric effects, single Glass roll, held/main/editions once. Source-bound native687cases reproduced, core/review PASS; browser/Android pending. No seals/Mime/Pareidolia/copy Joker or profile unlock admission. Inherited limits: trace10000events, actionRng2000draws, payload2MiB; extreme negative inventory is not silently truncated and can exceed these validation ceilings. Default negative-slot expansion explicitly tested.
 
+
+
+## 23.10.2026 — 10г завершён
+
+Все20испытаний, специальные правила, ограничения, профильный прогресс и сохранения выполнены. Actions39906363695 SUCCESS:1640corePASS/2optional skips,50Chromium suites,freshAndroid/APK PASS. APK0.4.46-preview/code59, PR42 готов (не слит). Актуальное состояние — STATUS.md; доказательства — docs/qa/item10d.md. Следующие пункты без выбора пользователя не начинать.

@@ -574,3 +574,8 @@ Actions37812813108 SUCCESS на f90446d94d921fe7a26afb71c24168fcf15ba34e (merge 
 PR28 слит в f37712f после Actions 38565975326/38565984439 SUCCESS: 36 браузерных сценариев, fresh Android, подпись и alignment. История PR25–27 сохранена; Blue Joker/Swashbuckler интегрированы, каталог 53/150. 864 теста ядра PASS с приватным нативным оракулом; в CI этот необязательный тест пропускается. APK debug без гарантии обновления, физическое устройство не проверено.
 
 Активная ветка feat/showdown-lifecycle, checkpoint 7d07564. Task 1: нативные callbacks и finite target helpers выполнены, проверки соответствия и качества завершены. Task 2: Leaf/Vessel в работе. План: docs/superpowers/plans/2026-10-14-showdown-lifecycle.md. Подготовка helpers не означает готовую победу/Endless. Остальные 97 джокеров, полные пулы и профиль остаются открытыми.
+
+
+## 23.10.2026 — 10г завершён
+
+Все20испытаний, специальные правила, ограничения, профильный прогресс и сохранения выполнены. Actions39906363695 SUCCESS:1640corePASS/2optional skips,50Chromium suites,freshAndroid/APK PASS. APK0.4.46-preview/code59, PR42 готов (не слит). Актуальное состояние — STATUS.md; доказательства — docs/qa/item10d.md. Следующие пункты без выбора пользователя не начинать.

@@ -301,3 +301,8 @@ Checkpoint a9caf28 проверен CI38634841041/38634851227 SUCCESS:36 Chromiu
 
 Heart завершён в core/save: initial/PLAY выбор по native creation order, DISCARD без poll, отключённое владение отдельно от магазина/эффектов, score-time replay и frozen bonuses. Ревью исправления Glass→Heart прошло: точный выбор и полный post-poll RNG проверяются при сохранении, no-poll controls сохранены. 62 целевых/929 полных тестов PASS,0skip; mixed Glass/Lucky независимо проверены. UI-представление и Ante8→9 ещё принадлежат Task4/6. Подготовлен фактический source index97 оставшихся Joker centres, без копирования исходного кода и без заявления новых эффектов.
 
+
+
+## 23.10.2026 — 10г завершён
+
+Все20испытаний, специальные правила, ограничения, профильный прогресс и сохранения выполнены. Actions39906363695 SUCCESS:1640corePASS/2optional skips,50Chromium suites,freshAndroid/APK PASS. APK0.4.46-preview/code59, PR42 готов (не слит). Актуальное состояние — STATUS.md; доказательства — docs/qa/item10d.md. Следующие пункты без выбора пользователя не начинать.

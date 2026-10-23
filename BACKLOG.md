@@ -27,4 +27,4 @@
 
 PR35 готов к слиянию, не слит. APK0.4.39 передан. Физическое устройство и общая frame/event RNG parity не входят в закрытый механический срез.
 
-23.10.2026 — 10г: все20испытаний реализованы; core1638PASS/2optional skips. Browser/Android/APK gate pending. Review fixes: первоначальный ваучер учитывает bans/grants; Inflation включает ваучеры и открытие наборов. Дальнейшие пункты не начинать без выбора пользователя.
+23.10.2026 — 10г выполнен технически: все20испытаний; core1640PASS/0FAIL/2optional skips,50Chromium suites,freshAndroid/APK PASS,CI39906363695. PR42 готов, не слит. См.STATUS.md/docs/qa/item10d.md. Дальнейшие пункты не начинать без выбора пользователя.
