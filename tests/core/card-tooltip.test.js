@@ -14,11 +14,12 @@ test('any next interaction dismisses; same physical card does not reopen after r
  const listeners={},container={append(tip){tip.connected=true;}};
  const doc={addEventListener:(type,fn)=>listeners[type]=fn,getElementById:()=>container};
  const card=()=>({ownerDocument:doc,dataset:{cardId:'same-card'},setAttribute(){},removeAttribute(){}});
- const tip=()=>({style:{},remove(){this.connected=false;}});
+ const tip=()=>({style:{},contains(target){return target===this;},remove(){this.connected=false;}});
  const one=tip();assert.equal(showCardTooltip(one,card()),true);assert.equal(one.connected,true);
  listeners.pointerdown({});assert.equal(one.connected,false);assert.equal(showCardTooltip(tip(),card()),false);
  listeners.pointerdown({});const two=tip();assert.equal(showCardTooltip(two,card()),true);
  let prevented=false;listeners.keydown({key:'Escape',preventDefault(){prevented=true;}});assert.equal(two.connected,false);assert.equal(prevented,true);
  listeners.pointerdown({});const anchor=card();assert.equal(showCardTooltip(tip(),anchor),true);listeners.keydown({key:'Enter',target:anchor});listeners.click({detail:0,target:anchor});assert.equal(showCardTooltip(tip(),card()),false,'Keyboard click retains keydown dismissal through native click');
+ listeners.pointerdown({});const popup=tip();showCardTooltip(popup,card());let stopped=false;listeners.pointerdown({target:popup,preventDefault(){}});listeners.click({detail:1,preventDefault(){},stopImmediatePropagation(){stopped=true;}});assert.equal(stopped,true,'Click on the removed popup must not activate a card underneath');
  dismissCardTooltip();
 });

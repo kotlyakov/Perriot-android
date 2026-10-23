@@ -1,5 +1,5 @@
 // One active card explanation, shared by the field, shop and collection.
-let active=null,dismissedKey=null,keyboardTarget=null;
+let active=null,dismissedKey=null,keyboardTarget=null,tooltipTap=false;
 const listening=new WeakSet();
 const key=card=>card?.dataset?.cardId??card?.dataset?.entryId??card?.dataset?.offerId??card?.closest?.('[data-offer-id]')?.dataset.offerId??card?.id??card;
 export function tooltipPlacement(card,size,bounds,gap=10){
@@ -18,8 +18,8 @@ export function dismissCardTooltip(){
 function install(doc){
  if(!doc?.addEventListener||listening.has(doc))return;listening.add(doc);
  const dismiss=()=>{dismissedKey=active?key(active.card):null;dismissCardTooltip();};
- doc.addEventListener('pointerdown',()=>{keyboardTarget=null;dismiss();},true);
- doc.addEventListener('click',event=>{if(event.detail===0&&!event.pointerType&&!event.sourceCapabilities?.firesTouchEvents){const handled=keyboardTarget!==null&&keyboardTarget===key(event.target);keyboardTarget=null;if(!handled)dismiss();}},true);
+ doc.addEventListener('pointerdown',event=>{tooltipTap=active?.tip.contains?.(event.target)??false;keyboardTarget=null;if(tooltipTap)event.preventDefault();dismiss();},true);
+ doc.addEventListener('click',event=>{if(tooltipTap){tooltipTap=false;event.preventDefault();event.stopImmediatePropagation();return;}if(event.detail===0&&!event.pointerType&&!event.sourceCapabilities?.firesTouchEvents){const handled=keyboardTarget!==null&&keyboardTarget===key(event.target);keyboardTarget=null;if(!handled)dismiss();}},true);
  doc.addEventListener('keydown',event=>{if(event.key==='Escape'){keyboardTarget=null;if(active)event.preventDefault();dismiss();}else if(event.key==='Enter'||event.key===' '){keyboardTarget=key(event.target);dismissedKey=active?key(active.card):null;dismissCardTooltip();}},true);
  doc.defaultView?.addEventListener('resize',dismissCardTooltip);
 }
