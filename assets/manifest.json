@@ -31,7 +31,7 @@
       "id": "edition-ink-motion",
       "source": "web/styles.css and web/shop-screen.css",
       "origin": "Original CSS foil lines, holographic gradient and polychrome ink overlay; respects reduced motion",
-      "status": "visual QA pending"
+      "status": "implemented; subjective visual acceptance pending"
     }
   ],
   "originalScreenshotsIncluded": false,
