@@ -166,7 +166,7 @@ function showSettings(){
 document.getElementById('options').onclick=showOptions;
 document.getElementById('run_info').onclick=()=>{
  if(busy||!state||state.winPending)return;
- openDialog('Партия',createRunInfoView(state,{blindChoices:['small','big','boss'].map(id=>({id,target:displayBlindTarget(blindChoiceTarget(state,id)),reward:blindReward(state,id),description:id==='boss'?(APK_BLINDS_BY_ID[state.apkBlinds?.bossId]?.description??''):''}))}),[['Назад',closeDialog]]);
+ openDialog('Партия',createRunInfoView(state,{voucherFamilies:catalogue.centres.filter(c=>c.set==='Voucher').sort((a,b)=>a.order-b.order).map((c,index)=>({id:c.key,group:Math.floor(index/2)})),blindChoices:['small','big','boss'].map(id=>({id,target:displayBlindTarget(blindChoiceTarget(state,id)),reward:blindReward(state,id),description:id==='boss'?(APK_BLINDS_BY_ID[state.apkBlinds?.bossId]?.description??''):''}))}),[['Назад',closeDialog]]);
 };
 document.getElementById('deck').onclick=()=>{
  if(busy||!state||state.winPending)return;openDialog('Колода',createDeckView(roundDeckView(state)),[['Назад',closeDialog]]);

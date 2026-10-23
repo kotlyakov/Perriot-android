@@ -37,7 +37,7 @@ export function createSettingsView({values={music:.35,effects:.7},onVolume=()=>{
   body.append(el('p','menu-note','Серые параметры пока недоступны. Музыка и звуковые эффекты сохраняются.'));
  });view.dataset.window='settings';return view;
 }
-export function createRunInfoView(state,{blindChoices=[]}={}){
+export function createRunInfoView(state,{blindChoices=[],voucherFamilies=[]}={}){
  const view=tabbedWindow(runInfoTabs(state),(tab,body)=>{
   if(tab==='hands'){
    const grid=el('div','run-hands');for(const r of handInfoRows(state)){const row=el('div','run-hand');row.append(el('span','hand-level','Ур. '+r.level),el('strong','',r.name),el('b','hand-chips',r.chips),el('span','','×'),el('b','hand-mult',r.mult),el('span','','#'),el('span','hand-played',state.handUsage?.[r.id]??0));grid.append(row);}body.append(grid);
@@ -45,8 +45,12 @@ export function createRunInfoView(state,{blindChoices=[]}={}){
    const grid=el('div','run-blinds');for(const [id,label] of [['small','Малый блайнд'],['big','Большой блайнд'],['boss','Босс']]){const p=el('article','run-blind');p.append(el('h2','',label),el('p','',id==='boss'?(APK_BLINDS_BY_ID[state.apkBlinds?.bossId]?.nameRu??APK_BLINDS_BY_ID[state.apkBlinds?.bossId]?.name??'Босс'):id==='small'?'Первый блайнд анте':'Второй блайнд анте'));const meta=blindChoices.find(b=>b.id===id);p.append(el('div','run-blind-token',id==='boss'?'♠':id==='big'?'●●':'●'));if(meta){p.append(el('small','','Набрать минимум'),el('strong','run-blind-target',meta.target),el('p','run-blind-description',meta.description??''),el('span','gold','Награда: $'+meta.reward));}p.append(el('strong','run-blind-status',state.round.blindId===id?'Текущий блайнд':'Анте '+state.round.ante));grid.append(p);}body.append(grid);
   }else if(tab==='vouchers'){
    const ids=state.apkShop?.context.usedVoucherIds??[];if(!ids.length){body.append(el('p','menu-empty','В этой партии билетов пока нет.'));return;}
-   let page=0;const list=el('div','run-vouchers'),pager=el('nav','menu-paging');body.append(list,pager);
-   const paint=()=>{list.replaceChildren();for(const id of ids.slice(page*4,page*4+4)){const meta=describeShopItem({entityId:id}),row=el('article','run-voucher');row.append(el('strong','',meta.name),el('p','',meta.description));list.append(row);}pager.replaceChildren(button('voucher_prev','‹',()=>{page--;paint();}),el('span','',`${page+1} / ${Math.ceil(ids.length/4)}`),button('voucher_next','›',()=>{page++;paint();}));pager.firstChild.disabled=page===0;pager.lastChild.disabled=(page+1)*4>=ids.length;};paint();
+   body.append(el('h2','','Использованные билеты'));const groups=new Map();
+   for(const id of [...ids].sort((a,b)=>voucherFamilies.findIndex(v=>v.id===a)-voucherFamilies.findIndex(v=>v.id===b))){const key=voucherFamilies.find(v=>v.id===id)?.group??id;const group=groups.get(key)??[];group.push(id);groups.set(key,group);}
+   const area=el('div','used-voucher-groups'),rows=[...groups.values()];
+   const tip=el('aside','voucher-tooltip');tip.hidden=true;
+   for(let offset=0;offset<rows.length;offset+=offset===10?rows.length:5){const row=el('div','used-voucher-row');for(const family of rows.slice(offset,offset===10?rows.length:offset+5)){const stack=el('div','used-voucher-family');family.forEach((id,index)=>{const meta=describeShopItem({entityId:id}),card=button('used_'+id,meta.name,()=>{tip.replaceChildren(el('strong','',meta.name),el('p','',meta.description),button('voucher_tip_close','Закрыть',()=>tip.hidden=true));tip.hidden=false;});card.style.setProperty('--voucher-index',index);stack.append(card);});row.append(stack);}area.append(row);if(offset>=10)break;}
+   body.append(area,tip);
   }else {const s=STAKES.find(s=>s.level===(state.stake??1));body.append(el('h2','',s?.name??'Белая ставка'),el('p','settings-summary',s?.description??''),el('p','menu-note','Действуют ограничения предыдущих ставок.'));}
  });view.dataset.window='party';return view;
 }
