@@ -46,3 +46,8 @@
 .shop-ticket-scroll{position:absolute;z-index:3;padding:0;border:1px solid #78918a;border-radius:5px;background:#355d53;color:#eddbac;font-size:12px;text-shadow:none;box-shadow:0 2px #102826}
 
 .joker-stickers{position:absolute;top:5px;right:4px;left:4px;z-index:4;display:flex;align-items:flex-end;flex-direction:column;gap:3px;pointer-events:none}.joker-sticker{max-width:100%;padding:2px 4px;border:1px solid #3f4b45;border-radius:4px;background:#d8c5a2;color:#263b37;font-size:9px;line-height:11px;font-weight:800;text-shadow:none;white-space:nowrap;box-shadow:0 1px 2px #0004}.joker-sticker[data-sticker=eternal]{background:#a58dc0;color:#241b38}.joker-sticker[data-sticker=perishable]{background:#bfd0d2;color:#23454b}.joker-sticker[data-sticker=rental]{background:#dfbb68;color:#4c3818}
+.shop-card[data-edition=foil] .shop-art{background:repeating-linear-gradient(125deg,#a7d7e92a 0 5px,#e8ffff70 6px,#376b8738 8px 13px)}
+.shop-card[data-edition=holographic] .shop-art{background:linear-gradient(125deg,#df69ba55,#73cfdb55 30%,#f3d78366 55%,#8c88e955 80%,#df69ba55)}
+.shop-card[data-edition=polychrome] .shop-art{background:conic-gradient(from 40deg,#ef789980,#f2d57285,#78d68b75,#7bd0ef85,#ab8ee580,#ef789980)}
+.shop-card[data-edition=foil] .shop-art,.shop-card[data-edition=holographic] .shop-art,.shop-card[data-edition=polychrome] .shop-art{background-size:220% 220%;animation:edition-ink 7s ease-in-out infinite alternate}
+@media(prefers-reduced-motion:reduce){.shop-card[data-edition] .shop-art{animation:none}}

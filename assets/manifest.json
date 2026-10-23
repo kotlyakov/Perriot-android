@@ -26,8 +26,18 @@
       "source": "src/ui/shop-screen.js",
       "origin": "Original procedural printing plate SVG motifs and coded paper voucher/pack surfaces; no source-game artwork",
       "status": "intermediate"
+    },
+    {
+      "id": "edition-ink-motion",
+      "source": "web/styles.css and web/shop-screen.css",
+      "origin": "Original CSS foil lines, holographic gradient and polychrome ink overlay; respects reduced motion",
+      "status": "implemented; subjective visual acceptance pending"
     }
   ],
   "originalScreenshotsIncluded": false,
-  "audio": "not implemented"
+  "audio": {
+    "source": "src/ui/audio.js",
+    "origin": "Original synthesized pentatonic 16-step phrase and oscillator effects composed for Pierrot; no samples or source-game audio",
+    "status": "implemented; listening acceptance pending"
+  }
 }

@@ -5,8 +5,9 @@ export function integerText(value){return exactText(typeof value==='number'?BigI
 export function scoreDelta(event){if(event.operation==='balance')return {kind:'balance',multiply:false,text:'Баланс'};const mult=event.operation.includes('mult'),key=mult?'mult':'chips',multiply=event.operation.startsWith('multiply') || event.operation.startsWith('mul_') || event.operation.startsWith('x_');const before=event.before[key],after=event.after[key];return {kind:mult?'mult':'chips',multiply,text:(multiply?'×':'+')+exactText(multiply?divideExact(after,before):subtractExact(after,before))};}
 export function scoreMoneyText(event){return '+$'+integerText(event.amount);}
 const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
-export async function animateScore(events){const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+export async function animateScore(events,onSound=()=>{}){const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
  for(const event of events){
+   if(['score_repeat','score_step','score_money'].includes(event.type))onSound(event);
    if(event.type==='score_repeat'){
      const joker=document.querySelector(`#shop_owned [data-offer-id="${event.effectSourceId}"]`);
      const card=joker??document.querySelector(`${event.phase==='held_card'?'#hand .playing-card':'.played-card'}[data-card-id="${event.sourceId}"]`);
