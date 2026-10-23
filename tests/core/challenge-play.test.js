@@ -63,3 +63,9 @@ test('reapplying an enhancement replaces the native ability and clears permanent
  s=act(s,'USE_CONSUMABLE',{cardId:'empress',targetCardIds:[id]});
  assert.equal(s.cards[id].enhancement,'mult');assert.equal(isBossCardDebuffed(s,s.cards[id]),false);
 });
+test('Rich get Richer caps chips after Tooth and Ox remove money before scoring',()=>{
+ const s=run('rich_get_richer');s.hand=['card_clubs_14'];s.jokers=[];s.money=1n;
+ for(const boss of [{id:'bl_tooth',disabled:false},{id:'bl_ox',disabled:false,oxHand:'high_card'}]){
+  s.bossState=boss;assert.equal(scoreHand(s,[s.cards[s.hand[0]]]).score,0n,boss.id);
+ }
+});

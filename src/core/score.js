@@ -101,9 +101,12 @@ export function scoreHand(state, playedCards, {legacyRng=false,armTriggered} = {
   const level = state.handLevels[hand.handId] ?? 1;
   if (!Number.isSafeInteger(level) || level < 1) throw new RangeError('Invalid hand level');
   const definition = HANDS[hand.handId];
+  let moneyBeforeCards=state.money??0n;
+  if(!state.bossState?.disabled&&state.bossState?.id==='bl_tooth')moneyBeforeCards-=BigInt(playedCards.length);
+  if(!state.bossState?.disabled&&state.bossState?.id==='bl_ox'&&state.bossState.oxHand===hand.handId)moneyBeforeCards=0n;
   let chips = BigInt(definition.chips) + BigInt(level-1)*BigInt(definition.chipGain);
   const capChips=(value,money)=>challengeFor(state)?.modifiers?.chipsDollarCap?(value<(money>0n?money:0n)?value:(money>0n?money:0n)):value;
-  chips=capChips(chips,(state.money??0n)+beforeScoreMoney.reduce((sum,e)=>sum+e.amount,0n));
+  chips=capChips(chips,moneyBeforeCards+beforeScoreMoney.reduce((sum,e)=>sum+e.amount,0n));
   let mult = BigInt(definition.mult) + BigInt(level-1)*BigInt(definition.multGain);
   if(!state.bossState?.disabled&&state.bossState?.id==='bl_flint'){
     chips=(chips+1n)/2n;
@@ -138,7 +141,7 @@ export function scoreHand(state, playedCards, {legacyRng=false,armTriggered} = {
   function apply(effect,phase,sourceId,effectSourceId){
     if(effect.operation==='money'){trace.push({type:'score_money',phase,sourceId,amount:effect.amount,...(effectSourceId?{effectSourceId}:{})});return;}
     const before={chips,mult};
-    if(effect.operation==='add_chips')chips=capChips(chips+effect.amount,(state.money??0n)+trace.reduce((sum,e)=>sum+(e.type==='score_money'?e.amount:0n),0n));
+    if(effect.operation==='add_chips')chips=capChips(chips+effect.amount,moneyBeforeCards+trace.reduce((sum,e)=>sum+(e.type==='score_money'?e.amount:0n),0n));
     else if(effect.operation==='multiply_mult')mult=multiplyExact(mult,effect.amount);
     else mult=addExact(mult,effect.amount);
     trace.push({type:'score_step',phase,sourceId,operation:effect.operation,before,after:{chips,mult},...(effectSourceId?{effectSourceId}:{})});
@@ -161,7 +164,7 @@ export function scoreHand(state, playedCards, {legacyRng=false,armTriggered} = {
     if(source)trace.push({type:'score_repeat',phase:'scored_card',sourceId:card.id,effectSourceId:source});
     const before = {chips,mult};
     chips += (card.enhancement==='stone'?50n:BigInt(card.rank===14 ? 11 : Math.min(card.rank,10)))+BigInt(card.permaBonus??0);
-    chips=capChips(chips,(state.money??0n)+trace.reduce((sum,e)=>sum+(e.type==='score_money'?e.amount:0n),0n));
+    chips=capChips(chips,moneyBeforeCards+trace.reduce((sum,e)=>sum+(e.type==='score_money'?e.amount:0n),0n));
     let luckyTriggered=false;
     trace.push({type:'score_step',phase:'scored_card',sourceId:card.id,operation:'add_chips',before,after:{chips,mult}});
     if(card.enhancement==='bonus')apply({operation:'add_chips',amount:30n},'scored_card',card.id);
@@ -230,9 +233,6 @@ export function scoreHand(state, playedCards, {legacyRng=false,armTriggered} = {
   const moneyJokers=state.jokers.some(j=>['j_bull','j_bootstraps'].includes(originalJokerKey(j.entityId)));
   if(moneyJokers&&typeof state.money!=='bigint')throw new TypeError('Missing scoring money');
   // Native get_p_dollars buffers Lucky income before independent Joker evaluation.
-  let moneyBeforeCards=state.money??0n;
-  if(!state.bossState?.disabled&&state.bossState?.id==='bl_tooth')moneyBeforeCards-=BigInt(playedCards.length);
-  if(!state.bossState?.disabled&&state.bossState?.id==='bl_ox'&&state.bossState.oxHand===hand.handId)moneyBeforeCards=0n;
 
   const rankCounts = new Map();
   for (const card of playedCards)if(card.enhancement!=='stone')rankCounts.set(card.rank,(rankCounts.get(card.rank)??0)+1);
