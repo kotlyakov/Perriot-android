@@ -63,3 +63,5 @@
 .start-challenge-overview>.challenge-overview{grid-row:2}.start-challenge-overview>.start-back-footer{grid-row:3}
 .start-challenges>.challenge-body{grid-row:1}.start-challenges>.start-back-footer{grid-row:2}
 .challenge-browser{grid-template-rows:minmax(0,1fr) 32px 22px}.challenge-completed{margin:0;font-size:15px;line-height:22px;text-align:center}
+/* New/Continue fit their actual rows; the Back footer does not leave an empty panel below it. */
+.start-setup:not(.start-challenges):not(.start-challenge-overview){top:82px;height:524px}

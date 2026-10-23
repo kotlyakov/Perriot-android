@@ -1,4 +1,5 @@
 import {collectionEntries} from '../core/profile.js';
+import {nativeBlindTarget} from '../core/blind-progression.js';
 import {HAND_NAMES} from '../content/hand-names.js';
 import {DECKS} from '../content/decks.js';
 import {CHALLENGES} from '../content/challenges.js';
@@ -71,14 +72,22 @@ export function renderStatsView(profile,{onNavigate}={}){
    const columns=element('div','profile-stats-columns'),records=element('div','profile-records'),scores=profile.highScores??{};
    const mostPlayed=Object.entries(profile.usage?.hands??{}).sort((a,b)=>b[1]-a[1])[0];
    showRows(records,[['Лучшая рука',number(scores.hand)],['Самый дальний раунд',number(scores.furthestRound)],['Самое дальнее анте',number(scores.furthestAnte)],['Любимая комбинация',mostPlayed?`${HAND_NAMES[mostPlayed[0]]??mostPlayed[0]} (${number(mostPlayed[1])})`:'Нет'],['Максимум денег',number(scores.mostMoney)],['Лучшая серия побед',number(scores.winStreak)]],0,'profile_stats');
-   const side=element('div','profile-stats-side');side.append(progressView(profile),button('profile_usage_tab','Статистика карт',()=>navigate('usage')),button('profile_history_tab','Карьера',()=>navigate('history')));columns.append(records,side);body.append(columns);
+   const side=element('div','profile-stats-side');side.append(progressView(profile),button('profile_usage_tab','Статистика карт',()=>navigate('usage')));columns.append(records,side);body.append(columns);
   }else if(view==='usage'){
    const entries=collectionEntries(profile),lookup=new Map(entries.map(entry=>[entry.id,entry])),nav=element('nav','profile-usage-tabs'),content=element('section','profile-usage');body.append(nav,content);
-   for(const [field,label] of [['jokers','Джокеры'],['consumables','Расходники'],['vouchers','Билеты'],['decks','Колоды'],['hands','Комбинации']]){const tab=button('profile_usage_'+field,label,()=>show(field));tab.dataset.tab=field;nav.append(tab);}
-   function show(field){selectTab(nav,field);const rows=Object.entries(profile.usage?.[field]??{}).filter(([id])=>lookup.get(id)?.discovered||field==='decks'||field==='hands').sort((a,b)=>Number(b[1]?.count??b[1])-Number(a[1]?.count??a[1])).map(([id,value])=>[lookup.has(id)?localized(lookup.get(id)).name:DECKS[id]?.name??HAND_NAMES[id]??'Карта',number(value?.count??value)]);showRows(content,rows,0,'profile_usage');}show('jokers');
-  }else{
-   const c=profile.career??{},s=profile.highScores??{};
-   showRows(body,[['Победы',c.c_wins],['Поражения',c.c_losses],['Сыграно раундов',c.c_rounds],['Сыграно рук',c.c_hands_played],['Сыграно карт',c.c_cards_played],['Сброшено карт',c.c_cards_discarded],['Заработано денег',c.c_dollars_earned],['Потрачено в магазине',c.c_shop_dollars_spent],['Обновлений магазина',c.c_shop_rerolls],['Текущая серия побед',s.currentStreak]].map(([label,value])=>[label,number(value)]),0,'profile_history');
+   for(const [field,label] of [['jokers','Джокеры'],['consumables','Расходники'],['Tarot','Таро'],['Planet','Планеты'],['Spectral','Спектральные'],['vouchers','Билеты']]){const tab=button('profile_usage_'+field,label,()=>show(field));tab.dataset.tab=field;nav.append(tab);}
+   function show(field,page=0){
+    selectTab(nav,field);content.replaceChildren();const subset=['Tarot','Planet','Spectral'].includes(field),source=subset?'consumables':field;
+    const rows=Object.entries(profile.usage?.[source]??{}).filter(([id])=>lookup.get(id)?.discovered&&(!subset||lookup.get(id).set===field)).map(([id,value])=>({entry:lookup.get(id),count:Number(value?.count??value)})).sort((a,b)=>b.count-a.count),max=Math.max(1,...rows.map(item=>item.count)),pages=Math.max(1,Math.ceil(rows.length/10));
+    content.append(element('p','profile-usage-caption',field==='jokers'?'Раунды с джокером':field==='vouchers'?'Купленные билеты':'Использованные расходники'));
+    const chart=element('div','profile-usage-chart');chart.setAttribute('aria-label','Использование карт');chart.setAttribute('role','list');
+    for(let index=0;index<10;index++){
+     const item=rows[page*10+index],column=element('div','profile-usage-column');column.setAttribute('role','listitem');
+     if(item){const name=localized(item.entry).name,card=element('div','profile-usage-card','♠');card.title=name;card.setAttribute('aria-label',name);card.dataset.entryId=item.entry.id;const label=element('span','profile-usage-count',number(item.count)),track=element('div','profile-usage-track'),bar=element('div','profile-usage-bar');bar.style.setProperty('--usage-height',String(100*item.count/max)+'%');bar.dataset.count=String(item.count);track.append(bar);column.setAttribute('aria-label',`${name}: ${number(item.count)}`);column.append(card,label,track);
+     }else{column.setAttribute('aria-label','Нет данных');const placeholder=element('div','profile-usage-card profile-usage-placeholder'),track=element('div','profile-usage-track');column.append(placeholder,element('span','profile-usage-count','—'),track);}
+     chart.append(column);
+    }content.append(chart);if(!rows.length)content.append(element('p','profile-empty','Пока нет использованных карт.'));if(pages>1)content.append(pager('profile_usage',page,pages,next=>show(field,next)));
+   }show('jokers');
   }
  }
  function navigate(next){view=next;draw();onNavigate?.({view,back:root.back});}
@@ -107,16 +116,23 @@ export function renderCollectionView(profile,seed,{onNavigate}={}){
    const content=element('div','collection-content'),heading=element('div','collection-controls');heading.append(element('strong','',setNames[set]));const tally=element('strong','');tally.id='collection_tally';
    const rows=entries.filter(entry=>entry.set===set).sort((a,b)=>(a.order??0)-(b.order??0)),capacities=collectionRows[set],size=capacities.reduce((n,x)=>n+x,0),pages=Math.max(1,Math.ceil(rows.length/size));page=Math.max(0,Math.min(page,pages-1));tally.textContent=`${rows.filter(entry=>entry.discovered).length}/${rows.length}`;heading.append(tally);content.append(heading);
    const grid=element('div','collection-grid');grid.setAttribute('aria-label','Карты раздела');grid.dataset.set=set;let offset=page*size;
+   let hoverSuppressed=false;grid.onmouseleave=()=>{hoverSuppressed=false;};
    const tooltip=element('aside','collection-details collection-tooltip');tooltip.id='collection_details';tooltip.hidden=true;tooltip.setAttribute('role','tooltip');tooltip.setAttribute('aria-live','polite');
-   function details(entry,card){const known=entry.discovered,display=known||!entry.unlocked?localized(entry):null,name=display?.name??'Не обнаружено';let text=!entry.unlocked?(entry.condition||'Выполните условие открытия.'):known?display.description:'Найдите эту карту в обычной партии.';if(known&&entry.sticker)text+=` Победа: ${STAKES[entry.sticker-1]?.name??entry.sticker}.`;const chunks=textPages(text||'Описание отсутствует.');function part(index){tooltip.replaceChildren(element('strong','',name),element('p','',chunks[index]));const close=button('collection_detail_close','Закрыть описание',()=>{tooltip.hidden=true;});tooltip.append(close);if(chunks.length>1)tooltip.append(pager('collection_detail',index,chunks.length,part));}part(0);tooltip.hidden=false;for(const other of grid.querySelectorAll('[data-entry-id]'))other.setAttribute('aria-pressed',String(other===card));card.setAttribute('aria-describedby',tooltip.id);}
+   function details(entry,card){const known=entry.discovered,display=known||!entry.unlocked?localized(entry):null,name=display?.name??'Не обнаружено';let text=!entry.unlocked?(entry.condition||'Выполните условие открытия.'):known?display.description:'Найдите эту карту в обычной партии.';if(known&&entry.sticker)text+=` Победа: ${STAKES[entry.sticker-1]?.name??entry.sticker}.`;const chunks=textPages(text||'Описание отсутствует.');function part(index){tooltip.replaceChildren(element('strong','',name),element('p','',chunks[index]));const close=button('collection_detail_close','Закрыть описание',()=>{tooltip.hidden=true;hoverSuppressed=true;});tooltip.append(close);if(chunks.length>1)tooltip.append(pager('collection_detail',index,chunks.length,part));}part(0);tooltip.hidden=false;for(const other of grid.querySelectorAll('[data-entry-id]'))other.setAttribute('aria-pressed',String(other===card));card.setAttribute('aria-describedby',tooltip.id);}
    for(const capacity of capacities){const row=element('div','collection-card-row');row.style.setProperty('--collection-columns',capacity);for(const entry of rows.slice(offset,offset+capacity)){
-    const display=entry.discovered||!entry.unlocked?localized(entry):null,name=display?.name??'Не обнаружено',card=button('collection_'+entry.id,'',()=>details(entry,card));card.className='collection-card';card.dataset.entryId=entry.id;card.dataset.discovered=String(entry.discovered);card.dataset.unlocked=String(entry.unlocked);card.setAttribute('aria-label',name+(!entry.unlocked?' — закрыто':''));card.setAttribute('aria-pressed','false');card.onfocus=()=>details(entry,card);card.onmouseenter=()=>details(entry,card);card.append(element('span','collection-symbol',entry.discovered?'♠':entry.unlocked?'?':'◆'),element('strong','',name));
+    const display=entry.discovered||!entry.unlocked?localized(entry):null,name=display?.name??'Не обнаружено',card=button('collection_'+entry.id,'',()=>details(entry,card));card.className='collection-card';card.dataset.entryId=entry.id;card.dataset.discovered=String(entry.discovered);card.dataset.unlocked=String(entry.unlocked);card.setAttribute('aria-label',name+(!entry.unlocked?' — закрыто':''));card.setAttribute('aria-pressed','false');card.onfocus=()=>details(entry,card);card.onmouseenter=()=>{if(!hoverSuppressed)details(entry,card);};card.append(element('span','collection-symbol',entry.discovered?'♠':entry.unlocked?'?':'◆'),element('strong','',name));
     if(entry.discovered&&entry.sticker){const sticker=element('span','collection-sticker',String(entry.sticker));sticker.style.setProperty('--stake-color',STAKES[entry.sticker-1]?.color??'#d7c49a');card.append(sticker);}row.append(card);
     if(set==='Back'){const description=element('div','collection-deck-description');description.append(element('h3','',name),element('p','',!entry.unlocked?entry.condition:entry.discovered?display.description:'Найдите эту колоду в обычной партии.'));row.append(description);}
-   }offset+=capacity;grid.append(row);}content.append(grid);
+   }offset+=capacity;grid.append(row);}
+   if(set==='Blind'){
+    const layout=element('div','collection-blind-layout'),table=element('table','collection-ante-table');table.setAttribute('aria-label','Базовые очки по анте');
+    const header=element('tr');header.append(element('th','','Анте'),element('th','','База'));table.append(header);
+    for(let ante=1;ante<=16;ante++){const target=nativeBlindTarget(ante),record=element('tr');record.dataset.ante=String(ante);record.dataset.target=String(target);record.dataset.reached=String(ante<=(profile.highScores?.furthestAnte??0));record.append(element('td','',String(ante)),element('td','',new Intl.NumberFormat('ru-RU',{notation:target>=1000000n?'compact':'standard',maximumFractionDigits:2}).format(target)));table.append(record);}
+    layout.append(table,grid);content.append(layout);
+   }else content.append(grid);
    const paging=pager('collection',page,pages,next=>{page=next;draw();});paging.className='collection-paging';content.append(paging);root.append(content,tooltip);
    // The floating explanation is dismissible on touch and keyboard, without closing the category.
-   root.onkeydown=event=>{if(event.key==='Escape'&&!tooltip.hidden){event.stopPropagation();tooltip.hidden=true;}};
+   root.onkeydown=event=>{if(event.key==='Escape'&&!tooltip.hidden){event.stopPropagation();tooltip.hidden=true;hoverSuppressed=true;}};
   }
   onNavigate?.({view:set?'category':'index',set,back:root.back});
  }

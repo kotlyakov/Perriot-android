@@ -1,5 +1,6 @@
 import {readFile,writeFile} from 'node:fs/promises';
 import {createProfile,collectionEntries,deckUnlocked as nativeDeckUnlocked,stakeUnlocked as nativeStakeUnlocked} from '../src/core/profile.js';
+import {nativeBlindTarget} from '../src/core/blind-progression.js';
 import {HANDS} from '../src/content/hands.js';
 import {HAND_NAMES} from '../src/content/hand-names.js';
 import {DECKS} from '../src/content/decks.js';
@@ -11,13 +12,14 @@ import {describeShopItem} from '../src/content/shop-display.js';
 import {ENHANCEMENT_DESCRIPTIONS,EDITION_DESCRIPTIONS,SEAL_DESCRIPTIONS} from '../src/content/card-modifier-display.js';
 const profile=createProfile(),entries=collectionEntries(profile,'13031990'),descriptions=Object.fromEntries(entries.map(e=>[e.id,describeShopItem({entityId:e.id})]));
 const ordinaryEntries=collectionEntries(profile);const gates={decks:Object.fromEntries(Object.keys(DECKS).map(id=>[id,nativeDeckUnlocked(profile,id)])),stakes:Object.fromEntries(Object.keys(DECKS).map(id=>[id,STAKES.map(s=>nativeStakeUnlocked(profile,id,s.level))])),challenges:Object.fromEntries(CHALLENGES.map(c=>[c.id,challengeUnlocked(profile,c.id)])),challengeMode:challengeModeUnlocked(profile)};
-const data={profile,entries,ordinaryEntries,gates,descriptions,HANDS,HAND_NAMES,DECKS,CHALLENGES,STAKES,APK_BLINDS_BY_ID,APK_TAGS_BY_ID,ENHANCEMENT_DESCRIPTIONS,EDITION_DESCRIPTIONS,SEAL_DESCRIPTIONS};
-const imported=Object.keys(data).filter(k=>!['profile','entries','ordinaryEntries','gates','descriptions'].includes(k)).join(',');
+const anteTargets=Array.from({length:16},(_,i)=>nativeBlindTarget(i+1).toString());
+const data={profile,entries,ordinaryEntries,gates,descriptions,anteTargets,HANDS,HAND_NAMES,DECKS,CHALLENGES,STAKES,APK_BLINDS_BY_ID,APK_TAGS_BY_ID,ENHANCEMENT_DESCRIPTIONS,EDITION_DESCRIPTIONS,SEAL_DESCRIPTIONS};
+const imported=Object.keys(data).filter(k=>!['profile','entries','ordinaryEntries','gates','descriptions','anteTargets'].includes(k)).join(',');
 async function module(name,functions){let s=await readFile('src/ui/'+name+'.js','utf8');s=s.replace(/^import .*;\n/gm,'').replace(/\bexport /g,'');return `(()=>{${s}\nreturn {${functions}};})()`;}
 let css=(await Promise.all(['styles','start-screen','window-review','profile-review','challenge-review'].map(n=>readFile('web/'+n+'.css','utf8')))).join('\n');
 css=css.replace('/web/fonts/Rubik.ttf','data:font/ttf;base64,'+(await readFile('web/fonts/Rubik.ttf')).toString('base64'));
 const template=await readFile('tools/previews/native-menu-template.html','utf8');
-const boot=`(()=>{const root=document.getElementById('pierrot-native-review');const data=${JSON.stringify(data).replaceAll('<','\\u003c')};const {${imported}}=data;const profile=data.profile;const collectionEntries=(p,seed)=>seed==='13031990'?data.entries:data.ordinaryEntries;const describeShopItem=({entityId})=>data.descriptions[entityId]??{name:entityId,description:''};const isVerificationSeed=s=>s==='13031990';const deckUnlocked=(p,id,seed)=>isVerificationSeed(seed)||data.gates.decks[id],stakeUnlocked=(p,id,stake,seed)=>isVerificationSeed(seed)||data.gates.stakes[id]?.[stake-1],challengeModeUnlocked=(p,seed)=>isVerificationSeed(seed)||data.gates.challengeMode,challengeUnlocked=(p,id,seed)=>isVerificationSeed(seed)||data.gates.challenges[id];
+const boot=`(()=>{const root=document.getElementById('pierrot-native-review');const data=${JSON.stringify(data).replaceAll('<','\\u003c')};const {${imported}}=data;const profile=data.profile;const nativeBlindTarget=ante=>BigInt(data.anteTargets[ante-1]);const collectionEntries=(p,seed)=>seed==='13031990'?data.entries:data.ordinaryEntries;const describeShopItem=({entityId})=>data.descriptions[entityId]??{name:entityId,description:''};const isVerificationSeed=s=>s==='13031990';const deckUnlocked=(p,id,seed)=>isVerificationSeed(seed)||data.gates.decks[id],stakeUnlocked=(p,id,stake,seed)=>isVerificationSeed(seed)||data.gates.stakes[id]?.[stake-1],challengeModeUnlocked=(p,seed)=>isVerificationSeed(seed)||data.gates.challengeMode,challengeUnlocked=(p,id,seed)=>isVerificationSeed(seed)||data.gates.challenges[id];
 const menu=${await module('menu-windows','createOptionsView,createSettingsView,createRunInfoView,createCustomizeView,createEndView')};const profiles=${await module('profile-screen','renderProfileView,renderCollectionView,renderStatsView')};const start=${await module('start-screen','renderStartScreen,removeStartScreen')};
 const state={seed:'13031990',deckId:'red',money:100,roundNumber:1,discoveredHands:Object.keys(HANDS).slice(0,9),handLevels:{},stake:1,round:{blindId:'small',ante:1},apkBlinds:{},apkShop:{context:{usedVoucherIds:[]}}};
 const dialog=root.querySelector('#dialog'),body=root.querySelector('#dialog-body'),footer=root.querySelector('#dialog-actions');let values={music:.18,effects:.55};
