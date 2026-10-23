@@ -56,3 +56,10 @@ test('initial voucher selection respects challenge bans and already granted vouc
  }
  for(let i=0;i<60;i++){const s=createRun('V'+i,{runId:'voucher-check',money:4n,challengeId:'rich_get_richer'});assert.ok(!['v_seed_money','v_money_tree'].includes(s.apkShop.voucherId));}
 });
+test('reapplying an enhancement replaces the native ability and clears permanent challenge debuff',()=>{
+ let s=act(run('double_or_nothing'),'START_BLIND');const id=s.hand[0];
+ s.challengePlayedCardIds=[id];s.cards[id].enhancement='mult';
+ s.consumables=[{id:'empress',entityId:'c_empress',originalKey:'c_empress',set:'Tarot',edition:'base',cost:3n,sellCost:1n}];
+ s=act(s,'USE_CONSUMABLE',{cardId:'empress',targetCardIds:[id]});
+ assert.equal(s.cards[id].enhancement,'mult');assert.equal(isBossCardDebuffed(s,s.cards[id]),false);
+});

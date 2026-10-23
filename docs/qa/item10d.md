@@ -8,7 +8,7 @@ Targeted checks cover neutral challenge deck counters, exact starting inventory/
 
 Independent review identified two Important issues: challenge initial voucher drawn before bans/starting grants; Inflation missing voucher and booster opens. Both were reproduced by failing checks and fixed. Corrected Inflation includes free tag packs. Tests/core/challenge-review.test.js now passes with the full suite.
 
-Local full `npm test`:1640total,1638PASS,0FAIL,2expected optional private-source skips. Android offline assets, standalone export, XML/security config and diff-check PASS. Local Chromium absent, browser download archives truncated; no local browser success claimed.
+Local full `npm test`:1641total,1639PASS,0FAIL,2expected optional private-source skips. Android offline assets, standalone export, XML/security config and diff-check PASS. Local Chromium absent, browser download archives truncated; no local browser success claimed.
 
 ## Platform gate
 
