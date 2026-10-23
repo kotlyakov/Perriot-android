@@ -63,9 +63,9 @@ export function renderProfileView(profile,{activeId='1',profiles=[{id:'1',name:'
 }
 
 /** Paginated native categories; unknown cards never reveal their identity or effect. */
-export function renderCollectionView(profile){
+export function renderCollectionView(profile,seed){
  const root=element('section','collection-view');root.id='collection_view';root.setAttribute('aria-label','Коллекция');
- const entries=collectionEntries(profile),nav=element('div','collection-controls'),selector=element('select');selector.id='collection_set';selector.setAttribute('aria-label','Раздел коллекции');
+ const entries=collectionEntries(profile,seed),nav=element('div','collection-controls'),selector=element('select');selector.id='collection_set';selector.setAttribute('aria-label','Раздел коллекции');
  for(const set of sets){const option=element('option','',setNames[set]);option.value=set;selector.append(option);}
  const tally=element('strong');tally.id='collection_tally';nav.append(selector,tally);root.append(nav);
  const grid=element('div','collection-grid');grid.setAttribute('aria-label','Карты раздела');root.append(grid);

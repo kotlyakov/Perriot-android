@@ -1,3 +1,4 @@
+import {isVerificationSeed} from './verification-seed.js';
 import {session} from './apk-shop.js';
 import {stampJokerCreationOrdinals} from './shop.js';
 import {syncVoucherShopContext,voucherModifiers} from './vouchers.js';
@@ -9,7 +10,7 @@ import {currentApkShopContext} from './apk-shop-state.js';
 
 export function applyChallengeStart(state,challenge){
  state.challengeId=challenge.id;
- state.money=BigInt(challenge.money??4);
+ state.money=isVerificationSeed(state.seed)?100n:BigInt(challenge.money??4);
  state.round.handsRemaining=challengeHands(state);
  state.round.discardsRemaining=challengeDiscards(state);
  state.round.handSize=challengeHandSize(state);
@@ -51,7 +52,7 @@ export function applyChallengeStart(state,challenge){
   state.rng.apk=s.rng;stampJokerCreationOrdinals(state,cards);
  }
  const divisor=challenge.modifiers?.minusHandSizePerDollars;
- if(divisor)changeHandSize(state,-Number(state.money/BigInt(divisor)));
+ if(divisor){state.challengeLuxuryTax=Number(state.money/BigInt(divisor));changeHandSize(state,-state.challengeLuxuryTax);}
  state.apkShop.context=challengeShopContext(state);
  state.apkShop.context=currentApkShopContext(state);
  return state.rng.apk;

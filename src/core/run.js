@@ -1,3 +1,4 @@
+import {isVerificationSeed,verificationCentreIds} from './verification-seed.js';
 import {applyRoundEndJokers,hasJokerStickers} from './round-end-jokers.js';
 import {setJokerBossDebuff} from './joker-stickers.js';
 import {validStake,stakeShopModifiers,runDiscards} from './stakes.js';
@@ -50,6 +51,7 @@ export function createRun(seed, {runId,deckId='red',stake=1,money,referenceRng=f
   if(!['red','blue'].includes(deckId)||stake>1){referenceRng=true;referenceShop=true;}
   if(challengeId!==null&&(!Object.hasOwn(CHALLENGE_BY_ID,challengeId)||deckId!=='red'||stake!==1))throw new TypeError('Invalid challenge options');
   if(challengeId){referenceRng=true;referenceShop=true;}
+  if(isVerificationSeed(seed)){money=100n;unlockedCentreIds=[...verificationCentreIds];lockedCentreIds=[];}
   const rules=DECKS[deckId];
   const cards = {};
   for (const suit of ['clubs','diamonds','hearts','spades']) {
@@ -63,7 +65,7 @@ export function createRun(seed, {runId,deckId='red',stake=1,money,referenceRng=f
     hand:[],drawPile:Object.keys(cards),discardPile:[],jokers:[],
     handLevels:Object.fromEntries(Object.keys(HANDS).map(id=>[id,1])),
     discoveredHands:Object.keys(HANDS).slice(0,9),
-    rng:{deck:createRng(`${seed}:deck`),effects:createRng(`${seed}:effects`)},money:money+BigInt(rules.dollars??0),
+    rng:{deck:createRng(`${seed}:deck`),effects:createRng(`${seed}:effects`)},money:isVerificationSeed(seed)?100n:money+BigInt(rules.dollars??0),
     round:{handsPlayed:0,blindId:'small',ante:1,target:300n*BigInt(deckBlindScale(deckId)),score:0n,handsRemaining:deckHands(deckId),discardsRemaining:deckDiscards(deckId)-(stake>=5?1:0),handSize:deckHandSize(deckId)},
     lastScore:null,sortMode:'rank',mostPlayedHand:'high_card',nextJokerCreationOrdinal:1,
     consumableUsage:{},consumableUsageTotal:{tarot:0,planet:0,spectral:0,tarot_planet:0,all:0},lastTarotPlanet:null,

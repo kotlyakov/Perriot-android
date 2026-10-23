@@ -1,3 +1,4 @@
+import {isVerificationSeed,verificationCentreIds} from './verification-seed.js';
 import catalog from '../content/apk-shop-catalog.js';
 import {PROFILE_UNLOCKS} from '../content/profile-unlocks.js';
 import {CHALLENGE_BY_ID} from '../content/challenges.js';
@@ -40,10 +41,10 @@ export function validateProfile(p){
  assert(object(p.runs));for(const [id,run] of Object.entries(p.runs)){assert(id.length>0&&id.length<=120&&object(run)&&safe(run.revision)&&typeof run.seeded==='boolean'&&typeof run.challenge==='boolean'&&typeof run.won==='boolean'&&typeof run.lost==='boolean'&&safe(run.maxJokers)&&safe(run.bossStreak)&&safe(run.rounds)&&object(run.handUsage)&&Object.entries(run.handUsage).every(([k,n])=>own(APK_HAND_NAMES,k)&&safe(n))&&Object.keys(run).every(k=>['revision','seeded','challenge','won','lost','maxJokers','bossStreak','rounds','handUsage'].includes(k)));}
  return p;
 }
-export function deckUnlocked(p,id){return own(DECKS,id)&&p.unlocked.includes('b_'+id);}
-export function stakeUnlocked(p,id,stake){return deckUnlocked(p,id)&&Number.isInteger(stake)&&stake>=1&&stake<=8&&(stake===1||highest(p.deckWins[id])>=stake-1);}
+export function deckUnlocked(p,id,seed){return own(DECKS,id)&&(isVerificationSeed(seed)||p.unlocked.includes('b_'+id));}
+export function stakeUnlocked(p,id,stake,seed){return deckUnlocked(p,id,seed)&&Number.isInteger(stake)&&stake>=1&&stake<=8&&(isVerificationSeed(seed)||stake===1||highest(p.deckWins[id])>=stake-1);}
 export function legendaryWinIds(p){return LEGENDARY.filter(id=>(p.jokerWins[id]?.[7]??0)>0);}
-export function profileRunContext(p){return {unlockedCentreIds:p.unlocked.filter(id=>own(byId,id)),lockedCentreIds:centres.filter(c=>!p.unlocked.includes(c.key)).map(c=>c.key)};}
+export function profileRunContext(p,seed){if(isVerificationSeed(seed))return {unlockedCentreIds:[...verificationCentreIds],lockedCentreIds:[]};return {unlockedCentreIds:p.unlocked.filter(id=>own(byId,id)),lockedCentreIds:centres.filter(c=>!p.unlocked.includes(c.key)).map(c=>c.key)};}
 function conditionText(id){
  const c=PROFILE_UNLOCKS[id];if(!c)return '';const x=c.extra;
  if(c.hidden)return 'Получите этого легендарного джокера из карты «Душа».';
@@ -60,7 +61,7 @@ function conditionText(id){
  const descriptions={j_troubadour:'Выиграйте 5 раундов подряд за одну руку.',j_certificate:'Получите Золотую карту с Золотой печатью.',j_throwback:'Продолжите сохранённую партию.',j_hanging_chad:'Победите босса старшей картой.',j_seeing_double:'Сыграйте руку с четырьмя семёрками треф.',j_ticket:'Сыграйте пять Золотых карт.',j_matador:'Победите босса за одну руку без сбросов.',j_hit_the_road:'Сбросьте пять валетов за один раз.',j_brainstorm:'Сбросьте роял-флеш.',j_satellite:'Накопите $400.',j_shoot_the_moon:'Сыграйте все червы колоды за один раунд.',j_bootstraps:'Получите двух полихромных джокеров.',j_invisible:'Победите, ни разу не имея больше четырёх джокеров.',j_blueprint:'Победите в партии.',v_liquidation:'Получите 10 билетов за одну партию.',v_glow_up:'Получите пять джокеров с покрытиями.',v_money_tree:'Получите максимальные проценты 10 раундов подряд.',v_antimatter:'Купите Пустой билет 10 раз.',v_retcon:'Обнаружьте 25 блайндов.',v_palette:'Уменьшите размер руки до 5 карт.'};
  return descriptions[id]??'';
 }
-export function collectionEntries(p){return rows.map(row=>({...row,unlocked:p.unlocked.includes(row.id)||(!PROFILE_UNLOCKS[row.id]&&row.set!=='Back'),discovered:['Enhanced','Seal'].includes(row.set)||p.discovered.includes(row.id),condition:conditionText(row.id),sticker:row.set==='Joker'?highest(p.jokerWins[row.id]):row.set==='Back'?highest(p.deckWins[row.id.slice(2)]):0}));}
+export function collectionEntries(p,seed){return rows.map(row=>({...row,unlocked:isVerificationSeed(seed)||p.unlocked.includes(row.id)||(!PROFILE_UNLOCKS[row.id]&&row.set!=='Back'),discovered:isVerificationSeed(seed)||['Enhanced','Seal'].includes(row.set)||p.discovered.includes(row.id),condition:conditionText(row.id),sticker:row.set==='Joker'?highest(p.jokerWins[row.id]):row.set==='Back'?highest(p.deckWins[row.id.slice(2)]):0}));}
 function addWin(map,id,stake,fill=false){const wins=map[id]??Array(8).fill(0);increment(wins,stake-1);if(fill)for(let i=0;i<stake;i++)if(!wins[i])wins[i]=1;map[id]=wins;}
 function discover(profile,id){if(ids.has(id)&&!profile.discovered.includes(id))profile.discovered.push(id);if(LEGENDARY.includes(id)&&!profile.unlocked.includes(id))profile.unlocked.push(id);}
 function totalDiscovered(profile){return rows.filter(r=>!['Enhanced','Seal'].includes(r.set)&&profile.discovered.includes(r.id)).length;}
@@ -92,7 +93,7 @@ export function updateProfile(profile,previousState,nextState,events=[],context=
  if(started&&context.abandonedRunId&&own(p.runs,context.abandonedRunId)){const old=p.runs[context.abandonedRunId];if(!old.seeded&&!old.challenge&&!old.won)p.highScores.currentStreak=0;}
  for(const event of events)if(event.type==='round_started')increment(run,'rounds');
  if(run.seeded||run.challenge){
-  if(run.challenge&&own(CHALLENGE_BY_ID,nextState.challengeId)&&!run.won&&nextState.winPending===true&&nextState.phase==='round_won'&&nextState.round?.ante===8&&nextState.round.blindId==='boss'&&events.some(e=>e.type==='round_won')){
+  if(run.challenge&&!isVerificationSeed(nextState.seed)&&own(CHALLENGE_BY_ID,nextState.challengeId)&&!run.won&&nextState.winPending===true&&nextState.phase==='round_won'&&nextState.round?.ante===8&&nextState.round.blindId==='boss'&&events.some(e=>e.type==='round_won')){
    run.won=true;p.completedChallenges??=[];if(!p.completedChallenges.includes(nextState.challengeId))p.completedChallenges.push(nextState.challengeId);
   }
   recordExcludedUsage(p,previousState??nextState,nextState,events,started);if(!run.seeded)recordHighScores(p,nextState,run,events);return validateProfile(p);}
