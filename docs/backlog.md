@@ -248,3 +248,7 @@ Dusk1/Hack1/Sock1/Chad2 additional evaluations in owned order, first scoring phy
 ## 23.10.2026 — 10г завершён
 
 Все20испытаний, специальные правила, ограничения, профильный прогресс и сохранения выполнены. Actions39906363695 SUCCESS:1640corePASS/2optional skips,50Chromium suites,freshAndroid/APK PASS. APK0.4.46-preview/code59, PR42 готов (не слит). Актуальное состояние — STATUS.md; доказательства — docs/qa/item10d.md. Следующие пункты без выбора пользователя не начинать.
+
+## 23.10.2026 — №11
+
+Собственные музыка/эффекты, отдельные настройки громкости, WebAudio lifecycle, различимость foil/holographic/polychrome и reduced-motion. Оба подтверждённых Important независимого ревью audio исправлены RED→GREEN. З-03 не переоткрывается как новая реализация: существующая инерция сохраняется, приёмка пользователем отдельно. Финальные CI/Android/APK ещё ожидаются.

@@ -132,3 +132,10 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .playing-card[data-edition]::before{background-size:220% 220%;animation:edition-ink 7s ease-in-out infinite alternate}
 @keyframes edition-ink{from{background-position:0% 15%}to{background-position:100% 85%}}
 @media(prefers-reduced-motion:reduce){.playing-card[data-edition]::before{animation:none}}
+@media(max-height:480px){
+ dialog.audio-dialog{padding:12px 20px;max-height:94dvh}
+ .audio-dialog h1{font-size:20px;margin-bottom:6px}
+ .audio-dialog p{font-size:13px;line-height:1.35;margin:6px 0}
+ .audio-settings label{font-size:15px;margin-top:6px}
+ .audio-dialog #dialog-actions button{margin-top:4px;padding:10px 16px}
+}

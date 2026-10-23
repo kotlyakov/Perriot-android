@@ -50,6 +50,7 @@ function openDialog(title,body,actions=[['Закрыть',closeDialog]]) {
  dismissCardTip();dialog.dataset.view='';
  dialogMotion?.cancel();dialogMotion=null;
  dialog.classList.toggle('deck-dialog',typeof body!=='string' && body.classList.contains('deck-view'));
+ dialog.classList.toggle('audio-dialog',typeof body!=='string' && body.classList.contains('audio-settings'));
  document.getElementById('dialog-title').textContent=title;document.getElementById('dialog-body').replaceChildren();
  if(typeof body==='string')document.getElementById('dialog-body').innerHTML=body;else document.getElementById('dialog-body').append(body);
  const buttons=document.getElementById('dialog-actions');buttons.replaceChildren();

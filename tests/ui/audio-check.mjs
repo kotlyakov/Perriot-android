@@ -15,6 +15,7 @@ try {
   await page.locator('#audio_effects').evaluate(el=>{el.value='25';el.dispatchEvent(new Event('input'));});
   assert.deepEqual(await page.evaluate(()=>[localStorage.getItem('card-cascade.current'),localStorage.getItem('card-cascade.backup')]),before);
   assert.equal(await page.locator('label[for=audio_effects] output').textContent(),'25%');
+  if(width>=900){const last=await page.locator('#dialog-actions button').last().boundingBox();assert.ok(last.y+last.height<=height,'Settings actions fit on a landscape phone');}
   await page.screenshot({path:`artifacts/item11-settings-${width}.png`});
   await page.reload();await page.locator('#start_settings').click();
   assert.equal(await page.locator('#audio_music').inputValue(),'0');assert.equal(await page.locator('#audio_effects').inputValue(),'25');
