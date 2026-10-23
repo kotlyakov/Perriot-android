@@ -1,3 +1,4 @@
+import {showCardTooltip} from './card-tooltip.js';
 import {HANDS} from '../content/hands.js';
 import {HAND_NAMES} from '../content/hand-names.js';
 import {APK_BLINDS_BY_ID} from '../content/apk-blinds.js';
@@ -47,8 +48,8 @@ export function createRunInfoView(state,{blindChoices=[],voucherFamilies=[]}={})
    body.append(el('h2','','Использованные билеты'));const groups=new Map();
    for(const id of [...ids].sort((a,b)=>voucherFamilies.findIndex(v=>v.id===a)-voucherFamilies.findIndex(v=>v.id===b))){const key=voucherFamilies.find(v=>v.id===id)?.group??id;const group=groups.get(key)??[];group.push(id);groups.set(key,group);}
    const area=el('div','used-voucher-groups'),rows=[...groups.values()];
-   const tip=el('aside','voucher-tooltip');tip.hidden=true;
-   for(let offset=0;offset<rows.length;offset+=offset===10?rows.length:5){const row=el('div','used-voucher-row');for(const family of rows.slice(offset,offset===10?rows.length:offset+5)){const stack=el('div','used-voucher-family');family.forEach((id,index)=>{const meta=describeShopItem({entityId:id}),card=button('used_'+id,meta.name,()=>{tip.replaceChildren(el('strong','',meta.name),el('p','',meta.description),button('voucher_tip_close','Закрыть',()=>tip.hidden=true));tip.hidden=false;});card.style.setProperty('--voucher-index',index);stack.append(card);});row.append(stack);}area.append(row);if(offset>=10)break;}
+   const tip=el('aside','voucher-tooltip');tip.id='used_voucher_tooltip';tip.setAttribute('role','tooltip');tip.hidden=true;
+   for(let offset=0;offset<rows.length;offset+=offset===10?rows.length:5){const row=el('div','used-voucher-row');for(const family of rows.slice(offset,offset===10?rows.length:offset+5)){const stack=el('div','used-voucher-family');family.forEach((id,index)=>{const meta=describeShopItem({entityId:id}),card=button('used_'+id,meta.name,()=>{tip.replaceChildren(el('strong','',meta.name),el('p','',meta.description));showCardTooltip(tip,card,{container:body});});card.style.setProperty('--voucher-index',index);stack.append(card);});row.append(stack);}area.append(row);if(offset>=10)break;}
    body.append(area,tip);
   }else {const s=STAKES.find(s=>s.level===(state.stake??1));body.append(el('h2','',s?.name??'Белая ставка'),el('p','settings-summary',s?.description??''),el('p','menu-note','Действуют ограничения предыдущих ставок.'));}
  });view.dataset.window='party';return view;

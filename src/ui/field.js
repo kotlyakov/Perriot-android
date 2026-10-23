@@ -6,6 +6,7 @@ import {showFlame} from './flame.js';
 import {pipArtwork,suitSvg} from './card-art.js';
 import {scoreHand} from '../core/score.js';
 import {appendTooltipContents} from './tooltip-text.js';
+import {showCardTooltip,dismissCardTooltip} from './card-tooltip.js';
 import {describeCardModifiers} from '../content/card-modifier-display.js';
 import {exactText} from '../core/numbers.js';
 import {HAND_NAMES} from '../content/hand-names.js';
@@ -49,7 +50,7 @@ export function showNumbers(chips,mult,animate=false){
  }
 }
 
-export function dismissCardTip(){document.querySelector('.card-tip')?.remove();}
+export function dismissCardTip(){dismissCardTooltip();}
 export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=null) {
  document.getElementById('deck').dataset.deck=state.deckId;
  const boss=state.round.blindId==='boss'?APK_BLINDS_BY_ID[state.apkBlinds?.bossId]:null;
@@ -85,13 +86,7 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
    const left=start+i*gap,top=(arcana?430:388)+Math.abs(i-middle)*2.5-(selected.has(id)?arcana?14:28:0);
    Object.assign(b.style,{left:left+'px',top:top+'px',transform:`rotate(${tilt}deg)`,zIndex:String(3+i),color:hidden?'#f0e5c8':SUITS[card.suit][1]});
    b.innerHTML=hidden?'<span class="deck-seal" aria-hidden="true"><svg viewBox="0 0 32 32"><path fill="currentColor" d="M16 0Q19 13 32 16Q19 19 16 32Q13 19 0 16Q13 13 16 0Z"/></svg></span>':cardMarkup(card)+(debuffed?'<span class=debuff-stamp>Ослаблена</span>':'');b.disabled=busy || !selectable;
-   // Touch emits a compatibility click with detail=0 after pointerup. Only
-   // keyboard/programmatic clicks need this path; pointers already toggled.
-   b.addEventListener('click',e=>{if(e.detail===0 && !e.pointerType && !e.sourceCapabilities?.firesTouchEvents)onCard(id);});
-   b.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();if(!e.repeat&&!b.disabled)onCard(id);}});
-   b.addEventListener('pointerdown',e=>{
-     if(b.disabled || e.button!==0)return;e.preventDefault();b.setPointerCapture(e.pointerId);
-     document.querySelector('.card-tip')?.remove();
+   function showTip(anchor=b){
      const tip=document.createElement('div');tip.className='card-tip';tip.setAttribute('role','tooltip');
      if(hidden)appendTooltipContents(tip,'Скрытая карта',['Неизвестна до игры или сброса.']);
      else {
@@ -100,10 +95,21 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
       else{const suit=document.createElement('span');title.append(document.createTextNode(rankLabel(card.rank)+' '));suit.style.color=SUITS[card.suit][1];suit.textContent=({clubs:'треф',diamonds:'бубен',hearts:'червей',spades:'пик'})[card.suit];title.append(suit);}
       appendTooltipContents(tip,title,[`+${debuffed?0:card.enhancement==='stone'?50:card.rank===14?11:Math.min(card.rank,10)} очков`,...describeCardModifiers(card),...(debuffed?['Не даёт фишек и не запускает эффекты джокеров за эту карту.']:[])]);
      }
-     tip.dataset.cardId=id;
-     const placeTip=()=>{tip.style.left=Math.max(8,Math.min(1348,parseFloat(b.style.left)-32))+'px';tip.style.top=Math.max(8,parseFloat(b.style.top)-100)+'px';};placeTip();
+     tip.dataset.cardId=id;showCardTooltip(tip,anchor);
+   }
+   function selectAndDescribe(){
+     onCard(id);
+     // Selection redraws the hand, so position against its new, raised card.
+     const anchor=[...hand.children].find(n=>n.dataset.cardId===id);
+     if(anchor)showTip(anchor);
+   }
+   // Pointers already selected on release; this path serves keyboard clicks.
+   b.addEventListener('click',e=>{if(e.detail===0 && !e.pointerType && !e.sourceCapabilities?.firesTouchEvents)selectAndDescribe();});
+   b.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();if(!e.repeat&&!b.disabled)selectAndDescribe();}});
+   b.addEventListener('pointerdown',e=>{
+     if(b.disabled || e.button!==0)return;e.preventDefault();b.setPointerCapture(e.pointerId);
      const x=e.clientX,y=e.clientY,scale=document.getElementById('stage').getBoundingClientRect().width/1536;let dragged=false,to=i,held=false;
-     const holdTimer=setTimeout(()=>{if(!b.isConnected)return;held=true;placeTip();document.getElementById('stage').append(tip);},350);
+     const holdTimer=setTimeout(()=>{if(!b.isConnected||dragged)return;held=true;showTip();},350);
      const slots=[...hand.children].map(n=>({id:n.dataset.cardId,left:n.style.left,top:n.style.top,transform:n.style.transform}));
      function move(ev){if(ev.pointerId!==e.pointerId)return;
        if(Math.hypot(ev.clientX-x,ev.clientY-y)>8)dragged=true;
@@ -111,11 +117,11 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
          to=Math.max(0,Math.min(state.hand.length-1,Math.round((parseFloat(b.style.left)-start)/Math.max(gap,1))));
          const order=state.hand.filter(other=>other!==id);order.splice(to,0,id);
          for(const n of hand.children){if(n===b)continue;const slot=slots[order.indexOf(n.dataset.cardId)];Object.assign(n.style,{left:slot.left,top:parseFloat(slot.top)+(selected.has(slot.id)?arcana?14:28:0)-(selected.has(n.dataset.cardId)?arcana?14:28:0)+'px',transform:slot.transform});}
-         placeTip();
+         clearTimeout(holdTimer);dismissCardTooltip();
        }
      }
-     function cleanup(removeTip=true){clearTimeout(holdTimer);b.removeEventListener('pointermove',move);b.removeEventListener('pointerup',end);b.removeEventListener('pointercancel',cancel);if(removeTip)tip.remove();b.classList.remove('dragging');}
-     async function end(ev){if(ev.pointerId!==e.pointerId)return;cleanup(false);if(dragged){await onReorder(id,to);tip.remove();}else if(!held){tip.remove();onCard(id);}}
+     function cleanup(removeTip=true){clearTimeout(holdTimer);b.removeEventListener('pointermove',move);b.removeEventListener('pointerup',end);b.removeEventListener('pointercancel',cancel);if(removeTip)dismissCardTooltip();b.classList.remove('dragging');}
+     async function end(ev){if(ev.pointerId!==e.pointerId)return;cleanup(false);if(dragged){dismissCardTooltip();await onReorder(id,to);}else if(!held){selectAndDescribe();}}
      function cancel(){cleanup();for(const n of hand.children){const slot=slots.find(s=>s.id===n.dataset.cardId);Object.assign(n.style,{left:slot.left,top:slot.top,transform:slot.transform});}}
      b.addEventListener('pointermove',move);b.addEventListener('pointerup',end);b.addEventListener('pointercancel',cancel);
    });

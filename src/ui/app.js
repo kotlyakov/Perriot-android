@@ -25,7 +25,6 @@ import {installLayout} from './layout.js';
 import {displayBlindTarget,renderField,dismissCardTip,showNumbers,HAND_NAMES,SUITS,rankLabel,displayInteger} from './field.js';
 
 installLayout();
-document.getElementById('stage').addEventListener('pointerdown',e=>{if(!e.target.closest('button'))dismissCardTip();});
 const native=globalThis.CardStorage;
 const audioPreferences=createAudioSettings({
  read:()=>native?native.read('audio'):globalThis.localStorage.getItem('pierrot.audio'),

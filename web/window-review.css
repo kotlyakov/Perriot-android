@@ -61,3 +61,5 @@ dialog.menu-dialog{right:auto;bottom:auto}
 .used-voucher-groups{display:flex;flex-direction:column;justify-content:center;gap:18px;min-height:270px}.used-voucher-row{display:flex;justify-content:center;gap:16px}.used-voucher-family{position:relative;flex:0 1 155px;height:96px}.used-voucher-family button{position:absolute;left:calc(var(--voucher-index)*8px);top:calc(var(--voucher-index)*17px);width:calc(100% - 8px);height:72px;margin:0;padding:5px 8px;background:#e8ddc0;color:#193d34;border:3px dashed #bb9c5b;border-radius:8px;font-size:16px;text-shadow:none}.menu-window-content:has(.used-voucher-groups){position:relative}.voucher-tooltip{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);width:430px;padding:15px;background:#24483f;border:3px solid #d7c49a;border-radius:10px;z-index:5}.voucher-tooltip[hidden]{display:none}.voucher-tooltip p{font-size:18px}.voucher-tooltip button{width:100%;height:35px;font-size:18px;padding:3px}
 
 .menu-dialog[data-window=collection][data-collection-set=Joker]{width:720px}
+
+.voucher-tooltip{pointer-events:none}.menu-window-content{position:relative}
