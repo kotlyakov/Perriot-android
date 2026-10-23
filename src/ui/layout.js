@@ -15,6 +15,7 @@ export function installLayout() {
    const width=document.documentElement.clientWidth,height=document.documentElement.clientHeight;
    if(!width || !height)return;
    const scale=Math.min(width/1536,height/688);
+   document.documentElement.style.setProperty("--ui-scale",scale);
    document.documentElement.style.setProperty("--deck-scale",Math.min(width/1536,height/709));
    Object.assign(stage.style,{transform:`scale(${scale})`,left:(width-1536*scale)/2+'px',top:(height-688*scale)/2+'px'});
  }

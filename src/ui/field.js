@@ -8,7 +8,8 @@ import {scoreHand} from '../core/score.js';
 import {appendTooltipContents} from './tooltip-text.js';
 import {describeCardModifiers} from '../content/card-modifier-display.js';
 import {exactText} from '../core/numbers.js';
-export const HAND_NAMES={high_card:'Старшая карта',pair:'Пара',two_pair:'Две пары',three_of_a_kind:'Тройка',straight:'Стрит',flush:'Флеш',full_house:'Фулл-хаус',four_of_a_kind:'Каре',straight_flush:'Стрит-флеш',five_of_a_kind:'Пятёрка',flush_house:'Флеш-хаус',flush_five:'Флеш-пятёрка'};
+import {HAND_NAMES} from '../content/hand-names.js';
+export {HAND_NAMES};
 export const SUITS={spades:['♠','#283c53'],hearts:['♥','#bb3034'],clubs:['♣','#143d39'],diamonds:['♦','#ca502a']};
 export function rankLabel(rank){return ({11:'J',12:'Q',13:'K',14:'A'})[rank]??String(rank);}
 export function applyCardModifiers(element,card) {

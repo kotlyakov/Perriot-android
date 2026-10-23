@@ -1,3 +1,4 @@
+import {createOptionsView,createSettingsView,createRunInfoView} from './menu-windows.js';
 import {isVerificationSeed} from '../core/verification-seed.js';
 import catalogue from '../content/apk-shop-catalog.js';
 import {createGameAudio,createAudioSettings,soundForAction} from './audio.js';
@@ -51,6 +52,7 @@ function openDialog(title,body,actions=[['Закрыть',closeDialog]]) {
  dismissCardTip();dialog.dataset.view='';
  dialogMotion?.cancel();dialogMotion=null;
  dialog.classList.toggle('deck-dialog',typeof body!=='string' && body.classList.contains('deck-view'));
+ dialog.classList.toggle('menu-dialog',!dialog.classList.contains('deck-dialog'));
  dialog.classList.toggle('audio-dialog',typeof body!=='string' && body.classList.contains('audio-settings'));
  document.getElementById('dialog-title').textContent=title;document.getElementById('dialog-body').replaceChildren();
  if(typeof body==='string')document.getElementById('dialog-body').innerHTML=body;else document.getElementById('dialog-body').append(body);
@@ -75,7 +77,7 @@ function newState({deckId='red',seed,stake=1,challengeId}={}){
  return createRun(selectedSeed,{runId:crypto.randomUUID(),deckId,stake,challengeId,money:4n,referenceRng:true,referenceShop:true,...profileRunContext(profile,selectedSeed),reducedMotion:matchMedia('(prefers-reduced-motion: reduce)').matches});
 }
 function startFresh(options){if(busy)return;try{const next=newState(options);repository.reset(next,{seeded:isVerificationSeed(next.seed)||!options?.challengeId&&!!options?.seed,challenge:!!options?.challengeId});state=next;selected.clear();closeDialog();removeStartScreen();render();}catch{storageError();}}
-function showMenu(){if(busy)return;dismissDialog();renderStartScreen({hasSave:!!state,continueChallengeId:state?.challengeId,profile:repository.getProfile(),profileName:repository.getProfiles().find(p=>p.id===repository.activeId)?.name,onContinue:()=>{try{repository.save(state,[],{continued:true});removeStartScreen();render();}catch{storageError();}},onNew:options=>{if(state)confirmNew(options);else startFresh(options);},onSettings:showSettings,onCollection:()=>openDialog('Коллекция',renderCollectionView(repository.getProfile(),state?.seed)),onProfile:showProfile});}
+function showMenu(){if(busy)return;dismissDialog();renderStartScreen({hasSave:!!state,continueChallengeId:state?.challengeId,profile:repository.getProfile(),profileName:repository.getProfiles().find(p=>p.id===repository.activeId)?.name,onContinue:()=>{try{repository.save(state,[],{continued:true});removeStartScreen();render();}catch{storageError();}},onNew:options=>{if(state)confirmNew(options);else startFresh(options);},onSettings:showOptions,onCollection:()=>openDialog('Коллекция',renderCollectionView(repository.getProfile(),state?.seed)),onProfile:showProfile});}
 function showProfile(){
  openDialog('Профиль',renderProfileView(repository.getProfile(),{activeId:repository.activeId,profiles:repository.getProfiles(),onSelect:id=>{
   if(busy)return;try{const selectedProfile=repository.selectProfile(id);state=selectedProfile.state;selected.clear();showMenu();showProfile();}catch{storageError();}
@@ -144,26 +146,18 @@ document.getElementById('play_hand').onclick=()=>perform('PLAY_HAND',[...selecte
 document.getElementById('discard').onclick=()=>perform('DISCARD',[...selected]);
 function sort(mode){if(busy || (state?.phase!=='playing'&&!targetPackOpen()))return;perform('SET_SORT',undefined,mode);}
 document.getElementById('sort_rank').onclick=()=>sort('rank');document.getElementById('sort_suit').onclick=()=>sort('suit');
+function showOptions(){
+ if(busy||victoryProtected())return;
+ openDialog('Меню',createOptionsView({settings:showSettings,restart:()=>confirmNew(),menu:showMenu,stats:showProfile,collection:()=>openDialog('Коллекция',renderCollectionView(repository.getProfile(),state?.seed),[['Назад',showOptions]]),deck:state?()=>openDialog('Колода',createDeckView(roundDeckView(state)),[['Назад',showOptions]]):undefined}),[['Продолжить',closeDialog]]);
+}
 function showSettings(){
  if(busy||victoryProtected())return;
- const body=document.createElement('div');body.className='audio-settings';
- const subtitle=document.createElement('p');subtitle.textContent='Пьеро · предварительная сборка 0.4.48-preview';body.append(subtitle);
- for(const [key,title] of [['music','Музыка'],['effects','Звуковые эффекты']]){
-  const label=document.createElement('label'),input=document.createElement('input'),output=document.createElement('output');
-  label.htmlFor=input.id='audio_'+key;label.append(document.createTextNode(title),output);
-  input.type='range';input.min='0';input.max='100';input.step='1';
-  const refresh=()=>{input.value=String(Math.round(audioPreferences.get()[key]*100));output.textContent=input.value+'%';};refresh();
-  input.oninput=()=>{try{audio.setVolumes(audioPreferences.set({...audioPreferences.get(),[key]:Number(input.value)/100}));if(key==='effects')audio.play('select');}catch{notice('Не удалось сохранить настройки звука');}refresh();};
-  body.append(label,input);
- }
- const note=document.createElement('p');note.className='audio-note';note.textContent='0% — выключено. Звук останавливается при сворачивании. Забег сохраняется после каждого действия.';body.append(note);
- openDialog('Настройки',body,[['Продолжить',closeDialog],['Новый забег',()=>confirmNew()],['Главное меню',showMenu]]);
+ openDialog('Настройки',createSettingsView({values:audioPreferences.get(),onVolume:(key,value)=>{const next=audioPreferences.set({...audioPreferences.get(),[key]:value});audio.setVolumes(next);if(key==='effects')audio.play('select');return next;},onNotice:notice}),[['Назад',showOptions]]);
 }
-document.getElementById('options').onclick=showSettings;
+document.getElementById('options').onclick=showOptions;
 document.getElementById('run_info').onclick=()=>{
- if(busy||!state||state.winPending)return;const table=document.createElement('table');
- for(const id of state.discoveredHands){const row=table.insertRow();row.insertCell().textContent=HAND_NAMES[id];row.insertCell().textContent='Ур. '+state.handLevels[id];}
- const body=document.createElement('div'),p=document.createElement('p');p.textContent=(state.challengeId?'Испытание: '+CHALLENGE_BY_ID[state.challengeId].name:DECKS[state.deckId].name)+' · Анте '+state.round.ante+(state.round.blindId==='boss'?' · Босс':state.round.blindId==='big'?' · Большой блайнд':' · Малый блайнд');body.append(p,table);openDialog('Партия',body);
+ if(busy||!state||state.winPending)return;
+ openDialog('Партия',createRunInfoView(state),[['Назад',closeDialog]]);
 };
 document.getElementById('deck').onclick=()=>{
  if(busy||!state||state.winPending)return;openDialog('Колода',createDeckView(roundDeckView(state)),[['Назад',closeDialog]]);

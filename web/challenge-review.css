@@ -1,0 +1,21 @@
+/* Logical coordinates stay in the uniformly scaled 1536 × 688 stage. */
+.start-challenges .challenge-body{height:382px;margin:10px 0;grid-template-columns:325px minmax(0,1fr);gap:18px}
+.challenge-browser{display:grid;grid-template-rows:minmax(0,1fr) 32px;gap:8px;min-height:0}
+.start-challenges .challenge-list{display:grid;grid-template-rows:repeat(10,minmax(0,1fr));gap:4px;overflow:visible;padding:0 3px;touch-action:manipulation}
+.start-challenges .challenge-list button{min-height:0;height:100%;padding:2px 9px;font-size:16px;line-height:1.1;white-space:normal;box-shadow:0 2px #102626}
+.start-challenges .challenge-details{display:grid;grid-template-rows:32px 36px 36px minmax(0,1fr) 32px;gap:7px;min-height:0;padding:12px 14px;overflow:visible;touch-action:manipulation}
+.start-challenges .challenge-details h3{font-size:22px;line-height:1.2;margin:0;align-self:center}
+.start-challenges .challenge-access{font-size:14px;line-height:17px;margin:0;align-self:center}
+.challenge-detail-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.start-challenges .challenge-detail-tabs button{height:33px;margin:0;padding:3px 7px;min-width:0;font-size:16px;box-shadow:0 3px #102626}
+.challenge-detail-tabs [aria-selected=true]{outline:2px solid #f0e5c8;outline-offset:1px}
+.challenge-detail-content{min-height:0;display:flow-root;overflow:visible;padding:0 2px}
+.start-challenges .challenge-detail-content p{font-size:17px;line-height:22px;margin:0 0 8px;overflow-wrap:anywhere}
+.challenge-paging{display:grid;grid-template-columns:46px minmax(0,1fr) 46px;align-items:center;gap:8px;text-align:center;font-size:16px}
+.start-challenges .challenge-paging button{height:30px;min-height:0;margin:0;padding:0;font-size:26px;line-height:1;box-shadow:0 3px #102626}
+/* Native selects retain their compatibility IDs; the visible controls use game buttons. */
+.start-deck-choices #setup_deck_cycle{width:380px;font-size:21px}
+.start-stake-choices{display:grid;grid-template-columns:34px minmax(0,1fr) 34px;gap:6px}
+.start-stake-choices button{height:39px;min-height:0;margin:0;padding:2px 4px;font-size:18px;line-height:1.1}
+.start-stake-choices #setup_stake_cycle{font-size:16px}
+.start-deck-choices select[hidden],.start-stake-settings select[hidden]{display:none}
