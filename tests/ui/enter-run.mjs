@@ -7,7 +7,7 @@ export async function enterRun(page,{startBlind=true}={}) {
   await page.locator('#start_new').click();
   await page.locator('#setup_continue_tab').waitFor();
   if(await page.locator('#setup_continue_tab').isEnabled())await page.locator('#setup_continue_tab').click();
-  else await page.locator('#setup_play').click();
+  await page.locator('#setup_play').click();
   await page.locator('#start_screen').waitFor({state:'detached'});
  }
  // Continue a saved reward/shop unchanged; select only an actual pending blind.
