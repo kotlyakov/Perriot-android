@@ -1,0 +1,802 @@
+[
+  {
+    "seed": "GOLD1",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD2",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD3",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD4",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD5",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD6",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD7",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD8",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD9",
+    "joker": "j_triboulet"
+  },
+  {
+    "seed": "GOLD10",
+    "joker": "j_triboulet"
+  },
+  {
+    "seed": "GOLD11",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD12",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD13",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD14",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD15",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD16",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD17",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD18",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD19",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD20",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD21",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD22",
+    "joker": "j_triboulet"
+  },
+  {
+    "seed": "GOLD23",
+    "joker": "j_triboulet"
+  },
+  {
+    "seed": "GOLD24",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD25",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD26",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD27",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD28",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD29",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD30",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD31",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD32",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD33",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD34",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD35",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD36",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD37",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD38",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD39",
+    "joker": "j_triboulet"
+  },
+  {
+    "seed": "GOLD40",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD41",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD42",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD43",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD44",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD45",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD46",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD47",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD48",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD49",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD50",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD51",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD52",
+    "joker": "j_triboulet"
+  },
+  {
+    "seed": "GOLD53",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD54",
+    "joker": "j_triboulet"
+  },
+  {
+    "seed": "GOLD55",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD56",
+    "joker": "j_triboulet"
+  },
+  {
+    "seed": "GOLD57",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD58",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD59",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD60",
+    "joker": "j_triboulet"
+  },
+  {
+    "seed": "GOLD61",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD62",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD63",
+    "joker": "j_triboulet"
+  },
+  {
+    "seed": "GOLD64",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD65",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD66",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD67",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD68",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD69",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD70",
+    "joker": "j_triboulet"
+  },
+  {
+    "seed": "GOLD71",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD72",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD73",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD74",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD75",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD76",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD77",
+    "joker": "j_triboulet"
+  },
+  {
+    "seed": "GOLD78",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD79",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD80",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD81",
+    "joker": "j_triboulet"
+  },
+  {
+    "seed": "GOLD82",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD83",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD84",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD85",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD86",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD87",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD88",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD89",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD90",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD91",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD92",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD93",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD94",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD95",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD96",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD97",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD98",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD99",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD100",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD101",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD102",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD103",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD104",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD105",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD106",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD107",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD108",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD109",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD110",
+    "joker": "j_triboulet"
+  },
+  {
+    "seed": "GOLD111",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD112",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD113",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD114",
+    "joker": "j_triboulet"
+  },
+  {
+    "seed": "GOLD115",
+    "joker": "j_triboulet"
+  },
+  {
+    "seed": "GOLD116",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD117",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD118",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD119",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD120",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD121",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD122",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD123",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD124",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD125",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD126",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD127",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD128",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD129",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD130",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD131",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD132",
+    "joker": "j_triboulet"
+  },
+  {
+    "seed": "GOLD133",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD134",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD135",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD136",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD137",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD138",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD139",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD140",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD141",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD142",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD143",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD144",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD145",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD146",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD147",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD148",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD149",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD150",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD151",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD152",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD153",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD154",
+    "joker": "j_triboulet"
+  },
+  {
+    "seed": "GOLD155",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD156",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD157",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD158",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD159",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD160",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD161",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD162",
+    "joker": "j_triboulet"
+  },
+  {
+    "seed": "GOLD163",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD164",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD165",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD166",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD167",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD168",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD169",
+    "joker": "j_triboulet"
+  },
+  {
+    "seed": "GOLD170",
+    "joker": "j_triboulet"
+  },
+  {
+    "seed": "GOLD171",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD172",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD173",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD174",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD175",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD176",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD177",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD178",
+    "joker": "j_triboulet"
+  },
+  {
+    "seed": "GOLD179",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD180",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD181",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD182",
+    "joker": "j_triboulet"
+  },
+  {
+    "seed": "GOLD183",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD184",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD185",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD186",
+    "joker": "j_triboulet"
+  },
+  {
+    "seed": "GOLD187",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD188",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD189",
+    "joker": "j_triboulet"
+  },
+  {
+    "seed": "GOLD190",
+    "joker": "j_caino"
+  },
+  {
+    "seed": "GOLD191",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD192",
+    "joker": "j_triboulet"
+  },
+  {
+    "seed": "GOLD193",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD194",
+    "joker": "j_triboulet"
+  },
+  {
+    "seed": "GOLD195",
+    "joker": "j_chicot"
+  },
+  {
+    "seed": "GOLD196",
+    "joker": "j_triboulet"
+  },
+  {
+    "seed": "GOLD197",
+    "joker": "j_triboulet"
+  },
+  {
+    "seed": "GOLD198",
+    "joker": "j_perkeo"
+  },
+  {
+    "seed": "GOLD199",
+    "joker": "j_yorick"
+  },
+  {
+    "seed": "GOLD200",
+    "joker": "j_chicot"
+  }
+]

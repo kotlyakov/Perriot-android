@@ -1,3 +1,5 @@
+22.10.2026 — 10в реализован локально в feat/item10c-profile, source f749660273e0d8a817cde5aa8d059971d213c25d. Полный core1602PASS/0FAIL/2private skips,69profile checksPASS,200native Gold fixturesPASS. Browser/Android/APK ещё не проверены. Push в публичный kotlyakov/Perriot-android отклонён auto-review: требуется прямое разрешение пользователя на публичную запись. Последний выпущенный APK0.4.44; кандидат0.4.45/code58 не собран. 10г не начат. Подробнее STATUS.md и docs/qa/item10c.md.
+
 22.10.2026 — 10а завершён технически: все15колод, их стартовые/постоянные эффекты, выбор и сохранения. APK0.4.43-preview/code56. Source d3518d1ec74521936908291002f7b580b46eb215; tested merge071ac9ac7c78c055d25dfb2ed972a8ce24b79a41:0файловых различий. CI39727016489 SUCCESS:1511corePASS/0FAIL/2private-source skips,47Chromium suites,freshAndroid/signature/alignment PASS. 75offlineassets побайтно равны исходникам; новые desktop/touch снимки просмотрены. Независимое ревью: подтверждённых Critical/Important нет;35disable edges+2Green earned-disable+Abandoned Erosion PASS. APK SHA256 ed6a784d598372e03c0b8eb28091c4e09d08f574af3e3d69d8f8ce0db1c12314;artifact12403338565. Следующий10б:8сложностей;10в:профиль/разблокировки/коллекция/статистика;10г:испытания. Физический Android и fullframe/event RNG parity не заявлены. Отчёт docs/qa/item10a.md.
 
 ## Актуализация 22.10.2026 — №9
@@ -241,3 +243,8 @@
 
 Dusk1/Hack1/Sock1/Chad2 additional evaluations in owned order, first scoring physical ID unchanged by debuff. Repeated Lucky rows and per-pass numeric effects, single Glass roll, held/main/editions once. Source-bound native687cases reproduced, core/review PASS; browser/Android pending. No seals/Mime/Pareidolia/copy Joker or profile unlock admission. Inherited limits: trace10000events, actionRng2000draws, payload2MiB; extreme negative inventory is not silently truncated and can exceed these validation ceilings. Default negative-slot expansion explicitly tested.
 
+
+
+## 23.10.2026 — 10г завершён
+
+Все20испытаний, специальные правила, ограничения, профильный прогресс и сохранения выполнены. Actions39906363695 SUCCESS:1640corePASS/2optional skips,50Chromium suites,freshAndroid/APK PASS. APK0.4.46-preview/code59, PR42 готов (не слит). Актуальное состояние — STATUS.md; доказательства — docs/qa/item10d.md. Следующие пункты без выбора пользователя не начинать.

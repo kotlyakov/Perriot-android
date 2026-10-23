@@ -8,11 +8,11 @@ try{for(const [width,height] of [[1536,688],[915,412],[360,800]]){
  await page.evaluate(s=>localStorage.setItem('card-cascade.current',s),serializeState(shop()));await page.reload();await enterRun(page);
  assert.equal(await page.locator('#shop_next_round').isEnabled(),true);await page.locator('#shop_next_round').click();await page.locator('#select_boss').waitFor();assert.equal(await page.locator('#select_boss').isEnabled(),true);assert.equal(await page.locator('.blind-choice-boss .blind-choice-skip').count(),0);
  assert.equal(await page.locator('#select_small').innerText(),'Пройден');assert.equal(await page.locator('#select_big').innerText(),'Пройден');const pending=await page.evaluate(()=>localStorage.getItem('card-cascade.current'));
- await page.reload();await enterRun(page,{startBlind:false});assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),pending);await page.locator('#select_boss').click();await page.locator('#hand .playing-card').first().waitFor();
+ await page.reload();await enterRun(page,{startBlind:false});assert.deepEqual(deserializeState(await page.evaluate(()=>localStorage.getItem('card-cascade.current'))),deserializeState(pending));await page.locator('#select_boss').click();await page.locator('#hand .playing-card').first().waitFor();
  assert.equal(await page.locator('#blind_title').innerText(),'Окно');assert.equal(await page.locator('#target_value').innerText(),'600');const active=deserializeState(await page.evaluate(()=>localStorage.getItem('card-cascade.current')));assert.equal(active.roundNumber,3);
  for(const id of active.hand){const card=page.locator(`[data-card-id="${id}"]`);assert.equal(await card.evaluate(el=>el.classList.contains('boss-debuffed')),active.cards[id].suit==='diamonds');}
  if(width===1536)await page.screenshot({path:'artifacts/boss-playing.png'});
- await page.reload();await enterRun(page);assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),serializeState(active));assert.deepEqual(errors,[]);await page.close();console.log('boss enter/start/debuff/reload '+width+'x'+height);
+ await page.reload();await enterRun(page);assert.deepEqual(deserializeState(await page.evaluate(()=>localStorage.getItem('card-cascade.current'))),active);assert.deepEqual(errors,[]);await page.close();console.log('boss enter/start/debuff/reload '+width+'x'+height);
  }
  const effectsPage=await browser.newPage();await effectsPage.goto(process.env.PREVIEW_URL);await enterRun(effectsPage);
  const hook=createRun('AAAAAAA1',{runId:'hook-ui',money:4n,referenceRng:true,referenceShop:true});hook.apkBlinds.bossesUsed.bl_window=0;hook.apkBlinds.bossId='bl_hook';hook.apkBlinds.bossesUsed.bl_hook=1;hook.round.blindId='boss';hook.round.target=600n;

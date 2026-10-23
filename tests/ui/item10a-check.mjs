@@ -1,3 +1,4 @@
+import {installUnlockedProfile,unlockedProfileFixture} from './unlocked-profile-fixture.mjs';
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {mkdir} from 'node:fs/promises';
@@ -14,18 +15,19 @@ if(!process.argv.includes('--logic-only')){
   await mkdir('artifacts',{recursive:true});
   for(const [width,height,touch] of [[1536,688,false],[915,412,true],[568,320,true],[360,800,true]]){
    const context=await browser.newContext({viewport:{width,height},hasTouch:touch,reducedMotion:'reduce'}),page=await context.newPage(),errors=[];
+   await installUnlockedProfile(context);
    page.on('pageerror',error=>errors.push(error.message));
    await page.goto(process.env.PREVIEW_URL??'http://127.0.0.1:4173');
    await page.locator('#start_new').click();await page.locator('#setup_deck_select').waitFor();
    const ids=Object.keys(DECKS);assert.equal(ids.length,15);
    assert.equal(await page.locator('#setup_deck_select option').count(),15);
-   assert.match(await page.locator('.start-preview-access').textContent(),/предпросмотра/);
+   assert.match(await page.locator('.start-preview-access').textContent(),/Колода открыта/);
    for(const id of ids){
     await page.locator('#setup_deck_select').selectOption(id);
     assert.equal(await page.locator('.start-deck-back').getAttribute('data-deck'),id);
     assert.equal(await page.locator('.start-deck-info h3').textContent(),DECKS[id].name);
     assert.equal(await page.locator('.start-deck-info p').textContent(),DECKS[id].description??`${DECKS[id].bonus} ${DECKS[id].effect} ${DECKS[id].timing}`);
-    assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),null);
+    assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),unlockedProfileFixture());
     const fits=await page.locator('.start-deck-info').evaluate(info=>{const box=info.getBoundingClientRect();return [...info.children].every(node=>{const r=node.getBoundingClientRect();return r.left>=box.left&&r.right<=box.right&&r.top>=box.top&&r.bottom<=box.bottom;});});assert.ok(fits,'Deck description overflows: '+id);
    }
    await page.locator('#setup_deck_select').selectOption('red');

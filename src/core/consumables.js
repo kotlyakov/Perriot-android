@@ -159,6 +159,8 @@ export function applyConsumableAction(state,action,{fromPack=false}={}){
   events.push({type:'playing_card_changed',cardId,before,after:{rank:target.rank,suit:target.suit},sourceId:card.id});
  }
  if(!card.debuffed&&enhancementTarots.has(centre.key))for(const cardId of action.targetCardIds){
+  // Native set_ability replaces the ability table, including perma_debuff.
+  if(next.challengePlayedCardIds)next.challengePlayedCardIds=next.challengePlayedCardIds.filter(id=>id!==cardId);
   const {enhancement}=enhancementTarots.get(centre.key);next.cards[cardId].enhancement=enhancement;events.push({type:'card_enhanced',cardId,enhancement,sourceId:card.id});
  }
  if(!card.debuffed&&centre.key==='c_hanged_man'){
@@ -185,6 +187,7 @@ export function applyConsumableAction(state,action,{fromPack=false}={}){
  if(!card.debuffed&&centre.key==='c_death'){
   const selected=new Set(action.targetCardIds),ordered=state.hand.filter(id=>selected.has(id)),[left,right]=ordered;
   const source=next.cards[right],target=next.cards[left];target.rank=source.rank;target.suit=source.suit;
+  if(next.challengePlayedCardIds){const debuffed=next.challengePlayedCardIds.includes(right);next.challengePlayedCardIds=next.challengePlayedCardIds.filter(id=>id!==left);if(debuffed)next.challengePlayedCardIds.push(left);}
   for(const property of ['enhancement','edition','seal'])if(Object.hasOwn(source,property))target[property]=source[property];else delete target[property];
   events.push({type:'playing_card_copied',cardId:left,sourceCardId:right,sourceId:card.id});
  }

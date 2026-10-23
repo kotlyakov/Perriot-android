@@ -1,3 +1,4 @@
+import {challengeReward,challengeHandMoney,challengeInterest} from './challenge-rules.js';
 import {applyRoundEndJokers} from './round-end-jokers.js';
 import {blindReward} from './stakes.js';
 import {DECKS} from '../content/decks.js';
@@ -16,8 +17,8 @@ export function getCashout(state) {
     !Number.isSafeInteger(state.round.handsRemaining) || state.round.handsRemaining<0 || state.round.handsRemaining>10000 ||
     typeof state.round.score!=='bigint' || typeof state.round.target!=='bigint' || state.round.target<=0n || (state.round.score<state.round.target&&!(state.round.savedByBones===true&&state.round.score*4n>=state.round.target)))throw new TypeError('Invalid cashout state');
  if(state.round.blindId==='boss' && (!state.bossState || state.bossState.id!==state.apkBlinds?.bossId || !canEnterBoss(state)))throw new TypeError('Invalid boss payout');
- const reward=blindReward(state);
- const green=state.deckId==='green',hands=BigInt(state.round.handsRemaining),handReward=hands*(green?2n:1n),discards=green?BigInt(state.round.discardsRemaining):0n;
+ const reward=challengeReward(state,state.round.blindId,blindReward(state));
+ const green=state.deckId==='green',hands=challengeHandMoney(state)?BigInt(state.round.handsRemaining):0n,handReward=hands*(green?2n:1n),discards=green?BigInt(state.round.discardsRemaining):0n;
  if(state.cashoutQuote){
   const snapshot=state.cashoutQuote,q=snapshot.quote,context=snapshot.bonusContext;
   const earnedHands=Object.hasOwn(snapshot,'handsRemainingBefore')?snapshot.handsRemainingBefore:Number(q?.hands);
@@ -40,11 +41,11 @@ export function getCashout(state) {
    if(state.round.handsRemaining!==earnedHands||green&&state.round.discardsRemaining!==earnedDiscards||state.money!==snapshot.moneyBefore||context.sources.length!==current.sources.length||context.sources.some((row,i)=>row.id!==current.sources[i].id||row.entityId!==current.sources[i].entityId)||context.nineCardIds.length!==current.nineCardIds.length||context.nineCardIds.some((id,i)=>id!==current.nineCardIds[i])||JSON.stringify(context.item7??null)!==JSON.stringify(current.item7??null))throw new TypeError('Invalid fresh cashout context');
   }
   const earned=typeof snapshot.moneyBefore==='bigint'&&snapshot.moneyBefore>0n?snapshot.moneyBefore/5n:0n;
-  const interest=green?0n:(earned>voucherModifiers(state).interestCap?voucherModifiers(state).interestCap:earned)*BigInt(1+(context.item7?.moonIds.length??0)),rows=q?.jokerBonuses??[];
-  if(typeof snapshot.moneyBefore!=='bigint'||!q||q.reward!==reward||q.hands!==BigInt(earnedHands)||q.interest!==interest||green&&(q.handReward!==BigInt(earnedHands)*2n||q.discards!==BigInt(earnedDiscards))||!green&&(Object.hasOwn(q,'handReward')||Object.hasOwn(q,'discards'))||(q.tagReward??0n)!==getTagInvestmentBonus(state)||typeof q.total!=='bigint'||!Array.isArray(rows)||rows.length>10000||new Set(rows.map(row=>row?.sourceId)).size!==rows.length||rows.some(row=>!row||typeof row.sourceId!=='string'||!row.sourceId||typeof row.amount!=='bigint'||row.amount<=0n||!BONUS_KEYS.includes(row.entityId))||rows.length!==expectedRows.length||rows.some((row,i)=>row.sourceId!==expectedRows[i].sourceId||row.entityId!==expectedRows[i].entityId||row.amount!==expectedRows[i].amount)||q.total!==reward+BigInt(earnedHands)*(green?2n:1n)+BigInt(earnedDiscards)+interest+(q.tagReward??0n)+rows.reduce((sum,row)=>sum+row.amount,0n))throw new TypeError('Invalid cashout snapshot');
+  const interest=green||!challengeInterest(state)?0n:(earned>voucherModifiers(state).interestCap?voucherModifiers(state).interestCap:earned)*BigInt(1+(context.item7?.moonIds.length??0)),rows=q?.jokerBonuses??[];
+  if(typeof snapshot.moneyBefore!=='bigint'||!q||q.reward!==reward||q.hands!==(challengeHandMoney(state)?BigInt(earnedHands):0n)||q.interest!==interest||green&&(q.handReward!==(challengeHandMoney(state)?BigInt(earnedHands):0n)*2n||q.discards!==BigInt(earnedDiscards))||!green&&(Object.hasOwn(q,'handReward')||Object.hasOwn(q,'discards'))||(q.tagReward??0n)!==getTagInvestmentBonus(state)||typeof q.total!=='bigint'||!Array.isArray(rows)||rows.length>10000||new Set(rows.map(row=>row?.sourceId)).size!==rows.length||rows.some(row=>!row||typeof row.sourceId!=='string'||!row.sourceId||typeof row.amount!=='bigint'||row.amount<=0n||!BONUS_KEYS.includes(row.entityId))||rows.length!==expectedRows.length||rows.some((row,i)=>row.sourceId!==expectedRows[i].sourceId||row.entityId!==expectedRows[i].entityId||row.amount!==expectedRows[i].amount)||q.total!==reward+(challengeHandMoney(state)?BigInt(earnedHands):0n)*(green?2n:1n)+BigInt(earnedDiscards)+interest+(q.tagReward??0n)+rows.reduce((sum,row)=>sum+row.amount,0n))throw new TypeError('Invalid cashout snapshot');
   return structuredClone(q);
  }
- const earned=state.money>0n?state.money/5n:0n,interest=green?0n:(earned>voucherModifiers(state).interestCap?voucherModifiers(state).interestCap:earned)*BigInt(1+state.jokers.filter(j=>!j.debuffed&&j.entityId==='j_to_the_moon').length);
+ const earned=state.money>0n?state.money/5n:0n,interest=green||!challengeInterest(state)?0n:(earned>voucherModifiers(state).interestCap?voucherModifiers(state).interestCap:earned)*BigInt(1+state.jokers.filter(j=>!j.debuffed&&j.entityId==='j_to_the_moon').length);
  const jokerBonuses=getJokerCashoutBonuses(state),bonus=jokerBonuses.reduce((total,row)=>total+row.amount,0n);
  const tagReward=getTagInvestmentBonus(state);
  return {reward,hands,...(green?{handReward,discards}:{}),interest,total:reward+handReward+discards+interest+bonus+tagReward,...(tagReward?{tagReward}:{}),...(jokerBonuses.length?{jokerBonuses}:{})};

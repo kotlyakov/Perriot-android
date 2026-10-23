@@ -31,7 +31,7 @@ class CardStorage(private val directory: File) {
             while (true) {
                 val count = it.read(buffer)
                 if (count == -1) break
-                check(collected.size() + count <= LIMIT) { "Save exceeds 2 MiB" }
+                check(collected.size() + count <= PROFILE_LIMIT) { "Save exceeds profile limit" }
                 collected.write(buffer, 0, count)
             }
             check(collected.size() > 0) { "Save file is empty" }
@@ -54,13 +54,20 @@ class CardStorage(private val directory: File) {
         val store = file(slot)
         return try {
             // Validate before startWrite: invalid envelope cannot replace existing data.
-            require(text.isNotEmpty() && text.length <= LIMIT)
+            require(text.isNotEmpty() && text.length <= PROFILE_LIMIT)
             val bytes = Charsets.UTF_8.newEncoder().onMalformedInput(CodingErrorAction.REPORT)
                 .onUnmappableCharacter(CodingErrorAction.REPORT).encode(java.nio.CharBuffer.wrap(text))
-            require(bytes.remaining() <= LIMIT)
+            require(bytes.remaining() <= PROFILE_LIMIT)
             val envelope = JSONObject(text)
-            require(envelope.length() == 3 && envelope.getString("format") == "card-cascade-save" &&
-                envelope.getInt("version") == 1 && envelope.getJSONObject("state").getInt("schemaVersion") == 1)
+            val profiles = envelope.optJSONObject("account")
+            require(envelope.getString("format") == "card-cascade-save" && envelope.getInt("version") == 1)
+            if (profiles != null) {
+                require(envelope.length() == 4 && profiles.getInt("version") == 1 &&
+                    profiles.getString("activeId") in listOf("1", "2", "3") && profiles.getJSONObject("profiles").length() == 3)
+                require(envelope.isNull("state") || envelope.getJSONObject("state").getInt("schemaVersion") == 1)
+            } else {
+                require(bytes.remaining() <= LIMIT && envelope.length() == 3 && envelope.getJSONObject("state").getInt("schemaVersion") == 1)
+            }
             output = store.startWrite()
             while (bytes.hasRemaining()) output.channel.write(bytes)
             store.finishWrite(output)
@@ -74,5 +81,8 @@ class CardStorage(private val directory: File) {
         }
     }
 
-    companion object { private const val LIMIT = 2 * 1024 * 1024 }
+    companion object {
+        private const val LIMIT = 2 * 1024 * 1024
+        private const val PROFILE_LIMIT = 16 * 1024 * 1024
+    }
 }

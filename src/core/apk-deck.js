@@ -44,6 +44,7 @@ export function createPlayingCard(state, source, {area='drawPile'}={}) {
   if(ordinal===Number.MAX_SAFE_INTEGER||Object.keys(state.cards).length>=10000||occupied.some(card=>card.id===id))throw new RangeError('Playing card identity unavailable');
   const card={id,rank:source.rank,suit:source.suit,...(source.enhancement!==undefined?{enhancement:source.enhancement}:{}),...(source.edition!==undefined?{edition:source.edition}:{}),...(source.seal!==undefined?{seal:source.seal}:{}),creationOrdinal:ordinal};
   state.cards[id]=card;state[area].push(id);state.nextPlayingCardOrdinal=ordinal+1;
+  if(state.challengePlayedCardIds?.includes(source.id))state.challengePlayedCardIds.push(id);
   return card;
 }
 

@@ -1,3 +1,5 @@
+import {challengeFor,challengeHands} from './challenge-rules.js';
+import {repriceItem7Cards} from './joker-item7-economy.js';
 import {stakeScaling,runDiscards,validStake} from './stakes.js';
 import {DECKS,deckHands,deckDiscards,deckHandSize,deckBlindScale} from '../content/decks.js';
 import {voucherModifiers} from './vouchers.js';
@@ -54,6 +56,13 @@ export function stampJokerCreationOrdinals(state,cards){
  }
  for(const card of cards)if((['Joker','Tarot','Planet','Spectral'].includes(card?.set)||supportsConsumableEffect(card))&&!Object.hasOwn(card,'creationOrdinal'))card.creationOrdinal=state.nextJokerCreationOrdinal++;
 }
+// Native buy_from_shop, Card:redeem and Card:open all advance Inflation.
+export function applyChallengePurchaseInflation(state){
+ const amount=challengeFor(state)?.modifiers?.inflationPerPurchase;
+ if(!state.apkShop||!amount)return;
+ state.apkShop.context.inflation+=amount;
+ repriceItem7Cards(state);
+}
 export function isPlayingShopCard(offer){return ['Base','Enhanced'].includes(offer?.set)&&typeof offer.frontKey==='string'&&/^[CDHS]_[2-9AJKQT]$/.test(offer.frontKey);}
 export function canBuyShopCard(state,offer){
  const consumable=supportsConsumableEffect(offer),playing=isPlayingShopCard(offer);
@@ -87,7 +96,10 @@ export function applyShopAction(state,action,{refill,nextRound}={}) {
     next.shop.main=next.shop.main.filter(o=>o.id!==offer.id);
     const bought=structuredClone(offer);stampJokerCreationOrdinals(next,[bought]);
     if(playing){const [suit,rank]=offer.frontKey.split('_'),value=({A:14,K:13,Q:12,J:11,T:10})[rank]??Number(rank);const card=createPlayingCard(next,{rank:value,suit:({C:'clubs',D:'diamonds',H:'hearts',S:'spades'})[suit],edition:offer.edition,...(offer.enhancement?{enhancement:offer.enhancement}:{})});applyItem7PlayingCardsAdded(next,[card],[]);}else if(consumable){next.consumables??=[];next.consumables.push(bought);}else next.jokers.push(bought);next.money-=offer.cost;
-    if(next.apkShop)next.apkShop.context=currentApkShopContext(next);
+    if(next.apkShop){
+      applyChallengePurchaseInflation(next);
+      next.apkShop.context=currentApkShopContext(next);
+    }
     return finish(next,[{type:'shop_card_bought',offerId:offer.id,...(consumable?{consumableId:offer.id}:{jokerId:offer.id}),cost:offer.cost},
       {type:'money_changed',before:state.money,after:next.money,delta:-offer.cost}]);
   }
@@ -147,7 +159,7 @@ export function applyShopAction(state,action,{refill,nextRound}={}) {
         }catch{return reject('NEXT_BLIND_UNAVAILABLE','Invalid next ante selection');}
       }
       const vouchers=voucherModifiers(next);delete next.round.targetAnte;
-      next.round={...next.round,ante,blindId:newAnte?'small':boss?'boss':'big',target:newAnte?nativeBlindTarget(ante,deckBlindScale(next.deckId),stakeScaling(next)):boss?bossTarget(next):nativeBlindTarget(ante,1.5*deckBlindScale(next.deckId),stakeScaling(next)),score:0n,handsRemaining:deckHands(next.deckId)+vouchers.hands,discardsRemaining:runDiscards(next)+vouchers.discards};
+      next.round={...next.round,ante,blindId:newAnte?'small':boss?'boss':'big',target:newAnte?nativeBlindTarget(ante,deckBlindScale(next.deckId),stakeScaling(next)):boss?bossTarget(next):nativeBlindTarget(ante,1.5*deckBlindScale(next.deckId),stakeScaling(next)),score:0n,handsRemaining:(next.challengeId?challengeHands(next):deckHands(next.deckId))+vouchers.hands,discardsRemaining:runDiscards(next)+vouchers.discards};
       delete next.round.bossDisabled;
       next.hand=[];next.discardPile=[];next.apkShop.context=currentApkShopContext(next);
       return finish(next,[{type:'shop_left',nextBlindId:next.round.blindId}]);

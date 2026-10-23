@@ -14,6 +14,7 @@ import { SUPPORTED_JOKERS, SCORED_RETRIGGER_JOKERS, scoredJokerRepetitions, hand
 import {nextApkRandom} from './apk-rng.js';
 import {randomInt} from './rng.js';
 import {addExact,floorExact,multiplyExact} from './numbers.js';
+import {challengeFor} from './challenge-rules.js';
 
 export function scoreHand(state, playedCards, {legacyRng=false,armTriggered} = {}) {
   const hasItem7=state.jokers.some(j=>ITEM7_SCORE_JOKERS.includes(j.entityId)||j.entityId==='j_oops'||j.entityId==='j_smeared');
@@ -100,7 +101,12 @@ export function scoreHand(state, playedCards, {legacyRng=false,armTriggered} = {
   const level = state.handLevels[hand.handId] ?? 1;
   if (!Number.isSafeInteger(level) || level < 1) throw new RangeError('Invalid hand level');
   const definition = HANDS[hand.handId];
+  let moneyBeforeCards=state.money??0n;
+  if(!state.bossState?.disabled&&state.bossState?.id==='bl_tooth')moneyBeforeCards-=BigInt(playedCards.length);
+  if(!state.bossState?.disabled&&state.bossState?.id==='bl_ox'&&state.bossState.oxHand===hand.handId)moneyBeforeCards=0n;
   let chips = BigInt(definition.chips) + BigInt(level-1)*BigInt(definition.chipGain);
+  const capChips=(value,money)=>challengeFor(state)?.modifiers?.chipsDollarCap?(value<(money>0n?money:0n)?value:(money>0n?money:0n)):value;
+  chips=capChips(chips,moneyBeforeCards+beforeScoreMoney.reduce((sum,e)=>sum+e.amount,0n));
   let mult = BigInt(definition.mult) + BigInt(level-1)*BigInt(definition.multGain);
   if(!state.bossState?.disabled&&state.bossState?.id==='bl_flint'){
     chips=(chips+1n)/2n;
@@ -135,7 +141,7 @@ export function scoreHand(state, playedCards, {legacyRng=false,armTriggered} = {
   function apply(effect,phase,sourceId,effectSourceId){
     if(effect.operation==='money'){trace.push({type:'score_money',phase,sourceId,amount:effect.amount,...(effectSourceId?{effectSourceId}:{})});return;}
     const before={chips,mult};
-    if(effect.operation==='add_chips')chips+=effect.amount;
+    if(effect.operation==='add_chips')chips=capChips(chips+effect.amount,moneyBeforeCards+trace.reduce((sum,e)=>sum+(e.type==='score_money'?e.amount:0n),0n));
     else if(effect.operation==='multiply_mult')mult=multiplyExact(mult,effect.amount);
     else mult=addExact(mult,effect.amount);
     trace.push({type:'score_step',phase,sourceId,operation:effect.operation,before,after:{chips,mult},...(effectSourceId?{effectSourceId}:{})});
@@ -158,6 +164,7 @@ export function scoreHand(state, playedCards, {legacyRng=false,armTriggered} = {
     if(source)trace.push({type:'score_repeat',phase:'scored_card',sourceId:card.id,effectSourceId:source});
     const before = {chips,mult};
     chips += (card.enhancement==='stone'?50n:BigInt(card.rank===14 ? 11 : Math.min(card.rank,10)))+BigInt(card.permaBonus??0);
+    chips=capChips(chips,moneyBeforeCards+trace.reduce((sum,e)=>sum+(e.type==='score_money'?e.amount:0n),0n));
     let luckyTriggered=false;
     trace.push({type:'score_step',phase:'scored_card',sourceId:card.id,operation:'add_chips',before,after:{chips,mult}});
     if(card.enhancement==='bonus')apply({operation:'add_chips',amount:30n},'scored_card',card.id);
@@ -226,9 +233,6 @@ export function scoreHand(state, playedCards, {legacyRng=false,armTriggered} = {
   const moneyJokers=state.jokers.some(j=>['j_bull','j_bootstraps'].includes(originalJokerKey(j.entityId)));
   if(moneyJokers&&typeof state.money!=='bigint')throw new TypeError('Missing scoring money');
   // Native get_p_dollars buffers Lucky income before independent Joker evaluation.
-  let moneyBeforeCards=state.money??0n;
-  if(!state.bossState?.disabled&&state.bossState?.id==='bl_tooth')moneyBeforeCards-=BigInt(playedCards.length);
-  if(!state.bossState?.disabled&&state.bossState?.id==='bl_ox'&&state.bossState.oxHand===hand.handId)moneyBeforeCards=0n;
 
   const rankCounts = new Map();
   for (const card of playedCards)if(card.enhancement!=='stone')rankCounts.set(card.rank,(rankCounts.get(card.rank)??0)+1);
@@ -269,7 +273,7 @@ export function scoreHand(state, playedCards, {legacyRng=false,armTriggered} = {
   const score = floorExact(multiplyExact(chips,mult));
   trace.push({type:'score_total',phase:'total',chips,mult,score});
   const bellGlass=(actionRng||glassRolls.length>0&&glassKind==='apk')&&!state.bossState?.disabled&&state.bossState?.id==='bl_final_bell';
-  return {...hand,...(hasItem7?{item7State:{...(Number.isSafeInteger(state.nextJokerCreationOrdinal)?{nextJokerCreationOrdinal:state.nextJokerCreationOrdinal}:{}),jokers:structuredClone(state.jokers),cards:structuredClone(state.cards),handLevels:structuredClone(state.handLevels)}}:{}),...actionProvenance(),...(hasMechanisms?{effectMechanisms:true}:{}),...(createdPlayingCards.length?{createdPlayingCards}:{}),...(lifecycleEvents.length?{lifecycleEvents}:{}),...(state.consumables?.some(c=>!originalState.consumables?.some(old=>old.id===c.id))?{createdConsumables:state.consumables.filter(c=>!originalState.consumables?.some(old=>old.id===c.id))}:{}),playedCardIds:playedCards.map(c=>c.id),scoringCardIds,chips,mult,score,trace,...(actionRng||bellGlass||heldCards.some(card=>card.enhancement==='steel')||state.jokers.some(j=>['j_blackboard','j_raised_fist','j_baron','j_shoot_the_moon','j_blue_joker'].includes(originalJokerKey(j.entityId)))?{heldCardIds:heldCards.map(card=>card.id)}:{}),...(actionRng||bellGlass||state.jokers.some(j=>originalJokerKey(j.entityId)==='j_blue_joker')?{scoringPilesBefore:{drawPile:[...(state.drawPile??[])],discardPile:[...(state.discardPile??[])],...(state.hangedShortfallCardIds?{hangedShortfallCardIds:[...state.hangedShortfallCardIds],hangedShortfallRevision:state.hangedShortfallEpoch?.revision??state.revision}:{})}}:{}),...(moneyJokers?{scoringMoneyBefore:state.money}:{}),...(state.round&&(actionRng||bellGlass||state.jokers.some(j=>['j_acrobat','j_banner','j_mystic_summit','j_blue_joker','j_dusk'].includes(originalJokerKey(j.entityId))))?{scoringRoundBefore:{handsRemaining:state.round.handsRemaining,discardsRemaining:state.round.discardsRemaining}}:{}),...(luckyRolls.length?{luckyRolls,luckyRngKind:luckyKind,luckyRngBefore,luckyRngAfter:luckyKind==='apk'?{...luckySnapshot(luckyRng),mathState:[...luckyRng.mathState]}:luckyRng}:{}),...(glassRolls.length?{glassRolls,glassRngKind:glassKind,glassRngBefore,glassRngAfter:glassKind==='apk'?{...glassSnapshot(glassRng),mathState:[...glassRng.mathState]}:glassRng,glassDestroyedCards:glassRolls.filter(roll=>roll.destroyed).map(roll=>structuredClone(playedCards.find(card=>card.id===roll.cardId)))}:{})};
+  return {...hand,...(hasItem7||state.challengeId?{item7State:{...(state.challengePlayedCardIds?{challengePlayedCardIds:[...state.challengePlayedCardIds]}:{}),...(Number.isSafeInteger(state.nextJokerCreationOrdinal)?{nextJokerCreationOrdinal:state.nextJokerCreationOrdinal}:{}),jokers:structuredClone(state.jokers),cards:structuredClone(state.cards),handLevels:structuredClone(state.handLevels)}}:{}),...actionProvenance(),...(hasMechanisms?{effectMechanisms:true}:{}),...(createdPlayingCards.length?{createdPlayingCards}:{}),...(lifecycleEvents.length?{lifecycleEvents}:{}),...(state.consumables?.some(c=>!originalState.consumables?.some(old=>old.id===c.id))?{createdConsumables:state.consumables.filter(c=>!originalState.consumables?.some(old=>old.id===c.id))}:{}),playedCardIds:playedCards.map(c=>c.id),scoringCardIds,chips,mult,score,trace,...(actionRng||bellGlass||heldCards.some(card=>card.enhancement==='steel')||state.jokers.some(j=>['j_blackboard','j_raised_fist','j_baron','j_shoot_the_moon','j_blue_joker'].includes(originalJokerKey(j.entityId)))?{heldCardIds:heldCards.map(card=>card.id)}:{}),...(actionRng||bellGlass||state.jokers.some(j=>originalJokerKey(j.entityId)==='j_blue_joker')?{scoringPilesBefore:{drawPile:[...(state.drawPile??[])],discardPile:[...(state.discardPile??[])],...(state.hangedShortfallCardIds?{hangedShortfallCardIds:[...state.hangedShortfallCardIds],hangedShortfallRevision:state.hangedShortfallEpoch?.revision??state.revision}:{})}}:{}),...(moneyJokers?{scoringMoneyBefore:state.money}:{}),...(state.round&&(actionRng||bellGlass||state.jokers.some(j=>['j_acrobat','j_banner','j_mystic_summit','j_blue_joker','j_dusk'].includes(originalJokerKey(j.entityId))))?{scoringRoundBefore:{handsRemaining:state.round.handsRemaining,discardsRemaining:state.round.discardsRemaining}}:{}),...(luckyRolls.length?{luckyRolls,luckyRngKind:luckyKind,luckyRngBefore,luckyRngAfter:luckyKind==='apk'?{...luckySnapshot(luckyRng),mathState:[...luckyRng.mathState]}:luckyRng}:{}),...(glassRolls.length?{glassRolls,glassRngKind:glassKind,glassRngBefore,glassRngAfter:glassKind==='apk'?{...glassSnapshot(glassRng),mathState:[...glassRng.mathState]}:glassRng,glassDestroyedCards:glassRolls.filter(roll=>roll.destroyed).map(roll=>structuredClone(playedCards.find(card=>card.id===roll.cardId)))}:{})};
 }
 
 

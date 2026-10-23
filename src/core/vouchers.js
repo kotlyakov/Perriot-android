@@ -1,10 +1,11 @@
+import {challengeBossBans} from './challenge-rules.js';
 import catalogue from '../content/apk-shop-catalog.js';
 import {createApkShopContext,session} from './apk-shop.js';
 import {APK_HAND_NAMES,currentApkShopContext} from './apk-shop-state.js';
 import {canAfford} from './shop-pricing.js';
 import {changeHandSize} from './hand-size.js';
 import {repriceItem7Cards} from './joker-item7-economy.js';
-import {stampJokerCreationOrdinals} from './shop.js';
+import {stampJokerCreationOrdinals,applyChallengePurchaseInflation} from './shop.js';
 import {chooseApkBoss} from './apk-blinds.js';
 import {bossTarget} from './boss-effects.js';
 import {createTagShopHooks} from './tag-effects.js';
@@ -101,6 +102,7 @@ export function applyVoucherAction(state,action){
    events.push({type:'shop_slots_added',offerIds:added.map(card=>card.id)});
   }
  }
+ applyChallengePurchaseInflation(next);
  next.apkShop.context=currentApkShopContext(next);next.revision++;next.lastScore=null;
  events.unshift({type:'voucher_redeemed',voucherId:key,offerId:offer.id,cost:offer.cost});
  events.push({type:'money_changed',before:state.money,after:next.money,delta:-offer.cost});
@@ -118,7 +120,7 @@ export function applyBossRerollAction(state,action){
  if(action.expectedRevision!==state.revision)return reject('STALE_ACTION','State revision has changed');
  if(!Number.isSafeInteger(state.revision)||state.revision<0||state.revision===Number.MAX_SAFE_INTEGER)return reject('INVALID_STATE','Invalid revision');
  if(!canRerollBoss(state))return reject('BOSS_REROLL_UNAVAILABLE','Boss reroll is not available');
- const next=structuredClone(state),selected=chooseApkBoss(next.rng.apk,{ante:Math.max(1,next.round.ante),bossesUsed:next.apkBlinds.bossesUsed});
+ const next=structuredClone(state),selected=chooseApkBoss(next.rng.apk,{ante:Math.max(1,next.round.ante),bossesUsed:next.apkBlinds.bossesUsed,bannedKeys:challengeBossBans(next)});
  next.apkBlinds.bossId=selected.bossId;next.apkBlinds.bossesUsed=selected.bossesUsed;next.rng.apk=selected.rng;
  next.apkBlinds.bossSelectionAnte=next.round.ante;
  next.money-=10n;next.bossRerollUsed=true;

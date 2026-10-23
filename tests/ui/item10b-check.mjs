@@ -1,3 +1,4 @@
+import {installUnlockedProfile,unlockedProfileFixture} from './unlocked-profile-fixture.mjs';
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {mkdir} from 'node:fs/promises';
@@ -18,6 +19,7 @@ if(!process.argv.includes('--logic-only')){
   await mkdir('artifacts',{recursive:true});
   for(const [width,height,touch] of [[1536,688,false],[915,412,true],[568,320,true],[360,800,true]]){
    const context=await browser.newContext({viewport:{width,height},hasTouch:touch,reducedMotion:'reduce'}),page=await context.newPage(),errors=[];
+   await installUnlockedProfile(context);
    page.on('pageerror',error=>errors.push(error.message));
    await page.goto(process.env.PREVIEW_URL??'http://127.0.0.1:4173');
    await page.locator('#start_new').click();await page.locator('#setup_stake').waitFor();
@@ -28,7 +30,7 @@ if(!process.argv.includes('--logic-only')){
     await page.locator('#setup_stake').selectOption(String(stake.level));
     assert.equal(await page.locator('.start-stake-chip').getAttribute('data-stake'),stake.id);
     assert.match(await page.locator('#setup_stake_description').textContent(),new RegExp(stake.description.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
-    assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),null);
+    assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),unlockedProfileFixture());
    }
    await page.locator('#setup_stake').selectOption('5');await page.locator('#setup_deck_select').selectOption('blue');
    const controls=await page.locator('#setup_stake,#setup_stake_description,#setup_deck_select,#setup_seed,#setup_play,#setup_back').evaluateAll(nodes=>nodes.map(node=>{const r=node.getBoundingClientRect();return [r.left,r.top,r.right,r.bottom];}));

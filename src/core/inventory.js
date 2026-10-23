@@ -18,6 +18,7 @@ export function applyInventoryAction(state,action){
  if(action.type.startsWith('REORDER_')){
   const ids=action.cardIds;
   if(!Array.isArray(ids)||ids.length!==cards.length||new Set(ids).size!==ids.length||ids.some(id=>!cards.some(c=>c.id===id)))return reject('INVALID_SELECTION','Expected an exact inventory permutation');
+  if(cards.some((card,index)=>card.pinned&&ids[index]!==card.id))return reject('INVALID_SELECTION','Pinned cards cannot move');
   next=structuredClone(state);if(state.phase==='round_won'&&!next.cashoutQuote)next.cashoutQuote=captureCashoutQuote(state);next[area]=ids.map(id=>next[area].find(c=>c.id===id));events=[{type:'inventory_reordered',area,cardIds:[...ids]}];
  }else{
   const card=cards.find(c=>c.id===action.cardId);

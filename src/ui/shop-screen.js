@@ -158,7 +158,7 @@ function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
    else if(dragged&&inventory){
     const siblings=[...document.querySelectorAll(`#shop_owned [data-kind=${kind}]`)],cardBounds=card.getBoundingClientRect();
     const inRow=ev.clientY>=cardBounds.top-25*scale&&ev.clientY<=cardBounds.bottom+25*scale;
-    if(inRow){const ids=siblings.map(n=>n.dataset.offerId),others=siblings.filter(n=>n.dataset.offerId!==offer.id),to=others.filter(n=>{const b=n.getBoundingClientRect();return ev.clientX>(b.left+b.right)/2;}).length;const ordered=ids.filter(id=>id!==offer.id);ordered.splice(to,0,offer.id);if(ordered.some((id,i)=>id!==ids[i]))callbacks.onAction?.(area==='jokers'?'REORDER_JOKERS':'REORDER_CONSUMABLES',{cardIds:ordered});}
+    if(inRow&&!offer.pinned){const ids=siblings.map(n=>n.dataset.offerId),others=siblings.filter(n=>n.dataset.offerId!==offer.id),to=others.filter(n=>{const b=n.getBoundingClientRect();return ev.clientX>(b.left+b.right)/2;}).length;const ordered=ids.filter(id=>id!==offer.id);ordered.splice(to,0,offer.id);if((area!=='jokers'||!state.jokers.some((j,i)=>j.pinned&&ordered[i]!==j.id))&&ordered.some((id,i)=>id!==ids[i]))callbacks.onAction?.(area==='jokers'?'REORDER_JOKERS':'REORDER_CONSUMABLES',{cardIds:ordered});}
    }
   }
   cancelDrag=cancel;card.addEventListener('pointermove',move);card.addEventListener('pointerup',end);card.addEventListener('pointercancel',cancel);card.addEventListener('lostpointercapture',cancel);card.addEventListener('keydown',escape);

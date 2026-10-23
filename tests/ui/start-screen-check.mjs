@@ -23,7 +23,7 @@ async function startup(page,width,height,touch){
  assert.equal(await saved(page),null,'Opening the app must not create a run');
  if(await page.evaluate(()=>matchMedia('(prefers-reduced-motion: reduce)').matches))assert.equal(await page.locator('#start_screen').evaluate(n=>n.getAnimations().length),0);
  assert.equal(await page.locator('#start_new').textContent(),'Играть');
- assert.equal(await page.locator('#start_collection').isDisabled(),true);
+ assert.equal(await page.locator('#start_collection').isDisabled(),false);
  if(width===1536)await page.screenshot({path:'artifacts/start-menu046.png'});
  await inside(page,'#start_new,#start_settings,#start_collection,#start_language',width,height);
  await click(page.locator('#start_settings'));await page.locator('dialog[open]').waitFor();
@@ -34,7 +34,7 @@ async function startup(page,width,height,touch){
  if(await page.evaluate(()=>matchMedia('(prefers-reduced-motion: reduce)').matches))assert.equal(await page.locator('.start-setup').evaluate(n=>n.getAnimations().length),0);
  await inside(page,'#setup_play,#setup_back,#setup_seed,#setup_deck_prev,#setup_deck_select,#setup_deck_next',width,height);
  assert.equal(await page.locator('#setup_continue_tab').isDisabled(),true);
- await page.locator('#setup_deck_select').selectOption('blue');await page.locator('#setup_seed').fill('menu1234');
+ await page.locator('#setup_deck_select').selectOption('red');await page.locator('#setup_seed').fill('menu1234');
  assert.equal(await page.locator('#setup_seed').inputValue(),'MENU1234');
  assert.equal(await page.locator('#setup_seed').getAttribute('maxlength'),'8');
  assert.equal(await saved(page),null,'Selecting a deck or seed must not create a run');
@@ -43,15 +43,15 @@ async function startup(page,width,height,touch){
  await settleStartup(page,'#blind_selection');
  if(width===1536)await page.screenshot({path:'artifacts/blind-selection046.png'});
  const pending=deserializeState(await saved(page));
- assert.equal(pending.phase,'blind_selection');assert.equal(pending.deckId,'blue');
- assert.equal(await page.locator('#deck').evaluate(n=>getComputedStyle(n).backgroundColor),'rgb(8, 123, 173)','Blue deck back must follow chosen deck');assert.equal(pending.seed,'MENU1234');
- assert.equal(Object.keys(pending.cards).length,52);assert.equal(pending.hand.length,0);assert.equal(pending.round.handsRemaining,5);assert.equal(pending.round.discardsRemaining,3);
+ assert.equal(pending.phase,'blind_selection');assert.equal(pending.deckId,'red');
+ assert.equal(await page.locator('#deck').getAttribute('data-deck'),'red','Deck back follows selected Red deck');assert.equal(pending.seed,'MENU1234');
+ assert.equal(Object.keys(pending.cards).length,52);assert.equal(pending.hand.length,0);assert.equal(pending.round.handsRemaining,4);assert.equal(pending.round.discardsRemaining,4);
  assert.equal(pending.apkShop.version,1);assert.match(pending.apkShop.voucherId,/^v_/);assert.deepEqual(pending.apkShop.context.playedHands,{});
  await page.reload();await page.locator('#start_new').waitFor();await click(page.locator('#start_new'));await page.locator('#setup_continue_tab').waitFor();assert.equal(await page.locator('#setup_continue_tab').isEnabled(),true);
  const before=await saved(page);await click(page.locator('#setup_continue_tab'));await page.locator('#select_small').waitFor();
  assert.equal(await saved(page),before,'Continuing pending blind must not deal or mutate RNG');
  await click(page.locator('#select_small'));await page.locator('#hand .playing-card').first().waitFor();
- assert.equal(await page.locator('#hand .playing-card').count(),8);assert.equal(await page.locator('#hands_value').textContent(),'5');
+ assert.equal(await page.locator('#hand .playing-card').count(),8);assert.equal(await page.locator('#hands_value').textContent(),'4');
  const playing=await saved(page);await page.reload();await page.locator('#start_new').waitFor();await click(page.locator('#start_new'));await page.locator('#setup_continue_tab').waitFor();await click(page.locator('#setup_continue_tab'));
  await page.locator('#hand .playing-card').first().waitFor();assert.equal(await saved(page),playing,'Continue must not reshuffle active hand');
  await page.reload();await page.locator('#start_new').waitFor();await click(page.locator('#start_new'));await page.locator('#setup_play').waitFor();
@@ -65,7 +65,7 @@ try{
  for(const [width,height,reducedMotion] of [[1536,688,'no-preference'],[915,412,'no-preference'],[568,320,'reduce'],[390,844,'reduce']]){
   const context=await browser.newContext({viewport:{width,height},hasTouch:true,isMobile:width<1000,reducedMotion});const page=await context.newPage(),errors=[];
   page.on('pageerror',error=>errors.push(error.message));await page.goto(process.env.PREVIEW_URL??'http://127.0.0.1:4173/');
-  await startup(page,width,height,true);assert.deepEqual(errors,[]);await context.close();console.log(`Startup menus/save/seed/blue/continue/confirm/touch ${width}x${height} ${reducedMotion}`);
+  await startup(page,width,height,true);assert.deepEqual(errors,[]);await context.close();console.log(`Startup menus/save/seed/red/continue/confirm/touch ${width}x${height} ${reducedMotion}`);
  }
  const context=await browser.newContext({viewport:{width:1536,height:688},offline:true,reducedMotion:'reduce'}),page=await context.newPage(),errors=[];
  page.on('pageerror',error=>errors.push(error.message));await page.goto(new URL('../../artifacts/field-preview.html',import.meta.url).href);
