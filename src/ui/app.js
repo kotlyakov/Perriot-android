@@ -87,6 +87,7 @@ function showProfile(){
  }}));
 }
 function storageError(){openDialog('Не удалось сохранить','<p>Действие не применено. Проверьте свободное место и доступ к сохранению.</p>',state?.winPending?[['Вернуться к победе',showVictory,'victory_retry']]:undefined);}
+function showLoss(){openDialog('Партия окончена',createEndView(state,{restart:showRunSetup,menu:showMenu,copySeed}),[]);}
 function showVictory(){
  if(busy||!state?.winPending)return;
  openDialog('Победа!',createEndView(state,{restart:()=>showRunSetup(),menu:showMenu,endless:()=>perform('CONTINUE_ENDLESS'),copySeed},true),[]);
@@ -142,7 +143,7 @@ async function perform(type,ids,mode,fields={}) {
  }
  await moneyMotion;scoringJokers=null;busy=false;render();
  if(type==='PLAY_HAND'&&['round_won','game_over'].includes(state.phase))audio.play(state.phase==='round_won'?'win':'lose');
- if(state.phase==='game_over')openDialog('Партия окончена',createEndView(state,{restart:showRunSetup,menu:showMenu,copySeed}),[]);
+ if(state.phase==='game_over')showLoss();
 }
 function confirmNew(options){if(busy)return;openDialog('Новый забег','<p>Начать заново? Текущий забег останется в резервной записи.</p>',[['Начать',()=>startFresh(options)],['Отмена',()=>{if(state?.winPending)showVictory();else closeDialog();}]]);if(state?.winPending)dialog.dataset.view='victory-confirm';}
 document.getElementById('play_hand').onclick=()=>perform('PLAY_HAND',[...selected]);
@@ -150,7 +151,7 @@ document.getElementById('discard').onclick=()=>perform('DISCARD',[...selected]);
 function sort(mode){if(busy || (state?.phase!=='playing'&&!targetPackOpen()))return;perform('SET_SORT',undefined,mode);}
 document.getElementById('sort_rank').onclick=()=>sort('rank');document.getElementById('sort_suit').onclick=()=>sort('suit');
 async function copySeed(seed){try{await navigator.clipboard.writeText(String(seed));notice('Сид скопирован');}catch{notice('Не удалось скопировать сид: '+seed);}}
-function showRunSetup(){if(busy)return;dismissDialog();renderStartScreen({hasSave:!!state,savedState:state?{...state,seeded:repository.getProfile()?.runs?.[state.runId]?.seeded??false}:undefined,fromRun:true,onBack:()=>{removeStartScreen();render();},profileName:repository.getProfiles().find(p=>p.id===repository.activeId)?.name,profile:repository.getProfile(),onNew:startFresh,onContinue:()=>{removeStartScreen();render();},onSettings:showOptions,onCollection:()=>showCollection(closeDialog),onProfile:showProfile});document.getElementById('start_new').click();}
+function showRunSetup(){if(busy)return;dismissDialog();renderStartScreen({hasSave:!!state,savedState:state?{...state,seeded:repository.getProfile()?.runs?.[state.runId]?.seeded??false}:undefined,fromRun:true,onBack:()=>{removeStartScreen();if(state?.phase==='game_over')showLoss();else render();},profileName:repository.getProfiles().find(p=>p.id===repository.activeId)?.name,profile:repository.getProfile(),onNew:startFresh,onContinue:()=>{removeStartScreen();render();},onSettings:showOptions,onCollection:()=>showCollection(closeDialog),onProfile:showProfile});document.getElementById('start_new').click();}
 function showCollection(back=showOptions){let view;view=renderCollectionView(repository.getProfile(),state?.seed,{onNavigate:({view:page})=>{dialog.dataset.window=page==='index'?'collection-index':'collection';}});openDialog('Коллекция',view,[['Назад',()=>{if(!view.back?.())back();}]]);dialog.dataset.window='collection-index';}
 function showStats(){const view=renderStatsView(repository.getProfile());openDialog('Статистика',view,[['Назад',()=>{if(!view.back?.())showOptions();}]]);dialog.dataset.window='stats';}
 function showOptions(){
