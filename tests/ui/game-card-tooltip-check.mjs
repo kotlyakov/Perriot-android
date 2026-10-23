@@ -40,10 +40,12 @@ try{
    const offer=(id,entityId,set='Joker')=>({id,entityId,originalKey:entityId,set,edition:'base',cost:3n,sellCost:1n});
    s.jokers=[offer('tooltip-owned','j_joker')];s.consumables=[offer('tooltip-consumable','c_fool','Tarot')];
    s.shop={main:[offer('tooltip-main','j_joker')],vouchers:[offer('tooltip-voucher','v_overstock_norm','Voucher')],boosters:[offer('tooltip-booster','p_arcana_normal_1','Booster')],rerollBase:5n,rerollIncrease:0n,freeRerolls:0};
-   window.tooltipFixture=s;window.tooltipEvents=[];for(const type of ['pointerdown','pointerup','click','pointercancel'])document.addEventListener(type,e=>{window.tooltipEvents.push([type,e.target.className,e.detail,e.pointerType]);if(window.tooltipEvents.length>12)window.tooltipEvents.shift();},true);renderShop(s,false);
+   // Mirror app.render: the playing hand is not interactive beneath the shop.
+   for(const id of ['hand','hand_count','play_hand','discard','sort_panel','sort_label','sort_rank','sort_suit'])document.getElementById(id).hidden=true;
+   window.tooltipFixture=s;renderShop(s,false);
   });
   for(const kind of ['main','voucher','booster','owned','consumable']){
-   const card=page.locator(`[data-kind=${kind}] .shop-card`).first();console.log('Tooltip path',width,kind);await tap(card);if(!await page.locator('.shop-tooltip').count()){await page.screenshot({path:`artifacts/tooltip-failure-${kind}-${width}.png`});console.log('Missing tooltip',await card.evaluate(n=>({rect:n.getBoundingClientRect().toJSON(),offer:n.closest('[data-offer-id]')?.dataset.offerId,events:window.tooltipEvents,hit:document.elementFromPoint(n.getBoundingClientRect().x+n.getBoundingClientRect().width/2,n.getBoundingClientRect().y+n.getBoundingClientRect().height/2)?.outerHTML.slice(0,220)})));}await adjacent(card,'.shop-tooltip');
+   const card=page.locator(`[data-kind=${kind}] .shop-card`).first();console.log('Tooltip path',width,kind);await tap(card);await adjacent(card,'.shop-tooltip');
    await tap(card);assert.equal(await page.locator('.shop-tooltip').count(),0,`${kind}: same-card tap dismisses`);
    await tap(card);await adjacent(card,'.shop-tooltip');await outside();
   }
