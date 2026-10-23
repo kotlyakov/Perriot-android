@@ -1,0 +1,21 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {createRun,dispatch} from '../../src/core/run.js';
+import {serializeState,deserializeState} from '../../src/persistence/save.js';
+const fixtures=JSON.parse(readFileSync(new URL('../../scripts/reference-rng/deck-fixtures.json',import.meta.url))).seeds;
+const suits={C:'clubs',D:'diamonds',H:'hearts',S:'spades'},ranks={A:14,J:11,K:13,Q:12,T:10};
+const id=value=>{const [s,r]=value.split('_');return `card_${suits[s]}_${ranks[r]??r}`;};
+for(const [seed,f] of Object.entries(fixtures))test('original deck integrated: '+seed,()=>{
+ const pending=createRun(seed,{runId:'apk-run',money:4n,referenceRng:true});
+ assert.equal(pending.phase,'blind_selection');assert.ok(pending.rng.apk);
+ assert.deepEqual(pending.drawPile,f.start_order_bottom_to_top.map(id));
+ const result=dispatch(pending,{type:'START_BLIND',expectedRevision:0});assert.equal(result.error,null);
+ assert.deepEqual(result.events.find(e=>e.type==='cards_drawn').cardIds,f.first_hand_deal_order.map(id));
+ assert.deepEqual(result.state.drawPile,f.remaining_bottom_to_top.map(id));
+ const saved=deserializeState(serializeState(result.state));
+ const discarded=dispatch(saved,{type:'DISCARD',expectedRevision:saved.revision,cardIds:saved.hand.slice(0,3)});
+ assert.equal(discarded.error,null);
+ assert.deepEqual(discarded.events.find(e=>e.type==='cards_drawn').cardIds,f.three_replacements_deal_order.map(id));
+ assert.deepEqual(discarded.state.rng.apk,saved.rng.apk,'ordinary draw must not consume randomness');
+});

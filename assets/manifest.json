@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "stage": "intermediate-procedural-art",
+  "style": "B / Печатная мастерская",
+  "assets": [
+    {
+      "id": "playing-cards-base",
+      "source": "src/ui/field.js",
+      "origin": "Original procedural pips and geometric court portraits, created for this project",
+      "status": "intermediate"
+    },
+    {
+      "id": "field-background",
+      "source": "web/styles.css",
+      "origin": "Original CSS print rings and pine-green grain",
+      "status": "intermediate"
+    },
+    {
+      "id": "red-deck-back",
+      "source": "web/styles.css",
+      "origin": "Original diagonal print and star seal",
+      "status": "intermediate"
+    },
+    {
+      "id": "shop-printing-plates",
+      "source": "src/ui/shop-screen.js",
+      "origin": "Original procedural printing plate SVG motifs and coded paper voucher/pack surfaces; no source-game artwork",
+      "status": "intermediate"
+    },
+    {
+      "id": "edition-ink-motion",
+      "source": "web/styles.css and web/shop-screen.css",
+      "origin": "Original CSS foil lines, holographic gradient and polychrome ink overlay; respects reduced motion",
+      "status": "implemented; subjective visual acceptance pending"
+    }
+  ],
+  "originalScreenshotsIncluded": false,
+  "audio": {
+    "source": "src/ui/audio.js",
+    "origin": "Original synthesized pentatonic 16-step phrase and oscillator effects composed for Pierrot; no samples or source-game audio",
+    "status": "implemented; listening acceptance pending"
+  }
+}
