@@ -58,3 +58,5 @@ dialog.menu-dialog{height:auto;min-height:0;padding:14px;gap:12px;width:940px;bo
 .native-settings{gap:8px;justify-content:center}.native-settings .settings-cycle{gap:3px;font-size:18px}.settings-cycle button{height:28px}
 /* Reset the native modal's bottom inset before measuring content height. */
 dialog.menu-dialog{right:auto;bottom:auto}
+.options-menu>button{padding:6px 12px}.settings-cycle button{padding:0}.customize-cycle button{padding:4px}
+.end-score{min-height:30px;font-size:17px}.end-score strong{padding:3px 8px}.end-counters button{padding:2px 8px}
