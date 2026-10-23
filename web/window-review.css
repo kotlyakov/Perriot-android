@@ -55,3 +55,4 @@ dialog.menu-dialog{height:auto;min-height:0;padding:14px;gap:12px;width:940px;bo
 .collection-tooltip[hidden]{display:none!important}
 .collection-grid[data-set=Blind] .collection-symbol{font-size:17px}
 .collection-grid[data-set=Blind] .collection-card{gap:3px;padding:4px;line-height:1.05}
+.native-settings{gap:8px;justify-content:center}.native-settings .settings-cycle{gap:3px;font-size:18px}.settings-cycle button{height:28px}
