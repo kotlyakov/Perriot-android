@@ -1,11 +1,11 @@
 /* Structure follows native menu hierarchy; artwork, colours and Rubik stay ours. */
 .profile-view,.collection-view{height:100%;min-height:0;box-sizing:border-box;font-family:"Rubik",sans-serif}
 .profile-view{display:flex;flex-direction:column;padding:4px}
-.profile-view .profile-details{display:flex;flex-direction:column;gap:10px;width:min(620px,100%);margin:auto;min-height:0;box-sizing:border-box;padding:6px}
+.profile-view .profile-details{display:flex;flex-direction:column;gap:10px;width:min(620px,100%);margin:auto;min-height:0;max-height:none;overflow:visible;flex:none;box-sizing:border-box;padding:6px}
 .profile-name-label{display:flex;align-items:center;justify-content:center;gap:14px;font-size:16px;color:#b8c5c0}
 .profile-view .profile-name{width:240px;min-width:0;max-width:65%;box-sizing:border-box;padding:7px 10px;min-height:34px;margin:0;border:2px solid #617d78;border-radius:6px;background:#12292a;color:#f0e5c8;font:500 18px "Rubik",sans-serif;text-align:center}
 .profile-progress{display:flex;flex-direction:column;gap:4px;min-width:0;padding:6px;background:#102526;border-radius:9px;box-shadow:0 3px #0b1c1d}
-.profile-view .profile-progress-item{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:10px;padding:2px;font-size:15px}
+.profile-view .profile-progress-item{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:10px;margin:0;padding:2px;font-size:15px}
 .profile-progress-label{line-height:1.15;color:#d3d9ce}
 .profile-progress-fill{display:flex;justify-content:center;align-items:center;min-height:28px;position:relative;isolation:isolate;border-radius:6px;background:#091b20;overflow:hidden;color:#f6eedb;font-variant-numeric:tabular-nums;white-space:nowrap}
 .profile-progress-fill:before{content:'';position:absolute;inset:0 auto 0 0;width:var(--progress-fill);background:#377bb790;z-index:-1}
