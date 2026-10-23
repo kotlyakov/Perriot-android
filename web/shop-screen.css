@@ -51,3 +51,10 @@
 .shop-card[data-edition=polychrome] .shop-art{background:conic-gradient(from 40deg,#ef789980,#f2d57285,#78d68b75,#7bd0ef85,#ab8ee580,#ef789980)}
 .shop-card[data-edition=foil] .shop-art,.shop-card[data-edition=holographic] .shop-art,.shop-card[data-edition=polychrome] .shop-art{background-size:220% 220%;animation:edition-ink 7s ease-in-out infinite alternate}
 @media(prefers-reduced-motion:reduce){.shop-card[data-edition] .shop-art{animation:none}}
+
+/* A shared ink family follows consumables through shop, inventory, packs and drag clones. */
+.shop-card:is([data-card-set=Tarot],[data-card-set=Planet],[data-card-set=Spectral]){background:color-mix(in srgb,var(--card-type-color) 24%,#f0e5c8);border-color:var(--card-type-color);color:#213b3d}
+.shop-card:is([data-card-set=Tarot],[data-card-set=Planet],[data-card-set=Spectral]) .shop-art{color:var(--card-type-color)}
+.shop-card:is([data-card-set=Tarot],[data-card-set=Planet],[data-card-set=Spectral]):disabled{background:color-mix(in srgb,var(--card-type-color) 24%,#f0e5c8)!important;color:#213b3d;filter:none;opacity:1}
+.shop-card:is([data-card-set=Tarot],[data-card-set=Planet],[data-card-set=Spectral])[data-edition=negative]{background:color-mix(in srgb,var(--card-type-color) 28%,#1d3438);color:#f0e5c8}
+.shop-card:is([data-card-set=Tarot],[data-card-set=Planet],[data-card-set=Spectral])[data-edition=negative]:disabled{background:color-mix(in srgb,var(--card-type-color) 28%,#1d3438)!important;color:#f0e5c8}

@@ -1,4 +1,4 @@
-import {createOptionsView,createSettingsView,createRunInfoView,createEndView,createCustomizeView} from './menu-windows.js';
+import {createOptionsView,createSettingsView,createRunInfoView,createEndView} from './menu-windows.js';
 import {isVerificationSeed} from '../core/verification-seed.js';
 import catalogue from '../content/apk-shop-catalog.js';
 import {createGameAudio,createAudioSettings,soundForAction} from './audio.js';
@@ -19,7 +19,7 @@ import {createRun,dispatch} from '../core/run.js';
 import {createProfileStore} from '../persistence/profile-store.js';
 import {profileRunContext,deckUnlocked,stakeUnlocked,legendaryWinIds} from '../core/profile.js';
 import {chooseProfileSeed} from '../core/profile-seed.js';
-import {renderProfileView,renderCollectionView,renderStatsView} from './profile-screen.js';
+import {renderProfileView,renderCollectionView} from './profile-screen.js';
 import {createBackend} from '../persistence/backend.js';
 import {installLayout} from './layout.js';
 import {displayBlindTarget,renderField,dismissCardTip,showNumbers,HAND_NAMES,SUITS,rankLabel,displayInteger} from './field.js';
@@ -80,11 +80,12 @@ function newState({deckId='red',seed,stake=1,challengeId}={}){
  return createRun(selectedSeed,{runId:crypto.randomUUID(),deckId,stake,challengeId,money:4n,referenceRng:true,referenceShop:true,...profileRunContext(profile,selectedSeed),reducedMotion:matchMedia('(prefers-reduced-motion: reduce)').matches});
 }
 function startFresh(options){if(busy)return;try{const next=newState(options);repository.reset(next,{seeded:isVerificationSeed(next.seed)||!options?.challengeId&&!!options?.seed,challenge:!!options?.challengeId});state=next;selected.clear();closeDialog();removeStartScreen();render();}catch{storageError();}}
-function showMenu(){if(busy)return;dismissDialog();renderStartScreen({hasSave:!!state,savedState:state?{...state,seeded:repository.getProfile()?.runs?.[state.runId]?.seeded??false}:undefined,continueChallengeId:state?.challengeId,profile:repository.getProfile(),profileName:repository.getProfiles().find(p=>p.id===repository.activeId)?.name,onContinue:()=>{try{repository.save(state,[],{continued:true});removeStartScreen();render();}catch{storageError();}},onNew:startFresh,onSettings:showOptions,onCollection:()=>showCollection(closeDialog),onProfile:showProfile});}
+function showMenu(){if(busy)return;dismissDialog();renderStartScreen({hasSave:!!state,savedState:state?{...state,seeded:repository.getProfile()?.runs?.[state.runId]?.seeded??false}:undefined,continueChallengeId:state?.challengeId,profile:repository.getProfile(),profileName:repository.getProfiles().find(p=>p.id===repository.activeId)?.name,onContinue:()=>{try{repository.save(state,[],{continued:true});removeStartScreen();render();}catch{storageError();}},onNew:startFresh,onSettings:()=>showSettings(showMenu),onCollection:()=>showCollection(closeDialog),onProfile:showProfile});}
 function showProfile(){
- openDialog('Профиль',renderProfileView(repository.getProfile(),{activeId:repository.activeId,profiles:repository.getProfiles().map(p=>({...p,profile:repository.getProfile(p.id)})),onSelect:id=>{
-  if(busy)return;try{const selectedProfile=repository.selectProfile(id);state=selectedProfile.state;selected.clear();showMenu();showProfile();}catch{storageError();}
- }}));
+ const name=repository.getProfiles().find(p=>p.id===repository.activeId)?.name??'Игрок';
+ openDialog('Профиль игрока',renderProfileView(repository.getProfile(),{name,onRename:next=>{
+  const saved=repository.renameProfile(next);const label=document.querySelector('#start_profile strong');if(label)label.textContent=saved;return saved;
+ }}),[['Назад',showMenu]]);
 }
 function storageError(){openDialog('Не удалось сохранить','<p>Действие не применено. Проверьте свободное место и доступ к сохранению.</p>',state?.winPending?[['Вернуться к победе',showVictory,'victory_retry']]:undefined);}
 function showLoss(){openDialog('Партия окончена',createEndView(state,{restart:showRunSetup,menu:showMenu,copySeed}),[]);}
@@ -151,17 +152,16 @@ document.getElementById('discard').onclick=()=>perform('DISCARD',[...selected]);
 function sort(mode){if(busy || (state?.phase!=='playing'&&!targetPackOpen()))return;perform('SET_SORT',undefined,mode);}
 document.getElementById('sort_rank').onclick=()=>sort('rank');document.getElementById('sort_suit').onclick=()=>sort('suit');
 async function copySeed(seed){try{await navigator.clipboard.writeText(String(seed));notice('Сид скопирован');}catch{notice('Не удалось скопировать сид: '+seed);}}
-function showRunSetup(){if(busy)return;dismissDialog();renderStartScreen({hasSave:!!state,savedState:state?{...state,seeded:repository.getProfile()?.runs?.[state.runId]?.seeded??false}:undefined,fromRun:true,onBack:()=>{removeStartScreen();if(state?.phase==='game_over')showLoss();else render();},profileName:repository.getProfiles().find(p=>p.id===repository.activeId)?.name,profile:repository.getProfile(),onNew:startFresh,onContinue:()=>{removeStartScreen();render();},onSettings:showOptions,onCollection:()=>showCollection(closeDialog),onProfile:showProfile});document.getElementById('start_new').click();}
-function showCollection(back=showOptions){let view;view=renderCollectionView(repository.getProfile(),state?.seed,{onNavigate:({view:page})=>{dialog.dataset.window=page==='index'?'collection-index':'collection';}});openDialog('Коллекция',view,[['Назад',()=>{if(!view.back?.())back();}]]);dialog.dataset.window='collection-index';}
-function showStats(){const view=renderStatsView(repository.getProfile());openDialog('Статистика',view,[['Назад',()=>{if(!view.back?.())showOptions();}]]);dialog.dataset.window='stats';}
+function showRunSetup(){if(busy)return;dismissDialog();renderStartScreen({hasSave:!!state,savedState:state?{...state,seeded:repository.getProfile()?.runs?.[state.runId]?.seeded??false}:undefined,fromRun:true,onBack:()=>{removeStartScreen();if(state?.phase==='game_over')showLoss();else render();},profileName:repository.getProfiles().find(p=>p.id===repository.activeId)?.name,profile:repository.getProfile(),onNew:startFresh,onContinue:()=>{removeStartScreen();render();},onSettings:()=>showSettings(showMenu),onCollection:()=>showCollection(closeDialog),onProfile:showProfile});document.getElementById('start_new').click();}
+function showCollection(back=showMenu){let view;view=renderCollectionView(repository.getProfile(),state?.seed,{onNavigate:({view:page,set})=>{dialog.dataset.window=page==='index'?'collection-index':'collection';dialog.dataset.collectionSet=set??'';}});openDialog('Коллекция',view,[['Назад',()=>{if(!view.back?.())back();}]]);dialog.dataset.window='collection-index';}
 function showOptions(){
  if(busy||victoryProtected())return;
  const inRun=!!state&&!document.getElementById('start_screen');
- openDialog('Меню',createOptionsView({settings:showSettings,restart:showRunSetup,menu:showMenu,stats:showStats,collection:()=>showCollection(),deck:()=>openDialog('Настройка колоды',createCustomizeView(),[['Назад',showOptions]]),copySeed,credits:()=>openDialog('Авторы','<h2>Пьеро</h2><p>Собственное оформление: Печатная мастерская.</p><p>Правила и структура интерфейса основаны на Balatro.</p>',[['Назад',showOptions]])},{inRun,seeded:repository.getProfile()?.runs?.[state?.runId]?.seeded??false,seed:state?.seed}),[['Назад',closeDialog]]);
+ openDialog('Меню',createOptionsView({settings:()=>showSettings(),restart:showRunSetup,menu:showMenu,copySeed,credits:()=>openDialog('Авторы','<h2>Пьеро</h2><p>Собственное оформление: Печатная мастерская.</p><p>Правила и структура интерфейса основаны на Balatro.</p>',[['Назад',showOptions]])},{inRun,seeded:repository.getProfile()?.runs?.[state?.runId]?.seeded??false,seed:state?.seed}),[['Назад',closeDialog]]);
 }
-function showSettings(){
+function showSettings(back=showOptions){
  if(busy||victoryProtected())return;
- openDialog('Настройки',createSettingsView({values:audioPreferences.get(),onVolume:(key,value)=>{const next=audioPreferences.set({...audioPreferences.get(),[key]:value});audio.setVolumes(next);if(key==='effects')audio.play('select');return next;},onNotice:notice}),[['Назад',showOptions]]);
+ openDialog('Настройки',createSettingsView({values:audioPreferences.get(),onVolume:(key,value)=>{const next=audioPreferences.set({...audioPreferences.get(),[key]:value});audio.setVolumes(next);if(key==='effects')audio.play('select');return next;},onNotice:notice}),[['Назад',back]]);
 }
 document.getElementById('options').onclick=showOptions;
 document.getElementById('run_info').onclick=()=>{
@@ -173,11 +173,11 @@ document.getElementById('deck').onclick=()=>{
 };
 globalThis.cardGamePause=()=>audio.setActive(false); // Actions are persisted before animation; no pending I/O on pause.
 const loaded=repository.load();
-if(loaded.status==='current'){state=loaded.state;render();if(!state.winPending)showMenu();}
+if(loaded.status==='current'){state=loaded.state;render();showMenu();}
 else if(loaded.status==='empty')showMenu();
 else if(loaded.status==='recovery') {
  dialog.addEventListener('cancel',e=>e.preventDefault(),{once:true});
- openDialog('Восстановить забег?','<p>Основная запись повреждена. Есть проверенная резервная копия. Восстановить её?</p>',[['Восстановить',()=>{try{state=repository.restoreBackup();dismissDialog();render();if(!state?.winPending)showMenu();}catch{storageError();}},'restore-backup']]);
+ openDialog('Восстановить забег?','<p>Основная запись повреждена. Есть проверенная резервная копия. Восстановить её?</p>',[['Восстановить',()=>{try{state=repository.restoreBackup();dismissDialog();render();showMenu();}catch{storageError();}},'restore-backup']]);
 } else openDialog('Сохранение недоступно','<p>Не удалось прочитать исправную запись. Файлы сохранены без изменений. Автоматический новый забег не начат.</p>');
 
 

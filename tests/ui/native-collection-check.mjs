@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import {createProfile,collectionEntries} from '../../src/core/profile.js';
 import {nativeBlindTarget} from '../../src/core/blind-progression.js';
-import {renderCollectionView,renderProfileView,renderStatsView} from '../../src/ui/profile-screen.js';
+import {renderCollectionView,renderProfileView} from '../../src/ui/profile-screen.js';
 class Node {
  constructor(tag){this.tagName=tag;this.children=[];this.dataset={};this.attributes={};this.style={setProperty:(key,value)=>{this.style[key]=value;}};this._text='';}
  set textContent(value){this._text=String(value);this.children=[];}
@@ -31,7 +31,7 @@ for(const [set,capacities] of Object.entries(expected)){
  assert.equal(collection.dataset.view,'category');assert.equal(all(collection).some(node=>node.className==='collection-categories'),false,'Category removes the index');
  assert.deepEqual(rows(collection).map(node=>node.style['--collection-columns']),capacities);
  const total=collectionEntries(profile).filter(entry=>entry.set===set).length,size=capacities.reduce((n,x)=>n+x,0),pages=Math.ceil(total/size);
- assert.equal(cards(collection).length,Math.min(total,size));assert.equal(find(collection,'collection_page').textContent,`1 / ${pages}`);
+ assert.equal(cards(collection).length,Math.min(total,size));if(pages>1||['Joker','Tarot','Spectral','Voucher','Booster','Back'].includes(set))assert.equal(find(collection,'collection_page').textContent,`1 / ${pages}`);else assert.equal(find(collection,'collection_page'),undefined);
  const visited=cards(collection).map(card=>card.dataset.entryId);
  for(let page=1;page<pages;page++){find(collection,'collection_next').click();visited.push(...cards(collection).map(card=>card.dataset.entryId));}
  assert.equal(visited.length,total);assert.equal(new Set(visited).size,total,'Every category item appears exactly once');
@@ -41,13 +41,25 @@ for(const [set,capacities] of Object.entries(expected)){
  assert.equal(collection.back(),true);assert.equal(collection.dataset.view,'index');assert.equal(collection.back(),false);
 }
 assert.equal(navigation.at(-1).view,'index');
-const selects=[],view=renderProfileView(profile,{onSelect:id=>selects.push(id)});
-find(view,'profile_slot_2').click();assert.deepEqual(selects,[],'Browsing does not load another profile');assert.equal(find(view,'profile_slot_2').attributes['aria-pressed'],'true');find(view,'profile_load').click();assert.deepEqual(selects,['2']);
-find(view,'profile_slot_1').click();assert.equal(find(view,'profile_load').disabled,true);
-const stats=renderStatsView(profile);assert.equal(all(stats).filter(node=>node.tagName==='tr').length,6);assert.equal(all(stats).filter(node=>node.className==='profile-stats-columns').length,1);find(stats,'profile_usage_tab').click();assert.match(stats.textContent,/Пока нет/);assert.equal(stats.back(),true);assert.equal(stats.back(),false);
-const populated=createProfile(),jokers=collectionEntries(populated).filter(entry=>entry.set==='Joker');populated.discovered=jokers.map(entry=>entry.id);populated.usage.jokers=Object.fromEntries(jokers.slice(0,20).map((entry,i)=>[entry.id,i+1]));populated.highScores.hand='9'.repeat(10000);
-const populatedStats=renderStatsView(populated);assert.ok(Number(find(populatedStats,'profile_stats_page').textContent.split('/')[1])>20,'Huge values remain paginated');assert.equal(find(populatedStats,'profile_history_tab'),undefined,'Main scores keeps only native actions');find(populatedStats,'profile_usage_tab').click();assert.equal(all(populatedStats).filter(node=>node.dataset.tab).length,6);assert.equal(find(populatedStats,'profile_usage_page').textContent,'1 / 2');const bars=()=>all(populatedStats).filter(node=>node.className==='profile-usage-bar');assert.deepEqual(bars().map(node=>Number(node.dataset.count)),[20,19,18,17,16,15,14,13,12,11]);assert.equal(all(populatedStats).filter(node=>node.className==='profile-usage-column').length,10);find(populatedStats,'profile_usage_next').click();assert.deepEqual(bars().map(node=>Number(node.dataset.count)),[10,9,8,7,6,5,4,3,2,1]);
-const consumables=collectionEntries(populated).filter(entry=>['Tarot','Planet','Spectral'].includes(entry.set));populated.discovered.push(...consumables.map(entry=>entry.id));populated.usage.consumables=Object.fromEntries(consumables.map((entry,i)=>[entry.id,i+1]));const filtered=renderStatsView(populated);find(filtered,'profile_usage_tab').click();for(const set of ['Tarot','Planet','Spectral']){find(filtered,'profile_usage_'+set).click();const shown=all(filtered).filter(node=>node.dataset.entryId);assert.ok(shown.length);assert.ok(shown.every(node=>consumables.some(entry=>entry.id===node.dataset.entryId&&entry.set===set)));}
+const renamed=[],view=renderProfileView(profile,{name:'Игрок',onRename:name=>renamed.push(name)});
+assert.equal(view.attributes['aria-label'],'Профиль игрока');
+assert.equal(find(view,'profile_slot_2'),undefined);
+assert.equal(find(view,'profile_load'),undefined);
+assert.equal(find(view,'profile_reset'),undefined);
+const nameInput=find(view,'profile_name');assert.ok(nameInput);assert.equal(nameInput.value,'Игрок');assert.equal(nameInput.maxLength,16);
+nameInput.value='  Новое имя  ';nameInput.onchange();assert.deepEqual(renamed,['Новое имя']);
+assert.equal(all(view).filter(node=>node.className?.split(' ').includes('profile-progress-item')).length,5,'Overall plus four detail fractions');
+let failRename=true;const guarded=renderProfileView(profile,{name:'Сохранено',onRename:value=>{if(failRename)throw Error('disk full');return value;}}),guardedInput=find(guarded,'profile_name');guardedInput.value='Потеря';guardedInput.onchange();assert.equal(guardedInput.value,'Сохранено');assert.match(find(guarded,'profile_name_status').textContent,/Не удалось/);assert.equal(find(guarded,'profile_name_status').attributes.role,'status');failRename=false;guardedInput.value='Ещё раз';guardedInput.onchange();assert.equal(guardedInput.value,'Ещё раз');assert.equal(find(guarded,'profile_name_status').textContent,'');
+const completed=createProfile();completed.completedChallenges=Array.from({length:20},(_,i)=>'c'+i);
+const completion=renderProfileView(completed);const overall=find(completion,'profile_progress_overall');assert.ok(overall);assert.equal(Number(overall.dataset.percent),Math.floor(.01+25+25*collectionEntries(completed).filter(entry=>!['Enhanced','Seal'].includes(entry.set)&&entry.discovered).length/collectionEntries(completed).filter(entry=>!['Enhanced','Seal'].includes(entry.set)).length),'Overall averages four independent fractions');
+find(collection,'collection_category_Joker').click();
+assert.equal(cards(collection).length,15);
+assert.ok(cards(collection).every(card=>!card.children.some(child=>child.tagName==='strong')),'Names belong in tooltip, never portrait faces');
+assert.ok(cards(collection).every(card=>card.dataset.cardState),'Every portrait has a discovery/lock state');
+const pageSelect=find(collection,'collection_page_select');assert.ok(pageSelect);assert.equal(pageSelect.children.length,10);pageSelect.value='2';pageSelect.onchange();assert.equal(find(collection,'collection_page').textContent,'3 / 10');find(collection,'collection_page_select').value='9';find(collection,'collection_page_select').onchange();find(collection,'collection_next').click();assert.equal(find(collection,'collection_page').textContent,'1 / 10');find(collection,'collection_prev').click();assert.equal(find(collection,'collection_page').textContent,'10 / 10');
+assert.ok(cards(collection).some(card=>card.children.some(child=>child.className==='collection-state-art')));
+collection.back();
+for(const set of ['Tarot','Planet','Spectral'])assert.equal(find(collection,'collection_category_'+set).dataset.cardSet,set);
 assert.equal(JSON.stringify(profile),before,'Views never mutate profile/unlocks');
-const seeded=renderCollectionView(profile,'13031990');find(seeded,'collection_category_Joker').click();assert.ok(cards(seeded).every(card=>card.dataset.discovered==='true'),'Verification seed behavior stays intact');assert.equal(JSON.stringify(profile),before);
-console.log('Native collection grids/index/back/tooltip and profile explicit-load/stats/nonmutation PASS');
+const seeded=renderCollectionView(profile,'13031990');find(seeded,'collection_category_Joker').click();assert.ok(cards(seeded).every(card=>card.dataset.discovered==='true'),'Verification seed behavior stays intact');assert.ok(cards(seeded).every(card=>card.children.some(child=>child.className==='shop-art'&&child.innerHTML.includes('<svg'))),'Discovered portraits reuse original project artwork');assert.ok(cards(seeded).every(card=>card.attributes['aria-pressed']===undefined),'Collection portraits do not become selected');cards(seeded)[0].click();assert.ok(all(find(seeded,'collection_details')).some(node=>node.className==='collection-rarity'&&node.dataset.rarity==='1'));assert.equal(JSON.stringify(profile),before);
+console.log('Collection portrait states/paging/tooltips and single player profile naming/progress/nonmutation PASS');

@@ -68,7 +68,7 @@ function showTip(offer,card){
 }
 // Independently drawn printing blocks: each catalogue identity gets its own ink,
 // plate number and geometry. These are not source-game illustrations.
-function artwork(offer,kind){
+export function artwork(offer,kind){
  const key=offer.entityId??offer.originalKey??offer.id;let hash=0;for(const c of key)hash=(hash*31+c.charCodeAt(0))>>>0;
  const ink=['#176e80','#b84b37','#406b42','#7a5382','#ac772b'][hash%5],variant=hash%4;
  const motifs=[
@@ -96,6 +96,8 @@ function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
  const expired=offer.perishable===true&&offer.perishRounds===0;
  const debuffed=kind==='owned'&&!hidden&&(expired||state.phase==='playing'&&offer.debuffed===true),stickers=hidden?[]:jokerStickers(offer);
  const details=hidden?{name:'Скрытый джокер',canBuy:false}:describeShopItem(offer,{owned:kind==='owned'}),card=node('button','shop-card shop-'+(kind==='owned'?'owned-card':kind));card.type='button';card.disabled=busy;card.setAttribute('aria-label',[details.name,...stickers.map(row=>row.label),...(debuffed?['ослаблен']:[])].join(' — '));card.setAttribute('aria-pressed',String(selected?.id===offer.id));
+ const cardSet=kind==='booster'?offer.entityId.startsWith('p_arcana_')?'Tarot':offer.entityId.startsWith('p_celestial_')?'Planet':offer.entityId.startsWith('p_spectral_')?'Spectral':offer.set:offer.set;
+ if(!hidden&&cardSet)card.dataset.cardSet=cardSet;
  if(kind==='voucher'){card.classList.add('shop-ticket');card.append(...ticketArtwork(offer,details));}
  else if(hidden){card.classList.add('acorn-hidden');const back=node('span','acorn-back');back.setAttribute('aria-hidden','true');back.innerHTML='<svg viewBox="0 0 104 143"><path d="M7 7H97V136H7Z M14 14H90V129H14Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M52 28L80 72L52 115L24 72Z" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="52" cy="72" r="12" fill="currentColor"/></svg>';card.append(back);}
  else if(['pack','main'].includes(kind)&&displayPlayingCard(offer)){const playing=displayPlayingCard(offer);card.classList.add('playing-card','pack-playing-card');card.innerHTML=cardMarkup(playing);applyCardModifiers(card,playing);}else card.append(artwork(offer,kind),node('span','shop-card-name',details.name));

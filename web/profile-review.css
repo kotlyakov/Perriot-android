@@ -1,30 +1,24 @@
 /* Structure follows native menu hierarchy; artwork, colours and Rubik stay ours. */
 .profile-view,.collection-view{height:100%;min-height:0;box-sizing:border-box;font-family:"Rubik",sans-serif}
-.profile-view{display:flex;flex-direction:column;gap:12px;padding:4px}
-.profile-view nav{display:flex;gap:10px;margin:0;flex:none}
-.profile-view nav button{flex:1;min-width:0;margin:0;padding:8px 10px;min-height:36px;font-size:16px;line-height:1.15}
-.profile-slots button[aria-pressed=true]{background:#448d74;outline:2px solid #f0e5c8}
-.profile-view .profile-details{flex:1;min-height:0;overflow:visible;padding:6px;display:flex;flex-direction:column;gap:12px}
-.profile-name{text-align:center;margin:0;padding:10px;background:#12292a;border-radius:8px;font-size:22px}
-.profile-slot-content,.profile-stats-columns{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:20px;min-height:0;flex:1}
-.profile-progress{display:flex;flex-direction:column;justify-content:center;gap:12px;min-width:0}
-.profile-view .profile-progress-item{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);align-items:center;gap:4px 12px;margin:0;padding:10px;background:#12292a;border-radius:7px;font-size:16px}
-.profile-progress-item strong{grid-row:span 2;overflow-wrap:anywhere}
-.profile-progress-item span{text-align:center;font-size:15px;white-space:nowrap}
-.profile-progress-item progress{width:100%;height:12px;min-width:0;accent-color:#e7b76d}
-.profile-load-actions,.profile-stats-side,.profile-records{display:flex;flex-direction:column;justify-content:center;gap:12px;min-width:0;min-height:0}
-.profile-load-actions button,.profile-stats-side>button{margin:0;padding:13px;font-size:18px}
-.profile-wins{text-align:center;font-size:26px!important;margin:12px 0}
-.profile-view .profile-stat-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:17px;line-height:1.2}
-.profile-view .profile-stat-table td{padding:10px 12px;overflow-wrap:anywhere;vertical-align:middle;background:#12292a;border-bottom:5px solid #21483f}
-.profile-view .profile-stat-table td:first-child{width:53%}
-.profile-view .profile-stat-table td:last-child{font-size:16px;text-align:center;color:#f8cb73}
-.profile-paging,.collection-paging{display:flex;flex:none;align-items:center;justify-content:center;gap:18px;margin-top:auto}
-.profile-paging button,.collection-paging button{min-width:52px!important;max-width:52px;min-height:32px!important;padding:3px!important;font-size:24px!important;line-height:1!important}
+.profile-view{display:flex;flex-direction:column;padding:4px}
+.profile-view .profile-details{display:flex;flex-direction:column;gap:10px;width:min(620px,100%);margin:auto;min-height:0;box-sizing:border-box;padding:6px}
+.profile-name-label{display:flex;align-items:center;justify-content:center;gap:14px;font-size:16px;color:#b8c5c0}
+.profile-view .profile-name{width:240px;min-width:0;max-width:65%;box-sizing:border-box;padding:7px 10px;min-height:34px;margin:0;border:2px solid #617d78;border-radius:6px;background:#12292a;color:#f0e5c8;font:500 18px "Rubik",sans-serif;text-align:center}
+.profile-progress{display:flex;flex-direction:column;gap:4px;min-width:0;padding:6px;background:#102526;border-radius:9px;box-shadow:0 3px #0b1c1d}
+.profile-view .profile-progress-item{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:10px;padding:2px;font-size:15px}
+.profile-progress-label{line-height:1.15;color:#d3d9ce}
+.profile-progress-fill{display:flex;justify-content:center;align-items:center;min-height:28px;position:relative;isolation:isolate;border-radius:6px;background:#091b20;overflow:hidden;color:#f6eedb;font-variant-numeric:tabular-nums;white-space:nowrap}
+.profile-progress-fill:before{content:'';position:absolute;inset:0 auto 0 0;width:var(--progress-fill);background:#377bb790;z-index:-1}
+.profile-progress-fill strong{font-size:20px;font-weight:500}
+.profile-progress-fill small{font-size:11px;color:#b8c5c0;margin-left:4px}
+.profile-progress-overall{margin-bottom:3px;border-bottom:1px solid #355454;padding-bottom:6px!important}
+.profile-progress-overall .profile-progress-label{font-weight:600;color:#f0e5c8}
+.profile-progress-overall .profile-progress-fill{min-height:32px}
+.profile-wins{margin:0!important;text-align:center;font-size:17px!important;color:#cbd2c8}
+.profile-wins strong{font-size:26px;color:#ed826d}
+.profile-paging,.collection-paging{display:flex;flex:none;align-items:center;justify-content:center;gap:12px;margin-top:auto}
+.profile-paging button,.collection-paging button{min-width:42px!important;max-width:42px;min-height:32px!important;padding:3px!important;font-size:24px!important;line-height:1!important}
 .profile-paging span,.collection-paging span{font-size:16px;min-width:68px;text-align:center}
-.profile-usage-tabs button{font-size:14px!important;padding:8px 4px!important}
-.profile-usage{display:flex;flex:1;min-height:0;flex-direction:column;gap:8px}
-.profile-empty{margin:auto;text-align:center;font-size:18px;line-height:1.5}
 .collection-view{position:relative;display:flex;flex-direction:column;padding:8px;gap:12px}
 .collection-view #collection_set[hidden],.collection-view [hidden]{display:none!important}
 .collection-categories{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;flex:1;min-height:0}
@@ -38,16 +32,10 @@
 .collection-consumables>div{display:flex;flex:1;flex-direction:column;gap:8px;min-width:0}
 .collection-consumables button{font-size:18px;padding:6px}
 .collection-content{display:flex;flex:1;min-width:0;min-height:0;flex-direction:column;gap:12px}
-.collection-view .collection-controls{display:flex;justify-content:space-between;align-items:center;margin:0;min-height:26px;gap:8px}
-.collection-view .collection-controls strong{font-size:20px}
 .collection-view .collection-grid{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:12px;padding:12px;background:#12292a;border-radius:10px}
 .collection-card-row{display:flex;justify-content:center;align-items:stretch;gap:12px;flex:1;min-height:0;width:100%}
 .collection-view .collection-card-row .collection-card{display:flex;position:relative;align-items:center;justify-content:center;flex-direction:column;flex:0 1 calc((100% - (var(--collection-columns) - 1)*12px)/var(--collection-columns));max-width:150px;height:auto;min-height:0;margin:0;padding:8px 5px;gap:6px;font-size:14px;line-height:1.15;overflow:visible;border-width:2px;overflow-wrap:anywhere;text-shadow:none}
-.collection-view .collection-card strong{max-height:none;overflow:visible;font-weight:600}
-.collection-view .collection-symbol{font-size:32px;flex:none}
-.collection-view .collection-card[aria-pressed=true]{outline:3px solid #e7b76d;outline-offset:1px}
 .collection-grid[data-set=Tag] .collection-card,.collection-grid[data-set=Blind] .collection-card{max-width:none;font-size:12px;padding:5px}
-.collection-grid[data-set=Tag] .collection-symbol,.collection-grid[data-set=Blind] .collection-symbol{font-size:22px}
 .collection-grid[data-set=Back] .collection-card-row{align-items:center;gap:32px}
 .collection-grid[data-set=Back] .collection-card{flex-basis:170px;min-height:230px;box-shadow:-6px 6px 0 #617d78,-12px 12px 0 #31554d}
 .collection-deck-description{width:45%;max-width:420px;padding:20px;border-radius:10px;background:#e8ddc1;color:#18352e;text-align:center;line-height:1.5}
@@ -64,8 +52,6 @@
 .collection-view .collection-card-row .collection-card{flex:0 1 auto;width:min(132px,calc((100% - (var(--collection-columns) - 1)*12px)/var(--collection-columns)));aspect-ratio:3/4;max-height:100%;height:auto}
 .collection-grid[data-set=Joker] .collection-card{width:min(104px,calc((100% - 48px)/5))}
 .collection-grid[data-set=Tag] .collection-card,.collection-grid[data-set=Blind] .collection-card{flex:none;width:58px;height:58px;aspect-ratio:1;border-radius:50%;padding:5px}
-.collection-grid[data-set=Tag] .collection-card>strong,.collection-grid[data-set=Blind] .collection-card>strong{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
-.collection-grid[data-set=Tag] .collection-symbol,.collection-grid[data-set=Blind] .collection-symbol{font-size:28px;line-height:1}
 .collection-blind-layout{display:grid;grid-template-columns:minmax(200px,.55fr) minmax(0,1fr);gap:18px;flex:1;min-height:0;max-height:470px}
 .collection-blind-layout .collection-grid{padding:10px;gap:8px}
 .collection-blind-layout .collection-card-row{gap:10px}
@@ -76,12 +62,34 @@
 .collection-ante-table td{padding:3px 10px;color:#b7c6b9;white-space:nowrap}
 .collection-ante-table tr[data-reached=true] td:last-child{color:#ed936f}
 .collection-grid[data-set=Back] .collection-card{width:170px;max-height:270px;aspect-ratio:3/4}
-.profile-usage-caption{text-align:center;margin:0;font-size:16px!important}
-.profile-usage-chart{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:10px;min-height:0;flex:1;padding:12px;background:#12292a;border-radius:10px}
-.profile-usage-column{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:8px;min-width:0;border-radius:5px;background:#193a32;padding:8px 4px}
-.profile-usage-card{display:flex;align-items:center;justify-content:center;width:min(58px,100%);aspect-ratio:3/4;border:2px solid #e7b76d;border-radius:6px;background:#617d78;color:#f5e7c6;font-size:30px;flex:none}
-.profile-usage-placeholder{visibility:hidden}
-.profile-usage-count{font-size:15px;line-height:1.2;overflow-wrap:anywhere;text-align:center}
-.profile-usage-track{display:flex;align-items:flex-end;justify-content:center;min-height:0;height:210px;width:100%;flex:0 1 210px}
-.profile-usage-bar{height:var(--usage-height);min-height:1px;width:min(44px,90%);background:#e7b76d;border-radius:3px 3px 0 0}
-.profile-usage-tabs button{font-size:13px!important}
+
+/* Portrait plates share our in-game artwork; information belongs to the tooltip. */
+.collection-view .collection-card-row{gap:14px}
+.collection-view .collection-card-row .collection-card{aspect-ratio:71/95;padding:0;overflow:hidden;border:3px solid #c9c5b5;border-radius:7px;background:#f0e5c8;box-shadow:0 4px 0 #071d21, inset 0 0 0 2px #fff8;color:#294b49}
+.collection-grid[data-set=Joker] .collection-card{width:min(102px,calc((100% - 56px)/5))}
+.collection-view .collection-card .shop-art{inset:3px;color:var(--card-type-color,var(--shop-ink));background:repeating-linear-gradient(0deg,transparent 0 3px,#263e3910 3px 4px)}
+.collection-view .collection-card .shop-art svg{width:100%;height:100%;display:block}
+.collection-view .collection-card .shop-plate{top:auto;bottom:5px;right:5px;font-size:8px;line-height:1;color:inherit}
+.collection-state-art{display:block;width:100%;height:100%;padding:8px;box-sizing:border-box}
+.collection-state-art svg{display:block;width:100%;height:100%}
+.collection-view .collection-card[data-card-state=unseen]{border-color:#637e8b;background:repeating-linear-gradient(45deg,#253f4a 0 4px,#294650 4px 8px);color:#99b4bf;box-shadow:0 4px #071d21,inset 0 0 0 3px #172d35}
+.collection-view .collection-card[data-card-state=locked]{background:#263b3b;border-color:#536765;color:#788b86;box-shadow:0 4px #071d21,inset 0 0 0 2px #1b2f2f}
+.collection-view .collection-card[data-card-state=discovered][data-card-set=Tarot],.collection-view .collection-card[data-card-state=discovered][data-card-set=Planet],.collection-view .collection-card[data-card-state=discovered][data-card-set=Spectral]{border-color:var(--card-type-color)}
+.collection-categories button[data-card-set=Tarot],.collection-categories button[data-card-set=Planet],.collection-categories button[data-card-set=Spectral]{background:var(--card-type-color);color:#fff3dc}
+.collection-view .collection-page-select{height:34px;min-width:215px;max-width:60%;margin:0;padding:3px 12px;border:2px solid #ed826d;border-radius:6px;background:#b74b3f;color:#fff1db;font:500 16px "Rubik",sans-serif;text-align:center}
+.collection-category-explanation{text-align:center;font-size:14px!important;line-height:1.3;margin:0;padding:5px;color:#c2cec5}
+.collection-grid[data-set=Tag] .shop-art,.collection-grid[data-set=Blind] .shop-art{border-radius:50%;overflow:hidden}
+.collection-grid[data-set=Tag] .shop-plate,.collection-grid[data-set=Blind] .shop-plate{display:none}
+@media(max-height:430px){.profile-view .profile-details{gap:7px;padding:4px}.profile-view .profile-progress-item{padding:2px 4px}.profile-progress-fill{min-height:27px}.profile-progress-overall .profile-progress-fill{min-height:30px}.profile-progress-fill strong{font-size:17px}.profile-name-label{font-size:14px}.profile-view .profile-name{font-size:16px;min-height:30px;padding:4px 8px}.profile-wins strong{font-size:22px}}
+
+.profile-name-status{margin:0!important;color:#ed936f;font-size:13px!important;text-align:center;line-height:1.25}
+.profile-name-status:empty{display:none}
+.collection-rarity{align-self:center;border-radius:5px;background:#377bb7;padding:4px 12px;font-size:13px;font-weight:600}
+.collection-rarity[data-rarity="2"]{background:#397e58}.collection-rarity[data-rarity="3"]{background:#b74b3f}.collection-rarity[data-rarity="4"]{background:#855a9e}
+.collection-view[data-set=Back] .collection-grid{padding-inline:62px}
+.collection-view[data-set=Back] .collection-paging button{position:absolute;top:45%;left:12px;min-height:48px!important}
+.collection-view[data-set=Back] .collection-paging button#collection_next{left:auto;right:12px}
+/* Family hue survives undiscovered/locked faces without disclosing identity. */
+.collection-view .collection-card:is([data-card-set=Tarot],[data-card-set=Planet],[data-card-set=Spectral]){border-color:var(--card-type-color);background:color-mix(in srgb,var(--card-type-color) 22%,#f0e5c8)}
+.collection-view .collection-card:is([data-card-set=Tarot],[data-card-set=Planet],[data-card-set=Spectral])[data-card-state=unseen]{background:repeating-linear-gradient(45deg,transparent 0 4px,#12292a30 4px 8px),color-mix(in srgb,var(--card-type-color) 34%,#20363b);color:color-mix(in srgb,var(--card-type-color) 55%,#f0e5c8)}
+.collection-view .collection-card:is([data-card-set=Tarot],[data-card-set=Planet],[data-card-set=Spectral])[data-card-state=locked]{background:color-mix(in srgb,var(--card-type-color) 24%,#263b3b);color:color-mix(in srgb,var(--card-type-color) 45%,#a7b4b1)}

@@ -33,3 +33,12 @@ test('backup with empty selected profile recovers without inventing a run',()=>{
  const io=memory(),store=createProfileStore(io);store.load();store.reset(run('reserved'),{seeded:false});store.selectProfile('2');
  io.data.backup=io.data.current;io.data.current='damaged';const restore=createProfileStore(io);assert.equal(restore.load().status,'recovery');assert.equal(restore.restoreBackup(),null);assert.equal(restore.load().status,'empty');restore.selectProfile('1');assert.equal(restore.load().state.runId,'reserved');
 });
+
+test('one visible player can rename atomically without changing progress or current run',()=>{
+ const io=memory(),store=createProfileStore(io);store.load();store.reset(run('named'),{seeded:false});
+ const before=store.getProfile();store.renameProfile('  Артур  ');
+ const restored=createProfileStore(io);assert.equal(restored.load().state.runId,'named');assert.equal(restored.getProfiles().find(p=>p.id===restored.activeId).name,'Артур');assert.deepEqual(restored.getProfile(),before);
+ for(const name of ['', ' '.repeat(3),'x'.repeat(17),null])assert.throws(()=>restored.renameProfile(name));
+ const write=io.write;io.write=()=>{throw Error('disk full');};assert.throws(()=>restored.renameProfile('Другое имя'));assert.equal(restored.getProfiles().find(p=>p.id===restored.activeId).name,'Артур');io.write=write;
+ restored.renameProfile('Новое имя');assert.equal(restored.getProfiles().find(p=>p.id===restored.activeId).name,'Новое имя');
+});

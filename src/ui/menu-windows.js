@@ -22,7 +22,6 @@ export function createOptionsView(actions={},context={}){
   if(context.seeded&&context.seed){const row=el('div','options-seed'),value=el('strong','',context.seed),copy=button('options_copy_seed','Копировать',()=>actions.copySeed?.(context.seed));row.append(el('span','','Сид:'),value,copy);root.append(row);}
   add('restart','Новая партия');add('menu','Главное меню');
  }
- add('stats','Статистика');if(context.inRun!==false)add('collection','Коллекция');add('deck','Настройка колоды');
  if(context.inRun===false)add('credits','Авторы');return root;
 }
 export function createSettingsView({values={music:.35,effects:.7},onVolume=()=>{},onNotice=()=>{}}={}){
@@ -73,12 +72,4 @@ export function createEndView(state,actions={},won=false){
  columns.append(left,right);panel.append(columns);if(won)panel.append(button('victory_endless','Бесконечный режим',actions.endless));else panel.append(controls);
  if(!state.runSummary)panel.append(el('p','end-note','— показатель не записан в этой версии сохранения.'));
  root.append(mascot,panel);return root;
-}
-export function createCustomizeView(){
- const view=tabbedWindow([['spades','Пики'],['hearts','Червы'],['clubs','Трефы'],['diamonds','Бубны']],(tab,body)=>{
-  const suit={spades:'♠',hearts:'♥',clubs:'♣',diamonds:'♦'}[tab],cards=el('div','customize-faces');
-  for(const rank of ['K','Q','J']){const card=el('div','customize-face');card.append(el('strong','',rank),el('span','',suit));cards.append(card);}body.append(cards);
-  const cycle=el('div','customize-cycle');for(const label of ['‹','Печатная мастерская','›']){const b=button('',label,()=>{});b.disabled=true;cycle.append(b);}body.append(cycle);
-  const label=el('label','settings-toggle'),toggle=el('input');toggle.type='checkbox';toggle.disabled=true;label.append(toggle,el('span','','Контрастные масти'));body.append(label,el('p','menu-note','Другие рисунки и контрастный режим пока недоступны.'));
- });view.dataset.window='customize';return view;
 }

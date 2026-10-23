@@ -1,6 +1,7 @@
+import catalog from '../content/apk-shop-catalog.js';
+import {artwork} from './shop-screen.js';
 import {collectionEntries} from '../core/profile.js';
 import {nativeBlindTarget} from '../core/blind-progression.js';
-import {HAND_NAMES} from '../content/hand-names.js';
 import {DECKS} from '../content/decks.js';
 import {CHALLENGES} from '../content/challenges.js';
 import {STAKES} from '../content/stakes.js';
@@ -11,7 +12,6 @@ import {APK_TAGS_BY_ID} from '../content/apk-tags.js';
 
 const setNames={Joker:'Джокеры',Back:'Колоды',Voucher:'Билеты',Tarot:'Таро',Planet:'Планеты',Spectral:'Спектральные карты',Enhanced:'Улучшения',Seal:'Печати',Edition:'Издания',Booster:'Коробочки',Tag:'Награды за пропуск',Blind:'Блайнды'};
 const sets=['Joker','Back','Voucher','Tarot','Planet','Spectral','Enhanced','Seal','Edition','Booster','Tag','Blind'];
-const profilePageSize=6;
 function element(tag,className,text){const node=document.createElement(tag);if(className)node.className=className;if(text!==undefined)node.textContent=text;return node;}
 function button(id,text,action){const node=element('button','',text);node.id=id;node.type='button';node.onclick=action;return node;}
 function number(value){try{return BigInt(value??0).toLocaleString('ru-RU');}catch{return '0';}}
@@ -25,73 +25,26 @@ function localized(entry){
  return describeShopItem({entityId:entry.id});
 }
 function highestStake(wins){let result=0;for(let index=0;index<wins.length;index++)if(wins[index]>0)result=index+1;return result;}
-function row(table,label,value){const tr=element('tr');tr.append(element('td','',label),element('td','',typeof value==='string'?value:number(value)));table.append(tr);}
 function pager(id,page,pages,change){const nav=element('nav','profile-paging');nav.setAttribute('aria-label','Страницы');const prev=button(id+'_prev','‹',()=>change(page-1)),next=button(id+'_next','›',()=>change(page+1));prev.setAttribute('aria-label','Предыдущая страница');next.setAttribute('aria-label','Следующая страница');prev.disabled=page===0;next.disabled=page>=pages-1;const count=element('span','',`${page+1} / ${pages}`);count.id=id+'_page';nav.append(prev,count,next);return nav;}
 function textPages(text,size=220){const pages=[];let chunk='';for(let word of String(text??'').split(/\s+/)){if(chunk.length+word.length+1>size&&chunk){pages.push(chunk);chunk='';}for(let rest=word;rest.length>size;rest=rest.slice(size)){if(chunk){pages.push(chunk);chunk='';}pages.push(rest.slice(0,size));word=rest.slice(size);}chunk+=(chunk?' ':'')+word;}if(chunk||!pages.length)pages.push(chunk);return pages;}
-function selectTab(container,key){for(const tab of container.querySelectorAll('[data-tab]'))tab.setAttribute('aria-pressed',String(tab.dataset.tab===key));}
-
 function progressView(profile){
- const progress=element('div','profile-progress');
- const entries=collectionEntries(profile).filter(entry=>!['Enhanced','Seal'].includes(entry.set));
- for(const [label,value,total] of [['Коллекция',entries.filter(entry=>entry.discovered).length,entries.length],['Испытания',profile.completedChallenges?.length??0,CHALLENGES.length],['Наклейки джокеров',Object.values(profile.jokerWins??{}).reduce((n,wins)=>n+highestStake(wins),0),150*8],['Победы колод по ставкам',Object.values(profile.deckWins??{}).reduce((n,wins)=>n+highestStake(wins),0),Object.keys(DECKS).length*8]]){
-  const item=element('div','profile-progress-item');item.append(element('strong','',label),element('span','',`${Math.floor(100*value/(total||1))}% (${value} / ${total})`));const meter=element('progress');meter.max=total||1;meter.value=value;meter.setAttribute('aria-label',label);item.append(meter);progress.append(item);
+ const progress=element('div','profile-progress'),entries=collectionEntries(profile).filter(entry=>!['Enhanced','Seal'].includes(entry.set));
+ const metrics=[['collection','Коллекция',entries.filter(entry=>entry.discovered).length,entries.length],['challenges','Испытания',profile.completedChallenges?.length??0,CHALLENGES.length],['stickers','Наклейки джокеров',Object.values(profile.jokerWins??{}).reduce((n,wins)=>n+highestStake(wins),0),150*8],['decks','Победы колод по ставкам',Object.values(profile.deckWins??{}).reduce((n,wins)=>n+highestStake(wins),0),Object.keys(DECKS).length*8]];
+ const overall=metrics.reduce((sum,[,,value,total])=>sum+value/(total||1),0)/metrics.length;
+ for(const [id,label,value,total] of [['overall','Общий прогресс',overall,1],...metrics]){
+  const percent=Math.floor(.01+100*value/(total||1)),item=element('div','profile-progress-item'+(id==='overall'?' profile-progress-overall':''));item.id='profile_progress_'+id;item.dataset.percent=String(percent);
+  const fill=element('div','profile-progress-fill');fill.style.setProperty('--progress-fill',percent+'%');fill.setAttribute('role','progressbar');fill.setAttribute('aria-label',label);fill.setAttribute('aria-valuemin','0');fill.setAttribute('aria-valuemax',String(total));fill.setAttribute('aria-valuenow',String(value));
+  fill.append(element('strong','',percent+'%'));if(id!=='overall')fill.append(element('small','',` (${value} / ${total})`));item.append(element('span','profile-progress-label',label),fill);progress.append(item);
  }return progress;
 }
-function showRows(target,rows,page,id){
- target.replaceChildren();
- const expanded=rows.flatMap(([label,value])=>textPages(value,36).map((part,index,parts)=>[label+(parts.length>1?` (${index+1}/${parts.length})`:''),part]));
- const pages=Math.max(1,Math.ceil(expanded.length/profilePageSize)),table=element('table','profile-stat-table');
- for(const [label,value] of expanded.slice(page*profilePageSize,(page+1)*profilePageSize))row(table,label,value);
- target.append(expanded.length?table:element('p','profile-empty','Пока нет использованных карт.'));
- if(pages>1)target.append(pager(id,page,pages,next=>showRows(target,rows,next,id)));
-}
-/** Browsing a slot does not load or change the active save. */
-export function renderProfileView(profile,{activeId='1',profiles=[{id:'1',name:'П1'},{id:'2',name:'П2'},{id:'3',name:'П3'}],onSelect}={}){
- const root=element('section','profile-view');root.id='profile_view';root.setAttribute('aria-label','Профили');
- const slots=element('nav','profile-slots');slots.setAttribute('aria-label','Профили');root.append(slots);
- const body=element('div','profile-details');body.id='profile_details';root.append(body);
- let focused=String(activeId);
- for(const item of profiles){const slot=button('profile_slot_'+item.id,item.name??'П'+item.id,()=>{focused=String(item.id);draw();});slot.dataset.tab=String(item.id);slot.dataset.profileSlot=item.id;slots.append(slot);}
- function draw(){
-  selectTab(slots,focused);body.replaceChildren();const item=profiles.find(item=>String(item.id)===focused),data=focused===String(activeId)?profile:item?.profile??item?.data;
-  body.append(element('h3','profile-name',item?.name??'П'+focused));
-  const columns=element('div','profile-slot-content');columns.append(data?progressView(data):element('p','profile-empty','Прогресс этого профиля доступен после загрузки.'));
-  const actions=element('div','profile-load-actions');actions.append(element('p','profile-wins','Победы: '+(data?number(data.career?.c_wins):'—')));
-  const load=button('profile_load',focused===String(activeId)?'Текущий профиль':'Загрузить профиль',()=>onSelect?.(focused));load.disabled=focused===String(activeId)||!onSelect;actions.append(load);
-  // Destructive profile operations are unavailable until persistence exposes them.
-  const reset=button('profile_reset',focused===String(activeId)?'Сбросить профиль':'Удалить профиль');reset.disabled=true;reset.title='Недоступно';actions.append(reset);
-  columns.append(actions);body.append(columns);
- }draw();return root;
-}
-/** Native high-scores surface: records left, progress and card usage right. */
-export function renderStatsView(profile,{onNavigate}={}){
- const root=element('section','profile-view stats-view');root.id='stats_view';let view='scores';
- const body=element('div','profile-details');root.append(body);
- function draw(){body.replaceChildren();root.dataset.view=view;
-  if(view==='scores'){
-   const columns=element('div','profile-stats-columns'),records=element('div','profile-records'),scores=profile.highScores??{};
-   const mostPlayed=Object.entries(profile.usage?.hands??{}).sort((a,b)=>b[1]-a[1])[0];
-   showRows(records,[['Лучшая рука',number(scores.hand)],['Самый дальний раунд',number(scores.furthestRound)],['Самое дальнее анте',number(scores.furthestAnte)],['Любимая комбинация',mostPlayed?`${HAND_NAMES[mostPlayed[0]]??mostPlayed[0]} (${number(mostPlayed[1])})`:'Нет'],['Максимум денег',number(scores.mostMoney)],['Лучшая серия побед',number(scores.winStreak)]],0,'profile_stats');
-   const side=element('div','profile-stats-side');side.append(progressView(profile),button('profile_usage_tab','Статистика карт',()=>navigate('usage')));columns.append(records,side);body.append(columns);
-  }else if(view==='usage'){
-   const entries=collectionEntries(profile),lookup=new Map(entries.map(entry=>[entry.id,entry])),nav=element('nav','profile-usage-tabs'),content=element('section','profile-usage');body.append(nav,content);
-   for(const [field,label] of [['jokers','Джокеры'],['consumables','Расходники'],['Tarot','Таро'],['Planet','Планеты'],['Spectral','Спектральные'],['vouchers','Билеты']]){const tab=button('profile_usage_'+field,label,()=>show(field));tab.dataset.tab=field;nav.append(tab);}
-   function show(field,page=0){
-    selectTab(nav,field);content.replaceChildren();const subset=['Tarot','Planet','Spectral'].includes(field),source=subset?'consumables':field;
-    const rows=Object.entries(profile.usage?.[source]??{}).filter(([id])=>lookup.get(id)?.discovered&&(!subset||lookup.get(id).set===field)).map(([id,value])=>({entry:lookup.get(id),count:Number(value?.count??value)})).sort((a,b)=>b.count-a.count),max=Math.max(1,...rows.map(item=>item.count)),pages=Math.max(1,Math.ceil(rows.length/10));
-    content.append(element('p','profile-usage-caption',field==='jokers'?'Раунды с джокером':field==='vouchers'?'Купленные билеты':'Использованные расходники'));
-    const chart=element('div','profile-usage-chart');chart.setAttribute('aria-label','Использование карт');chart.setAttribute('role','list');
-    for(let index=0;index<10;index++){
-     const item=rows[page*10+index],column=element('div','profile-usage-column');column.setAttribute('role','listitem');
-     if(item){const name=localized(item.entry).name,card=element('div','profile-usage-card','♠');card.title=name;card.setAttribute('aria-label',name);card.dataset.entryId=item.entry.id;const label=element('span','profile-usage-count',number(item.count)),track=element('div','profile-usage-track'),bar=element('div','profile-usage-bar');bar.style.setProperty('--usage-height',String(100*item.count/max)+'%');bar.dataset.count=String(item.count);track.append(bar);column.setAttribute('aria-label',`${name}: ${number(item.count)}`);column.append(card,label,track);
-     }else{column.setAttribute('aria-label','Нет данных');const placeholder=element('div','profile-usage-card profile-usage-placeholder'),track=element('div','profile-usage-track');column.append(placeholder,element('span','profile-usage-count','—'),track);}
-     chart.append(column);
-    }content.append(chart);if(!rows.length)content.append(element('p','profile-empty','Пока нет использованных карт.'));if(pages>1)content.append(pager('profile_usage',page,pages,next=>show(field,next)));
-   }show('jokers');
-  }
- }
- function navigate(next){view=next;draw();onNavigate?.({view,back:root.back});}
- root.back=()=>{if(view==='scores')return false;navigate('scores');return true;};draw();return root;
+/** A single local player; editing the name never replaces progress. */
+export function renderProfileView(profile,{name='Игрок',onRename}={}){
+ const root=element('section','profile-view player-profile');root.id='profile_view';root.setAttribute('aria-label','Профиль игрока');
+ const body=element('div','profile-details');body.id='profile_details';const label=element('label','profile-name-label','Имя игрока'),input=element('input','profile-name');input.id='profile_name';input.type='text';input.maxLength=16;input.value=name;input.autocomplete='off';input.setAttribute('aria-label','Имя игрока');
+ const status=element('p','profile-name-status');status.id='profile_name_status';status.setAttribute('role','status');let savedName=name;
+ input.onchange=()=>{const next=input.value.trim().slice(0,16)||'Игрок';try{savedName=onRename?.(next)??next;input.value=savedName;status.textContent='';}catch{input.value=savedName;status.textContent='Не удалось сохранить имя. Повторите попытку.';}};label.append(input);
+ const wins=element('p','profile-wins');wins.append(element('span','','Победы: '),element('strong','',number(profile.career?.c_wins)));
+ body.append(label,status,progressView(profile),wins);root.append(body);return root;
 }
 // Row capacities from UI_definitions.lua; decks use their own one-at-a-time cycle.
 const collectionRows={Joker:[5,5,5],Tarot:[5,6],Planet:[6,6],Spectral:[4,5],Voucher:[4,4],Booster:[4,4],Enhanced:[4,4],Seal:[4],Edition:[5],Back:[1],Tag:[6,6,6,6],Blind:[5,5,5,5,5,5]};
@@ -107,20 +60,20 @@ export function renderCollectionView(profile,seed,{onNavigate}={}){
   if(!set){
    const categories=element('nav','collection-categories');categories.setAttribute('aria-label','Раздел коллекции');
    const left=element('div','collection-category-column'),right=element('div','collection-category-column');
-   function choice(category,parent){const rows=entries.filter(entry=>entry.set===category),item=button('collection_category_'+category,'',()=>changeSet(category));item.append(element('strong','',setNames[category]));if(!['Enhanced','Seal'].includes(category))item.append(element('span','collection-category-count',`${rows.filter(entry=>entry.discovered).length} / ${rows.length}`));parent.append(item);}
+   function choice(category,parent){const rows=entries.filter(entry=>entry.set===category),item=button('collection_category_'+category,'',()=>changeSet(category));item.dataset.cardSet=category;item.append(element('strong','',setNames[category]));if(!['Enhanced','Seal'].includes(category))item.append(element('span','collection-category-count',`${rows.filter(entry=>entry.discovered).length} / ${rows.length}`));parent.append(item);}
    for(const category of ['Joker','Back','Voucher'])choice(category,left);
    const consumables=element('section','collection-consumables');consumables.setAttribute('aria-label','Расходники');consumables.append(element('strong','collection-group-title','Расходники'));const group=element('div');for(const category of ['Tarot','Planet','Spectral'])choice(category,group);consumables.append(group);left.append(consumables);
    for(const category of ['Enhanced','Seal','Edition','Booster','Tag','Blind'])choice(category,right);
    categories.append(left,right);root.append(categories);
   }else{
-   const content=element('div','collection-content'),heading=element('div','collection-controls');heading.append(element('strong','',setNames[set]));const tally=element('strong','');tally.id='collection_tally';
-   const rows=entries.filter(entry=>entry.set===set).sort((a,b)=>(a.order??0)-(b.order??0)),capacities=collectionRows[set],size=capacities.reduce((n,x)=>n+x,0),pages=Math.max(1,Math.ceil(rows.length/size));page=Math.max(0,Math.min(page,pages-1));tally.textContent=`${rows.filter(entry=>entry.discovered).length}/${rows.length}`;heading.append(tally);content.append(heading);
-   const grid=element('div','collection-grid');grid.setAttribute('aria-label','Карты раздела');grid.dataset.set=set;let offset=page*size;
+   const content=element('div','collection-content');
+   const rows=entries.filter(entry=>entry.set===set).sort((a,b)=>(a.order??0)-(b.order??0)),capacities=collectionRows[set],size=capacities.reduce((n,x)=>n+x,0),pages=Math.max(1,Math.ceil(rows.length/size));page=Math.max(0,Math.min(page,pages-1));
+   const grid=element('div','collection-grid');grid.setAttribute('aria-label','Карты раздела');grid.dataset.set=set;grid.dataset.cardSet=set;let offset=page*size;
    let hoverSuppressed=false;grid.onmouseleave=()=>{hoverSuppressed=false;};
    const tooltip=element('aside','collection-details collection-tooltip');tooltip.id='collection_details';tooltip.hidden=true;tooltip.setAttribute('role','tooltip');tooltip.setAttribute('aria-live','polite');
-   function details(entry,card){const known=entry.discovered,display=known||!entry.unlocked?localized(entry):null,name=display?.name??'Не обнаружено';let text=!entry.unlocked?(entry.condition||'Выполните условие открытия.'):known?display.description:'Найдите эту карту в обычной партии.';if(known&&entry.sticker)text+=` Победа: ${STAKES[entry.sticker-1]?.name??entry.sticker}.`;const chunks=textPages(text||'Описание отсутствует.');function part(index){tooltip.replaceChildren(element('strong','',name),element('p','',chunks[index]));const close=button('collection_detail_close','Закрыть описание',()=>{tooltip.hidden=true;hoverSuppressed=true;});tooltip.append(close);if(chunks.length>1)tooltip.append(pager('collection_detail',index,chunks.length,part));}part(0);tooltip.hidden=false;for(const other of grid.querySelectorAll('[data-entry-id]'))other.setAttribute('aria-pressed',String(other===card));card.setAttribute('aria-describedby',tooltip.id);}
+   function details(entry,card){const known=entry.discovered,display=known||!entry.unlocked?localized(entry):null,name=display?.name??'Не обнаружено';let text=!entry.unlocked?(entry.condition||'Выполните условие открытия.'):known?display.description:'Найдите эту карту в обычной партии.';if(set==='Blind'){const blind=APK_BLINDS_BY_ID[entry.id];text=known?`Набрать: ${blind.mult} × базовые очки анте. Награда: $${blind.dollars}. ${text}`:'Победите этот блайнд в обычной партии, чтобы открыть его описание.';}if(known&&entry.sticker)text+=` Победа: ${STAKES[entry.sticker-1]?.name??entry.sticker}.`;const chunks=textPages(text||'Описание отсутствует.');function part(index){tooltip.replaceChildren(element('strong','',name));if(known&&set==='Joker'){const rarity=catalog.centres.find(centre=>centre.key===entry.id)?.rarity,badge=element('span','collection-rarity',({1:'Обычный',2:'Необычный',3:'Редкий',4:'Легендарный'})[rarity]??'Джокер');badge.dataset.rarity=String(rarity);tooltip.append(badge);}tooltip.append(element('p','',chunks[index]));const close=button('collection_detail_close','Закрыть описание',()=>{tooltip.hidden=true;hoverSuppressed=true;});tooltip.append(close);if(chunks.length>1)tooltip.append(pager('collection_detail',index,chunks.length,part));}part(0);tooltip.hidden=false;card.setAttribute('aria-describedby',tooltip.id);}
    for(const capacity of capacities){const row=element('div','collection-card-row');row.style.setProperty('--collection-columns',capacity);for(const entry of rows.slice(offset,offset+capacity)){
-    const display=entry.discovered||!entry.unlocked?localized(entry):null,name=display?.name??'Не обнаружено',card=button('collection_'+entry.id,'',()=>details(entry,card));card.className='collection-card';card.dataset.entryId=entry.id;card.dataset.discovered=String(entry.discovered);card.dataset.unlocked=String(entry.unlocked);card.setAttribute('aria-label',name+(!entry.unlocked?' — закрыто':''));card.setAttribute('aria-pressed','false');card.onfocus=()=>details(entry,card);card.onmouseenter=()=>{if(!hoverSuppressed)details(entry,card);};card.append(element('span','collection-symbol',entry.discovered?'♠':entry.unlocked?'?':'◆'),element('strong','',name));
+    const display=entry.discovered||!entry.unlocked?localized(entry):null,name=display?.name??'Не обнаружено',card=button('collection_'+entry.id,'',()=>details(entry,card));card.className='collection-card';card.dataset.entryId=entry.id;card.dataset.cardSet=entry.set;card.dataset.cardState=!entry.unlocked?'locked':entry.discovered?'discovered':'unseen';card.dataset.discovered=String(entry.discovered);card.dataset.unlocked=String(entry.unlocked);card.setAttribute('aria-label',name+(!entry.unlocked?' — закрыто':''));card.onfocus=()=>details(entry,card);card.onmouseenter=()=>{if(!hoverSuppressed)details(entry,card);};if(entry.discovered&&entry.unlocked){card.append(artwork({entityId:entry.id},entry.set==='Booster'?'booster':'collection'));}else{const state=element('span','collection-state-art');state.setAttribute('aria-hidden','true');state.innerHTML=entry.unlocked?'<svg viewBox="0 0 72 100"><path d="M10 8H62V92H10Z M17 15H55V85H17Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M26 36C26 20 51 20 49 38C48 46 36 46 36 58" fill="none" stroke="currentColor" stroke-width="5"/><circle cx="36" cy="72" r="3" fill="currentColor"/></svg>':'<svg viewBox="0 0 72 100"><path d="M23 44V32C23 14 49 14 49 32V44" fill="none" stroke="currentColor" stroke-width="6"/><rect x="15" y="42" width="42" height="39" rx="5" fill="currentColor"/><circle cx="36" cy="57" r="5" fill="#263b3b"/><path d="M36 58V69" stroke="#263b3b" stroke-width="4"/></svg>';card.append(state);}
     if(entry.discovered&&entry.sticker){const sticker=element('span','collection-sticker',String(entry.sticker));sticker.style.setProperty('--stake-color',STAKES[entry.sticker-1]?.color??'#d7c49a');card.append(sticker);}row.append(card);
     if(set==='Back'){const description=element('div','collection-deck-description');description.append(element('h3','',name),element('p','',!entry.unlocked?entry.condition:entry.discovered?display.description:'Найдите эту колоду в обычной партии.'));row.append(description);}
    }offset+=capacity;grid.append(row);}
@@ -130,7 +83,13 @@ export function renderCollectionView(profile,seed,{onNavigate}={}){
     for(let ante=1;ante<=16;ante++){const target=nativeBlindTarget(ante),record=element('tr');record.dataset.ante=String(ante);record.dataset.target=String(target);record.dataset.reached=String(ante<=(profile.highScores?.furthestAnte??0));record.append(element('td','',String(ante)),element('td','',new Intl.NumberFormat('ru-RU',{notation:target>=1000000n?'compact':'standard',maximumFractionDigits:2}).format(target)));table.append(record);}
     layout.append(table,grid);content.append(layout);
    }else content.append(grid);
-   const paging=pager('collection',page,pages,next=>{page=next;draw();});paging.className='collection-paging';content.append(paging);root.append(content,tooltip);
+   if(['Enhanced','Seal','Edition'].includes(set))content.append(element('p','collection-category-explanation',set==='Seal'?'Печати добавляют карте особое свойство. На карте может быть одна печать.':set==='Enhanced'?'Улучшение меняет свойства игральной карты. На карте может быть одно улучшение.':'Издание добавляет карте отдельный эффект и сочетается с улучшением и печатью.'));
+   if(pages>1||['Joker','Tarot','Spectral','Voucher','Booster','Back'].includes(set)){
+    const cycle=next=>{page=(next+pages)%pages;draw();},paging=pager('collection',page,pages,cycle);paging.className='collection-paging';
+    for(const arrow of [paging.children[0],paging.children[2]])arrow.disabled=false;
+    const select=element('select','collection-page-select');select.id='collection_page_select';select.setAttribute('aria-label',set==='Back'?'Колода':'Страница коллекции');
+    for(let index=0;index<pages;index++){const option=element('option','',set==='Back'?localized(rows[index]).name:`Страница ${index+1} / ${pages}`);option.value=String(index);select.append(option);}select.value=String(page);select.onchange=()=>cycle(Number(select.value));paging.children[1].hidden=true;paging.append(select);content.append(paging);
+   }root.append(content,tooltip);
    // The floating explanation is dismissible on touch and keyboard, without closing the category.
    root.onkeydown=event=>{if(event.key==='Escape'&&!tooltip.hidden){event.stopPropagation();tooltip.hidden=true;hoverSuppressed=true;}};
   }

@@ -39,7 +39,7 @@ dialog.menu-dialog{height:auto;min-height:0;padding:14px;gap:12px;width:940px;bo
 .run-blind{padding:8px;border-width:3px}.run-blind h2{font-size:23px;margin:5px 0 12px}.run-blind p{font-size:17px!important;margin:6px}.run-blind strong{margin:8px 0;font-size:20px}
 .run-blind-token{font-size:44px;background:#214d48;border:5px dashed #a9b9a6;border-radius:50%;width:92px;height:92px;margin:10px auto;display:grid;place-items:center}.run-blind .run-blind-target{font-size:29px;color:#e05645}.run-blind-description{min-height:48px}
 .menu-dialog[data-window=collection-index]{width:1030px}.menu-dialog[data-window=collection]{width:1040px}
-.menu-dialog[data-window=profile],.menu-dialog[data-window=stats]{width:1100px}
+.menu-dialog[data-window=profile]{width:720px}
 .menu-dialog[data-window=end]{width:1160px}.menu-dialog[data-window=end] #dialog-body{height:570px;padding:8px}.end-window{display:grid;grid-template-columns:190px minmax(0,1fr);gap:15px;height:100%}
 .end-mascot{align-self:center;justify-self:center;width:150px;height:210px;border:7px solid #d7c49a;border-radius:14px;background:#f0e5c8;color:#ad3c33;display:grid;place-items:center;font-size:95px;transform:rotate(-8deg);box-shadow:0 8px #102626}
 .end-panel{display:flex;flex-direction:column;gap:12px}.end-heading{text-align:center;font-size:43px!important;margin:0!important;color:#ebc37b}.end-window[data-outcome=lost] .end-heading{color:#d95749}
@@ -47,17 +47,17 @@ dialog.menu-dialog{height:auto;min-height:0;padding:14px;gap:12px;width:940px;bo
 .end-score{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:18px;min-height:38px}.end-score strong{background:#102626;border-radius:5px;padding:6px 10px;color:#e7bc7b;overflow-wrap:anywhere;max-width:75%}
 .end-columns{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:18px}.end-counters,.end-progress{padding:8px;background:#23463f;border-radius:8px}.end-controls{display:flex;flex-direction:column;gap:13px;margin-top:12px}.end-controls button{height:56px;font-size:23px;background:#b74339;margin:0}
 .end-panel>button{height:54px;background:#087bad;font-size:27px}.end-counters button{height:30px;font-size:17px;background:#087bad;margin:2px 0 0;width:100%}.end-note{font-size:14px;margin:0;text-align:center}
-.menu-dialog[data-window=customize]{width:870px}.menu-dialog[data-window=customize] #dialog-body{height:460px}.customize-faces{display:flex;justify-content:center;gap:24px;padding:15px;background:#102626;border-radius:10px}.customize-face{width:125px;height:174px;background:#f0e5c8;border:4px solid #d7c49a;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#ad3c33;font-size:54px;box-shadow:0 5px #102626}.customize-face strong{font-size:33px}.customize-cycle{display:grid;grid-template-columns:50px 1fr 50px;gap:8px;margin:15px auto;width:550px}.customize-cycle button{height:44px;background:#b74339;font-size:22px}.menu-dialog[data-window=customize] .settings-toggle{justify-content:center}.menu-dialog[data-window=customize] .menu-note{font-size:16px!important;margin:15px 0 0;text-align:center}
 .menu-dialog[data-window=collection-index] #dialog-body{height:500px}
 .menu-dialog[data-window=collection] #dialog-body{height:560px}
-.menu-dialog[data-window=profile] #dialog-body{height:440px}
-.menu-dialog[data-window=stats] #dialog-body{height:500px}
+.menu-dialog[data-window=profile] #dialog-body{height:360px}
 .collection-tooltip[hidden]{display:none!important}
 .collection-grid[data-set=Blind] .collection-symbol{font-size:17px}
 .collection-grid[data-set=Blind] .collection-card{gap:3px;padding:4px;line-height:1.05}
 .native-settings{gap:8px;justify-content:center}.native-settings .settings-cycle{gap:3px;font-size:18px}.settings-cycle button{height:28px}
 /* Reset the native modal's bottom inset before measuring content height. */
 dialog.menu-dialog{right:auto;bottom:auto}
-.options-menu>button{padding:6px 12px}.settings-cycle button{padding:0}.customize-cycle button{padding:4px}
+.options-menu>button{padding:6px 12px}.settings-cycle button{padding:0}
 .end-score{min-height:30px;font-size:17px}.end-score strong{padding:3px 8px}.end-counters button{padding:2px 8px}
 .used-voucher-groups{display:flex;flex-direction:column;justify-content:center;gap:18px;min-height:270px}.used-voucher-row{display:flex;justify-content:center;gap:16px}.used-voucher-family{position:relative;flex:0 1 155px;height:96px}.used-voucher-family button{position:absolute;left:calc(var(--voucher-index)*8px);top:calc(var(--voucher-index)*17px);width:calc(100% - 8px);height:72px;margin:0;padding:5px 8px;background:#e8ddc0;color:#193d34;border:3px dashed #bb9c5b;border-radius:8px;font-size:16px;text-shadow:none}.menu-window-content:has(.used-voucher-groups){position:relative}.voucher-tooltip{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);width:430px;padding:15px;background:#24483f;border:3px solid #d7c49a;border-radius:10px;z-index:5}.voucher-tooltip[hidden]{display:none}.voucher-tooltip p{font-size:18px}.voucher-tooltip button{width:100%;height:35px;font-size:18px;padding:3px}
+
+.menu-dialog[data-window=collection][data-collection-set=Joker]{width:720px}
