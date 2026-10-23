@@ -116,6 +116,11 @@ class MainActivity : Activity() {
         super.onPause()
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (::web.isInitialized) web.evaluateJavascript("if (typeof window.cardGameResume === 'function') window.cardGameResume()", null)
+    }
+
     override fun onDestroy() {
         web.removeJavascriptInterface("CardStorage")
         web.destroy()

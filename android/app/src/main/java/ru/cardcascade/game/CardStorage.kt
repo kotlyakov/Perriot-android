@@ -13,7 +13,7 @@ import java.nio.charset.CodingErrorAction
 /** Called only by bundled scripts. Full SaveData validation belongs to the JS codec. */
 class CardStorage(private val directory: File) {
     private fun file(slot: String): AtomicFile {
-        require(slot == "current" || slot == "backup") { "Unknown save slot" }
+        require(slot == "current" || slot == "backup" || slot == "audio") { "Unknown save slot" }
         return AtomicFile(File(directory, "$slot.json"))
     }
 
@@ -31,7 +31,7 @@ class CardStorage(private val directory: File) {
             while (true) {
                 val count = it.read(buffer)
                 if (count == -1) break
-                check(collected.size() + count <= PROFILE_LIMIT) { "Save exceeds profile limit" }
+                check(collected.size() + count <= (if (slot == "audio") 1024 else PROFILE_LIMIT)) { "Save exceeds profile limit" }
                 collected.write(buffer, 0, count)
             }
             check(collected.size() > 0) { "Save file is empty" }
@@ -48,6 +48,30 @@ class CardStorage(private val directory: File) {
     @JavascriptInterface
     @Synchronized
     fun writeBackup(text: String): Boolean = write("backup", text)
+
+    @JavascriptInterface
+    @Synchronized
+    fun writeAudio(text: String): Boolean {
+        val store = file("audio")
+        var output: FileOutputStream? = null
+        return try {
+            require(text.length <= 1024)
+            val value = JSONObject(text)
+            require(value.length() == 2)
+            for (key in listOf("music", "effects")) {
+                val volume = value.get(key)
+                require(volume is Number && volume.toDouble().isFinite() && volume.toDouble() in 0.0..1.0)
+            }
+            output = store.startWrite()
+            output.write(text.toByteArray(Charsets.UTF_8))
+            store.finishWrite(output)
+            output = null
+            true
+        } catch (_: Exception) {
+            if (output != null) try { store.failWrite(output) } catch (_: Exception) { }
+            false
+        }
+    }
 
     private fun write(slot: String, text: String): Boolean {
         var output: FileOutputStream? = null
