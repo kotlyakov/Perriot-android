@@ -1,3 +1,4 @@
+import {challengeBossBans,challengeHands} from './challenge-rules.js';
 import {stakeScaling,runDiscards,validStake} from './stakes.js';
 import {DECKS,deckHands,deckDiscards,deckHandSize,deckBlindScale} from '../content/decks.js';
 import {APK_TAGS_BY_ID} from '../content/apk-tags.js';
@@ -27,7 +28,7 @@ export function getSkipAvailability(state,blindId=state.round?.blindId){
  }
  if(tagId==='tag_boss'){
   try{
-   const selected=chooseApkBoss(state.rng.apk,{ante:state.round.ante,bossesUsed:state.apkBlinds.bossesUsed});
+   const selected=chooseApkBoss(state.rng.apk,{ante:state.round.ante,bossesUsed:state.apkBlinds.bossesUsed,bannedKeys:challengeBossBans(state)});
    if(!canEnterBoss({...state,apkBlinds:{...state.apkBlinds,bossId:selected.bossId,bossSelectionAnte:state.round.ante}}))return blocked('Эффект выпавшего при замене босса ещё не реализован.',tagId);
   }catch{return blocked('Недоступны точные данные для замены босса.',tagId);}
  }
@@ -51,7 +52,7 @@ export function applySkipBlind(state,action){
    events.push({type:'hand_level_changed',handId,levels:3,level:next.handLevels[handId]});
   }
   if(tagId==='tag_boss'){
-   const selected=chooseApkBoss(next.rng.apk,{ante:next.round.ante,bossesUsed:next.apkBlinds.bossesUsed});
+   const selected=chooseApkBoss(next.rng.apk,{ante:next.round.ante,bossesUsed:next.apkBlinds.bossesUsed,bannedKeys:challengeBossBans(next)});
    next.bossRerollUsed=true;next.apkBlinds.bossSelectionAnte=next.round.ante;next.apkBlinds.bossId=selected.bossId;next.apkBlinds.bossesUsed=selected.bossesUsed;next.rng.apk=selected.rng;
    events.push({type:'boss_rerolled',bossId:selected.bossId});
   }
@@ -59,7 +60,7 @@ export function applySkipBlind(state,action){
   if(delta)events.push({type:'money_changed',before,after:next.money,delta});
  }
  const blindId=skipped==='small'?'big':'boss',vouchers=voucherModifiers(next);
- next.round={...next.round,blindId,target:blindId==='boss'?bossTarget(next):nativeBlindTarget(next.round.ante,1.5*deckBlindScale(next.deckId),stakeScaling(next)),score:0n,handsRemaining:deckHands(next.deckId)+vouchers.hands,discardsRemaining:runDiscards(next)+vouchers.discards};
+ next.round={...next.round,blindId,target:blindId==='boss'?bossTarget(next):nativeBlindTarget(next.round.ante,1.5*deckBlindScale(next.deckId),stakeScaling(next)),score:0n,handsRemaining:(next.challengeId?challengeHands(next):deckHands(next.deckId))+vouchers.hands,discardsRemaining:runDiscards(next)+vouchers.discards};
  next.lastScore=null;next.revision++;
  events.unshift({type:'blind_skipped',blindId:skipped,nextBlindId:blindId,tagId});
  return {state:next,events,error:null};

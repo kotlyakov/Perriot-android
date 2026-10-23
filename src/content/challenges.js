@@ -1,12 +1,9 @@
-// Challenge run configuration facts, based on Balatro 1.0.1 challenge rules.
-// Independent data catalog: gameplay enforcement and profile persistence are
-// implemented separately. Do not treat a listed challenge as playable yet.
-// Reference: https://teemo.dev/game-design/balatro/systems/decks-stakes-and-vouchers-reference/
+// Challenge configuration facts verified against the reference APK catalog.
 export const CHALLENGES=Object.freeze([
   {
     "number": 1,
     "id": "omelette",
-    "name": "The Omelette",
+    "name": "Омлет",
     "startingJokers": [
       {
         "id": "j_egg"
@@ -41,7 +38,7 @@ export const CHALLENGES=Object.freeze([
   {
     "number": 2,
     "id": "fifteen_minute_city",
-    "name": "15 Minute City",
+    "name": "15-минутный город",
     "deckPattern": "double_faces",
     "startingJokers": [
       {
@@ -57,7 +54,7 @@ export const CHALLENGES=Object.freeze([
   {
     "number": 3,
     "id": "rich_get_richer",
-    "name": "Rich get Richer",
+    "name": "Богатые становятся богаче",
     "money": 100,
     "modifiers": {
       "chipsDollarCap": true
@@ -70,7 +67,7 @@ export const CHALLENGES=Object.freeze([
   {
     "number": 4,
     "id": "knife_edge",
-    "name": "On a Knife's Edge",
+    "name": "На острие ножа",
     "startingJokers": [
       {
         "id": "j_ceremonial",
@@ -82,7 +79,7 @@ export const CHALLENGES=Object.freeze([
   {
     "number": 5,
     "id": "xray_vision",
-    "name": "X-ray Vision",
+    "name": "Рентгеновское зрение",
     "modifiers": {
       "flippedCards": 4
     }
@@ -90,7 +87,7 @@ export const CHALLENGES=Object.freeze([
   {
     "number": 6,
     "id": "mad_world",
-    "name": "Mad World",
+    "name": "Безумный мир",
     "deckPattern": "ranks_2_to_9",
     "modifiers": {
       "noHandMoney": true,
@@ -114,7 +111,7 @@ export const CHALLENGES=Object.freeze([
   {
     "number": 7,
     "id": "luxury_tax",
-    "name": "Luxury Tax",
+    "name": "Налог на роскошь",
     "handSize": 10,
     "modifiers": {
       "minusHandSizePerDollars": 5
@@ -123,7 +120,7 @@ export const CHALLENGES=Object.freeze([
   {
     "number": 8,
     "id": "non_perishable",
-    "name": "Non-Perishable",
+    "name": "Не портится",
     "modifiers": {
       "allEternal": true
     },
@@ -147,7 +144,7 @@ export const CHALLENGES=Object.freeze([
   {
     "number": 9,
     "id": "medusa",
-    "name": "Medusa",
+    "name": "Медуза",
     "deckPattern": "face_stone",
     "startingJokers": [
       {
@@ -159,7 +156,7 @@ export const CHALLENGES=Object.freeze([
   {
     "number": 10,
     "id": "double_or_nothing",
-    "name": "Double or Nothing",
+    "name": "Все или ничего",
     "deckPattern": "red_seals",
     "modifiers": {
       "debuffPlayedCards": true
@@ -168,7 +165,7 @@ export const CHALLENGES=Object.freeze([
   {
     "number": 11,
     "id": "typecast",
-    "name": "Typecast",
+    "name": "Одно и то же",
     "modifiers": {
       "eternalAfterAnte": 4,
       "zeroJokerSlotsAfterAnte": 4
@@ -180,7 +177,7 @@ export const CHALLENGES=Object.freeze([
   {
     "number": 12,
     "id": "inflation",
-    "name": "Inflation",
+    "name": "Инфляция",
     "modifiers": {
       "inflationPerPurchase": 1
     },
@@ -197,7 +194,7 @@ export const CHALLENGES=Object.freeze([
   {
     "number": 13,
     "id": "bram_poker",
-    "name": "Bram Poker",
+    "name": "Брэм-покер",
     "modifiers": {
       "noShopJokers": true
     },
@@ -212,14 +209,14 @@ export const CHALLENGES=Object.freeze([
       "v_illusion"
     ],
     "startingConsumables": [
-      "c_emperor",
-      "c_empress"
+      "c_empress",
+      "c_emperor"
     ]
   },
   {
     "number": 14,
     "id": "fragile",
-    "name": "Fragile",
+    "name": "Хрупкое",
     "deckPattern": "glass",
     "startingJokers": [
       {
@@ -261,7 +258,7 @@ export const CHALLENGES=Object.freeze([
   {
     "number": 15,
     "id": "monolith",
-    "name": "Monolith",
+    "name": "Монолит",
     "startingJokers": [
       {
         "id": "j_obelisk",
@@ -277,7 +274,7 @@ export const CHALLENGES=Object.freeze([
   {
     "number": 16,
     "id": "blast_off",
-    "name": "Blast Off",
+    "name": "На взлет",
     "hands": 2,
     "discards": 2,
     "jokerSlots": 4,
@@ -304,7 +301,7 @@ export const CHALLENGES=Object.freeze([
   {
     "number": 17,
     "id": "five_card_draw",
-    "name": "Five-Card Draw",
+    "name": "Пять карт",
     "discards": 6,
     "handSize": 5,
     "jokerSlots": 7,
@@ -325,7 +322,7 @@ export const CHALLENGES=Object.freeze([
   {
     "number": 18,
     "id": "golden_needle",
-    "name": "Golden Needle",
+    "name": "Золотая игла",
     "money": 10,
     "hands": 1,
     "discards": 6,
@@ -346,7 +343,7 @@ export const CHALLENGES=Object.freeze([
   {
     "number": 19,
     "id": "cruelty",
-    "name": "Cruelty",
+    "name": "Жестокость",
     "jokerSlots": 3,
     "modifiers": {
       "noSmallReward": true,
@@ -356,7 +353,7 @@ export const CHALLENGES=Object.freeze([
   {
     "number": 20,
     "id": "jokerless",
-    "name": "Jokerless",
+    "name": "Без джокеров",
     "jokerSlots": 0,
     "modifiers": {
       "noShopJokers": true

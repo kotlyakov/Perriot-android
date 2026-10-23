@@ -87,7 +87,7 @@ export function applySpectralEffect(state,card,targetIds,events){
  if(key==='c_immolate'){const result=shuffleApkDeck(state.hand.map(id=>state.cards[id]),state.rng.apk,'immolate');state.rng.apk=result.rng;raw(state);destroyPlaying(state,result.cardIds.slice(0,5),events,card.id);const before=state.money;state.money+=20n;events.push({type:'money_changed',sourceId:card.id,before,after:state.money,delta:20n});}
  if(key==='c_cryptid'){
   const source=state.cards[targetIds[0]],payload=Object.fromEntries(['rank','suit','enhancement','edition','seal'].filter(k=>Object.hasOwn(source,k)).map(k=>[k,source[k]])),added=[];
-  for(let i=0;i<2;i++){const copy=created(state,payload,events,card.id);if(Object.hasOwn(source,'permaBonus')){copy.permaBonus=source.permaBonus;events.at(-1).card.permaBonus=source.permaBonus;}added.push(copy);}
+  for(let i=0;i<2;i++){const copy=created(state,{...payload,id:source.id},events,card.id);if(Object.hasOwn(source,'permaBonus')){copy.permaBonus=source.permaBonus;events.at(-1).card.permaBonus=source.permaBonus;}added.push(copy);}
   applyItem7PlayingCardsAdded(state,added,events);
  }
  if(key==='c_sigil'||key==='c_ouija'){

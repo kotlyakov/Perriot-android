@@ -1,5 +1,6 @@
 import catalog from '../content/apk-shop-catalog.js';
 import {PROFILE_UNLOCKS} from '../content/profile-unlocks.js';
+import {CHALLENGE_BY_ID} from '../content/challenges.js';
 import {DECKS} from '../content/decks.js';
 import {APK_BLINDS} from '../content/apk-blinds.js';
 import {APK_TAGS} from '../content/apk-tags.js';
@@ -27,9 +28,10 @@ const unique=values=>[...new Set(values)];
 const highest=wins=>Math.max(0,...(wins??[]).flatMap((count,i)=>count?[i+1]:[]));
 const enhancementId=card=>card.enhancement?'m_'+card.enhancement:null;
 const editionId=card=>({foil:'e_foil',holographic:'e_holo',holo:'e_holo',polychrome:'e_polychrome',negative:'e_negative'})[card.edition];
-export function createProfile(){return {version:1,unlocked:unique([...centres.filter(c=>c.unlocked!==false&&!c.start_locked).map(c=>c.key),'b_red']),discovered:unique([...centres.filter(c=>c.start_discovered).map(c=>c.key),'b_red']),career:Object.fromEntries(CAREER.map(key=>[key,0])),highScores:{hand:'0',mostMoney:'0',furthestAnte:0,furthestRound:0,winStreak:0,currentStreak:0,bossStreak:0},deckWins:{},jokerWins:{},deckLosses:{},jokerLosses:{},usage:{jokers:{},vouchers:{},consumables:{},decks:{},hands:{}},runs:{}};}
+export function createProfile(){return {version:1,unlocked:unique([...centres.filter(c=>c.unlocked!==false&&!c.start_locked).map(c=>c.key),'b_red']),discovered:unique([...centres.filter(c=>c.start_discovered).map(c=>c.key),'b_red']),career:Object.fromEntries(CAREER.map(key=>[key,0])),highScores:{hand:'0',mostMoney:'0',furthestAnte:0,furthestRound:0,winStreak:0,currentStreak:0,bossStreak:0},completedChallenges:[],deckWins:{},jokerWins:{},deckLosses:{},jokerLosses:{},usage:{jokers:{},vouchers:{},consumables:{},decks:{},hands:{}},runs:{}};}
 export function validateProfile(p){
- assert(object(p)&&p.version===1&&Object.keys(p).every(k=>['version','unlocked','discovered','career','highScores','deckWins','jokerWins','deckLosses','jokerLosses','usage','runs'].includes(k)));
+ assert(object(p)&&p.version===1&&Object.keys(p).every(k=>['version','unlocked','discovered','career','highScores','deckWins','jokerWins','deckLosses','jokerLosses','usage','runs','completedChallenges'].includes(k)));
+ if(own(p,'completedChallenges'))assert(Array.isArray(p.completedChallenges)&&new Set(p.completedChallenges).size===p.completedChallenges.length&&p.completedChallenges.every(id=>typeof id==='string'&&own(CHALLENGE_BY_ID,id)));
  for(const field of ['unlocked','discovered'])assert(Array.isArray(p[field])&&new Set(p[field]).size===p[field].length&&p[field].every(id=>typeof id==='string'&&ids.has(id)));
  assert(object(p.career)&&CAREER.every(k=>safe(p.career[k]))&&Object.keys(p.career).every(k=>CAREER.includes(k)));
  assert(object(p.highScores)&&['hand','mostMoney'].every(k=>typeof p.highScores[k]==='string'&&/^\d{1,10000}$/.test(p.highScores[k]))&&['furthestAnte','furthestRound','winStreak','currentStreak','bossStreak'].every(k=>safe(p.highScores[k]))&&Object.keys(p.highScores).length===7);
@@ -85,11 +87,15 @@ export function updateProfile(profile,previousState,nextState,events=[],context=
  const p=structuredClone(profile),id=nextState.runId;assert(typeof id==='string'&&id.length>0&&id.length<=120&&safe(nextState.revision));
  let run=own(p.runs,id)?p.runs[id]:null;
  if(run&&nextState.revision<=run.revision){if(nextState.revision===run.revision&&context.continued&&!run.seeded&&!run.challenge&&!p.unlocked.includes('j_throwback')){p.unlocked.push('j_throwback');return p;}return profile;}
- const started=!run;run??={revision:-1,seeded:context.seeded===true,challenge:!!context.challenge,won:false,lost:false,maxJokers:0,bossStreak:0,rounds:0,handUsage:{}};
+ const started=!run;run??={revision:-1,seeded:context.seeded===true,challenge:!!nextState.challengeId||!!context.challenge,won:false,lost:false,maxJokers:0,bossStreak:0,rounds:0,handUsage:{}};
  run.revision=nextState.revision;run.maxJokers=Math.max(run.maxJokers,previousState?.jokers?.length??0,nextState.jokers?.length??0);Object.defineProperty(p.runs,id,{value:run,writable:true,enumerable:true,configurable:true});
  if(started&&context.abandonedRunId&&own(p.runs,context.abandonedRunId)){const old=p.runs[context.abandonedRunId];if(!old.seeded&&!old.challenge&&!old.won)p.highScores.currentStreak=0;}
  for(const event of events)if(event.type==='round_started')increment(run,'rounds');
- if(run.seeded||run.challenge){recordExcludedUsage(p,previousState??nextState,nextState,events,started);if(!run.seeded)recordHighScores(p,nextState,run,events);return validateProfile(p);}
+ if(run.seeded||run.challenge){
+  if(run.challenge&&own(CHALLENGE_BY_ID,nextState.challengeId)&&!run.won&&nextState.winPending===true&&nextState.phase==='round_won'&&nextState.round?.ante===8&&nextState.round.blindId==='boss'&&events.some(e=>e.type==='round_won')){
+   run.won=true;p.completedChallenges??=[];if(!p.completedChallenges.includes(nextState.challengeId))p.completedChallenges.push(nextState.challengeId);
+  }
+  recordExcludedUsage(p,previousState??nextState,nextState,events,started);if(!run.seeded)recordHighScores(p,nextState,run,events);return validateProfile(p);}
  const prev=previousState??nextState,n=nextState;
  if(started)increment(p.usage.decks,n.deckId);
  const inc=(key,amount=1)=>increment(p.career,key,amount);

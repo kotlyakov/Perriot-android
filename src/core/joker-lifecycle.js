@@ -25,7 +25,7 @@ export function applyJokerBeforeScore(state,playedIds,events,beforeContext){
   if(!source||context?.target.entityId!=='j_dna')continue;
   raw(state,3);
   const payload=Object.fromEntries(['rank','suit','enhancement','edition','seal'].filter(key=>Object.hasOwn(source,key)&&(key!=='enhancement'||source[key]!=='base')).map(key=>[key,source[key]]));
-  const copy=createPlayingCard(state,payload,{area:'hand'});
+  const copy=createPlayingCard(state,{...payload,id:source.id},{area:'hand'});
   if(Object.hasOwn(source,'permaBonus'))copy.permaBonus=source.permaBonus;
   created.push(copy);createdEvent(events,copy,context);
  }

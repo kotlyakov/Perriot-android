@@ -56,7 +56,7 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
  document.querySelector('#ante strong').firstChild.textContent=String(['shop','pack'].includes(state.phase)&&state.round.blindId==='boss'?state.apkShop.context.ante:state.round.ante);
  text('hand_count',state.hand.length+'/'+state.round.handSize);text('deck_count',state.drawPile.length+'/'+Object.keys(state.cards).length);text('joker_count',state.jokers.length+'/'+(state.jokerSlots??5));
  const arcana=state.phase==='pack'&&/^p_(arcana|spectral)_/.test(state.packState?.sourceEntityId??'');
- const hiddenCardIds=new Set(state.phase==='playing'?state.bossState?.hiddenCardIds??[]:[]);
+ const hiddenCardIds=new Set(state.phase==='playing'?[...(state.bossState?.hiddenCardIds??[]),...(state.challengeFlippedCardIds??[])]:[]);
  const hiddenSelection=state.hand.some(id=>selected.has(id)&&hiddenCardIds.has(id));
  const played=state.hand.filter(id=>selected.has(id)).map(id=>state.cards[id]);
  let preview=hiddenSelection?null:scoringPreview;try{if(!hiddenSelection && !preview && played.length)preview=scoreHand(state,played);}catch{}

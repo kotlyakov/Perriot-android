@@ -87,6 +87,7 @@ export function canEnterFirstAnteBoss(state){
  try{canonicalCards(state.cards);}catch{return false;}return true;
 }
 export function isBossCardDebuffed(state,card){
+ if(state.challengePlayedCardIds?.includes(card.id))return true;
  const boss=state.bossState;
  return !!boss && !boss.disabled && (boss.id==='bl_final_leaf' || suits[boss.id]&&isCardSuit(card,suits[boss.id],{bypassDebuff:true,jokers:state.jokers}) || boss.id==='bl_pillar'&&boss.playedBeforeBoss.includes(card.id) || boss.id==='bl_plant'&&isCardFace(card,state.jokers,{debuffed:false}));
 }

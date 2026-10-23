@@ -1,3 +1,4 @@
+import {applyChallengeDraw} from './challenge-draw.js';
 import {takeTagPack} from './tag-effects.js';
 import catalogue from '../content/apk-shop-catalog.js';
 import {generateApkCelestialPack,session} from './apk-shop.js';
@@ -5,7 +6,7 @@ import {currentApkShopContext} from './apk-shop-state.js';
 import {generateApkArcanaPack,supportsArcanaBooster} from './arcana-pack-generation.js';
 import {supportsRemainingBooster,getRemainingBoosterConfig,generateApkRemainingPack} from './booster-generation.js';
 import {createPlayingCard} from './apk-deck.js';
-import {hasJokerSpace,stampJokerCreationOrdinals} from './shop.js';
+import {hasJokerSpace,stampJokerCreationOrdinals,applyChallengePurchaseInflation} from './shop.js';
 import {supportsJoker} from '../content/jokers.js';
 import {applyItem7PlayingCardsAdded} from './joker-item7-lifecycle.js';
 import {sortHand} from './sort.js';
@@ -48,12 +49,13 @@ export function applyCelestialPackAction(state,action){
   const next=structuredClone(state),events=[];
   // Native open callbacks finish before the delayed card-generation callback.
   applyItem7EconomyContext(next,{type:'open_booster'},events);
+  applyChallengePurchaseInflation(next);
   const options={instancePrefix:'pack_'+(state.revision+1)};
   const generated=supportsRemainingBooster(offer.entityId)?generateApkRemainingPack(next.rng.apk,currentApkShopContext(next),{...options,boosterId:offer.entityId}):arcana?generateApkArcanaPack(next.rng.apk,currentApkShopContext(next),{...options,boosterId:offer.entityId}):generateApkCelestialPack(next.rng.apk,currentApkShopContext(next),{...options,...config(offer.entityId)});
   next.shop.boosters=next.shop.boosters.filter(card=>card.id!==offer.id);next.money-=offer.cost;next.rng.apk=generated.rng;next.phase='pack';next.revision++;
   next.packState={version:1,sourceEntityId:offer.entityId,cards:generated.cards,choicesRemaining:config(offer.entityId).choices};
   if(config(offer.entityId).kind==='Buffoon')stampJokerCreationOrdinals(next,next.packState.cards);
-  if(handPack(offer.entityId)){const count=Math.min(next.drawPile.length,Math.max(0,next.round.handSize-next.hand.length)),ids=Array.from({length:count},()=>next.drawPile.pop());next.hand.push(...ids);sortHand(next);next.packState.handDraw={cardIds:ids,handSize:next.round.handSize};if(ids.length)events.push({type:'cards_drawn',cardIds:ids});}
+  if(handPack(offer.entityId)){const count=Math.min(next.drawPile.length,Math.max(0,next.round.handSize-next.hand.length)),ids=Array.from({length:count},()=>next.drawPile.pop());applyChallengeDraw(next,ids);next.hand.push(...ids);sortHand(next);next.packState.handDraw={cardIds:ids,handSize:next.round.handSize};if(ids.length)events.push({type:'cards_drawn',cardIds:ids});}
   next.apkShop.context=currentApkShopContext(next);
   return {state:next,events:[{type:'booster_opened',offerId:offer.id,entityId:offer.entityId,cardIds:generated.cards.map(card=>card.id),choices:next.packState.choicesRemaining},{type:'money_changed',before:state.money,after:next.money,delta:-offer.cost},...events],error:null};
  }

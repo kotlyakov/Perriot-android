@@ -1,6 +1,7 @@
 import {collectionEntries} from '../core/profile.js';
 import {HAND_NAMES} from './field.js';
 import {DECKS} from '../content/decks.js';
+import {CHALLENGES} from '../content/challenges.js';
 import {STAKES} from '../content/stakes.js';
 import {describeShopItem} from '../content/shop-display.js';
 import {ENHANCEMENT_DESCRIPTIONS,EDITION_DESCRIPTIONS,SEAL_DESCRIPTIONS} from '../content/card-modifier-display.js';
@@ -40,10 +41,10 @@ export function renderProfileView(profile,{activeId='1',profiles=[{id:'1',name:'
   if(key==='progress'){
    const entries=collectionEntries(profile),collectable=entries.filter(entry=>!['Enhanced','Seal'].includes(entry.set)),discovered=collectable.filter(entry=>entry.discovered).length;
    const progress=element('div','profile-progress');
-   for(const [label,value,total] of [['Коллекция',discovered,collectable.length],['Победы колод по ставкам',Object.values(profile.deckWins??{}).reduce((n,wins)=>n+highestStake(wins),0),15*8],['Наклейки джокеров',Object.values(profile.jokerWins??{}).reduce((n,wins)=>n+highestStake(wins),0),150*8]]){
+   for(const [label,value,total] of [['Коллекция',discovered,collectable.length],['Испытания',profile.completedChallenges?.length??0,CHALLENGES.length],['Победы колод по ставкам',Object.values(profile.deckWins??{}).reduce((n,wins)=>n+highestStake(wins),0),15*8],['Наклейки джокеров',Object.values(profile.jokerWins??{}).reduce((n,wins)=>n+highestStake(wins),0),150*8]]){
     const item=element('div','profile-progress-item');item.append(element('strong','',label),element('span','',`${value} / ${total}`));const meter=element('progress');meter.max=total||1;meter.value=value;meter.setAttribute('aria-label',label);item.append(meter);progress.append(item);
    }body.append(progress);
-   body.append(element('p','profile-note','Партии с заданным зерном не открывают контент и не засчитывают победы. Испытания будут добавлены отдельно.'));
+   body.append(element('p','profile-note','Партии с заданным зерном не открывают контент и не засчитывают победы. Пройденные испытания учитываются отдельно от побед колод.'));
   }else if(key==='stats'){
    const table=element('table','profile-stat-table'),c=profile.career??{},scores=profile.highScores??{};
    for(const [label,value] of [['Победы',c.c_wins],['Поражения',c.c_losses],['Сыграно раундов',c.c_rounds],['Сыграно рук',c.c_hands_played],['Сыграно карт',c.c_cards_played],['Сброшено карт',c.c_cards_discarded],['Заработано денег',c.c_dollars_earned],['Потрачено в магазине',c.c_shop_dollars_spent],['Обновлений магазина',c.c_shop_rerolls],['Лучшая рука',scores.hand],['Максимум денег',scores.mostMoney],['Самое дальнее анте',scores.furthestAnte],['Самый дальний раунд',scores.furthestRound],['Лучшая серия побед',scores.winStreak],['Текущая серия побед',scores.currentStreak]])row(table,label,value);

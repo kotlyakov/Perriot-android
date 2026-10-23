@@ -1,3 +1,4 @@
+import {challengeBossBans,challengeTagBans} from './challenge-rules.js';
 import {canEnterBoss} from './boss-effects.js';
 import {chooseApkBoss} from './apk-blinds.js';
 import {createApkTagContext,chooseApkTag} from './apk-tags.js';
@@ -38,9 +39,9 @@ export function canLeaveApkShop(state){
 // Orbital hands are selected when entering the next blind selection screen.
 export function chooseNextAnteBlinds(state,rng){
  const ante=state.round.ante+1;
- const tagContext=createApkTagContext({...state.apkBlinds.tagContext,ante});
+ const tagContext=createApkTagContext({...state.apkBlinds.tagContext,ante,bannedKeys:[...new Set([...(state.apkBlinds.tagContext.bannedKeys??[]),...challengeTagBans(state)])]});
  const small=chooseApkTag(rng,tagContext),big=chooseApkTag(small.rng,tagContext);
- const boss=chooseApkBoss(big.rng,{ante,bossesUsed:state.apkBlinds.bossesUsed});
+ const boss=chooseApkBoss(big.rng,{ante,bossesUsed:state.apkBlinds.bossesUsed,bannedKeys:challengeBossBans(state)});
  return {selection:{version:1,ante,bossId:boss.bossId,bossesUsed:boss.bossesUsed,
   tags:{small:small.tagId,big:big.tagId},orbitalHands:{},tagContext,playedCardIds:[]},rng:boss.rng};
 }

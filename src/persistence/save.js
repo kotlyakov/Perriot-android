@@ -1,3 +1,5 @@
+import {CHALLENGE_BY_ID} from '../content/challenges.js';
+import {challengeFor,challengeHandSize,challengeShopContext} from '../core/challenge-rules.js';
 import {PROFILE_LIMIT,validateAccount} from './profile-envelope.js';
 import {isPerished} from '../core/joker-stickers.js';
 import {hasJokerStickers} from '../core/round-end-jokers.js';
@@ -30,7 +32,7 @@ const centres=new Map(catalogue.centres.map(c=>[c.key,c]));
 const handNames=new Set(catalogue.centres.filter(c=>c.set==='Planet').map(c=>c.handType));
 
 const freeTagPack=state=>state.phase==='pack'&&state.packState?.returnPhase==='blind_selection';
-const expectedHandSize=state=>deckHandSize(state.deckId)+(state.spectralHandSizeDelta??0)+item7CapacityDeltas(state.jokers).handSize+voucherModifiers(state).handSize+(state.activeTagHandSize??0);
+const expectedHandSize=state=>(state.challengeId?challengeHandSize(state):deckHandSize(state.deckId))-(state.challengeLuxuryTax??0)+(state.spectralHandSizeDelta??0)+item7CapacityDeltas(state.jokers).handSize+voucherModifiers(state).handSize+(state.activeTagHandSize??0);
 
 const LIMIT=2*1024*1024;
 const PHASES=['blind_selection','playing','round_won','game_over','shop','pack'];
@@ -44,7 +46,7 @@ function optionalObject(value,required,optional=[]) {
   requireValue(required.every(key=>Object.hasOwn(value,key)) && Object.keys(value).every(key=>required.includes(key) || optional.includes(key)));
 }
 function decodeOffer(value,ids,owned=false,consumable=false) {
-  optionalObject(value,owned?['id','entityId']:['id','entityId','cost','sellCost'],['cost','sellCost','edition','eternal','rental','perishable','perishRounds','debuffed','originalKey','set','frontKey','toDoPokerHand','creationOrdinal','repeatHandsRemaining','mult','chips','xMult','yorickDiscards','cainoXMult','turtleHandSize','invisibleRounds','rocketDollars','loyaltyRemaining','extraValue','enhancement','seal','couponed']);
+  optionalObject(value,owned?['id','entityId']:['id','entityId','cost','sellCost'],['cost','sellCost','edition','eternal','rental','perishable','perishRounds','debuffed','originalKey','set','frontKey','toDoPokerHand','creationOrdinal','repeatHandsRemaining','mult','chips','xMult','yorickDiscards','cainoXMult','turtleHandSize','invisibleRounds','rocketDollars','loyaltyRemaining','extraValue','enhancement','seal','couponed','pinned']);
   id(value.id);id(value.entityId);requireValue(!ids.has(value.id));ids.add(value.id);
   // Mutable currency counters are serialized decimals; ownership checks need
   // their decoded native type, just like the ability validator below.
@@ -52,6 +54,7 @@ function decodeOffer(value,ids,owned=false,consumable=false) {
   if(owned)requireValue(consumable?supportsConsumable(value):supportsJoker(value,{owned:true}));
   requireValue(validItem7Ability(value));
   for(const key of ['cost','sellCost'])if(Object.hasOwn(value,key))value[key]=decimal(value[key]);
+  if(Object.hasOwn(value,'pinned'))requireValue(value.pinned===true&&owned&&!consumable);
   if(Object.hasOwn(value,'couponed'))requireValue(value.couponed===true);
   if(Object.hasOwn(value,'edition'))requireValue(['base','foil','holographic','polychrome','negative'].includes(value.edition));
   for(const key of ['eternal','rental','perishable','debuffed'])if(Object.hasOwn(value,key))requireValue(typeof value[key]==='boolean');
@@ -73,6 +76,11 @@ function decodeApkShop(value,state) {
   if(Object.hasOwn(value.context,'activeCentreIds'))requireValue(Array.isArray(value.context.activeCentreIds)&&value.context.activeCentreIds.every(key=>['Joker','Tarot','Planet','Spectral'].includes(centres.get(key)?.set)));
   requireValue(new Set(value.context.usedVoucherIds).size===value.context.usedVoucherIds.length);
   createApkShopContext(value.context); // Validate actual saved inputs without selecting or polling.
+  if(state.challengeId){
+    const expected=challengeShopContext(state);
+    requireValue(expected.bannedCentreIds.every(id=>value.context.bannedCentreIds.includes(id)));
+    requireValue(Object.entries(expected.modifiers).every(([key,v])=>value.context.modifiers[key]===v)&&Object.entries(expected.rates).every(([key,v])=>value.context.rates[key]===v));
+  }
   const enhancements=[...new Set(Object.values(state.cards).map(card=>({mult:'m_mult',bonus:'m_bonus',lucky:'m_lucky',wild:'m_wild',steel:'m_steel',glass:'m_glass',stone:'m_stone',gold:'m_gold'})[card.enhancement]).filter(Boolean))];
   requireValue(new Set(value.context.enhancementIds).size===value.context.enhancementIds.length&&value.context.enhancementIds.length===enhancements.length&&value.context.enhancementIds.every(id=>enhancements.includes(id)));
   requireValue(value.context.ante===state.round.ante+(['shop','pack'].includes(state.phase)&&!freeTagPack(state)&&state.round.blindId==='boss'?1:0));
@@ -96,6 +104,8 @@ function decodeApkBlinds(value,state,pending=false){
   requireValue(value.bossesUsed[value.bossId]>=1);
   object(value.tagContext,Object.keys(createApkTagContext()));const context=createApkTagContext(value.tagContext);
   requireValue(context.ante===value.ante);
+  requireValue((challengeFor(state)?.bannedTagIds??[]).every(id=>context.bannedKeys.includes(id)));
+  requireValue(!(challengeFor(state)?.bannedBossIds??[]).includes(value.bossId));
   object(value.tags,['small','big']);const pool=getApkTagPool(context);
   for(const tag of Object.values(value.tags))requireValue(pool.includes(tag) && tag!=='UNAVAILABLE');
   object(value.orbitalHands,pending?[]:['small','big','boss']);
@@ -503,7 +513,14 @@ function decode(payload) {
   requireValue(state.lastScore===null||!hasEffectMechanisms(state));
   const sortMode=state.sortMode;
   if(Object.hasOwn(state,'sortMode'))requireValue(['rank','suit'].includes(sortMode));
-  optionalObject(state,['schemaVersion','runId','seed','revision','phase','deckId','cards','hand','drawPile','discardPile','jokers','handLevels','discoveredHands','rng','money','round','lastScore'],['stake','shop','bankruptAt','jokerSlots','apkShop','sortMode','roundNumber','apkBlinds','bossState','nextAnteBlinds','runStats','consumables','consumableSlots','mostPlayedHand','consumableUsage','consumableUsageTotal','lastTarotPlanet','packState','destroyedCardIds','hangedDestroyedCardIds','hangedShortfallCardIds','hangedShortfallEpoch','nextJokerCreationOrdinal','cashoutQuote','winAnte','won','winNotified','winPending','nextPlayingCardOrdinal','lastPlayedHand','handUsage','startingDeckSize','pendingDoubleTags','spectralDestroyedCardIds','spectralShortfallCardIds','spectralShortfallEpoch','spectralHandSizeDelta','ectoMinus','pendingTags','pendingTagPacks','activeTagHandSize','bossRerollUsed']);
+  optionalObject(state,['schemaVersion','runId','seed','revision','phase','deckId','cards','hand','drawPile','discardPile','jokers','handLevels','discoveredHands','rng','money','round','lastScore'],['stake','shop','bankruptAt','jokerSlots','apkShop','sortMode','roundNumber','apkBlinds','bossState','nextAnteBlinds','runStats','consumables','consumableSlots','mostPlayedHand','consumableUsage','consumableUsageTotal','lastTarotPlanet','packState','destroyedCardIds','hangedDestroyedCardIds','hangedShortfallCardIds','hangedShortfallEpoch','nextJokerCreationOrdinal','cashoutQuote','winAnte','won','winNotified','winPending','nextPlayingCardOrdinal','lastPlayedHand','handUsage','startingDeckSize','pendingDoubleTags','spectralDestroyedCardIds','spectralShortfallCardIds','spectralShortfallEpoch','spectralHandSizeDelta','ectoMinus','pendingTags','pendingTagPacks','activeTagHandSize','bossRerollUsed','challengeId','challengePlayedCardIds','challengeFlippedCardIds','challengeLuxuryTax']);
+  if(Object.hasOwn(state,'challengeId'))requireValue(typeof state.challengeId==='string'&&Object.hasOwn(CHALLENGE_BY_ID,state.challengeId)&&state.deckId==='red'&&(state.stake??1)===1&&state.apkShop&&state.apkBlinds&&state.rng?.apk);
+  const challenge=challengeFor(state);
+  if(Object.hasOwn(state,'challengeLuxuryTax')){requireValue(challenge?.modifiers?.minusHandSizePerDollars);integer(state.challengeLuxuryTax,-Number.MAX_SAFE_INTEGER,Number.MAX_SAFE_INTEGER);}
+  for(const [field,modifier]of [['challengePlayedCardIds','debuffPlayedCards'],['challengeFlippedCardIds','flippedCards']])if(Object.hasOwn(state,field)){
+    requireValue(challenge?.modifiers?.[modifier]&&Array.isArray(state[field])&&state[field].length<=10000&&new Set(state[field]).size===state[field].length);
+    requireValue(state[field].every(key=>typeof key==='string'&&(field==='challengeFlippedCardIds'?state.hand.includes(key):Object.hasOwn(state.cards,key)||(state.destroyedCardIds??[]).includes(key))));
+  }
   // Only the default win Ante is supported by the current blind-selection contract.
   if(Object.hasOwn(state,'winAnte'))requireValue(state.winAnte===8);
   for(const key of ['won','winNotified','winPending'])if(Object.hasOwn(state,key))requireValue(typeof state[key]==='boolean');
@@ -690,7 +707,7 @@ function decodeEffectReplay(payload){
   }
   const expected=replayEffectActions(before,journal.actions);
   if(journal.version===1)requireValue(expected.lastScore!==null);
-  else requireValue(hasEffectMechanisms(before)||hasEffectMechanisms(expected)||hasJokerStickers(before)||journal.actions.some(a=>['USE_CONSUMABLE','USE_PACK_CARD'].includes(a.type))||before.rng?.apk&&journal.actions.some(a=>a.type==='PLAY_HAND'));
+  else requireValue(before.challengeId||hasEffectMechanisms(before)||hasEffectMechanisms(expected)||hasJokerStickers(before)||journal.actions.some(a=>['USE_CONSUMABLE','USE_PACK_CARD'].includes(a.type))||before.rng?.apk&&journal.actions.some(a=>a.type==='PLAY_HAND'));
   const actual={...raw};delete actual.effectReplay;
   requireValue(canonical(actual)===canonical(encodeState(expected).state));
   expected.effectReplay={version:journal.version,before,actions:structuredClone(journal.actions)};return expected;

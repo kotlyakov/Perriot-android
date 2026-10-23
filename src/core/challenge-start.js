@@ -3,6 +3,9 @@ import {stampJokerCreationOrdinals} from './shop.js';
 import {syncVoucherShopContext,voucherModifiers} from './vouchers.js';
 import {challengeHands,challengeDiscards,challengeHandSize,challengeShopContext} from './challenge-rules.js';
 import {changeHandSize} from './hand-size.js';
+import {initializeItem7Joker,item7CapacityDeltas} from './joker-item7-lifecycle.js';
+import {item7EconomyModifiers} from './joker-item7-economy.js';
+import {currentApkShopContext} from './apk-shop-state.js';
 
 export function applyChallengeStart(state,challenge){
  state.challengeId=challenge.id;
@@ -30,10 +33,17 @@ export function applyChallengeStart(state,challenge){
    if(row.eternal)joker.eternal=true;
    if(row.negative)joker.edition='negative';
    if(row.pinned)joker.pinned=true;
-   return joker;
+   initializeItem7Joker(state,joker);
+   return s.reprice(joker);
   });
   state.rng.apk=s.rng;stampJokerCreationOrdinals(state,state.jokers);
  }
+ const capacity=item7CapacityDeltas(state.jokers);
+ state.round.handsRemaining+=capacity.hands;
+ state.round.discardsRemaining+=capacity.discards;
+ changeHandSize(state,capacity.handSize);
+ const bankruptAt=item7EconomyModifiers(state).bankruptAt;
+ if(bankruptAt!==0n)state.bankruptAt=bankruptAt;
  if(challenge.startingConsumables?.length){
   const s=session(state.rng.apk,state.apkShop.context);
   const cards=challenge.startingConsumables.map((id,index)=>s.construct(id,`challenge_${challenge.id}_consumable_${index+1}`,{materialize:true}));
@@ -43,4 +53,6 @@ export function applyChallengeStart(state,challenge){
  const divisor=challenge.modifiers?.minusHandSizePerDollars;
  if(divisor)changeHandSize(state,-Number(state.money/BigInt(divisor)));
  state.apkShop.context=challengeShopContext(state);
+ state.apkShop.context=currentApkShopContext(state);
+ return state.rng.apk;
 }

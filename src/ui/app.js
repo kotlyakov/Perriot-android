@@ -4,6 +4,7 @@ import {renderStartScreen,removeStartScreen} from './start-screen.js';
 import {renderBlindSelect} from './blind-select.js';
 import {renderPostRound,roundDeckView} from './post-round.js';
 import {animateNumber,animateCounters,animateMoney} from './number-animation.js';
+import {CHALLENGE_BY_ID,challengeUnlocked} from '../content/challenges.js';
 import {DECKS} from '../content/decks.js';
 import {createDeckView} from './deck-view.js';
 import {liftScoringCards,animateScore} from './score-animation.js';
@@ -52,14 +53,15 @@ const targetPackOpen=()=>state?.phase==='pack'&&/^p_(arcana|spectral)_/.test(sta
 function render(hand=state?.hand,scoringPreview=null){if(state){if(!busy){for(const id of selected)if(!state.hand.includes(id))selected.delete(id);const forced=!state.bossState?.disabled&&state.phase==='playing'?state.bossState?.forcedCardId:null;if(forced&&state.hand.includes(forced)&&!selected.has(forced)){if(selected.size>=5)selected.delete([...selected].at(-1));selected.add(forced);}}renderField(!busy?roundDeckView({...state,hand}):{...state,hand},selected,busy||!!state.winPending,toggle,reorder,scoringPreview);renderPostRound(state,busy&&!state.shop,()=>perform('CASH_OUT'));renderShop(busy&&scoringJokers?{...state,jokers:scoringJokers}:state,busy||!!state.winPending,{onAction:(type,fields)=>perform(type,undefined,undefined,fields),onNotice:notice,targetCardIds:[...selected]});renderBlindSelect(state,busy||!!state.winPending,()=>perform('START_BLIND'),blindId=>perform('SKIP_BLIND',undefined,undefined,{blindId}),()=>perform('REROLL_BOSS')); document.getElementById('stage').classList.toggle('arcana-open',targetPackOpen());for(const id of ['blind_panel','blind_title','blind_token','blind_target','hand','hand_count','play_hand','discard','sort_panel','sort_label','sort_rank','sort_suit'])document.getElementById(id).hidden=targetPackOpen()? !['hand','sort_panel','sort_label','sort_rank','sort_suit'].includes(id):state.phase==='blind_selection'||(['shop','pack'].includes(state.phase)&&!!state.shop)||(!busy&&['round_won','shop','pack'].includes(state.phase));for(const id of ['hands','discards','round_score','calculation_panel','chips','mult','times'])document.getElementById(id).hidden=targetPackOpen();if(!busy&&state.winPending&&!dialog.open&&!document.getElementById('start_screen'))showVictory();}}
 function toggle(id){if(busy || (state?.phase!=='playing'&&!targetPackOpen())||state.phase==='playing'&&!state.bossState?.disabled&&state.bossState?.forcedCardId===id)return;dismissCardTip();if(selected.has(id))selected.delete(id);else if(selected.size<5)selected.add(id);else {notice('Можно выбрать до 5 карт');return;}render();}
 async function reorder(id,to){const movement=prepareHandMovement();const ids=[...state.hand],from=ids.indexOf(id);ids.splice(from,1);ids.splice(to,0,id);if(to===from){render();await movement();return;}await perform('REORDER_HAND',ids);await movement();}
-function newState({deckId='red',seed,stake=1}={}){
+function newState({deckId='red',seed,stake=1,challengeId}={}){
  const profile=repository.getProfile();
+ if(challengeId){if(!challengeUnlocked(profile,challengeId))throw Error('Испытание пока закрыто');deckId='red';stake=1;seed=undefined;}
  if(!deckUnlocked(profile,deckId)||!stakeUnlocked(profile,deckId,stake))throw Error('Колода или ставка пока закрыта');
- const selectedSeed=chooseProfileSeed({seed,stake,wonIds:legendaryWinIds(profile),randomSeed:()=>crypto.randomUUID().replaceAll('-','').slice(0,8).toUpperCase()});
- return createRun(selectedSeed,{runId:crypto.randomUUID(),deckId,stake,money:4n,referenceRng:true,referenceShop:true,...profileRunContext(profile),reducedMotion:matchMedia('(prefers-reduced-motion: reduce)').matches});
+ const selectedSeed=chooseProfileSeed({seed,stake,wonIds:challengeId?[]:legendaryWinIds(profile),randomSeed:()=>crypto.randomUUID().replaceAll('-','').slice(0,8).toUpperCase()});
+ return createRun(selectedSeed,{runId:crypto.randomUUID(),deckId,stake,challengeId,money:4n,referenceRng:true,referenceShop:true,...profileRunContext(profile),reducedMotion:matchMedia('(prefers-reduced-motion: reduce)').matches});
 }
-function startFresh(options){if(busy)return;try{const next=newState(options);repository.reset(next,{seeded:!!options?.seed});state=next;selected.clear();closeDialog();removeStartScreen();render();}catch{storageError();}}
-function showMenu(){if(busy)return;dismissDialog();renderStartScreen({hasSave:!!state,profile:repository.getProfile(),profileName:repository.getProfiles().find(p=>p.id===repository.activeId)?.name,onContinue:()=>{try{repository.save(state,[],{continued:true});removeStartScreen();render();}catch{storageError();}},onNew:options=>{if(state)confirmNew(options);else startFresh(options);},onSettings:showSettings,onCollection:()=>openDialog('Коллекция',renderCollectionView(repository.getProfile())),onProfile:showProfile});}
+function startFresh(options){if(busy)return;try{const next=newState(options);repository.reset(next,{seeded:!options?.challengeId&&!!options?.seed,challenge:!!options?.challengeId});state=next;selected.clear();closeDialog();removeStartScreen();render();}catch{storageError();}}
+function showMenu(){if(busy)return;dismissDialog();renderStartScreen({hasSave:!!state,continueChallengeId:state?.challengeId,profile:repository.getProfile(),profileName:repository.getProfiles().find(p=>p.id===repository.activeId)?.name,onContinue:()=>{try{repository.save(state,[],{continued:true});removeStartScreen();render();}catch{storageError();}},onNew:options=>{if(state)confirmNew(options);else startFresh(options);},onSettings:showSettings,onCollection:()=>openDialog('Коллекция',renderCollectionView(repository.getProfile())),onProfile:showProfile});}
 function showProfile(){
  openDialog('Профиль',renderProfileView(repository.getProfile(),{activeId:repository.activeId,profiles:repository.getProfiles(),onSelect:id=>{
   if(busy)return;try{const selectedProfile=repository.selectProfile(id);state=selectedProfile.state;selected.clear();showMenu();showProfile();}catch{storageError();}
@@ -118,19 +120,19 @@ async function perform(type,ids,mode,fields={}) {
    await Promise.all([expand(),arrive()]);
  }
  await moneyMotion;scoringJokers=null;busy=false;render();
- if(state.phase==='game_over')openDialog('Партия окончена',`<p>Набрано ${state.round.score} из ${displayBlindTarget(state.round.target)} очков.</p><p>Предварительная версия: доступны переходы анте, финальные боссы, победа и бесконечный режим. Профиль, коллекция и статистика сохраняются. Испытания ещё в разработке.</p>`,[['Новый забег',()=>confirmNew()],['Закрыть',closeDialog]]);
+ if(state.phase==='game_over')openDialog('Партия окончена',`<p>Набрано ${state.round.score} из ${displayBlindTarget(state.round.target)} очков.</p><p>Предварительная версия: доступны переходы анте, финальные боссы, победа и бесконечный режим. Профиль, коллекция и статистика сохраняются. Доступны 20 испытаний.</p>`,[['Новый забег',()=>confirmNew()],['Закрыть',closeDialog]]);
 }
 function confirmNew(options){if(busy)return;openDialog('Новый забег','<p>Начать заново? Текущий забег останется в резервной записи.</p>',[['Начать',()=>startFresh(options)],['Отмена',()=>{if(state?.winPending)showVictory();else closeDialog();}]]);if(state?.winPending)dialog.dataset.view='victory-confirm';}
 document.getElementById('play_hand').onclick=()=>perform('PLAY_HAND',[...selected]);
 document.getElementById('discard').onclick=()=>perform('DISCARD',[...selected]);
 function sort(mode){if(busy || (state?.phase!=='playing'&&!targetPackOpen()))return;perform('SET_SORT',undefined,mode);}
 document.getElementById('sort_rank').onclick=()=>sort('rank');document.getElementById('sort_suit').onclick=()=>sort('suit');
-function showSettings(){if(busy||victoryProtected())return;openDialog('Настройки','<p>Пьеро · предварительная сборка 0.4.45-preview</p><p>Переходы анте, обычные и финальные боссы, победа и бесконечный режим. Доступны магазин, все 150 эффектов джокеров, Планеты, все семейства наборов, Таро и 18 Призрачных карт. Доступны три профиля, коллекция, статистика и разблокировки. Испытания ещё в разработке. Продолжение сохраняется после каждого действия.</p>',[['Продолжить',closeDialog],['Новый забег',()=>confirmNew()],['Главное меню',showMenu]]);}
+function showSettings(){if(busy||victoryProtected())return;openDialog('Настройки','<p>Пьеро · предварительная сборка 0.4.45-preview</p><p>Переходы анте, обычные и финальные боссы, победа и бесконечный режим. Доступны магазин, все 150 эффектов джокеров, Планеты, все семейства наборов, Таро и 18 Призрачных карт. Доступны три профиля, коллекция, статистика и разблокировки. Доступны 20 испытаний. Продолжение сохраняется после каждого действия.</p>',[['Продолжить',closeDialog],['Новый забег',()=>confirmNew()],['Главное меню',showMenu]]);}
 document.getElementById('options').onclick=showSettings;
 document.getElementById('run_info').onclick=()=>{
  if(busy||!state||state.winPending)return;const table=document.createElement('table');
  for(const id of state.discoveredHands){const row=table.insertRow();row.insertCell().textContent=HAND_NAMES[id];row.insertCell().textContent='Ур. '+state.handLevels[id];}
- const body=document.createElement('div'),p=document.createElement('p');p.textContent=DECKS[state.deckId].name+' · Анте '+state.round.ante+(state.round.blindId==='boss'?' · Босс':state.round.blindId==='big'?' · Большой блайнд':' · Малый блайнд');body.append(p,table);openDialog('Партия',body);
+ const body=document.createElement('div'),p=document.createElement('p');p.textContent=(state.challengeId?'Испытание: '+CHALLENGE_BY_ID[state.challengeId].name:DECKS[state.deckId].name)+' · Анте '+state.round.ante+(state.round.blindId==='boss'?' · Босс':state.round.blindId==='big'?' · Большой блайнд':' · Малый блайнд');body.append(p,table);openDialog('Партия',body);
 };
 document.getElementById('deck').onclick=()=>{
  if(busy||!state||state.winPending)return;openDialog('Колода',createDeckView(roundDeckView(state)),[['Назад',closeDialog]]);
