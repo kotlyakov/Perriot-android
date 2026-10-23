@@ -1,3 +1,4 @@
+import {isVerificationSeed} from '../core/verification-seed.js';
 import catalogue from '../content/apk-shop-catalog.js';
 import {createGameAudio,createAudioSettings,soundForAction} from './audio.js';
 import {renderShop,prepareShopChange} from './shop-screen.js';
@@ -68,13 +69,13 @@ function toggle(id){if(busy || (state?.phase!=='playing'&&!targetPackOpen())||st
 async function reorder(id,to){const movement=prepareHandMovement();const ids=[...state.hand],from=ids.indexOf(id);ids.splice(from,1);ids.splice(to,0,id);if(to===from){render();await movement();return;}await perform('REORDER_HAND',ids);await movement();}
 function newState({deckId='red',seed,stake=1,challengeId}={}){
  const profile=repository.getProfile();
- if(challengeId){if(!challengeUnlocked(profile,challengeId))throw Error('Испытание пока закрыто');deckId='red';stake=1;seed=undefined;}
- if(!deckUnlocked(profile,deckId)||!stakeUnlocked(profile,deckId,stake))throw Error('Колода или ставка пока закрыта');
+ if(challengeId){if(!challengeUnlocked(profile,challengeId,seed))throw Error('Испытание пока закрыто');deckId='red';stake=1;if(!isVerificationSeed(seed))seed=undefined;}
+ if(!deckUnlocked(profile,deckId,seed)||!stakeUnlocked(profile,deckId,stake,seed))throw Error('Колода или ставка пока закрыта');
  const selectedSeed=chooseProfileSeed({seed,stake,wonIds:challengeId?[]:legendaryWinIds(profile),randomSeed:()=>crypto.randomUUID().replaceAll('-','').slice(0,8).toUpperCase()});
- return createRun(selectedSeed,{runId:crypto.randomUUID(),deckId,stake,challengeId,money:4n,referenceRng:true,referenceShop:true,...profileRunContext(profile),reducedMotion:matchMedia('(prefers-reduced-motion: reduce)').matches});
+ return createRun(selectedSeed,{runId:crypto.randomUUID(),deckId,stake,challengeId,money:4n,referenceRng:true,referenceShop:true,...profileRunContext(profile,selectedSeed),reducedMotion:matchMedia('(prefers-reduced-motion: reduce)').matches});
 }
-function startFresh(options){if(busy)return;try{const next=newState(options);repository.reset(next,{seeded:!options?.challengeId&&!!options?.seed,challenge:!!options?.challengeId});state=next;selected.clear();closeDialog();removeStartScreen();render();}catch{storageError();}}
-function showMenu(){if(busy)return;dismissDialog();renderStartScreen({hasSave:!!state,continueChallengeId:state?.challengeId,profile:repository.getProfile(),profileName:repository.getProfiles().find(p=>p.id===repository.activeId)?.name,onContinue:()=>{try{repository.save(state,[],{continued:true});removeStartScreen();render();}catch{storageError();}},onNew:options=>{if(state)confirmNew(options);else startFresh(options);},onSettings:showSettings,onCollection:()=>openDialog('Коллекция',renderCollectionView(repository.getProfile())),onProfile:showProfile});}
+function startFresh(options){if(busy)return;try{const next=newState(options);repository.reset(next,{seeded:isVerificationSeed(next.seed)||!options?.challengeId&&!!options?.seed,challenge:!!options?.challengeId});state=next;selected.clear();closeDialog();removeStartScreen();render();}catch{storageError();}}
+function showMenu(){if(busy)return;dismissDialog();renderStartScreen({hasSave:!!state,continueChallengeId:state?.challengeId,profile:repository.getProfile(),profileName:repository.getProfiles().find(p=>p.id===repository.activeId)?.name,onContinue:()=>{try{repository.save(state,[],{continued:true});removeStartScreen();render();}catch{storageError();}},onNew:options=>{if(state)confirmNew(options);else startFresh(options);},onSettings:showSettings,onCollection:()=>openDialog('Коллекция',renderCollectionView(repository.getProfile(),state?.seed)),onProfile:showProfile});}
 function showProfile(){
  openDialog('Профиль',renderProfileView(repository.getProfile(),{activeId:repository.activeId,profiles:repository.getProfiles(),onSelect:id=>{
   if(busy)return;try{const selectedProfile=repository.selectProfile(id);state=selectedProfile.state;selected.clear();showMenu();showProfile();}catch{storageError();}
@@ -146,7 +147,7 @@ document.getElementById('sort_rank').onclick=()=>sort('rank');document.getElemen
 function showSettings(){
  if(busy||victoryProtected())return;
  const body=document.createElement('div');body.className='audio-settings';
- const subtitle=document.createElement('p');subtitle.textContent='Пьеро · предварительная сборка 0.4.47-preview';body.append(subtitle);
+ const subtitle=document.createElement('p');subtitle.textContent='Пьеро · предварительная сборка 0.4.48-preview';body.append(subtitle);
  for(const [key,title] of [['music','Музыка'],['effects','Звуковые эффекты']]){
   const label=document.createElement('label'),input=document.createElement('input'),output=document.createElement('output');
   label.htmlFor=input.id='audio_'+key;label.append(document.createTextNode(title),output);

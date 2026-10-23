@@ -1,3 +1,4 @@
+import {isVerificationSeed} from '../core/verification-seed.js';
 // Challenge configuration facts verified against the reference APK catalog.
 export const CHALLENGES=Object.freeze([
   {
@@ -385,8 +386,8 @@ export const CHALLENGES=Object.freeze([
   }
 ].map(row=>Object.freeze(row)));
 export const CHALLENGE_BY_ID=Object.freeze(Object.fromEntries(CHALLENGES.map(row=>[row.id,row])));
-export const challengeModeUnlocked=profile=>Object.values(profile?.deckWins??{}).filter(wins=>Array.isArray(wins)&&wins.some(n=>Number.isSafeInteger(n)&&n>0)).length>=5;
+export const challengeModeUnlocked=(profile,seed)=>isVerificationSeed(seed)||Object.values(profile?.deckWins??{}).filter(wins=>Array.isArray(wins)&&wins.some(n=>Number.isSafeInteger(n)&&n>0)).length>=5;
 // The first five are available after opening challenge mode; each distinct
 // completed challenge opens one more, irrespective of completion order.
-export const challengeUnlocked=(profile,id)=>challengeModeUnlocked(profile)&&Object.hasOwn(CHALLENGE_BY_ID,id)&&CHALLENGE_BY_ID[id].number<=5+new Set(profile?.completedChallenges??[]).size;
+export const challengeUnlocked=(profile,id,seed)=>Object.hasOwn(CHALLENGE_BY_ID,id)&&challengeModeUnlocked(profile,seed)&&(isVerificationSeed(seed)||CHALLENGE_BY_ID[id].number<=5+new Set(profile?.completedChallenges??[]).size);
 export const challengeStartingMoney=challenge=>BigInt(challenge.money??4);
