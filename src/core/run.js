@@ -36,12 +36,17 @@ import {APK_BASE_CARD_IDS,shuffleApkDeck} from './apk-deck.js';
 import {applyShopAction,createShop,stampJokerCreationOrdinals} from './shop.js';
 import {createApkShopContext,chooseApkVoucher,generateApkShop} from './apk-shop.js';
 import {APK_HAND_NAMES,currentApkShopContext} from './apk-shop-state.js';
+import {CHALLENGE_BY_ID} from '../content/challenges.js';
+import {applyChallengeDeck} from './challenge-deck.js';
+import {applyChallengeStart} from './challenge-start.js';
 
-export function createRun(seed, {runId,deckId='red',stake=1,money,referenceRng=false,referenceShop=false,reducedMotion=false,unlockedCentreIds=[],lockedCentreIds=[]}={}) {
+export function createRun(seed, {runId,deckId='red',stake=1,money,referenceRng=false,referenceShop=false,reducedMotion=false,unlockedCentreIds=[],lockedCentreIds=[],challengeId=null}={}) {
   if (typeof seed!=='string' || !seed || seed.length>1000) throw new TypeError('Invalid seed');
   if (typeof runId!=='string' || !runId || runId.length>120 || !Object.hasOwn(DECKS,deckId) || typeof money!=='bigint'||!validStake(stake)) throw new TypeError('Invalid run options');
   if(typeof referenceRng!=='boolean'||typeof referenceShop!=='boolean'||typeof reducedMotion!=='boolean'||referenceShop&&!referenceRng)throw new TypeError('Invalid reference shop options');
   if(!['red','blue'].includes(deckId)||stake>1){referenceRng=true;referenceShop=true;}
+  if(challengeId!==null&&(!Object.hasOwn(CHALLENGE_BY_ID,challengeId)||deckId!=='red'||stake!==1))throw new TypeError('Invalid challenge options');
+  if(challengeId){referenceRng=true;referenceShop=true;}
   const rules=DECKS[deckId];
   const cards = {};
   for (const suit of ['clubs','diamonds','hearts','spades']) {
@@ -60,6 +65,7 @@ export function createRun(seed, {runId,deckId='red',stake=1,money,referenceRng=f
     lastScore:null,sortMode:'rank',mostPlayedHand:'high_card',nextJokerCreationOrdinal:1,
     consumableUsage:{},consumableUsageTotal:{tarot:0,planet:0,spectral:0,tarot_planet:0,all:0},lastTarotPlanet:null,
   };
+  if(challengeId)applyChallengeDeck(state,CHALLENGE_BY_ID[challengeId].deckPattern);
   if(stake!==1)state.stake=stake;
   if(rules.jokerSlots)state.jokerSlots=5+rules.jokerSlots;
   if(rules.consumableSlots||rules.vouchers?.includes('v_crystal_ball'))state.consumableSlots=2+(rules.consumableSlots??0)+(rules.vouchers?.includes('v_crystal_ball')?1:0);
@@ -74,7 +80,8 @@ export function createRun(seed, {runId,deckId='red',stake=1,money,referenceRng=f
       state.runStats={handsPlayed:0,unusedDiscards:0,skips:0};state.roundNumber=1;state.apkShop={version:1,voucherId:voucher.voucherId,firstShopBuffoon:false,context};
     }
     rng=prepareStartingDeck(state,rng);
-    const shuffled=shuffleApkDeck(cards,rng,'shuffle');state.drawPile=shuffled.cardIds;state.rng.apk=shuffled.rng;
+    if(challengeId)applyChallengeStart(state,CHALLENGE_BY_ID[challengeId]);
+    const shuffled=shuffleApkDeck(state.cards,rng,'shuffle');state.drawPile=shuffled.cardIds;state.rng.apk=shuffled.rng;
     resetItem7RoundTargets(state);
     // The initial blind screen fixes all three orbital hands after the deck shuffle.
     if(state.apkBlinds)for(const id of ['small','big','boss']){
