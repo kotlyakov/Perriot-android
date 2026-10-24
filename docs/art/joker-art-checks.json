@@ -18,9 +18,9 @@
     "xml": "All150 final SVGs parsed with Python ElementTree",
     "raster": "All150 final SVGs rendered with sharp236x316; named contact sheets rendered for visual QA",
     "visual": "All150 reviewed; final corrections018/090/109 rechecked",
-    "tests": "1815core PASS/0 FAIL/2 optional skips before final art-only corrections;154targeted PASS after final corrections; full-face viewBox test observed RED150 -> GREEN152",
+    "tests": "Final CI40121855610 on802e71f:1817total/1815PASS/0FAIL/2expected optional skips;154targeted locally after final art corrections. Full-face format RED150 -> GREEN152 observed before integration.",
     "bundle": "150 bundled SVG byte-equal at integration review; Android source/art/CSS assets byte-equal",
-    "browser": "Initial layout CI40121551304 PASS. Manual320px review found a one-letter wrap in Сердцебиение; compact gallery spacing corrected and whole-word regression assertion added. Final browser rerun pending."
+    "browser": "Final CI40121855610 SUCCESS on802e71f22db0d2e8586cd10d2b11c209067e5716. All150 full-face art/outlined names/whole words/tooltips on3game resolutions, all150shop names, standalone320/390/736 paging/keyboard/swipe,4edition pixel comparisons PASS.49PNG artifact12571009095; final320first/last reviewed after the narrow-word correction."
   },
   "complexity": {
     "baselineSvgChars": 529107,
@@ -2731,5 +2731,14 @@
       },
       "acceptedByUser": false
     }
-  ]
+  ],
+  "ci": {
+    "runId": 40121855610,
+    "jobId": 120954956403,
+    "sourceCommit": "802e71f22db0d2e8586cd10d2b11c209067e5716",
+    "conclusion": "success",
+    "screenshotsArtifactId": 12571009095,
+    "screenshots": 49,
+    "initialLayoutRunId": 40121551304
+  }
 }
