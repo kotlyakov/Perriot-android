@@ -13,6 +13,7 @@ async function titleBounds(page,selector,titleClass){
   const out=[...range.getClientRects()].filter(b=>b.left<r.left+.4||b.right>r.right-.4||b.top<r.top||b.bottom>r.bottom-.4);
   const ink=card.querySelector('.shop-art,.print-plate')?.getBoundingClientRect(),label=name.getBoundingClientRect(),style=getComputedStyle(name);
   if(out.length||name.scrollHeight>name.clientHeight+1)return[card.dataset.entryId+' title overflow'];
+  if(name.firstChild?.nodeType===Node.TEXT_NODE)for(const word of name.textContent.matchAll(/[А-Яа-яЁё]{3,}/g)){const part=document.createRange();part.setStart(name.firstChild,word.index);part.setEnd(name.firstChild,word.index+word[0].length);if(part.getClientRects().length>1)return[card.dataset.entryId+' must keep the word '+word[0]+' together'];}
   if(!ink||ink.left>r.left+4||ink.top>r.top+4||ink.right<r.right-4||ink.bottom<r.bottom-4)return[card.dataset.entryId+' artwork must fill the card'];
   if(label.top<ink.top||label.bottom>ink.bottom||parseFloat(style.webkitTextStrokeWidth)<1.5||style.backgroundColor!=='rgba(0, 0, 0, 0)')return[card.dataset.entryId+' name must be outlined over the artwork'];
   return[];

@@ -12,7 +12,7 @@
   "styleSourceSha256": {
     "web/shop-screen.css": "3def4622a391371cce688cb38946896611ed980af5eb7d1f6ad2591686b01e43",
     "web/profile-review.css": "5774b4be3e38cb009384d9de4879356290fb139c009df208aa048532683d953f",
-    "tools/previews/joker-collection-template.html": "24ab2fcaace638e803870e3b5e730f218aa343e677e2bf1781b65c855df7d6ba"
+    "tools/previews/joker-collection-template.html": "a5c5db7311206816d80ed9446cbf183a444a6e8753ddeca8c7db9fbb3cd363fb"
   },
   "validation": {
     "xml": "All150 final SVGs parsed with Python ElementTree",
@@ -20,7 +20,7 @@
     "visual": "All150 reviewed; final corrections018/090/109 rechecked",
     "tests": "1815core PASS/0 FAIL/2 optional skips before final art-only corrections;154targeted PASS after final corrections; full-face viewBox test observed RED150 -> GREEN152",
     "bundle": "150 bundled SVG byte-equal at integration review; Android source/art/CSS assets byte-equal",
-    "browser": "Awaiting current-revision GitHub Actions; existing browser suite now verifies full-face art and outlined overlaid labels on all150 cards, including shop faces."
+    "browser": "Initial layout CI40121551304 PASS. Manual320px review found a one-letter wrap in Сердцебиение; compact gallery spacing corrected and whole-word regression assertion added. Final browser rerun pending."
   },
   "complexity": {
     "baselineSvgChars": 529107,
