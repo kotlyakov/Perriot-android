@@ -5,10 +5,10 @@ try{for(const [width,height,touch,motion] of [[1536,688,false,'no-preference'],[
  const context=await browser.newContext({viewport:{width,height},hasTouch:touch,reducedMotion:motion}),page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(process.env.PREVIEW_URL);await page.evaluate(()=>document.fonts.ready);
  // Bounds include content, not only the outer button; max-length names stay contained.
  for(const name of ['Игрок','Ш'.repeat(16)]){
-  await page.locator('#start_profile').click();await page.locator('#profile_name').fill(name);await page.locator('#profile_name').press('Tab');await page.locator('#dialog-actions button').click();
+  await page.locator('#start_profile').click();await page.locator('#profile_name').fill(name);await page.locator('#profile_name').press('Tab');await page.locator('#dialog-actions button').click();await page.locator('#start_screen').evaluate(n=>Promise.allSettled(n.getAnimations().map(a=>a.finished)));
   const geometry=await page.locator('#start_profile').evaluate(n=>{const b=n.getBoundingClientRect();return {button:b.toJSON(),children:[...n.children].map(c=>c.getBoundingClientRect().toJSON()),title:n.title,name:n.getAttribute('aria-label')};});assert.match(geometry.name,new RegExp(name));
   for(const c of geometry.children){assert.ok(c.x>=geometry.button.x&&c.y>=geometry.button.y&&c.right<=geometry.button.right+1&&c.bottom<=geometry.button.bottom+1,'Profile child is inside its button');}
-  assert.ok(geometry.button.x>=0&&geometry.button.y>=0&&geometry.button.right<=width&&geometry.button.bottom<=height);
+  assert.ok(geometry.button.x>=0&&geometry.button.y>=0&&geometry.button.right<=width&&geometry.button.bottom<=height,JSON.stringify(geometry));
  }
  await page.screenshot({path:`artifacts/profile-home-bounds-${width}.png`});await page.locator('#start_collection').click();
  const cdp=await context.newCDPSession(page);
