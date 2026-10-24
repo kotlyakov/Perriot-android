@@ -29,7 +29,7 @@ try{
    const actual=await page.locator('.collection-card').evaluateAll(ns=>ns.map(n=>({id:n.dataset.entryId,title:n.querySelector('.collection-joker-name')?.textContent,art:n.querySelector('.joker-illustration')?.dataset.jokerId})));
    for(const row of actual){assert.equal(row.title,JOKER_IDENTITIES[row.id].name);assert.equal(row.art,row.id);seen.push(row.id);}
    await titleBounds(page,'.collection-card','.collection-joker-name');
-   const first=page.locator('.collection-card').first();await first.click();await page.locator('#collection_details').waitFor({state:'visible'});assert.equal(await page.locator('#collection_details strong').first().textContent(),JOKER_IDENTITIES[actual[0].id].name);assert.equal(await page.locator('#collection_details button').count(),0);await page.locator('#dialog-title').click();assert.equal(await page.locator('#collection_details').count(),0);
+   const first=page.locator('.collection-card').first();await first.click();await page.locator('#collection_details').waitFor({state:'visible'});assert.equal(await page.locator('#collection_details strong').first().textContent(),JOKER_IDENTITIES[actual[0].id].name);assert.equal(await page.locator('#collection_details button').count(),0);await page.locator('#dialog').click({position:{x:8,y:8}});assert.equal(await page.locator('#collection_details').count(),0);
    await page.screenshot({path:`artifacts/joker-game-${width}-page-${p+1}.png`});
   }
   assert.equal(new Set(seen).size,150);
