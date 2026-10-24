@@ -1,0 +1,2566 @@
+{
+  "schemaVersion": 1,
+  "total": 150,
+  "artSourceSha256": "fc4061df9332a638ab893721e0e12654072af7ff1415b7ad843e97dd954fc9fa",
+  "primitivesSourceSha256": "e78ae5e6245dd5d157f9b6a33653fcb57fc668610cf2b9106aa646108870aac3",
+  "validation": {
+    "order": "001 through 150",
+    "sourceChecks": "Each add() validates canonical number order, nonempty finite markup, and unique scene before accepting the next plate.",
+    "xml": "Python xml.etree.ElementTree parsed each final complete SVG.",
+    "raster": "sharp rendered each final SVG at 236 by 276 pixels.",
+    "visual": "Every plate inspected in numbered contact sheets; root separately reviewed all five sheets.",
+    "tests": "152 node:test assertions passed in tests/core/joker-art.test.js."
+  },
+  "cards": [
+    {
+      "number": 1,
+      "id": "j_joker",
+      "name": "Искра",
+      "scene": "Красная искра зажигает знак множителя",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "aa6f678f1ee1f7556398067ac614898d8ab8394690bc16ee0f16366903f3a4aa",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 1,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 2,
+      "id": "j_greedy_joker",
+      "name": "Алмазный жар",
+      "scene": "Раскалённая бубна в кузнечных щипцах",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "1c0db2c2180ecba4b6aae044e1b8fe1e91242f6592f45efb32cf27ca5eeea19d",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 1,
+        "reviewed": true,
+        "notes": "Gold diamond separated visually from red forge flame."
+      }
+    },
+    {
+      "number": 3,
+      "id": "j_lusty_joker",
+      "name": "Сердцебиение",
+      "scene": "Сердце с пульсовой волной",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "1f2b7ae466ac882dfa61526500f4bf2e3de71e908a6709fd61ab69fd323ed5e2",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 1,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 4,
+      "id": "j_wrathful_joker",
+      "name": "Остриё",
+      "scene": "Пиковый наконечник с искрами",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "8db7dd1dc01b2315da9eb2c81f2fdcd8211b31de74c67b2df6871189442765d6",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 1,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 5,
+      "id": "j_gluttenous_joker",
+      "name": "Трилистник",
+      "scene": "Трефа с тремя побегами",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "c639bbacf1067f798fe2c1cda3c82e6d10d5246300096d951e67c6d86633b186",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 1,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 6,
+      "id": "j_jolly",
+      "name": "Парный огонь",
+      "scene": "Две одинаковые карты над пламенем",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "3ed4e61105c10624865e2c39028bf4c905bf64dc8d18e0cc8398e44251af192f",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 1,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 7,
+      "id": "j_zany",
+      "name": "Тройной огонь",
+      "scene": "Три одинаковые карты над пламенем",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "8174c3360a206555a002fee18e755c6a2fe9fbedae3d804b2468de41640f8fbc",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 1,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 8,
+      "id": "j_mad",
+      "name": "Двойной дуэт",
+      "scene": "Две пары карт с красной лентой",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "33841919bd8b88de63d08e134ad9145d88f1e8e07f9676e1a440751132c76680",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 1,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 9,
+      "id": "j_crazy",
+      "name": "Разгон",
+      "scene": "Пять последовательных ступеней в пламени",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "d1f79ea7163975e2d0b21c88f627d86b2ad47ab720f9a36b4c8ba303e3db0955",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 1,
+        "reviewed": true,
+        "notes": "Foreground flames added so numbered steps do not hide the approved fire."
+      }
+    },
+    {
+      "number": 10,
+      "id": "j_droll",
+      "name": "Единство",
+      "scene": "Пять одинаковых мастей в красной звезде",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "df0ea023eea54af54a5172fc40f994e57c74c13403621f39ed51f29b36489bab",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 1,
+        "reviewed": true,
+        "notes": "Five hearts positioned inside the five-point star."
+      }
+    },
+    {
+      "number": 11,
+      "id": "j_sly",
+      "name": "Парный запас",
+      "scene": "Две одинаковые карты и стопка синих фишек",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "18e925ae9015b4314e12cc08ac0195b2fcc67481728739643fbd542e97fda382",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 1,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 12,
+      "id": "j_wily",
+      "name": "Тройной запас",
+      "scene": "Три одинаковые карты на сундуке с фишками",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "cf656e8d690427fd3fe3be0e771de7cc5d04405b0ac1218494a4d66d42c93752",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 1,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 13,
+      "id": "j_clever",
+      "name": "Два вклада",
+      "scene": "Две пары карт и две стопки синих фишек",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "461b28f3357cfcf7ebdf44d471ca47b70d8d33a5a6903bf413d95995bc87f3e6",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 1,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 14,
+      "id": "j_devious",
+      "name": "Лестница",
+      "scene": "Ступени из последовательных карт и фишек",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "57a79783bd9cce49f8ba393cc70aa5c426178c3c49c90e3b9ae5f6fefc665352",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 1,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 15,
+      "id": "j_crafty",
+      "name": "Одна масть",
+      "scene": "Пять одинаковых мастей на синей печати",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "65fd171cd9b83b27d8412f45eb03278fb0b7df90efa7fe015717cf1f8c05e045",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 1,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 16,
+      "id": "j_half",
+      "name": "Малая сила",
+      "scene": "Три небольшие карты отбрасывают огромную тень",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "998a6cc89b86ff82f7400424eee02051f6a37b246ce00f8a9c3ab5d11c6d6fa8",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 1,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 17,
+      "id": "j_stencil",
+      "name": "Вакансия",
+      "scene": "Пустые рамки джокеров с сиянием внутри",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "adf054a86e71599a55eabee2ed961098bf7742de53e01b2cabbc4b237f27dd95",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 1,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 18,
+      "id": "j_four_fingers",
+      "name": "Четвёрка",
+      "scene": "Перчатка с четырьмя пальцами держит карточный веер",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "3afe8e760e13cd8c03d5e034c2d566d1546de266e21ef5f3f5af65d34c88d751",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 1,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 19,
+      "id": "j_mime",
+      "name": "Тихое эхо",
+      "scene": "Белая театральная маска отражается над картами в ладони",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "843d2ca5c92fb5a6bcd570f5051ee4ce0b1e4b447671df1344d2d4438987d26d",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 1,
+        "reviewed": true,
+        "notes": "Two theater masks above actual playing cards in a palm."
+      }
+    },
+    {
+      "number": 20,
+      "id": "j_credit_card",
+      "name": "В долг",
+      "scene": "Монета падает ниже нулевой отметки на шкале",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "fac0edf353b0a1015cd2245250d5fbeff6aba8c05be5f3eac7bcfea961f1827c",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 1,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 21,
+      "id": "j_ceremonial",
+      "name": "Жертва справа",
+      "scene": "Кинжал над правой картой; её энергия переходит в левую",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "7fc6a12176fefc850934312a73052a8a502d3b7d1f45e012dae1ff4246302f28",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 1,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 22,
+      "id": "j_banner",
+      "name": "Резерв",
+      "scene": "Нераспечатанные жетоны сбросов над запасом фишек",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "fefd26050f29736eb595caeaa85bccd6995b7b44952f8d532667c32af42c5ee8",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 1,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 23,
+      "id": "j_mystic_summit",
+      "name": "Без отходов",
+      "scene": "Пустая корзина сброса и красная вершина над ней",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "e641523f1427ffdcbbadbeaedbc4e205bf49cffd7693f24099f02fef0670dbb5",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 1,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 24,
+      "id": "j_marble",
+      "name": "Каменщик",
+      "scene": "Каменщик высекает новую карту из каменной плиты",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "60ac33dec8c2276a437c88251880fdd4f6d1924d6c8cfb3deece51f5645132ad",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 1,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 25,
+      "id": "j_loyalty_card",
+      "name": "Шестой удар",
+      "scene": "Карточка с шестью отметками; последняя ярко светится",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "b92e9b35d1cc43cdcab1cf522d62616bcecd988452d9660a1cf74ef13ac69269",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 1,
+        "reviewed": true,
+        "notes": "Five dark punches and a separate luminous sixth punch counted."
+      }
+    },
+    {
+      "number": 26,
+      "id": "j_8_ball",
+      "name": "Восьмое знамение",
+      "scene": "Шар с цифрой 8, из которого выходит карта Таро",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "ea62321682ccac2e267631ad588f79e2690fa27ef02c53c7239e86c6a08af26c",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 1,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 27,
+      "id": "j_misprint",
+      "name": "Разброс",
+      "scene": "Рассыпанные печатные цифры от 0 до 23",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "d13a19aaf9bf5b7800d62aefc9939d837597e8e9af77b904d7a1796fd85a430c",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 1,
+        "reviewed": true,
+        "notes": "All print types from 0 through 23 counted."
+      }
+    },
+    {
+      "number": 28,
+      "id": "j_dusk",
+      "name": "Последнее эхо",
+      "scene": "Последняя карта на закате оставляет второй отпечаток",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "14680f516158178e673bacaebcbb1d01e0c76ae00270a8d91e92e7d1ee5e1ab7",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 1,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 29,
+      "id": "j_raised_fist",
+      "name": "Младший козырь",
+      "scene": "Самая маленькая карта поднимает тяжёлую гирю",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "baf1857f80fc4ed0d568e68cfe9b73df324a75198fe96c61dac80ae06bb0aa29",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 1,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 30,
+      "id": "j_chaos",
+      "name": "За счёт заведения",
+      "scene": "Магазинный барабан обновления с ценником «0»",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "dc9a477c90f6c9e4a9fe859ca2d9761c0e12e51a75b87594b0a363b1199807a7",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 1,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 31,
+      "id": "j_fibonacci",
+      "name": "Спираль",
+      "scene": "Спираль с отметками A, 2, 3, 5 и 8",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "c8f213fb1089fde6e83eff697e188eb9c50a65e5b1229af0ea3c087ac511cd7c",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 2,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 32,
+      "id": "j_steel_joker",
+      "name": "Стальной сплав",
+      "scene": "Стальные карты переплавляются в мощную шестерню",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "095f1b09e6d3260f99c07a30162110ae8f34475d106f7ef7021e8fb03bf18f7d",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 2,
+        "reviewed": true,
+        "notes": "Metal cards use silver, then melt into a gear."
+      }
+    },
+    {
+      "number": 33,
+      "id": "j_scary_face",
+      "name": "Галерея",
+      "scene": "Портреты валета, дамы и короля в синих рамах",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "f42978dda5df40650ecd9789dc3afbf442a46c2201bd2fe04ce43a48f2aef146",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 2,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 34,
+      "id": "j_abstract",
+      "name": "Компания",
+      "scene": "Джокеры образуют общий круг вокруг красной искры",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "698e815d3c5774c4c7f8d693d10b63ec2a0058ee4b529035c004a7de21420db6",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 2,
+        "reviewed": true,
+        "notes": "Upper jester moved clear of numbering."
+      }
+    },
+    {
+      "number": 35,
+      "id": "j_delayed_grat",
+      "name": "Бережливость",
+      "scene": "Неиспользованные жетоны сброса превращаются в монеты",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "d7cbf72aa1f778b8c6286036207e4eb776c64327448381dea944f6f877a9727a",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 2,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 36,
+      "id": "j_hack",
+      "name": "Малый повтор",
+      "scene": "Карты 2, 3, 4 и 5 отражаются в маленьком зеркале",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "99cf38f9d5ba7112155906b0172050dae97d22073ee3a54cc528462d7e47efae",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 2,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 37,
+      "id": "j_pareidolia",
+      "name": "Маскарад",
+      "scene": "Обычные числовые карты надевают лица придворных",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "69936f4cbafb9c370892e47a4a7b2c94e8c2aceec5eefdc11986d313fa0eb03a",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 2,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 38,
+      "id": "j_gros_michel",
+      "name": "Спелый риск",
+      "scene": "Спелый банан с маленьким тлеющим фитилём",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "65bebcaa2a85ecbbcda0fe223cec7c8a79b3e5006e97c6733b4a7b83628e51b1",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 2,
+        "reviewed": true,
+        "notes": "Banana has a visibly smoldering fuse."
+      }
+    },
+    {
+      "number": 39,
+      "id": "j_even_steven",
+      "name": "Чётный жар",
+      "scene": "Красные угли с цифрами 2, 4, 6, 8, 10",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "3a2b9a3f825230f7a083ab8f7ebbae7bf5a6cf49517a7d4819a8607e01af5124",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 2,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 40,
+      "id": "j_odd_todd",
+      "name": "Нечётный запас",
+      "scene": "Синие фишки с отметками A, 3, 5, 7, 9",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "f18e918f8f2e62d4abae351ce41abb7783db52180264ca563a3a9fc93da43cd0",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 2,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 41,
+      "id": "j_scholar",
+      "name": "Тузоведение",
+      "scene": "Туз на раскрытой книге, рядом фишки и красная искра",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "4f5620b8e75e2f7d2d870baaf3cd72f51dc1ab799544911200095ae5d3afabf3",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 2,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 42,
+      "id": "j_business",
+      "name": "Гонорар",
+      "scene": "Портрет придворного на визитке с двумя монетами",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "e9ee0e9081b6e86b2580cebe0ff40043e262447531d4503b8bf7305c41d571cc",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 2,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 43,
+      "id": "j_supernova",
+      "name": "Практика",
+      "scene": "Повторяющиеся отпечатки одной комбинации усиливают звезду",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "88980b84c4f7bb47fd731be241168f425f5fc6ec7cbe04a01322b532690e1a46",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 2,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 44,
+      "id": "j_ride_the_bus",
+      "name": "Без свиты",
+      "scene": "Автобус с числовыми картами; корона остаётся на остановке",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "c9f86bae75bcc8aaee7444bcb86160f718f9bf5280c0a6725b889366bf20b0d3",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 2,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 45,
+      "id": "j_space",
+      "name": "Звёздный шанс",
+      "scene": "Комбинация поднимается на следующую ступень среди звёзд",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "a6f3393e1ed4108699603116194c9a5cd84a6b5e5aab9079d9cf0cce8ea4bb26",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 2,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 46,
+      "id": "j_egg",
+      "name": "Копилка",
+      "scene": "Серебряное яйцо-копилка, вокруг которого прибывают монеты",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "34647677ebb50de0e0c754c16554a2774588e1dac0250f360b7078d5f3be8577",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 2,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 47,
+      "id": "j_burglar",
+      "name": "Обмен ходов",
+      "scene": "Три карты переходят в руку, корзина сбросов закрывается",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "ce299525d5dae99433d2679d77610a7cb045f72753704a55c3ab3924dda0cbfa",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 2,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 48,
+      "id": "j_blackboard",
+      "name": "Чёрная рука",
+      "scene": "Ладонь держит только пики и трефы на чёрной доске",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "cc5e07df24f0b48fbd4d1177bcde88b58b914f63a4bf88ef15a78a9b956ec5da",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 2,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 49,
+      "id": "j_runner",
+      "name": "Пробег",
+      "scene": "Бегун поднимается по дорожке из последовательных карт",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "2a4bcb346881df9a1c9910673447db7dcff010dcde95cd7bf4b30e0043c01bb3",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 2,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 50,
+      "id": "j_ice_cream",
+      "name": "Таяние",
+      "scene": "Синее мороженое-фишка постепенно тает",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "2785747c4443bea057fb7a6e515cc81833e90024ac8986b3a9042835fd7a7dbc",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 2,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 51,
+      "id": "j_dna",
+      "name": "Клон",
+      "scene": "Одна карта проходит через спираль и выходит в двух экземплярах",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "24af7bc5904d45b38509386dba46eee7c350081a85adb6f52b1fff3275b853de",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 2,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 52,
+      "id": "j_splash",
+      "name": "Все в дело",
+      "scene": "Все пять карт одновременно опускаются на весы подсчёта",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "24bbee78940e24833c7777a1b1b90d2bd24871fe1d357110250228c9c91c81e6",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 2,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 53,
+      "id": "j_blue_joker",
+      "name": "Остаток",
+      "scene": "Стопка неразыгранных карт выпускает синие фишки",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "aa0c92845818ea8182ad36cb0ece8996925929226aaf12459deaaf27f804c967",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 2,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 54,
+      "id": "j_sixth_sense",
+      "name": "Шестой портал",
+      "scene": "Одинокая шестёрка растворяется в спектральном проходе",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "a84be276eaa3703d0991ace6c3004b006107f6b691d8c790d4592ae8cd35386f",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 2,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 55,
+      "id": "j_constellation",
+      "name": "Орбиты",
+      "scene": "Новые планеты достраивают светящееся созвездие",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "52e9258f52f3489f613b1087c1c4e8a1cf4785f1c5bc958b595cfde890a406d2",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 2,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 56,
+      "id": "j_hiker",
+      "name": "Закалка",
+      "scene": "Потрёпанная карта проходит через пресс и становится крепче",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "df30956d1f83e03bdd94d13784aca67ac736a9f24fa0958a2587eba5b024e232",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 2,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 57,
+      "id": "j_faceless",
+      "name": "Смена двора",
+      "scene": "Три портретные карты уходят в корзину, оставляя монеты",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "3bcca658ed0a4610eb6042e599ba96a1635d69e419cca720857fe8f8f9972076",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 2,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 58,
+      "id": "j_green_joker",
+      "name": "Темп",
+      "scene": "Красный росток растёт от розыгрыша и срезается сбросом",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "7336a8dc9ec37879baf9001224bc848a777d19ee3865fb15bc8c45bbab0eb7e6",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 2,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 59,
+      "id": "j_superposition",
+      "name": "Тузовый путь",
+      "scene": "Стрит начинается с туза и ведёт к карте Таро",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "bf6b15e8651960b6fd012dc3a4acf6886cf49ab3909beccfde8fd2ed9f1357ef",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 2,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 60,
+      "id": "j_todo_list",
+      "name": "Заказ",
+      "scene": "Лист заказа с комбинацией и четырьмя монетами",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "163afcd2e6fef3f12657645e6fe3ba031f11cfabc55ce14eeab5be76e9b15f03",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 2,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 61,
+      "id": "j_cavendish",
+      "name": "Крепкий сорт",
+      "scene": "Банан в защитной металлической оправе",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "4f37ca2400337db7ee606b72d6486cf45d5a1cc3054a7e5d5817c528f971acf0",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 3,
+        "reviewed": true,
+        "notes": "Second banana has a protective riveted metal brace."
+      }
+    },
+    {
+      "number": 62,
+      "id": "j_card_sharp",
+      "name": "Знакомый приём",
+      "scene": "Одна комбинация дважды отпечатана на красной печати",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "6306687fba1846b081c2d5027a9efec1e58b14b62a814aaaf0eade4a2e85c292",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 3,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 63,
+      "id": "j_red_card",
+      "name": "Отказ",
+      "scene": "Закрывающаяся коробочка с красной печатью отказа",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "e5ae2c9306f18c4772907ac94f67d02383ecfe0545dd8879cd3ce983b15f4a7c",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 3,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 64,
+      "id": "j_madness",
+      "name": "Пожиратель",
+      "scene": "Красная пасть поглощает соседнюю карту и растёт",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "7f235a48fd5af728112de04e334d96758a3ea05a107d98b15d60fef0194634fd",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 3,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 65,
+      "id": "j_square",
+      "name": "Квартет",
+      "scene": "Четыре карты образуют квадрат вокруг синих фишек",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "2ea992c36a9bcea9b44a2236daece759ede074f742da182c402c04c314a2e1bf",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 3,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 66,
+      "id": "j_seance",
+      "name": "Ритуал",
+      "scene": "Стрит-флеш разложен вокруг спектральной свечи",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "722fea606702b518a05c8013e323339c6e08455ad253b8e20a747c0b35ede3dc",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 3,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 67,
+      "id": "j_riff_raff",
+      "name": "Пополнение",
+      "scene": "Два простых джокера выходят из печатного станка",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "7124ca2a2192986f4154048f78b96ba39317342e7de610c2a277cdd39b7b6c63",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 3,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 68,
+      "id": "j_vampire",
+      "name": "Сбор дани",
+      "scene": "Клыки вытягивают сияние из улучшенных карт",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "f2fe5634cbd1bb1acff58a967cd9e2bac4fc5bf2cd0f2703853c6ad833445b07",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 3,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 69,
+      "id": "j_shortcut",
+      "name": "Через ступень",
+      "scene": "Карточная лестница с перепрыгнутыми ступеньками",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "3c0d3df43129714d03853111bb9a3a889af2d7aaa4da6bf8890cbec06432c780",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 3,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 70,
+      "id": "j_hologram",
+      "name": "Приращение",
+      "scene": "Каждая новая карта добавляет светящийся слой фигуре",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "7a22fb5c602c86aa1750c939e0ebc04abeb31fe30333767dcc2df88d97d75517",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 3,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 71,
+      "id": "j_vagabond",
+      "name": "Последний грош",
+      "scene": "Ладонь с несколькими монетами получает карту Таро",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "6ca0bbfc3e0e36e750137bc23cb2e240022ca1a693c10c99dad5d657d9d13648",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 3,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 72,
+      "id": "j_baron",
+      "name": "Королевский резерв",
+      "scene": "Король остаётся за кулисами и усиливает сцену",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "1b92db8d7cef3831541267066a78fbd58757eb52fd758bb945c92a6354fa2f55",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 3,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 73,
+      "id": "j_cloud_9",
+      "name": "Девятная рента",
+      "scene": "Девятки в колоде соединены с монетным приёмником",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "dc90af730bdfdc0d4ac7d9af2d7d8c81775bdcd89f7df4c844f509b934f2d2bb",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 3,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 74,
+      "id": "j_rocket",
+      "name": "Карьерный рост",
+      "scene": "Ракета поднимается по ступеням из поверженных боссов",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "2b474b468d9440353e316abb6e3bdc1dd9fd55961b3610552ea3aa515f13a497",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 3,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 75,
+      "id": "j_obelisk",
+      "name": "Новый приём",
+      "scene": "Новые карточные узоры растут вокруг старого монолита",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "e6f81fb647349514984b7c9063a2061f27915ca99f0d71caebd9702cb65c0857",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 3,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 76,
+      "id": "j_midas_mask",
+      "name": "Позолота",
+      "scene": "Кисть превращает портреты придворных в золото",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "24bf6620cf18282dc7872884be364c3d93bedcd699aa1ddfd3346214c4887c04",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 3,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 77,
+      "id": "j_luchador",
+      "name": "Откуп",
+      "scene": "Маска борца на прилавке; за ней гаснет знак босса",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "c49d8853c5815512eed1c8e0ce144d4f07a26c9a7cc653df3bca5e0a33b20b02",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 3,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 78,
+      "id": "j_photograph",
+      "name": "Первый портрет",
+      "scene": "Первый придворный выделен в рамке фотоаппарата",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "e94a8d7ff5554e54dfc471ca54e224bcf19f5d8d4bcfe9e77ad5c0b22a49253e",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 3,
+        "reviewed": true,
+        "notes": "First court portrait selected by camera lens; later portraits remain outside."
+      }
+    },
+    {
+      "number": 79,
+      "id": "j_gift",
+      "name": "Наценка",
+      "scene": "Ценники на джокерах и расходниках поднимаются на одну отметку",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "add8b98de298e550c6a158f01e1f2ac836cea494f96be813636bc1993690e954",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 3,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 80,
+      "id": "j_turtle_bean",
+      "name": "Увядающий веер",
+      "scene": "Веер из пяти дополнительных карт постепенно теряет лепестки",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "e53b5b3f59ebea44fb5dfae706448f199b02437b03e87d9b632391458a748fc5",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 3,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 81,
+      "id": "j_erosion",
+      "name": "Прореживание",
+      "scene": "Из колоды вырезают карты, освобождая красный свет",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "b34c2507645fec91e4893896722ea7b0bf7cc9bc72a95e85b0e2e6e81af7a94e",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 3,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 82,
+      "id": "j_reserved_parking",
+      "name": "Знатные гости",
+      "scene": "Фигурные карты сидят в зарезервированных креслах над монетами",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "e6dc183cdc927ca37a13d925ce3724577255de388cf8b2c00a5219048b2b94ca",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 3,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 83,
+      "id": "j_mail",
+      "name": "Выкуп ранга",
+      "scene": "Конверт с указанным рангом и пачкой банкнот",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "b7ea4623858d12f04a6eabe5aa38cafdb11b7cd836f075e63e51bab57f3428c8",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 3,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 84,
+      "id": "j_to_the_moon",
+      "name": "Проценты",
+      "scene": "Пять монет под лупой порождают дополнительную монету",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "93b3257dd4552031ecd540734f850acc66c41a2ea55204172e7679d2a009efbb",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 3,
+        "reviewed": true,
+        "notes": "Five source coins beneath the magnifier and one separate additional coin counted."
+      }
+    },
+    {
+      "number": 85,
+      "id": "j_hallucination",
+      "name": "Сюрприз внутри",
+      "scene": "Из открываемой коробочки выглядывает призрачная карта Таро",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "6ac4fc078eca4e1af4058abb8697e7f32224e8945b406eb3ffefc6314b57a702",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 3,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 86,
+      "id": "j_fortune_teller",
+      "name": "Опыт гадателя",
+      "scene": "Использованные Таро складываются в растущую красную башню",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "b94147ca20d6db5c0350c40bb07d41526dd195604f82521cb2dbe04da98b5457",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 3,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 87,
+      "id": "j_juggler",
+      "name": "Шестая карта",
+      "scene": "Ладонь раскрывает веер с дополнительным отделением",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "9ecad88503522969c508f0f06acc9840515506d69bb1f2dd2f42ebe21a1b4fa5",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 3,
+        "reviewed": true,
+        "notes": "Six cards counted in the expanded palm fan."
+      }
+    },
+    {
+      "number": 88,
+      "id": "j_drunkard",
+      "name": "Запасной сброс",
+      "scene": "Корзина сброса с дополнительным жетоном",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "8570de22e1d6c1ffd8c2859d66454161f33e0791368197387410759e0b9f2fda",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 3,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 89,
+      "id": "j_stone",
+      "name": "Каменоломня",
+      "scene": "Каменные карты добывают синие фишки",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "d0356e34604c7e6171eb40084f4bc8d1b9a0ef54e4e24b1a6178d2ab60e4248c",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 3,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 90,
+      "id": "j_golden",
+      "name": "Жалованье",
+      "scene": "Четыре монеты в конверте с печатью завершённого раунда",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "6ded2ce0578b5ea83fe1145b668bc841d739bc6c5e3cae232123eea01794f88d",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 3,
+        "reviewed": true,
+        "notes": "Four coins counted over the completed envelope seal."
+      }
+    },
+    {
+      "number": 91,
+      "id": "j_lucky_cat",
+      "name": "Удача в рост",
+      "scene": "Кот-копилка растёт от сияния Счастливых карт",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "5c1f96d186a84ad371e192a0b1776c25072a67facd3751a63df39e661843d147",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 4,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 92,
+      "id": "j_baseball",
+      "name": "Необычный союз",
+      "scene": "Необычные джокеры соединены общей усиливающей лентой",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "bd8d3ee08ae95823212754dd02bae6053257b9e01303eea71bb86f18d588cd4d",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 4,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 93,
+      "id": "j_bull",
+      "name": "Капитал",
+      "scene": "Бык поддерживает сейф, из которого сыплются синие фишки",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "154caf6243623fb784eff267033ca881e29d9d04748e9d691be85fe9dfc53ef8",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 4,
+        "reviewed": true,
+        "notes": "Two pointed horns redrawn to make the safe-supporting bull unambiguous."
+      }
+    },
+    {
+      "number": 94,
+      "id": "j_diet_cola",
+      "name": "Удвоитель наград",
+      "scene": "Банка на прилавке превращается в два одинаковых жетона",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "4198d3545f3bfbfb9dadf69616532f65de772e64c03113b3122e7d26559c6188",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 4,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 95,
+      "id": "j_trading",
+      "name": "Одиночный выкуп",
+      "scene": "Одна карта уходит в шредер, рядом появляются три монеты",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "f8af78c6e932822fe361c3d362be026a006402c130e3d79e51af93252eb23e96",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 4,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 96,
+      "id": "j_flash",
+      "name": "Перекрут",
+      "scene": "Ручка магазинного барабана разогревается с каждым оборотом",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "93a026bb10d98292da686fb2ef2ee02e3694af5e03c338d13f412b570b390434",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 4,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 97,
+      "id": "j_popcorn",
+      "name": "Порция",
+      "scene": "Пакет попкорна с постепенно исчезающими делениями",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "222cd15886426050e562008492f0c68c29ff1448817fe76b8a799199ea1cee93",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 4,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 98,
+      "id": "j_trousers",
+      "name": "Парное накопление",
+      "scene": "Две пары карт достраивают красную кирпичную стену",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "026a4b9714e073a06f7e96202f140dda0299105ddd7006d3861263f65b1e8096",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 4,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 99,
+      "id": "j_ancient",
+      "name": "Избранная масть",
+      "scene": "Одна масть светится в центре древнего каменного круга",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "348793455f29727607fb5c3c882848b12921b5bbdab8e2178957e94d3f857a53",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 4,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 100,
+      "id": "j_ramen",
+      "name": "Не расплескать",
+      "scene": "Миска лапши теряет бульон при сбросе карт",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "0d5af624e5ba79369b8bdfcb78db87b2d2187738d48ea3d302089859e6809c8a",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 4,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 101,
+      "id": "j_walkie_talkie",
+      "name": "Четыре-десять",
+      "scene": "Радиоприёмник с крупными настройками «4» и «10»",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "f7b06ececbcaa972f5fd6a886ce6a5cab1f6a73ec47977186cb0b2f0ae143551",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 4,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 102,
+      "id": "j_selzer",
+      "name": "Десять повторов",
+      "scene": "Сифон с десятью делениями выпускает двойной карточный отпечаток",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "2dd6189815c8e06404d258e65be0c21c7bbd05ae53c11c6fd2ff59212f19027b",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 4,
+        "reviewed": true,
+        "notes": "Ten siphon calibration ticks counted."
+      }
+    },
+    {
+      "number": 103,
+      "id": "j_castle",
+      "name": "Сбор масти",
+      "scene": "Сброшенные карты одной масти достраивают крепость",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "dad6e43e3eb9a59bcaed04626c5303ee426cdf9e0adaf0fed7822b540a93ddc7",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 4,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 104,
+      "id": "j_smiley",
+      "name": "Одобрение двора",
+      "scene": "Улыбающиеся придворные ставят красные печати",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "b62f3e6d1d6e0a747500c82e828263b05cf850d9430e336df0417fad6ad2350c",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 4,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 105,
+      "id": "j_campfire",
+      "name": "Распродажа",
+      "scene": "Проданные карты превращаются в топливо для костра",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "c815acb1469f6286104bae96aaf296c4d857ea3501213baf1517581adbf7fa37",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 4,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 106,
+      "id": "j_ticket",
+      "name": "Золотая касса",
+      "scene": "Золотая карта проходит через кассу с четырьмя монетами",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "d7f8eba2a52b354b7e7b5aaf899d9a6d01f06bb160e6f9dcf2375d029ef14a9a",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 4,
+        "reviewed": true,
+        "notes": "Four output coins counted."
+      }
+    },
+    {
+      "number": 107,
+      "id": "j_mr_bones",
+      "name": "Четверть шанса",
+      "scene": "Скелет удерживает стрелку счётчика на четверти шкалы",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "709d8bfdcd3698b5e2c56ca9d89fdd39efec9f376349d606d2fe1343bf7d3b03",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 4,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 108,
+      "id": "j_acrobat",
+      "name": "Финальный рывок",
+      "scene": "Акробат делает последний прыжок через красное кольцо",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "87fc5510f4f020201abbd8a51f89874fbf5ead44c0f30fff66cab5f41b451dd2",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 4,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 109,
+      "id": "j_sock_and_buskin",
+      "name": "Выход на бис",
+      "scene": "Придворные повторно выходят из-за театрального занавеса",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "2eba958a8c60068580df73e47df40a6fe560f383705b798bb9092b3f9cb68444",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 4,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 110,
+      "id": "j_swashbuckler",
+      "name": "Доля команды",
+      "scene": "Ценники остальных джокеров стекаются в красную чашу",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "97abfea67969b556afad984c9adca55959de8ace9b52f21456f389af21bd0e26",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 4,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 111,
+      "id": "j_troubadour",
+      "name": "Широкий выбор",
+      "scene": "Большой веер карт над перечёркнутым жетоном розыгрыша",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "f41edb3c3d36e2c514c7da54deb56111eebddf1505bf0d4bbf0b6ae81d79f885",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 4,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 112,
+      "id": "j_certificate",
+      "name": "Штемпель",
+      "scene": "Печатный пресс выдаёт новую карту со случайной печатью",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "d9db9f6403d885515252e1385567220d860335f082828655c18542b56380eac3",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 4,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 113,
+      "id": "j_smeared",
+      "name": "Два цвета",
+      "scene": "Червы сливаются с бубнами, пики — с трефами",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "935fb9b005340c9750a0aada1982b47795756baa9e00c015c5aa186f6eabb338",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 4,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 114,
+      "id": "j_throwback",
+      "name": "Обход",
+      "scene": "Дорога обходит блайнды, набирая красную энергию",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "edf703dd9e3f2ef68c81a11c85c534d6347eb47273b7502d1437786876979690",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 4,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 115,
+      "id": "j_hanging_chad",
+      "name": "Тройной отпечаток",
+      "scene": "Первая карта оставляет три последовательных оттиска",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "4d431ba6e89064294cfa735fcc2c8c19a4ab4f7cf32d9dee8f3c1aadaafcde4b",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 4,
+        "reviewed": true,
+        "notes": "One source card followed by exactly three impressions counted."
+      }
+    },
+    {
+      "number": 116,
+      "id": "j_rough_gem",
+      "name": "Алмазная выручка",
+      "scene": "Бубновый самоцвет рассыпается на монеты",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "a039396a95089cc7605c7d4fdfba0ac943a078410e245ad2ac8b29b7b917454b",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 4,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 117,
+      "id": "j_bloodstone",
+      "name": "Сердечный риск",
+      "scene": "Сердце внутри камня; одна его половина ярко светится",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "d9465ab27823941d9f3092fa835cb6bdb30b0ca1a733405c3d63a17038b761d5",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 4,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 118,
+      "id": "j_arrowhead",
+      "name": "Пиковый клад",
+      "scene": "Пиковый наконечник вскрывает залежь синих фишек",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "412914cb0c2c9809198dec946369b822f48e5dd4751c887ff41f570f2b8534dc",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 4,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 119,
+      "id": "j_onyx_agate",
+      "name": "Семилистник",
+      "scene": "Трефа в тёмном камне с семью красными лучами",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "fbff1b52d4a3554873e39b09935e22a37e6df68f6fe13d9576186efed8d24479",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 4,
+        "reviewed": true,
+        "notes": "Seven red rays moved outside the dark stone silhouette."
+      }
+    },
+    {
+      "number": 120,
+      "id": "j_glass",
+      "name": "Осколочный рост",
+      "scene": "Разбитые стеклянные карты собираются в растущий кристалл",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "4399748ed06d177a427d33901621055b4cf0508d190c2d51dc3dd2ea9996af2f",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 4,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 121,
+      "id": "j_ring_master",
+      "name": "Повторный тираж",
+      "scene": "Печатная форма выпускает одинаковые экземпляры карт",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "8e0ed4a44db64490e268ed472f983baf70a4eb59cb995e34223b33fa19d8406e",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 5,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 122,
+      "id": "j_flower_pot",
+      "name": "Четыре масти",
+      "scene": "Цветок с четырьмя лепестками-мастями, каждый на отдельной карте",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "05f432269e74fa437098bbaf2ed1f33e21e05df0a189e3f2bb89701c1829074b",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 5,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 123,
+      "id": "j_blueprint",
+      "name": "Копия справа",
+      "scene": "Чертёжная рамка со стрелкой к правому джокеру",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "5e368b33db590b4b9c37f2b21fd5a2ecfd78e360f89cacaac18f58ec82f51b7d",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 5,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 124,
+      "id": "j_wee",
+      "name": "Двойка в рост",
+      "scene": "Маленькая двойка выращивает большую башню синих фишек",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "0fabcba7ea35c8a0bf0b8386735e4d6468af8a045a8cf650a39b95b9c0f4ebcf",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 5,
+        "reviewed": true,
+        "notes": "Tiny deuce and a much taller blue-chip tower remain distinct."
+      }
+    },
+    {
+      "number": 125,
+      "id": "j_merry_andy",
+      "name": "Перебор",
+      "scene": "Три дополнительных жетона сброса сжимают карточный веер",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "7592164bc81170cd08ea4b4450c5ed60fce591005e18eb985829544746cbcb70",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 5,
+        "reviewed": true,
+        "notes": "Three discard tokens counted above compressed fan."
+      }
+    },
+    {
+      "number": 126,
+      "id": "j_oops",
+      "name": "Двойной шанс",
+      "scene": "Два одинаковых кубика над удвоенной полосой вероятности",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "5f006a086a5955162ef9f23c95153d79d50b99e3418c3e945c15577750c25384",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 5,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 127,
+      "id": "j_idol",
+      "name": "Точное попадание",
+      "scene": "Мишень с конкретными рангом и мастью",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "c7994b86c31d1930aebb3049e2f0a6daafeacf1a8f8b6eadcc01a4d7e0519a3d",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 5,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 128,
+      "id": "j_seeing_double",
+      "name": "Трефовый союз",
+      "scene": "Трефа пожимает руку другой масти через двойное зеркало",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "f59030772bb7bcf72607ca272cac04584a6ef4bbd4620ec2bfa05c3d9764cf84",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 5,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 129,
+      "id": "j_matador",
+      "name": "Плата за помеху",
+      "scene": "Бык-босс ударяет по красному плащу, из которого выпадают монеты",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "21cc0629f6df7ebb29d4f31f389af39e7c33cd91e855c43357ad2cfa185cb33f",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 5,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 130,
+      "id": "j_hit_the_road",
+      "name": "Проводы валетов",
+      "scene": "Валеты уходят по дороге, оставляя красный след",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "fa93be7220118e8ede841141e34318a39ddf5491b38b343a119d4ea1db378a32",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 5,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 131,
+      "id": "j_duo",
+      "name": "Парный резонанс",
+      "scene": "Две одинаковые карты между усиливающими камертонами",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "e570c5639a2236ed48c02c76387d1d1830b7533429ab365ba1b66a3d50e69aaf",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 5,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 132,
+      "id": "j_trio",
+      "name": "Тройной резонанс",
+      "scene": "Три одинаковые карты образуют светящийся треугольник",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "e82ec29005576bcae60540f33148f834077484617a98120c9ae48ed60a07467a",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 5,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 133,
+      "id": "j_family",
+      "name": "Каре силы",
+      "scene": "Четыре одинаковых ранга образуют мощную красную печать",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "67515c87e3227488f8b316c0be94e5339c06e69214149dcf804c9b36146d5399",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 5,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 134,
+      "id": "j_order",
+      "name": "Цепная тяга",
+      "scene": "Последовательные карты сцеплены в единую передачу",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "9ef261594d8eba3bb1aa2b7f4470ae332b127410feeee276eca12ca17847489c",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 5,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 135,
+      "id": "j_tribe",
+      "name": "Мастевой резонанс",
+      "scene": "Пять карт одной масти создают общую ударную волну",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "29cbe5a75749518b61350fab4feb67506627400204587d30fc46e959f7df794e",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 5,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 136,
+      "id": "j_stuntman",
+      "name": "Узкий размах",
+      "scene": "Каскадёр удерживает огромную стопку фишек маленьким веером карт",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "a854a7a932e1095233fb49fe24cb3f9f6a662ae7d987c569d48722c04bd0befa",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 5,
+        "reviewed": true,
+        "notes": "Ten-chip tower moved down to clear the number and frame."
+      }
+    },
+    {
+      "number": 137,
+      "id": "j_invisible",
+      "name": "Отложенный двойник",
+      "scene": "Прозрачная карта проявляется после двух отметок часов",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "ad39cbeb8294b764d39513a9f947563006960eef529966303a14c0e6b061f96f",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 5,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 138,
+      "id": "j_brainstorm",
+      "name": "Копия первого",
+      "scene": "Зеркальная карта соединена длинной линией с крайним левым джокером",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "3e38e852c398250d4e171d781bf9f0c3476c054bcf85d9df6f449fdcb74b8ca3",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 5,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 139,
+      "id": "j_satellite",
+      "name": "Планетная рента",
+      "scene": "Металлический спутник собирает монеты с разных планет",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "4fe731baf8f0ce86a153c737e595419e568c7c947596c2a12702855fb8409601",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 5,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 140,
+      "id": "j_shoot_the_moon",
+      "name": "Королевский совет",
+      "scene": "Дамы остаются за столом и направляют красные лучи на поле",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "c17abd216b7d8dc7d24397dc5c1433145e83fc69ca2c1bf8417bfb8658a5cf1c",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 5,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 141,
+      "id": "j_drivers_license",
+      "name": "Шестнадцать улучшений",
+      "scene": "Удостоверение с сеткой из шестнадцати улучшенных карт",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "32df2be91f7e004595907a0828118c9418f90ecab5fc6ccf87af1e8398a98f28",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 5,
+        "reviewed": true,
+        "notes": "Four rows by four columns of individually enhanced mini-cards counted."
+      }
+    },
+    {
+      "number": 142,
+      "id": "j_cartomancer",
+      "name": "Предвестник",
+      "scene": "Перед открывающимися воротами блайнда появляется Таро",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "0ad51439df2a67ddaf0d3b3851d2df7f7df00abc0c2ddabab75670882350bef6",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 5,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 143,
+      "id": "j_astronomer",
+      "name": "Небесный подарок",
+      "scene": "Планеты и небесная коробочка с ценниками «0»",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "73ff6a42fb6043b470c86b90b9565e2fd9ce06d64df758416fba7f42c0767ba9",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 5,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 144,
+      "id": "j_burnt",
+      "name": "Урок сброса",
+      "scene": "Первая сброшенная комбинация оставляет более совершенный отпечаток",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "756169742634602607593df2ef352283a3619e6aacae3e5d1101dcdef52d2f19",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 5,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 145,
+      "id": "j_bootstraps",
+      "name": "Пять к двум",
+      "scene": "Каждые пять монет питают две красные искры",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "f2ad9f51e01e9856adfa5e2c9df4428cdda110eb4f554d99cc4481fed8969a75",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 5,
+        "reviewed": true,
+        "notes": "Five source coins feed exactly two red sparks."
+      }
+    },
+    {
+      "number": 146,
+      "id": "j_caino",
+      "name": "Падение двора",
+      "scene": "Разрушенные короны поднимают растущую красную фигуру",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "f7d16f92fba66bc83c1455c7d9c7f44d90eced17b656d89f78c48c99989f19eb",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 5,
+        "reviewed": true,
+        "notes": "Radiance shrunk to clear plate number."
+      }
+    },
+    {
+      "number": 147,
+      "id": "j_triboulet",
+      "name": "Двойная корона",
+      "scene": "Король и дама под двумя сияющими коронами",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "ec61896e9ae5809c82d218ae531b1f59a7af921fe06a4cc9bc7c9a8e31769958",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 5,
+        "reviewed": true,
+        "notes": "Two distinct crowns and their rays lowered beneath plate number."
+      }
+    },
+    {
+      "number": 148,
+      "id": "j_yorick",
+      "name": "Двадцать третий",
+      "scene": "Счётчик сброшенных карт с яркой отметкой «23»",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "fda5c3d604c57bddfd590a25926ebe3c794f7f2f4eff3611741c53c06234778f",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 5,
+        "reviewed": true,
+        "notes": "Counter shows 23; discarded card and basket establish the approved action."
+      }
+    },
+    {
+      "number": 149,
+      "id": "j_chicot",
+      "name": "Безвластие",
+      "scene": "Корона босса лежит рядом с разомкнутой печатью запрета",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "5efaab60836f48a64f84f9f6f969c384be8d95e98839ce7a59f15efab0aefe81",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 5,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    },
+    {
+      "number": 150,
+      "id": "j_perkeo",
+      "name": "Теневая копия",
+      "scene": "Расходная карта отбрасывает самостоятельную тёмную копию",
+      "xmlParsed": true,
+      "rasterized": true,
+      "uniqueScene": true,
+      "semanticComposition": "Authored to approved scene; exact count and object composition checked from SVG source.",
+      "svgSha256": "3a858e6b866457887eae6d208389fcb4a6c226496e0eaef72de66f7ccd4e0d77",
+      "visualReview": {
+        "method": "Numbered contact-sheet inspection at 2x card size; source composition and count review.",
+        "sheet": 5,
+        "reviewed": true,
+        "notes": "Approved objects and narrative, shared palette, legibility, and distinct composition checked."
+      }
+    }
+  ]
+}

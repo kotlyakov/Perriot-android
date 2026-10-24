@@ -1,3 +1,4 @@
+import {JOKER_SCENES} from '../src/ui/joker-art.js';
 import {Script} from 'node:vm';
 import {bundledJokerArtwork} from './joker-review-source.mjs';
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
@@ -6,6 +7,7 @@ import {describeShopItem} from '../src/content/shop-display.js';
 import catalog from '../src/content/apk-shop-catalog.js';
 const esc=s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;');
 const rows=Object.entries(JOKER_IDENTITIES).sort((a,b)=>a[1].number-b[1].number);
+if(rows.length!==150||rows.some(([id])=>!JOKER_SCENES[id]))throw Error('Incomplete Joker artwork; do not publish a partial review as150cards');
 const descriptions=Object.fromEntries(rows.map(([id,m])=>[id,{...describeShopItem({entityId:id}),rarity:({1:'Обычный',2:'Необычный',3:'Редкий',4:'Легендарный'})[catalog.centres.find(c=>c.key===id).rarity]}]));
 let pages='';for(let p=0;p<10;p++)pages+=`<section class="joker-page" data-page="${p}" ${p?'hidden':''}>${rows.slice(p*15,p*15+15).map(([id,m])=>`<button type="button" class="gallery-joker cursor-interaction" data-entry-id="${id}" aria-label="${esc(m.name)}"><span class="print-plate"></span><span class="gallery-joker-name">${esc(m.name)}</span></button>`).join('')}</section>`;
 const strip=path=>readFile(path,'utf8').then(s=>s.replace(/^export /gm,''));

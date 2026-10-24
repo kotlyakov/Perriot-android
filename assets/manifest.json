@@ -37,7 +37,7 @@
       "id": "individual-joker-printing-plates",
       "source": "src/ui/joker-art.js; src/ui/joker-art-primitives.js; src/content/joker-identities.js",
       "origin": "150 individually authored original SVG engravings following the user-approved 24.10.2026 stories; no source-game art",
-      "status": "in production; visual user acceptance pending",
+      "status": "implemented150/150; visual user acceptance pending",
       "entities": [
         "j_joker",
         "j_greedy_joker",
