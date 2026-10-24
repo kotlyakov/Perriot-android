@@ -1,5 +1,6 @@
-// Original Pierrot printmaking vocabulary. Coordinates remain local to each engraving.
-export const P='#f0e5c8', I='#143d39', R='#ca3d2a', B='#267d9b', G='#b88935', S='#8b9c94';
+// Original Pierrot colour-print vocabulary. Local coordinates, flat inks, no external art.
+export const P='#fff1d6', I='#20213f', R='#f04452', B='#3285ed', G='#ffc34a', S='#a9c9de';
+export const V='#9460d5', T='#24bdba', O='#ff873f', Y='#ffe15c', L='#82cb63', K='#ec72af';
 export const group=(x,y,s,body,angle=0)=>`<g transform="translate(${x} ${y}) rotate(${angle}) scale(${s})">${body}</g>`;
 export const path=(d,fill='none',stroke=I,w=2)=>`<path d="${d}" fill="${fill}" stroke="${stroke}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
 export const rect=(x,y,w,h,fill=P,r=2,stroke=I,sw=2)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`;
