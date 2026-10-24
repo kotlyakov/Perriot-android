@@ -36,8 +36,8 @@
     {
       "id": "individual-joker-printing-plates",
       "source": "src/ui/joker-art.js; src/ui/joker-art-primitives.js; src/content/joker-identities.js",
-      "origin": "150 individually authored original colourful SVG scenes; revised24.10.2026 after user feedback to add colour and remove playing-card pictures; no source-game art",
-      "status": "revised150/150; new illustration acceptance pending",
+      "origin": "150 original concise SVG subjects tied to canonical names/effects; full-face artwork and outlined overlaid names. Colour retained after user approval24.10.2026; no source-game art.",
+      "status": "revised150/150, colour approved; new layout and illustration acceptance pending",
       "entities": [
         "j_joker",
         "j_greedy_joker",
