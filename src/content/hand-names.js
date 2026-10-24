@@ -1,0 +1,1 @@
+export const HAND_NAMES={high_card:'Старшая карта',pair:'Пара',two_pair:'Две пары',three_of_a_kind:'Тройка',straight:'Стрит',flush:'Флеш',full_house:'Фулл-хаус',four_of_a_kind:'Каре',straight_flush:'Стрит-флеш',five_of_a_kind:'Пятёрка',flush_house:'Флеш-хаус',flush_five:'Флеш-пятёрка'};

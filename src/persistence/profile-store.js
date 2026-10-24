@@ -1,7 +1,7 @@
 import {createProfile,updateProfile} from '../core/profile.js';
 import {serializeState,deserializeState} from './save.js';
 import {PROFILE_IDS,PROFILE_LIMIT,validateAccount} from './profile-envelope.js';
-const initial=()=>({version:1,activeId:'1',profiles:Object.fromEntries(PROFILE_IDS.map(id=>[id,{name:'П'+id,profile:createProfile(),current:null,backup:null}]))});
+const initial=()=>({version:1,activeId:'1',profiles:Object.fromEntries(PROFILE_IDS.map(id=>[id,{name:id==='1'?'Игрок':'П'+id,profile:createProfile(),current:null,backup:null}]))});
 // The active run and all profile changes share one atomic backend replacement.
 // Legacy save bytes remain valid; no historical seeded status is guessed.
 export function createProfileStore(io){
@@ -55,10 +55,16 @@ export function createProfileStore(io){
   if(!PROFILE_IDS.includes(id))throw Error('Unknown profile');if(id===account?.activeId)return result(account.profiles[id].current?'current':'empty');
   const next=structuredClone(account);next.activeId=id;commit(next);return result(next.profiles[id].current?'current':'empty');
  }
+ function renameProfile(name){
+  if(typeof name!=='string'||!name.trim()||name.trim().length>16)throw Error('Имя должно содержать от 1 до 16 символов');
+  const next=structuredClone(account);if(!next)throw Error('Storage not loaded');
+  next.profiles[next.activeId].name=name.trim();commit(next);
+  return name.trim();
+ }
  function restoreBackup(){
   if(!recoveryText||read('current')!==observed)throw Error('No unchanged recovery available');
   const recovered=decode(recoveryText);io.write('current',recoveryText);account=recovered;observed=recoveryText;writable=true;recoveryText=undefined;
   return result(account.profiles[account.activeId].current?'current':'empty').state;
  }
- return {load,save,reset,selectProfile,restoreBackup,get activeId(){return account?.activeId;},getProfile:()=>structuredClone(account?.profiles[account.activeId].profile),getProfiles:()=>PROFILE_IDS.map(id=>({id,name:account?.profiles[id].name??'П'+id}))};
+ return {load,save,reset,selectProfile,renameProfile,restoreBackup,get activeId(){return account?.activeId;},getProfile:(id=account?.activeId)=>structuredClone(account?.profiles[id]?.profile),getProfiles:()=>PROFILE_IDS.map(id=>({id,name:account?.profiles[id].name??'П'+id}))};
 }

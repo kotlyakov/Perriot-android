@@ -1,9 +1,12 @@
+import {createOptionsView,createSettingsView,createRunInfoView,createEndView} from './menu-windows.js';
 import {isVerificationSeed} from '../core/verification-seed.js';
 import catalogue from '../content/apk-shop-catalog.js';
 import {createGameAudio,createAudioSettings,soundForAction} from './audio.js';
 import {renderShop,prepareShopChange} from './shop-screen.js';
 import {renderStartScreen,removeStartScreen} from './start-screen.js';
-import {renderBlindSelect} from './blind-select.js';
+import {blindReward} from '../core/stakes.js';
+import {APK_BLINDS_BY_ID} from '../content/apk-blinds.js';
+import {blindChoiceTarget,renderBlindSelect} from './blind-select.js';
 import {renderPostRound,roundDeckView} from './post-round.js';
 import {animateNumber,animateCounters,animateMoney} from './number-animation.js';
 import {CHALLENGE_BY_ID,challengeUnlocked} from '../content/challenges.js';
@@ -22,7 +25,6 @@ import {installLayout} from './layout.js';
 import {displayBlindTarget,renderField,dismissCardTip,showNumbers,HAND_NAMES,SUITS,rankLabel,displayInteger} from './field.js';
 
 installLayout();
-document.getElementById('stage').addEventListener('pointerdown',e=>{if(!e.target.closest('button'))dismissCardTip();});
 const native=globalThis.CardStorage;
 const audioPreferences=createAudioSettings({
  read:()=>native?native.read('audio'):globalThis.localStorage.getItem('pierrot.audio'),
@@ -49,8 +51,10 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&dialog.open&&(busy|
 globalThis.cardGameBack=closeDialog;
 function openDialog(title,body,actions=[['Закрыть',closeDialog]]) {
  dismissCardTip();dialog.dataset.view='';
+ dialog.dataset.window=typeof body==='string'?'message':body.dataset.window??(body.classList.contains('profile-view')?'profile':'collection-index');
  dialogMotion?.cancel();dialogMotion=null;
  dialog.classList.toggle('deck-dialog',typeof body!=='string' && body.classList.contains('deck-view'));
+ dialog.classList.toggle('menu-dialog',!dialog.classList.contains('deck-dialog'));
  dialog.classList.toggle('audio-dialog',typeof body!=='string' && body.classList.contains('audio-settings'));
  document.getElementById('dialog-title').textContent=title;document.getElementById('dialog-body').replaceChildren();
  if(typeof body==='string')document.getElementById('dialog-body').innerHTML=body;else document.getElementById('dialog-body').append(body);
@@ -75,16 +79,18 @@ function newState({deckId='red',seed,stake=1,challengeId}={}){
  return createRun(selectedSeed,{runId:crypto.randomUUID(),deckId,stake,challengeId,money:4n,referenceRng:true,referenceShop:true,...profileRunContext(profile,selectedSeed),reducedMotion:matchMedia('(prefers-reduced-motion: reduce)').matches});
 }
 function startFresh(options){if(busy)return;try{const next=newState(options);repository.reset(next,{seeded:isVerificationSeed(next.seed)||!options?.challengeId&&!!options?.seed,challenge:!!options?.challengeId});state=next;selected.clear();closeDialog();removeStartScreen();render();}catch{storageError();}}
-function showMenu(){if(busy)return;dismissDialog();renderStartScreen({hasSave:!!state,continueChallengeId:state?.challengeId,profile:repository.getProfile(),profileName:repository.getProfiles().find(p=>p.id===repository.activeId)?.name,onContinue:()=>{try{repository.save(state,[],{continued:true});removeStartScreen();render();}catch{storageError();}},onNew:options=>{if(state)confirmNew(options);else startFresh(options);},onSettings:showSettings,onCollection:()=>openDialog('Коллекция',renderCollectionView(repository.getProfile(),state?.seed)),onProfile:showProfile});}
+function showMenu(){if(busy)return;dismissDialog();renderStartScreen({hasSave:!!state,savedState:state?{...state,seeded:repository.getProfile()?.runs?.[state.runId]?.seeded??false}:undefined,continueChallengeId:state?.challengeId,profile:repository.getProfile(),profileName:repository.getProfiles().find(p=>p.id===repository.activeId)?.name,onContinue:()=>{try{repository.save(state,[],{continued:true});removeStartScreen();render();}catch{storageError();}},onNew:startFresh,onSettings:()=>showSettings(showMenu),onCollection:()=>showCollection(closeDialog),onProfile:showProfile});}
 function showProfile(){
- openDialog('Профиль',renderProfileView(repository.getProfile(),{activeId:repository.activeId,profiles:repository.getProfiles(),onSelect:id=>{
-  if(busy)return;try{const selectedProfile=repository.selectProfile(id);state=selectedProfile.state;selected.clear();showMenu();showProfile();}catch{storageError();}
- }}));
+ const name=repository.getProfiles().find(p=>p.id===repository.activeId)?.name??'Игрок';
+ openDialog('Профиль игрока',renderProfileView(repository.getProfile(),{name,onRename:next=>{
+  const saved=repository.renameProfile(next);const label=document.querySelector('#start_profile strong');if(label)label.textContent=saved;return saved;
+ }}),[['Назад',showMenu]]);
 }
 function storageError(){openDialog('Не удалось сохранить','<p>Действие не применено. Проверьте свободное место и доступ к сохранению.</p>',state?.winPending?[['Вернуться к победе',showVictory,'victory_retry']]:undefined);}
+function showLoss(){openDialog('Партия окончена',createEndView(state,{restart:showRunSetup,menu:showMenu,copySeed}),[]);}
 function showVictory(){
  if(busy||!state?.winPending)return;
- openDialog('Победа!','<p>Босс Анте '+state.round.ante+' побеждён. Продолжить забег в бесконечном режиме?</p>',[['Новый забег',()=>confirmNew(),'victory_new'],['Главное меню',showMenu,'victory_menu'],['Бесконечный режим',()=>perform('CONTINUE_ENDLESS'),'victory_endless']]);
+ openDialog('Победа!',createEndView(state,{restart:()=>showRunSetup(),menu:showMenu,endless:()=>perform('CONTINUE_ENDLESS'),copySeed},true),[]);
  dialog.dataset.view='victory';
 }
 async function perform(type,ids,mode,fields={}) {
@@ -137,44 +143,40 @@ async function perform(type,ids,mode,fields={}) {
  }
  await moneyMotion;scoringJokers=null;busy=false;render();
  if(type==='PLAY_HAND'&&['round_won','game_over'].includes(state.phase))audio.play(state.phase==='round_won'?'win':'lose');
- if(state.phase==='game_over')openDialog('Партия окончена',`<p>Набрано ${state.round.score} из ${displayBlindTarget(state.round.target)} очков.</p><p>Предварительная версия: доступны переходы анте, финальные боссы, победа и бесконечный режим. Профиль, коллекция и статистика сохраняются. Доступны 20 испытаний.</p>`,[['Новый забег',()=>confirmNew()],['Закрыть',closeDialog]]);
+ if(state.phase==='game_over')showLoss();
 }
 function confirmNew(options){if(busy)return;openDialog('Новый забег','<p>Начать заново? Текущий забег останется в резервной записи.</p>',[['Начать',()=>startFresh(options)],['Отмена',()=>{if(state?.winPending)showVictory();else closeDialog();}]]);if(state?.winPending)dialog.dataset.view='victory-confirm';}
 document.getElementById('play_hand').onclick=()=>perform('PLAY_HAND',[...selected]);
 document.getElementById('discard').onclick=()=>perform('DISCARD',[...selected]);
 function sort(mode){if(busy || (state?.phase!=='playing'&&!targetPackOpen()))return;perform('SET_SORT',undefined,mode);}
 document.getElementById('sort_rank').onclick=()=>sort('rank');document.getElementById('sort_suit').onclick=()=>sort('suit');
-function showSettings(){
+async function copySeed(seed){try{await navigator.clipboard.writeText(String(seed));notice('Сид скопирован');}catch{notice('Не удалось скопировать сид: '+seed);}}
+function showRunSetup(){if(busy)return;dismissDialog();renderStartScreen({hasSave:!!state,savedState:state?{...state,seeded:repository.getProfile()?.runs?.[state.runId]?.seeded??false}:undefined,fromRun:true,onBack:()=>{removeStartScreen();if(state?.phase==='game_over')showLoss();else render();},profileName:repository.getProfiles().find(p=>p.id===repository.activeId)?.name,profile:repository.getProfile(),onNew:startFresh,onContinue:()=>{removeStartScreen();render();},onSettings:()=>showSettings(showMenu),onCollection:()=>showCollection(closeDialog),onProfile:showProfile});document.getElementById('start_new').click();}
+function showCollection(back=showMenu){let view;view=renderCollectionView(repository.getProfile(),state?.seed,{onNavigate:({view:page,set})=>{dialog.dataset.window=page==='index'?'collection-index':'collection';dialog.dataset.collectionSet=set??'';}});openDialog('Коллекция',view,[['Назад',()=>{if(!view.back?.())back();}]]);dialog.dataset.window='collection-index';}
+function showOptions(){
  if(busy||victoryProtected())return;
- const body=document.createElement('div');body.className='audio-settings';
- const subtitle=document.createElement('p');subtitle.textContent='Пьеро · предварительная сборка 0.4.48-preview';body.append(subtitle);
- for(const [key,title] of [['music','Музыка'],['effects','Звуковые эффекты']]){
-  const label=document.createElement('label'),input=document.createElement('input'),output=document.createElement('output');
-  label.htmlFor=input.id='audio_'+key;label.append(document.createTextNode(title),output);
-  input.type='range';input.min='0';input.max='100';input.step='1';
-  const refresh=()=>{input.value=String(Math.round(audioPreferences.get()[key]*100));output.textContent=input.value+'%';};refresh();
-  input.oninput=()=>{try{audio.setVolumes(audioPreferences.set({...audioPreferences.get(),[key]:Number(input.value)/100}));if(key==='effects')audio.play('select');}catch{notice('Не удалось сохранить настройки звука');}refresh();};
-  body.append(label,input);
- }
- const note=document.createElement('p');note.className='audio-note';note.textContent='0% — выключено. Звук останавливается при сворачивании. Забег сохраняется после каждого действия.';body.append(note);
- openDialog('Настройки',body,[['Продолжить',closeDialog],['Новый забег',()=>confirmNew()],['Главное меню',showMenu]]);
+ const inRun=!!state&&!document.getElementById('start_screen');
+ openDialog('Меню',createOptionsView({settings:()=>showSettings(),restart:showRunSetup,menu:showMenu,copySeed,credits:()=>openDialog('Авторы','<h2>Пьеро</h2><p>Собственное оформление: Печатная мастерская.</p><p>Правила и структура интерфейса основаны на Balatro.</p>',[['Назад',showOptions]])},{inRun,seeded:repository.getProfile()?.runs?.[state?.runId]?.seeded??false,seed:state?.seed}),[['Назад',closeDialog]]);
 }
-document.getElementById('options').onclick=showSettings;
+function showSettings(back=showOptions){
+ if(busy||victoryProtected())return;
+ openDialog('Настройки',createSettingsView({values:audioPreferences.get(),onVolume:(key,value)=>{const next=audioPreferences.set({...audioPreferences.get(),[key]:value});audio.setVolumes(next);if(key==='effects')audio.play('select');return next;},onNotice:notice}),[['Назад',back]]);
+}
+document.getElementById('options').onclick=showOptions;
 document.getElementById('run_info').onclick=()=>{
- if(busy||!state||state.winPending)return;const table=document.createElement('table');
- for(const id of state.discoveredHands){const row=table.insertRow();row.insertCell().textContent=HAND_NAMES[id];row.insertCell().textContent='Ур. '+state.handLevels[id];}
- const body=document.createElement('div'),p=document.createElement('p');p.textContent=(state.challengeId?'Испытание: '+CHALLENGE_BY_ID[state.challengeId].name:DECKS[state.deckId].name)+' · Анте '+state.round.ante+(state.round.blindId==='boss'?' · Босс':state.round.blindId==='big'?' · Большой блайнд':' · Малый блайнд');body.append(p,table);openDialog('Партия',body);
+ if(busy||!state||state.winPending)return;
+ openDialog('Партия',createRunInfoView(state,{voucherFamilies:catalogue.centres.filter(c=>c.set==='Voucher').sort((a,b)=>a.order-b.order).map((c,index)=>({id:c.key,group:Math.floor(index/2)})),blindChoices:['small','big','boss'].map(id=>({id,target:displayBlindTarget(blindChoiceTarget(state,id)),reward:blindReward(state,id),description:id==='boss'?(APK_BLINDS_BY_ID[state.apkBlinds?.bossId]?.description??''):''}))}),[['Назад',closeDialog]]);
 };
 document.getElementById('deck').onclick=()=>{
  if(busy||!state||state.winPending)return;openDialog('Колода',createDeckView(roundDeckView(state)),[['Назад',closeDialog]]);
 };
 globalThis.cardGamePause=()=>audio.setActive(false); // Actions are persisted before animation; no pending I/O on pause.
 const loaded=repository.load();
-if(loaded.status==='current'){state=loaded.state;render();if(!state.winPending)showMenu();}
+if(loaded.status==='current'){state=loaded.state;render();showMenu();}
 else if(loaded.status==='empty')showMenu();
 else if(loaded.status==='recovery') {
  dialog.addEventListener('cancel',e=>e.preventDefault(),{once:true});
- openDialog('Восстановить забег?','<p>Основная запись повреждена. Есть проверенная резервная копия. Восстановить её?</p>',[['Восстановить',()=>{try{state=repository.restoreBackup();dismissDialog();render();if(!state?.winPending)showMenu();}catch{storageError();}},'restore-backup']]);
+ openDialog('Восстановить забег?','<p>Основная запись повреждена. Есть проверенная резервная копия. Восстановить её?</p>',[['Восстановить',()=>{try{state=repository.restoreBackup();dismissDialog();render();showMenu();}catch{storageError();}},'restore-backup']]);
 } else openDialog('Сохранение недоступно','<p>Не удалось прочитать исправную запись. Файлы сохранены без изменений. Автоматический новый забег не начат.</p>');
 
 

@@ -1,0 +1,23 @@
+<div id="pierrot-menu-review" style="width:100%;">
+<style>
+#pierrot-menu-review{font-family:Arial,sans-serif;color:light-dark(#173d37,#f0e5c8)}
+#pierrot-menu-review .review-nav{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 8px}
+#pierrot-menu-review .review-nav button{font:inherit;padding:8px 12px;background:light-dark(#e5e8e2,#254640);color:inherit;border:1px solid light-dark(#acbcb0,#708a80);border-radius:6px}
+#pierrot-menu-review iframe{display:block;width:100%;aspect-ratio:1536/688;border:0;border-radius:8px;background:#225449}
+#pierrot-menu-review:fullscreen{background:#225449;display:flex;flex-direction:column;padding:8px;box-sizing:border-box}
+#pierrot-menu-review:fullscreen iframe{flex:1;aspect-ratio:auto;min-height:0}
+</style>
+<nav class="review-nav" aria-label="Проверить окно"><button class="cursor-interaction" data-review="options">Меню</button><button class="cursor-interaction" data-review="party">Партия</button><button class="cursor-interaction" data-review="settings">Настройки</button><button class="cursor-interaction" data-review="collection">Коллекция</button><button class="cursor-interaction" data-review="profile">Профиль</button><button class="cursor-interaction" data-review="main">Главное меню</button><button class="cursor-interaction" data-review="fullscreen">Развернуть</button></nav>
+<iframe title="Пьеро — проверка окон и меню" sandbox="allow-scripts allow-same-origin allow-modals" allow="fullscreen"></iframe>
+<script>
+(function(){
+const root=document.getElementById('pierrot-menu-review'),frame=root.querySelector('iframe');
+const packed='';
+const bytes=Uint8Array.from(atob(packed),c=>c.charCodeAt(0));
+new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))).text().then(html=>{frame.srcdoc=html;});
+root.querySelector('.review-nav').addEventListener('click',async e=>{const action=e.target.dataset.review;if(!action)return;if(action==='fullscreen'){if(document.fullscreenElement)await document.exitFullscreen();else await root.requestFullscreen();return;}const d=frame.contentDocument;if(!d?.getElementById('options'))return;d.querySelector('dialog[open]')?.close();
+if(action==='party'){d.getElementById('run_info').click();return;}
+d.getElementById('options').click();const id={settings:'options_settings',collection:'options_collection',profile:'options_stats',main:'options_menu'}[action];if(id)d.getElementById(id)?.click();});
+})();
+</script>
+</div>

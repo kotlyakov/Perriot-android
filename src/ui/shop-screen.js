@@ -2,6 +2,7 @@ import {canEnterBoss} from '../core/boss-effects.js';
 import {canLeaveApkShop} from '../core/blind-progression.js';
 import {describeShopItem as describeCatalogueItem,displayPlayingCard} from '../content/shop-display.js';
 import {appendTooltipContents} from './tooltip-text.js';
+import {showCardTooltip,dismissCardTooltip} from './card-tooltip.js';
 import {getRerollCost,canBuyShopCard,hasJokerSpace,hasConsumableSpace,isPlayingShopCard} from '../core/shop.js';
 import {canUseConsumable,supportsConsumableEffect} from '../core/consumables.js';
 import {canAfford} from '../core/shop-pricing.js';
@@ -44,7 +45,7 @@ export function jokerStickers(offer){
  return rows;
 }
 
-let view=null,packView=null,selected=null,tip=null,lastMain=null,entryMotion,stageTipListener=false,cancelDrag,cancelReturn,lastAcornRound=null;
+let view=null,packView=null,selected=null,tip=null,lastMain=null,entryMotion,cancelDrag,cancelReturn,lastAcornRound=null;
 const reduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
 const node=(tag,className,text)=>{const n=document.createElement(tag);if(className)n.className=className;if(text!==undefined)n.textContent=text;return n;};
 export function shopMoneyFontSize(value,width,max=27){return Math.min(max,width/(String(value).length+1)/.66);}
@@ -57,18 +58,16 @@ export function shopReturnFrames(dx,dy){
 }
 function money(value,width=56,max=27){const n=node('span','shop-money','$'+value);n.style.fontSize=shopMoneyFontSize(value,width,max)+'px';return n;}
 function rect(n,x,y,w,h){Object.assign(n.style,{left:x+'px',top:y+'px',width:w+'px',height:h+'px'});return n;}
-function dismissTip(){tip?.remove();tip=null;}
+function dismissTip(){if(tip?.isConnected)dismissCardTooltip();tip=null;}
 function clearSelection(){selected=null;dismissTip();for(const root of [view,packView,document.getElementById('shop_owned')]){root?.querySelectorAll('.shop-choice').forEach(n=>{n.classList.remove('is-selected');n.querySelector('.shop-card')?.setAttribute('aria-pressed','false');});root?.querySelectorAll('.shop-buy,.shop-use').forEach(n=>n.remove());}}
 function showTip(offer,card){
  dismissTip();if(card.classList.contains('acorn-hidden'))return;const details=describeShopItem(offer,{owned:card.classList.contains('shop-owned-card')});tip=node('aside','shop-tooltip');tip.setAttribute('role','tooltip');tip.id='shop_tooltip';
  appendTooltipContents(tip,details.name,[details.description,...jokerStickers(offer).map(row=>row.label+': '+row.description)]);
- const stage=document.getElementById('stage'),scale=stage.getBoundingClientRect().width/1536,b=card.getBoundingClientRect(),s=stage.getBoundingClientRect();
- const x=(b.left-s.left)/scale,y=(b.top-s.top)/scale;
- Object.assign(tip.style,{left:Math.min(1300,Math.max(450,x+card.offsetWidth+12))+'px',top:Math.min(475,Math.max(12,y))+'px'});stage.append(tip);tip.style.top=Math.max(12,Math.min(y,688-tip.offsetHeight-12))+'px';
+ showCardTooltip(tip,card);
 }
 // Independently drawn printing blocks: each catalogue identity gets its own ink,
 // plate number and geometry. These are not source-game illustrations.
-function artwork(offer,kind){
+export function artwork(offer,kind){
  const key=offer.entityId??offer.originalKey??offer.id;let hash=0;for(const c of key)hash=(hash*31+c.charCodeAt(0))>>>0;
  const ink=['#176e80','#b84b37','#406b42','#7a5382','#ac772b'][hash%5],variant=hash%4;
  const motifs=[
@@ -96,6 +95,8 @@ function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
  const expired=offer.perishable===true&&offer.perishRounds===0;
  const debuffed=kind==='owned'&&!hidden&&(expired||state.phase==='playing'&&offer.debuffed===true),stickers=hidden?[]:jokerStickers(offer);
  const details=hidden?{name:'Скрытый джокер',canBuy:false}:describeShopItem(offer,{owned:kind==='owned'}),card=node('button','shop-card shop-'+(kind==='owned'?'owned-card':kind));card.type='button';card.disabled=busy;card.setAttribute('aria-label',[details.name,...stickers.map(row=>row.label),...(debuffed?['ослаблен']:[])].join(' — '));card.setAttribute('aria-pressed',String(selected?.id===offer.id));
+ const cardSet=kind==='booster'?offer.entityId.startsWith('p_arcana_')?'Tarot':offer.entityId.startsWith('p_celestial_')?'Planet':offer.entityId.startsWith('p_spectral_')?'Spectral':offer.set:offer.set;
+ if(!hidden&&cardSet)card.dataset.cardSet=cardSet;
  if(kind==='voucher'){card.classList.add('shop-ticket');card.append(...ticketArtwork(offer,details));}
  else if(hidden){card.classList.add('acorn-hidden');const back=node('span','acorn-back');back.setAttribute('aria-hidden','true');back.innerHTML='<svg viewBox="0 0 104 143"><path d="M7 7H97V136H7Z M14 14H90V129H14Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M52 28L80 72L52 115L24 72Z" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="52" cy="72" r="12" fill="currentColor"/></svg>';card.append(back);}
  else if(['pack','main'].includes(kind)&&displayPlayingCard(offer)){const playing=displayPlayingCard(offer);card.classList.add('playing-card','pack-playing-card');card.innerHTML=cardMarkup(playing);applyCardModifiers(card,playing);}else card.append(artwork(offer,kind),node('span','shop-card-name',details.name));
@@ -117,7 +118,7 @@ function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
  // Pointer selection is committed on release; captured touch need not emit a click.
  card.onclick=e=>{if(e.detail===0&&!e.pointerType&&!e.sourceCapabilities?.firesTouchEvents&&!busy){if(['owned','consumable','pack'].includes(kind))select();showTip(offer,card);}};
  card.onpointerdown=e=>{
-  if(busy||card.disabled||e.button!==0)return;cancelDrag?.();cancelReturn?.();showTip(offer,card);
+  if(busy||card.disabled||e.button!==0)return;cancelDrag?.();cancelReturn?.();
   const inventory=kind==='owned'||kind==='consumable',area=kind==='owned'?'jokers':'consumables';
   const purchasable=state.phase==='shop'&&!inventory,draggable=purchasable||inventory&&canManageInventory(state);
   const startX=e.clientX,startY=e.clientY,scale=document.getElementById('stage').getBoundingClientRect().width/1536;let dragged=false,zone,ghost;
@@ -175,7 +176,6 @@ function ensureView(){
  const sign=node('section','shop-sign');sign.id='shop_sign';sign.setAttribute('aria-label','Магазин');sign.append(node('div','shop-sign-title','МАГАЗИН'),node('div','shop-sign-subtitle','Улучшите свою партию!'));document.getElementById('stage').append(sign);
  if(!document.getElementById('shop_owned')){const owned=node('div','shop-owned');owned.id='shop_owned';document.getElementById('stage').append(owned);}
  view.addEventListener('pointerdown',e=>{if(!e.target.closest('button'))clearSelection();});
- document.getElementById('stage').addEventListener('pointerdown',e=>{if(!e.target.closest('.shop-choice,.shop-tooltip'))dismissTip();},{signal:(view.controller=new AbortController()).signal});
  if(!reduced())entryMotion=view.animate([{translate:'0 488px'},{translate:'0 0'}],{duration:360,easing:'cubic-bezier(.16,1,.3,1)'});
  return true;
 }
@@ -206,7 +206,6 @@ function renderPack(state,busy,callbacks){
  renderOwned(state,busy,callbacks);
 }
 function renderOwned(state,busy,callbacks){
- if(!stageTipListener){document.getElementById('stage').addEventListener('pointerdown',e=>{if(!e.target.closest('.shop-choice,.shop-tooltip'))dismissTip();});stageTipListener=true;}
  let owned=document.getElementById('shop_owned');if(!owned){owned=node('div','shop-owned');owned.id='shop_owned';document.getElementById('stage').append(owned);}owned.replaceChildren();
  const jokers=state.jokers,step=jokers.length<=3?220:Math.min(130,560/Math.max(1,jokers.length-1)),jokerStart=744-52-step*(jokers.length-1)/2;
  jokers.forEach((o,i)=>owned.append(choice(o,'owned',i,state,busy,callbacks,jokerStart+i*step,23,104,143)));
