@@ -50,9 +50,30 @@ export function renderProfileView(profile,{name='Игрок',onRename}={}){
 const collectionRows={Joker:[5,5,5],Tarot:[5,6],Planet:[6,6],Spectral:[4,5],Voucher:[4,4],Booster:[4,4],Enhanced:[4,4],Seal:[4],Edition:[5],Back:[1],Tag:[6,6,6,6],Blind:[5,5,5,5,5,5]};
 export function renderCollectionView(profile,seed,{onNavigate}={}){
  const root=element('section','collection-view');root.id='collection_view';root.setAttribute('aria-label','Коллекция');
- const entries=collectionEntries(profile,seed);let set=null,page=0;
+ const entries=collectionEntries(profile,seed);let set=null,page=0,gesture=null,suppressClick=false,animation=null,changePage=()=>{};
+ // Keep the release click of a swipe from opening a card on the new page.
+ root.addEventListener?.('click',event=>{if(!suppressClick)return;suppressClick=false;event.preventDefault();event.stopImmediatePropagation();},true);
+ root.onpointerdown=event=>{
+  suppressClick=false;gesture=null;
+  if(!set||event.isPrimary===false||(event.button!=null&&event.button!==0)||event.target?.closest?.('.collection-paging'))return;
+  gesture={id:event.pointerId,x:event.clientX,y:event.clientY,horizontal:false};
+ };
+ root.onpointermove=event=>{
+  if(!gesture||event.pointerId!==gesture.id)return;
+  const dx=event.clientX-gesture.x,dy=event.clientY-gesture.y;
+  if(Math.abs(dx)>12&&Math.abs(dx)>Math.abs(dy)*1.4)gesture.horizontal=true;
+  if(gesture.horizontal){event.preventDefault();suppressClick=true;root.setPointerCapture?.(event.pointerId);}
+ };
+ root.onpointerup=event=>{
+  if(!gesture||event.pointerId!==gesture.id)return;
+  const dx=event.clientX-gesture.x,dy=event.clientY-gesture.y,horizontal=gesture.horizontal;gesture=null;
+  if(horizontal){event.preventDefault();suppressClick=true;if(Math.abs(dx)>=40&&Math.abs(dx)>Math.abs(dy)*1.4)changePage(dx<0?1:-1);}
+ };
+ root.onpointercancel=()=>{gesture=null;};
+ root.ondragstart=event=>event.preventDefault();
  root.back=()=>{if(!set)return false;set=null;page=0;draw();return true;};
- function draw(){
+ function draw(direction=0){
+  animation?.cancel();animation=null;changePage=()=>{};gesture=null;
   dismissCardTooltip();root.replaceChildren();root.onkeydown=null;root.dataset.view=set?'category':'index';root.dataset.set=set??'';
   // Retained as an accessible automation hook, never a second visible navigation.
   const selector=element('select');selector.id='collection_set';selector.hidden=true;selector.tabIndex=-1;selector.setAttribute('aria-label','Раздел коллекции');
@@ -87,12 +108,21 @@ export function renderCollectionView(profile,seed,{onNavigate}={}){
     layout.append(table,grid);content.append(layout);
    }else content.append(grid);
    if(['Enhanced','Seal','Edition'].includes(set))content.append(element('p','collection-category-explanation',set==='Seal'?'Печати добавляют карте особое свойство. На карте может быть одна печать.':set==='Enhanced'?'Улучшение меняет свойства игральной карты. На карте может быть одно улучшение.':'Издание добавляет карте отдельный эффект и сочетается с улучшением и печатью.'));
-   if(pages>1||['Joker','Tarot','Spectral','Voucher','Booster','Back'].includes(set)){
-    const cycle=next=>{page=(next+pages)%pages;draw();},paging=pager('collection',page,pages,cycle);paging.className='collection-paging';
-    for(const arrow of [paging.children[0],paging.children[2]])arrow.disabled=false;
-    const select=element('select','collection-page-select');select.id='collection_page_select';select.setAttribute('aria-label',set==='Back'?'Колода':'Страница коллекции');
-    for(let index=0;index<pages;index++){const option=element('option','',set==='Back'?localized(rows[index]).name:`Страница ${index+1} / ${pages}`);option.value=String(index);select.append(option);}select.value=String(page);select.onchange=()=>cycle(Number(select.value));paging.children[1].hidden=true;paging.append(select);content.append(paging);
-   }root.append(content,tooltip);
+   const cycle=(next,direction=Math.sign(next-page))=>{if(animation||pages===1)return;page=(next+pages)%pages;draw(direction);};
+   changePage=delta=>cycle(page+delta,delta);
+   const paging=pager('collection',page,pages,cycle);paging.className='collection-paging';
+   for(const arrow of [paging.children[0],paging.children[2]])arrow.disabled=pages===1;
+   paging.children[1].setAttribute('aria-live','polite');
+   // Preserve the existing automation hook; visible navigation is identical in every category.
+   const select=element('select');select.id='collection_page_select';select.hidden=true;select.tabIndex=-1;select.setAttribute('aria-label','Страница коллекции');
+   for(let index=0;index<pages;index++){const option=element('option','',`Страница ${index+1} / ${pages}`);option.value=String(index);select.append(option);}select.value=String(page);select.onchange=()=>cycle(Number(select.value));paging.append(select);content.append(paging);
+   root.append(content,tooltip);
+   const surface=set==='Blind'?grid.parentElement:grid;
+   if(direction&&surface?.animate&&!globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches){
+    const motion=surface.animate([{transform:`translateX(${direction*24}px)`,opacity:.35},{transform:'translateX(0)',opacity:1}],{duration:180,easing:'ease-out'});
+    animation=motion;
+    motion.finished.then(()=>{if(animation===motion)animation=null;},()=>{if(animation===motion)animation=null;});
+   }
 
   }
   onNavigate?.({view:set?'category':'index',set,back:root.back});

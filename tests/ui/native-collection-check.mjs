@@ -7,11 +7,12 @@ class Node {
  constructor(tag){this.tagName=tag;this.children=[];this.dataset={};this.attributes={};this.style={setProperty:(key,value)=>{this.style[key]=value;}};this._text='';}
  set textContent(value){this._text=String(value);this.children=[];}
  get textContent(){return this._text+this.children.map(node=>node.textContent).join('');}
- append(...nodes){this.children.push(...nodes);}
- replaceChildren(...nodes){this._text='';this.children=nodes;}
+ append(...nodes){for(const node of nodes)node.parentElement=this;this.children.push(...nodes);}
+ replaceChildren(...nodes){this._text='';this.children=[];this.append(...nodes);}
  setAttribute(key,value){this.attributes[key]=value;}
  querySelectorAll(selector){return all(this).filter(node=>selector==='[data-tab]'?node.dataset.tab:selector==='[data-entry-id]'?node.dataset.entryId:false);}
- click(){if(!this.disabled)this.onclick?.();}
+ addEventListener(type,listener){(this.listeners??={})[type]=listener;}
+ click(){if(this.disabled)return;let stopped=false;const event={preventDefault(){},stopImmediatePropagation(){stopped=true;}};const chain=[];for(let node=this;node;node=node.parentElement)chain.unshift(node);for(const node of chain){node.listeners?.click?.(event);if(stopped)return;}this.onclick?.();}
 }
 const all=node=>node.children.flatMap(child=>[child,...all(child)]);
 const find=(root,id)=>[root,...all(root)].find(node=>node.id===id);
@@ -25,13 +26,17 @@ assert.equal(all(collection).filter(node=>node.className==='collection-category-
 assert.equal(all(collection).filter(node=>node.id?.startsWith('collection_category_')).length,12);
 const group=all(collection).find(node=>node.className==='collection-consumables');
 for(const set of ['Tarot','Planet','Spectral'])assert.ok(find(group,'collection_category_'+set));
+const swipe=(dx,dy=0,{cancel=false}={})=>{const event=(x,y)=>({pointerId:7,isPrimary:true,pointerType:'touch',clientX:x,clientY:y,preventDefault(){},stopPropagation(){}});collection.onpointerdown(event(200,100));collection.onpointermove(event(200+dx,100+dy));collection[cancel?'onpointercancel':'onpointerup'](event(200+dx,100+dy));};
 const expected={Joker:[5,5,5],Tarot:[5,6],Planet:[6,6],Spectral:[4,5],Voucher:[4,4],Booster:[4,4],Enhanced:[4,4],Seal:[4],Edition:[5],Back:[1],Tag:[6,6,6,6],Blind:[5,5,5,5,5,5]};
 for(const [set,capacities] of Object.entries(expected)){
  find(collection,'collection_category_'+set).click();
  assert.equal(collection.dataset.view,'category');assert.equal(all(collection).some(node=>node.className==='collection-categories'),false,'Category removes the index');
  assert.deepEqual(rows(collection).map(node=>node.style['--collection-columns']),capacities);
  const total=collectionEntries(profile).filter(entry=>entry.set===set).length,size=capacities.reduce((n,x)=>n+x,0),pages=Math.ceil(total/size);
- assert.equal(cards(collection).length,Math.min(total,size));if(pages>1||['Joker','Tarot','Spectral','Voucher','Booster','Back'].includes(set))assert.equal(find(collection,'collection_page').textContent,`1 / ${pages}`);else assert.equal(find(collection,'collection_page'),undefined);
+ assert.equal(cards(collection).length,Math.min(total,size));assert.equal(find(collection,'collection_page').textContent,`1 / ${pages}`);
+ const paging=all(collection).find(node=>node.className==='collection-paging');assert.deepEqual(paging.children.slice(0,3).map(node=>node.id),['collection_prev','collection_page','collection_next']);assert.equal(find(collection,'collection_page').hidden,undefined);assert.equal(find(collection,'collection_prev').disabled,pages===1);assert.equal(find(collection,'collection_next').disabled,pages===1);
+ if(pages===1){swipe(-100);assert.equal(find(collection,'collection_page').textContent,'1 / 1');}else{swipe(-100);assert.equal(find(collection,'collection_page').textContent,`2 / ${pages}`,`${set} supports swiping`);swipe(100);assert.equal(find(collection,'collection_page').textContent,`1 / ${pages}`);}
+ swipe(0);
  const visited=cards(collection).map(card=>card.dataset.entryId);
  for(let page=1;page<pages;page++){find(collection,'collection_next').click();visited.push(...cards(collection).map(card=>card.dataset.entryId));}
  assert.equal(visited.length,total);assert.equal(new Set(visited).size,total,'Every category item appears exactly once');
@@ -56,10 +61,23 @@ find(collection,'collection_category_Joker').click();
 assert.equal(cards(collection).length,15);
 assert.ok(cards(collection).every(card=>!card.children.some(child=>child.tagName==='strong')),'Names belong in tooltip, never portrait faces');
 assert.ok(cards(collection).every(card=>card.dataset.cardState),'Every portrait has a discovery/lock state');
-const pageSelect=find(collection,'collection_page_select');assert.ok(pageSelect);assert.equal(pageSelect.children.length,10);pageSelect.value='2';pageSelect.onchange();assert.equal(find(collection,'collection_page').textContent,'3 / 10');find(collection,'collection_page_select').value='9';find(collection,'collection_page_select').onchange();find(collection,'collection_next').click();assert.equal(find(collection,'collection_page').textContent,'1 / 10');find(collection,'collection_prev').click();assert.equal(find(collection,'collection_page').textContent,'10 / 10');
+swipe(-100);assert.equal(find(collection,'collection_page').textContent,'2 / 10','Swipe left advances');cards(collection)[0].click();assert.equal(find(collection,'collection_details').hidden,true,'Swipe release does not open new-page tooltip');
+swipe(0);cards(collection)[0].click();assert.equal(find(collection,'collection_details').hidden,false,'A later tap still opens the tooltip');
+swipe(100);assert.equal(find(collection,'collection_page').textContent,'1 / 10','Swipe right returns');
+swipe(100);assert.equal(find(collection,'collection_page').textContent,'10 / 10','Swipe wraps');
+swipe(-15);swipe(-100,150);swipe(-100,0,{cancel:true});assert.equal(find(collection,'collection_page').textContent,'10 / 10','Short, vertical and cancelled gestures keep the page');
+find(collection,'collection_next').click();
+const pageSelect=find(collection,'collection_page_select');assert.ok(pageSelect);assert.equal(pageSelect.hidden,true);assert.equal(pageSelect.children.length,10);pageSelect.value='2';pageSelect.onchange();assert.equal(find(collection,'collection_page').textContent,'3 / 10');find(collection,'collection_page_select').value='9';find(collection,'collection_page_select').onchange();find(collection,'collection_next').click();assert.equal(find(collection,'collection_page').textContent,'1 / 10');find(collection,'collection_prev').click();assert.equal(find(collection,'collection_page').textContent,'10 / 10');
 assert.ok(cards(collection).some(card=>card.children.some(child=>child.className==='collection-state-art')));
 collection.back();
 for(const set of ['Tarot','Planet','Spectral'])assert.equal(find(collection,'collection_category_'+set).dataset.cardSet,set);
 assert.equal(JSON.stringify(profile),before,'Views never mutate profile/unlocks');
 const seeded=renderCollectionView(profile,'13031990');find(seeded,'collection_category_Joker').click();assert.ok(cards(seeded).every(card=>card.dataset.discovered==='true'),'Verification seed behavior stays intact');assert.ok(cards(seeded).every(card=>card.children.some(child=>child.className==='shop-art'&&child.innerHTML.includes('<svg'))),'Discovered portraits reuse original project artwork');assert.ok(cards(seeded).every(card=>card.attributes['aria-pressed']===undefined),'Collection portraits do not become selected');cards(seeded)[0].click();assert.ok(all(find(seeded,'collection_details')).some(node=>node.className==='collection-rarity'&&node.dataset.rarity==='1'));assert.equal(JSON.stringify(profile),before);
+const animations=[];Node.prototype.animate=function(frames,options){let finish;const motion={finished:new Promise(resolve=>{finish=resolve;}),cancel(){finish();}};animations.push({frames,options,finish});return motion;};
+find(collection,'collection_category_Joker').click();find(collection,'collection_next').click();assert.equal(animations.length,1);assert.equal(animations[0].frames[0].transform,'translateX(24px)');assert.equal(animations[0].options.duration,180);
+find(collection,'collection_next').click();assert.equal(find(collection,'collection_page').textContent,'2 / 10','Repeated navigation during animation is ignored');
+swipe(-100);cards(collection)[0].click();assert.equal(find(collection,'collection_details').hidden,true,'Swipe during animation cannot open a card');assert.equal(find(collection,'collection_page').textContent,'2 / 10');
+animations[0].finish();await Promise.resolve();find(collection,'collection_prev').click();assert.equal(animations[1].frames[0].transform,'translateX(-24px)');animations[1].finish();await Promise.resolve();
+globalThis.matchMedia=()=>({matches:true});find(collection,'collection_next').click();assert.equal(animations.length,2,'Reduced motion skips the animation');assert.equal(find(collection,'collection_page').textContent,'2 / 10');delete globalThis.matchMedia;delete Node.prototype.animate;
+assert.equal(JSON.stringify(profile),before,'Swipes and animation never change stored progress');
 console.log('Collection portrait states/paging/tooltips and single player profile naming/progress/nonmutation PASS');

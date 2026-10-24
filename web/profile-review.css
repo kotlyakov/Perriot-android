@@ -76,7 +76,6 @@
 .collection-view .collection-card[data-card-state=locked]{background:#263b3b;border-color:#536765;color:#788b86;box-shadow:0 4px #071d21,inset 0 0 0 2px #1b2f2f}
 .collection-view .collection-card[data-card-state=discovered][data-card-set=Tarot],.collection-view .collection-card[data-card-state=discovered][data-card-set=Planet],.collection-view .collection-card[data-card-state=discovered][data-card-set=Spectral]{border-color:var(--card-type-color)}
 .collection-categories button[data-card-set=Tarot],.collection-categories button[data-card-set=Planet],.collection-categories button[data-card-set=Spectral]{background:var(--card-type-color);color:#fff3dc}
-.collection-view .collection-page-select{height:34px;min-width:215px;max-width:60%;margin:0;padding:3px 12px;border:2px solid #ed826d;border-radius:6px;background:#b74b3f;color:#fff1db;font:500 16px "Rubik",sans-serif;text-align:center}
 .collection-category-explanation{text-align:center;font-size:14px!important;line-height:1.3;margin:0;padding:5px;color:#c2cec5}
 .collection-grid[data-set=Tag] .shop-art,.collection-grid[data-set=Blind] .shop-art{border-radius:50%;overflow:hidden}
 .collection-grid[data-set=Tag] .shop-plate,.collection-grid[data-set=Blind] .shop-plate{display:none}
@@ -86,10 +85,9 @@
 .profile-name-status:empty{display:none}
 .collection-rarity{align-self:center;border-radius:5px;background:#377bb7;padding:4px 12px;font-size:13px;font-weight:600}
 .collection-rarity[data-rarity="2"]{background:#397e58}.collection-rarity[data-rarity="3"]{background:#b74b3f}.collection-rarity[data-rarity="4"]{background:#855a9e}
-.collection-view[data-set=Back] .collection-grid{padding-inline:62px}
-.collection-view[data-set=Back] .collection-paging button{position:absolute;top:45%;left:12px;min-height:48px!important}
-.collection-view[data-set=Back] .collection-paging button#collection_next{left:auto;right:12px}
 /* Family hue survives undiscovered/locked faces without disclosing identity. */
 .collection-view .collection-card:is([data-card-set=Tarot],[data-card-set=Planet],[data-card-set=Spectral]){border-color:var(--card-type-color);background:color-mix(in srgb,var(--card-type-color) 22%,#f0e5c8)}
 .collection-view .collection-card:is([data-card-set=Tarot],[data-card-set=Planet],[data-card-set=Spectral])[data-card-state=unseen]{background:repeating-linear-gradient(45deg,transparent 0 4px,#12292a30 4px 8px),color-mix(in srgb,var(--card-type-color) 34%,#20363b);color:color-mix(in srgb,var(--card-type-color) 55%,#f0e5c8)}
 .collection-view .collection-card:is([data-card-set=Tarot],[data-card-set=Planet],[data-card-set=Spectral])[data-card-state=locked]{background:color-mix(in srgb,var(--card-type-color) 24%,#263b3b);color:color-mix(in srgb,var(--card-type-color) 45%,#a7b4b1)}
+
+.collection-content{touch-action:pan-y;user-select:none}

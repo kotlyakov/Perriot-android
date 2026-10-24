@@ -23,7 +23,7 @@ export function renderStartScreen({hasSave=false,onContinue,onNew,onSettings,pro
  const newButton=button('start_new','Играть','blue',()=>showSetup(hasSave&&!fromRun?'continue':'new'));
  const collection=button('start_collection','Коллекция','start-green',()=>onCollection?.());collection.disabled=!onCollection;collection.setAttribute('aria-label','Коллекция');
  bar.append(newButton,button('start_settings','Настройки','orange',()=>onSettings?.()),collection);screen.append(bar);
- const profileButton=button('start_profile','','start-profile',()=>onProfile?.());profileButton.disabled=!onProfile;profileButton.setAttribute('aria-label','Текущий профиль '+profileName);profileButton.append(element('span','','Профиль игрока'),element('strong','',profileName));screen.append(profileButton);
+ const profileButton=button('start_profile','','start-profile',()=>onProfile?.());profileButton.disabled=!onProfile;profileButton.setAttribute('aria-label','Текущий профиль '+profileName);profileButton.title=profileName;profileButton.append(element('span','','Профиль'),element('strong','',profileName));screen.append(profileButton);
  const language=button('start_language','Русский','start-language',()=>{});language.disabled=true;language.setAttribute('aria-label','Текущий язык: Русский. Выбор других языков ещё не реализован');screen.append(language);
  document.getElementById('stage').append(screen);enter(screen);newButton.focus({preventScroll:true});
 
