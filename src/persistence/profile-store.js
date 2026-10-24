@@ -56,7 +56,7 @@ export function createProfileStore(io){
   const next=structuredClone(account);next.activeId=id;commit(next);return result(next.profiles[id].current?'current':'empty');
  }
  function renameProfile(name){
-  if(typeof name!=='string'||!name.trim()||name.trim().length>16)throw Error('Имя должно содержать от 1 до 16 символов');
+  if(typeof name!=='string'||!name.trim()||name.trim().length>10)throw Error('Имя должно содержать от 1 до 10 символов');
   const next=structuredClone(account);if(!next)throw Error('Storage not loaded');
   next.profiles[next.activeId].name=name.trim();commit(next);
   return name.trim();

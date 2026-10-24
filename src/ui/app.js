@@ -1,3 +1,5 @@
+import {slideWindow,cancelWindowMotion} from './window-motion.js';
+import {gameDuration} from './game-speed.js';
 import {createOptionsView,createSettingsView,createRunInfoView,createEndView} from './menu-windows.js';
 import {isVerificationSeed} from '../core/verification-seed.js';
 import catalogue from '../content/apk-shop-catalog.js';
@@ -39,20 +41,20 @@ addEventListener('pagehide',()=>audio.setActive(false));
 addEventListener('pageshow',()=>audio.setActive(!document.hidden));
 const backend=createBackend({native,storage:native?null:globalThis.localStorage});
 const repository=createProfileStore(backend),selected=new Set(),dialog=document.getElementById('dialog');
-let state=null,busy=false,noticeTimer,dialogMotion,scoringJokers=null;
+let state=null,busy=false,noticeTimer,scoringJokers=null;
 function notice(message){document.getElementById('notice').textContent=message;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>document.getElementById('notice').textContent='',3500);}
 const victoryProtected=()=>state?.winPending&&!document.getElementById('start_screen');
 function closeDialog(){if(busy||victoryProtected()){if(!busy&&dialog.dataset.view==='victory-confirm')showVictory();return true;}return dismissDialog();}
-function dismissDialog(){if(dialog.open){dialogMotion?.cancel();dialogMotion=null;dialog.close();dialog.classList.remove('deck-dialog');return true;}return false;}
-dialog.addEventListener('close',()=>{if(dialog.open)return;dialogMotion?.cancel();dialogMotion=null;dialog.classList.remove('deck-dialog');});
-dialog.addEventListener('cancel',e=>{if(busy||victoryProtected()){e.preventDefault();if(!busy&&dialog.dataset.view==='victory-confirm')showVictory();}});
+function dismissDialog(){if(dialog.open){dialog.inert=true;slideWindow(dialog,true,()=>{dialog.close();dialog.inert=false;dialog.classList.remove('deck-dialog');});return true;}return false;}
+dialog.addEventListener('close',()=>{if(dialog.open)return;cancelWindowMotion(dialog);dialog.inert=false;dialog.classList.remove('deck-dialog');});
+dialog.addEventListener('cancel',e=>{e.preventDefault();closeDialog();});
 // Native dialog cancel may be noncancelable; consume Escape before its close request.
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&dialog.open&&(busy||victoryProtected())){e.preventDefault();closeDialog();}});
 globalThis.cardGameBack=closeDialog;
 function openDialog(title,body,actions=[['Закрыть',closeDialog]]) {
  dismissCardTip();dialog.dataset.view='';
  dialog.dataset.window=typeof body==='string'?'message':body.dataset.window??(body.classList.contains('profile-view')?'profile':'collection-index');
- dialogMotion?.cancel();dialogMotion=null;
+ cancelWindowMotion(dialog);dialog.inert=false;
  dialog.classList.toggle('deck-dialog',typeof body!=='string' && body.classList.contains('deck-view'));
  dialog.classList.toggle('menu-dialog',!dialog.classList.contains('deck-dialog'));
  dialog.classList.toggle('audio-dialog',typeof body!=='string' && body.classList.contains('audio-settings'));
@@ -61,11 +63,7 @@ function openDialog(title,body,actions=[['Закрыть',closeDialog]]) {
  const buttons=document.getElementById('dialog-actions');buttons.replaceChildren();
  for(const [label,handler,id] of actions){const b=document.createElement('button');b.textContent=label;if(id)b.id=id;b.onclick=handler;buttons.append(b);}
  if(!dialog.open)dialog.showModal();
- if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
-  const distance=innerHeight-dialog.getBoundingClientRect().top+16;
-  // Individual translate preserves the deck's existing centering and uniform scale.
-  dialogMotion=dialog.animate([{translate:`0 ${distance}px`},{translate:'0 0'}],{duration:360,easing:'cubic-bezier(.16,1,.3,1)'});
- }
+ slideWindow(dialog);
 }
 const targetPackOpen=()=>state?.phase==='pack'&&/^p_(arcana|spectral)_/.test(state.packState?.sourceEntityId??'');
 function render(hand=state?.hand,scoringPreview=null){if(state){if(!busy){for(const id of selected)if(!state.hand.includes(id))selected.delete(id);const forced=!state.bossState?.disabled&&state.phase==='playing'?state.bossState?.forcedCardId:null;if(forced&&state.hand.includes(forced)&&!selected.has(forced)){if(selected.size>=5)selected.delete([...selected].at(-1));selected.add(forced);}}renderField(!busy?roundDeckView({...state,hand}):{...state,hand},selected,busy||!!state.winPending,toggle,reorder,scoringPreview);renderPostRound(state,busy&&!state.shop,()=>perform('CASH_OUT'));renderShop(busy&&scoringJokers?{...state,jokers:scoringJokers}:state,busy||!!state.winPending,{onAction:(type,fields)=>perform(type,undefined,undefined,fields),onNotice:notice,targetCardIds:[...selected]});renderBlindSelect(state,busy||!!state.winPending,()=>perform('START_BLIND'),blindId=>perform('SKIP_BLIND',undefined,undefined,{blindId}),()=>perform('REROLL_BOSS')); document.getElementById('stage').classList.toggle('arcana-open',targetPackOpen());for(const id of ['blind_panel','blind_title','blind_token','blind_target','hand','hand_count','play_hand','discard','sort_panel','sort_label','sort_rank','sort_suit'])document.getElementById(id).hidden=targetPackOpen()? !['hand','sort_panel','sort_label','sort_rank','sort_suit'].includes(id):state.phase==='blind_selection'||(['shop','pack'].includes(state.phase)&&!!state.shop)||(!busy&&['round_won','shop','pack'].includes(state.phase));for(const id of ['hands','discards','round_score','calculation_panel','chips','mult','times'])document.getElementById(id).hidden=targetPackOpen();if(!busy&&state.winPending&&!dialog.open&&!document.getElementById('start_screen'))showVictory();}}
@@ -131,7 +129,7 @@ async function perform(type,ids,mode,fields={}) {
      await animateScore(result.events,event=>audio.play(event.type==='score_repeat'?'repeat':event.type==='score_money'?'money':event.operation.includes('mult')?'mult':'chips'));
      await animateShatteredCards(result.events.filter(event=>event.type==='card_shattered').map(event=>event.cardId));
      await animateNumber(document.getElementById('round_score_value'),state.round.score,{animate:true,from:previousScore,duration:480,format:displayInteger});
-     if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.getElementById('round_score_value').animate([{scale:1.18},{scale:1}],{duration:280});
+     if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.getElementById('round_score_value').animate([{scale:1.18},{scale:1}],{duration:gameDuration(280)});
    }
    await finish();
  }

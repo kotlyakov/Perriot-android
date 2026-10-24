@@ -1,3 +1,4 @@
+import {gameDuration} from './game-speed.js';
 import {displayBlindTarget} from './field.js';
 import {describeShopItem} from '../content/shop-display.js';
 import {APK_BLINDS_BY_ID} from '../content/apk-blinds.js';
@@ -34,7 +35,7 @@ export function renderPostRound(state,busy,cashout){
   const entry=document.createElement('div');entry.id='shop_entry';const title=document.createElement('h2');title.textContent='Магазин';const text=document.createElement('p');text.textContent='Награда получена. Переход сохранён.';const scope=document.createElement('p');scope.className='shop-scope';scope.textContent='Промежуточная сборка: покупки, обновление магазина и следующий блайнд будут добавлены на следующем этапе.';entry.append(title,text,scope);panel.append(entry);
  }
  document.getElementById('stage').append(panel);
- if(entering&&!matchMedia('(prefers-reduced-motion: reduce)').matches)motion=panel.animate([{translate:'0 488px'},{translate:'0 0'}],{duration:360,easing:'cubic-bezier(.16,1,.3,1)'});
+ if(entering&&!matchMedia('(prefers-reduced-motion: reduce)').matches)motion=panel.animate([{translate:'0 488px'},{translate:'0 0'}],{duration:gameDuration(360),easing:'cubic-bezier(.16,1,.3,1)'});
 }
 
 

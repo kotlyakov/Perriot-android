@@ -1,0 +1,42 @@
+name: Approved UI recovery and joker artwork
+on:
+  push:
+    branches: [feat/menu-motion]
+permissions:
+  contents: read
+concurrency:
+  group: ui-recovery-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - run: npm test
+      - name: Install browser
+        run: |
+          npm install --prefix "$RUNNER_TEMP/browser" --no-audit --no-fund playwright@1.62.1
+          "$RUNNER_TEMP/browser/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Restored UI browser checks
+        env:
+          PLAYWRIGHT_MODULE: ${{ runner.temp }}/browser/node_modules/playwright
+          UI_CHECK_SCRIPT: tests/ui/approved-ui-restore-check.mjs
+        run: node scripts/check-ui.mjs
+      - name: Joker browser checks when present
+        env:
+          PLAYWRIGHT_MODULE: ${{ runner.temp }}/browser/node_modules/playwright
+          UI_CHECK_SCRIPT: tests/ui/joker-art-check.mjs
+        run: |
+          if [ -f tests/ui/joker-art-check.mjs ]; then node scripts/check-ui.mjs; fi
+      - name: Screenshots
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ui-recovery-jokers-${{ github.run_id }}
+          path: artifacts/*.png
+          retention-days: 14

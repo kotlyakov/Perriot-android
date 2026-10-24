@@ -13,7 +13,7 @@ import java.nio.charset.CodingErrorAction
 /** Called only by bundled scripts. Full SaveData validation belongs to the JS codec. */
 class CardStorage(private val directory: File) {
     private fun file(slot: String): AtomicFile {
-        require(slot == "current" || slot == "backup" || slot == "audio") { "Unknown save slot" }
+        require(slot == "current" || slot == "backup" || slot == "audio" || slot == "game-speed") { "Unknown save slot" }
         return AtomicFile(File(directory, "$slot.json"))
     }
 
@@ -31,7 +31,7 @@ class CardStorage(private val directory: File) {
             while (true) {
                 val count = it.read(buffer)
                 if (count == -1) break
-                check(collected.size() + count <= (if (slot == "audio") 1024 else PROFILE_LIMIT)) { "Save exceeds profile limit" }
+                check(collected.size() + count <= (if (slot == "audio" || slot == "game-speed") 1024 else PROFILE_LIMIT)) { "Save exceeds profile limit" }
                 collected.write(buffer, 0, count)
             }
             check(collected.size() > 0) { "Save file is empty" }
@@ -66,6 +66,23 @@ class CardStorage(private val directory: File) {
             output.write(text.toByteArray(Charsets.UTF_8))
             store.finishWrite(output)
             output = null
+            true
+        } catch (_: Exception) {
+            if (output != null) try { store.failWrite(output) } catch (_: Exception) { }
+            false
+        }
+    }
+
+    @JavascriptInterface
+    @Synchronized
+    fun writeGameSpeed(text: String): Boolean {
+        if (text !in listOf("0.5", "1", "2", "4")) return false
+        val store = file("game-speed")
+        var output: FileOutputStream? = null
+        return try {
+            output = store.startWrite()
+            output.write(text.toByteArray(Charsets.UTF_8))
+            store.finishWrite(output)
             true
         } catch (_: Exception) {
             if (output != null) try { store.failWrite(output) } catch (_: Exception) { }

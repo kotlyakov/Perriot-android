@@ -40,9 +40,9 @@ function progressView(profile){
 /** A single local player; editing the name never replaces progress. */
 export function renderProfileView(profile,{name='Игрок',onRename}={}){
  const root=element('section','profile-view player-profile');root.id='profile_view';root.setAttribute('aria-label','Профиль игрока');
- const body=element('div','profile-details');body.id='profile_details';const label=element('label','profile-name-label','Имя игрока'),input=element('input','profile-name');input.id='profile_name';input.type='text';input.maxLength=16;input.value=name;input.autocomplete='off';input.setAttribute('aria-label','Имя игрока');
+ const body=element('div','profile-details');body.id='profile_details';const label=element('label','profile-name-label','Имя игрока'),input=element('input','profile-name');input.id='profile_name';input.type='text';input.maxLength=10;input.value=name;input.autocomplete='off';input.setAttribute('aria-label','Имя игрока');
  const status=element('p','profile-name-status');status.id='profile_name_status';status.setAttribute('role','status');let savedName=name;
- input.onchange=()=>{const next=input.value.trim().slice(0,16)||'Игрок';try{savedName=onRename?.(next)??next;input.value=savedName;status.textContent='';}catch{input.value=savedName;status.textContent='Не удалось сохранить имя. Повторите попытку.';}};label.append(input);
+ input.onchange=()=>{const next=input.value.trim().slice(0,10)||'Игрок';try{savedName=onRename?.(next)??next;input.value=savedName;status.textContent='';}catch{input.value=savedName;status.textContent='Не удалось сохранить имя. Повторите попытку.';}};label.append(input);
  const wins=element('p','profile-wins');wins.append(element('span','','Победы: '),element('strong','',number(profile.career?.c_wins)));
  body.append(label,status,progressView(profile),wins);root.append(body);return root;
 }

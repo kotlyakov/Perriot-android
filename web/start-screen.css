@@ -35,3 +35,13 @@ button.start-profile{border:0;color:#f0e5c8;font-family:inherit;font-weight:700;
 button.start-profile{display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:6px;box-sizing:border-box;overflow:hidden}
 .start-profile span{flex:none;line-height:22px;font-size:18px;white-space:nowrap;margin:0}
 .start-profile strong{display:block;flex:none;width:100%;max-width:100%;height:36px;line-height:36px;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Visible idle movement stays behind the controls, inside the home surface. */
+.start-screen{isolation:isolate;overflow:hidden}
+.start-screen::before{content:"";position:absolute;inset:-90px;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 30% 60%,#76966688,transparent 55%),repeating-radial-gradient(ellipse at 72% 36%,transparent 0 28px,#c4d2a920 30px 32px,transparent 34px 58px);transform-origin:72% 36%;animation:start-background-breathe 8s ease-in-out infinite}
+.start-logo{transform-origin:50% 55%;animation:start-logo-breathe 4.8s ease-in-out infinite}
+.start-ornament{animation:start-ornament-float 7s ease-in-out infinite}
+@keyframes start-background-breathe{0%,100%{transform:scale(1) translate(-16px,10px);opacity:.55}50%{transform:scale(1.14) translate(20px,-12px);opacity:1}}
+@keyframes start-logo-breathe{0%,100%{transform:rotate(-4deg) translateY(4px) scale(.98)}50%{transform:rotate(-2.6deg) translateY(-10px) scale(1.055)}}
+@keyframes start-ornament-float{0%,100%{transform:rotate(15deg) translateY(0)}50%{transform:rotate(23deg) translateY(-16px)}}
+@media(prefers-reduced-motion:reduce){.start-screen::before,.start-logo,.start-ornament{animation:none}}

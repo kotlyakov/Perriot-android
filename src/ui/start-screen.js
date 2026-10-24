@@ -1,3 +1,4 @@
+import {slideWindow} from './window-motion.js';
 import {isVerificationSeed} from '../core/verification-seed.js';
 import {DECKS} from '../content/decks.js';
 import {CHALLENGES,challengeModeUnlocked,challengeUnlocked} from '../content/challenges.js';
@@ -10,7 +11,8 @@ import {deckUnlocked,stakeUnlocked,collectionEntries} from '../core/profile.js';
 let screen, previousFocus;
 function element(tag,className,text){const node=document.createElement(tag);if(className)node.className=className;if(text!==undefined)node.textContent=text;return node;}
 function button(id,label,className,action){const node=element('button',className,label);node.id=id;node.type='button';node.onclick=action;return node;}
-function enter(node){if(!matchMedia('(prefers-reduced-motion: reduce)').matches)node.animate([{transform:'translateY(688px)'},{transform:'translateY(0)'}],{duration:360,easing:'cubic-bezier(.16,1,.3,1)'});}
+function enter(node){slideWindow(node);}
+function leave(node,done){node.inert=true;slideWindow(node,true,()=>{node.remove();done?.();});}
 
 /** UI only: onNew receives {deckId, seed, stake, challengeId?}; caller creates the run. */
 export function renderStartScreen({hasSave=false,onContinue,onNew,onSettings,profile,profileName='Игрок',onCollection,onProfile,continueChallengeId,savedState,fromRun=false,onBack}){
@@ -25,7 +27,7 @@ export function renderStartScreen({hasSave=false,onContinue,onNew,onSettings,pro
  bar.append(newButton,button('start_settings','Настройки','orange',()=>onSettings?.()),collection);screen.append(bar);
  const profileButton=button('start_profile','','start-profile',()=>onProfile?.());profileButton.disabled=!onProfile;profileButton.setAttribute('aria-label','Текущий профиль '+profileName);profileButton.title=profileName;profileButton.append(element('span','','Профиль'),element('strong','',profileName));screen.append(profileButton);
  const language=button('start_language','Русский','start-language',()=>{});language.disabled=true;language.setAttribute('aria-label','Текущий язык: Русский. Выбор других языков ещё не реализован');screen.append(language);
- document.getElementById('stage').append(screen);enter(screen);newButton.focus({preventScroll:true});
+ document.getElementById('stage').append(screen);newButton.focus({preventScroll:true});
 
  function renderChallengeOverview(panel){
   panel.classList.add('start-challenge-overview');
@@ -35,7 +37,7 @@ export function renderStartScreen({hasSave=false,onContinue,onNew,onSettings,pro
   for(const [label,value] of [['Открыто',opened],['Пройдено',profile?.completedChallenges?.length??0]]){
    const progress=element('div','challenge-progress'),meter=element('progress');meter.max=CHALLENGES.length;meter.value=value;meter.setAttribute('aria-label',label);progress.append(meter,element('span','',`${label}: ${value} / ${CHALLENGES.length}`));overview.append(progress);
   }
-  panel.append(overview,backFooter('setup_back',()=>{if(onBack){onBack();return;}panel.remove();newButton.focus({preventScroll:true});}));
+  panel.append(overview,backFooter('setup_back',()=>{leave(panel,()=>{if(onBack){onBack();return;}newButton.focus({preventScroll:true});});}));
  }
  function backFooter(id,action){const footer=element('div','start-back-footer');footer.append(button(id,'Назад','orange',action));return footer;}
  function renderChallenges(panel){
@@ -88,7 +90,7 @@ export function renderStartScreen({hasSave=false,onContinue,onNew,onSettings,pro
   document.fonts?.ready.then(()=>{if(panel.isConnected){detailPage=0;renderSection();}});
  }
  function showSetup(mode='new'){
-  screen.querySelector('.start-setup')?.remove();
+  const old=screen.querySelector('.start-setup');if(old){leave(old,()=>showSetup(mode));return;}
   const panel=element('section','start-setup');panel.setAttribute('aria-label','Новая партия');
   panel.dataset.mode=mode;
   const tabs=element('div','start-tabs');tabs.setAttribute('role','group');tabs.setAttribute('aria-label','Режим партии');
@@ -124,7 +126,7 @@ export function renderStartScreen({hasSave=false,onContinue,onNew,onSettings,pro
   stakeSelect.onchange=()=>{stake=Number(stakeSelect.value);refreshStake();};refreshStake();
   const stakeCenter=element('div','start-stake-center');stakeCenter.append(chip,stakeLabel,stakeDescription);stakeChoices.replaceChildren(stakePrevious,stakeCenter,stakeNext);stakeRow.append(stakeSelect,stakeChoices);panel.append(stakeRow);
   const seedLabel=element('label','start-seed-label','Сид партии');const seed=element('input');seed.id='setup_seed';seed.type='text';seed.maxLength=8;seed.value=setupSeed;seed.oninput=()=>{seed.value=seed.value.toUpperCase().slice(0,8);setupSeed=seed.value.trim();for(const option of selector.options)option.disabled=!!profile&&!deckUnlocked(profile,option.value,setupSeed);challengeTab.disabled=!!profile&&!challengeModeUnlocked(profile,setupSeed);challengeTab.title=challengeTab.disabled?'Победите с 5 разными колодами.':'20 испытаний';challengeTab.setAttribute('aria-label',challengeTab.disabled?'Испытания. Победите с 5 разными колодами.':'Испытания');refreshDeck();};seed.autocomplete='off';seed.spellcheck=false;seed.placeholder='Случайный забег';seedLabel.append(seed);seedLabel.hidden=!setupSeed;panel.append(seedLabel);
-  const actions=element('div','start-setup-actions');const toggleLabel=element('label','start-seed-toggle','Свой сид'),toggle=element('input');toggle.id='setup_seed_toggle';toggle.type='checkbox';toggle.checked=!!setupSeed;toggle.onchange=()=>{seedLabel.hidden=!toggle.checked;if(!toggle.checked){seed.value='';seed.oninput();}else seed.focus({preventScroll:true});};toggleLabel.prepend(toggle);actions.append(toggleLabel,button('setup_play',mode==='continue'?'Продолжить':'Играть','blue',()=>{if(mode==='continue'){onContinue?.();return;}if(profile&&(!deckUnlocked(profile,deckId,setupSeed)||!stakeUnlocked(profile,deckId,stake,setupSeed)))return;onNew?.({deckId,stake,seed:seed.value.trim().toUpperCase().slice(0,8)||undefined});}));panel.append(actions,backFooter('setup_back',()=>{if(onBack){onBack();return;}panel.remove();newButton.focus({preventScroll:true});}));
+  const actions=element('div','start-setup-actions');const toggleLabel=element('label','start-seed-toggle','Свой сид'),toggle=element('input');toggle.id='setup_seed_toggle';toggle.type='checkbox';toggle.checked=!!setupSeed;toggle.onchange=()=>{seedLabel.hidden=!toggle.checked;if(!toggle.checked){seed.value='';seed.oninput();}else seed.focus({preventScroll:true});};toggleLabel.prepend(toggle);actions.append(toggleLabel,button('setup_play',mode==='continue'?'Продолжить':'Играть','blue',()=>{if(mode==='continue'){onContinue?.();return;}if(profile&&(!deckUnlocked(profile,deckId,setupSeed)||!stakeUnlocked(profile,deckId,stake,setupSeed)))return;onNew?.({deckId,stake,seed:seed.value.trim().toUpperCase().slice(0,8)||undefined});}));panel.append(actions,backFooter('setup_back',()=>{leave(panel,()=>{if(onBack){onBack();return;}newButton.focus({preventScroll:true});});}));
   refreshDeck();
   if(mode==='continue'){
    previous.hidden=next.hidden=true;stakePrevious.hidden=stakeNext.hidden=true;stakeLabel.disabled=true;access.hidden=true;seedLabel.hidden=true;toggleLabel.hidden=true;effect.replaceChildren();effect.className='start-continue-summary';

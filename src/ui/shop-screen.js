@@ -1,3 +1,4 @@
+import {gameDuration} from './game-speed.js';
 import {canEnterBoss} from '../core/boss-effects.js';
 import {canLeaveApkShop} from '../core/blind-progression.js';
 import {describeShopItem as describeCatalogueItem,displayPlayingCard} from '../content/shop-display.js';
@@ -131,7 +132,7 @@ function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
     const finish=()=>{if(finished)return;finished=true;motion?.cancel();returning.remove();wrap.style.opacity='';if(cancelReturn===finish)cancelReturn=null;};
     cancelReturn=finish;
     const [dx,dy=0]=returning.style.translate.split(' ').map(parseFloat);
-    motion=returning.animate(shopReturnFrames(dx,dy),{duration:720,fill:'forwards',easing:'linear'});
+    motion=returning.animate(shopReturnFrames(dx,dy),{duration:gameDuration(720),fill:'forwards',easing:'linear'});
     motion.finished.then(finish,finish);
    }else{returning?.remove();wrap.style.opacity='';}
    card.removeEventListener('pointermove',move);card.removeEventListener('pointerup',end);card.removeEventListener('pointercancel',cancel);card.removeEventListener('lostpointercapture',cancel);card.removeEventListener('keydown',escape);cancelDrag=null;if(card.hasPointerCapture?.(e.pointerId))card.releasePointerCapture(e.pointerId);
@@ -176,7 +177,7 @@ function ensureView(){
  const sign=node('section','shop-sign');sign.id='shop_sign';sign.setAttribute('aria-label','Магазин');sign.append(node('div','shop-sign-title','МАГАЗИН'),node('div','shop-sign-subtitle','Улучшите свою партию!'));document.getElementById('stage').append(sign);
  if(!document.getElementById('shop_owned')){const owned=node('div','shop-owned');owned.id='shop_owned';document.getElementById('stage').append(owned);}
  view.addEventListener('pointerdown',e=>{if(!e.target.closest('button'))clearSelection();});
- if(!reduced())entryMotion=view.animate([{translate:'0 488px'},{translate:'0 0'}],{duration:360,easing:'cubic-bezier(.16,1,.3,1)'});
+ if(!reduced())entryMotion=view.animate([{translate:'0 488px'},{translate:'0 0'}],{duration:gameDuration(360),easing:'cubic-bezier(.16,1,.3,1)'});
  return true;
 }
 // Capture after persistence succeeds; await the returned exit before rendering
@@ -191,7 +192,7 @@ export function prepareShopChange(type){
   if(!outgoing.length)return;
   clearSelection();
   if(reduced())return;
-  await Promise.allSettled(outgoing.map((card,i)=>card.animate([{opacity:1,scale:1},{opacity:1,scale:.08,offset:.85},{opacity:0,scale:0}],{duration:170,delay:i*15,fill:'forwards',easing:'cubic-bezier(.6,0,1,.3)'}).finished));
+  await Promise.allSettled(outgoing.map((card,i)=>card.animate([{opacity:1,scale:1},{opacity:1,scale:.08,offset:.85},{opacity:0,scale:0}],{duration:gameDuration(170),delay:gameDuration(i*15),fill:'forwards',easing:'cubic-bezier(.6,0,1,.3)'}).finished));
  };
 }
 function renderPack(state,busy,callbacks){
@@ -242,7 +243,7 @@ export function renderShop(state,busy,{onAction,onNotice,targetCardIds=[]}={}){
  view.querySelectorAll('.shop-action').forEach(n=>n.remove());
  const next=rect(node('button','shop-action shop-next'),20,19,156,82);next.id='shop_next_round';next.append(node('span','','Следующий'),node('strong','','Раунд'));const boss=state.round.blindId==='big'&&canEnterBoss({...state,phase:'blind_selection'});next.disabled=busy||!canLeaveApkShop(state);next.title=state.round.blindId==='boss'?'Перейти к следующему анте':state.round.blindId==='small'?'Перейти к большому блайнду':boss?'Перейти к выбранному боссу':state.apkBlinds?.bossId==='bl_ox'?'Нет однозначного сохранённого выбора комбинации Буйвола':'Следующий блайнд пока недоступен';next.onclick=()=>onAction?.('LEAVE_SHOP',{});view.append(next);
  const rerollCost=getRerollCost(state.shop),reroll=rect(node('button','shop-action shop-reroll'),21,107,155,89);reroll.id='shop_reroll';reroll.append(node('span','','Переброс'),money(rerollCost,137,38));reroll.disabled=busy||!canAfford(state.money,rerollCost,state.bankruptAt??0n);reroll.onclick=()=>{clearSelection();onAction?.('REROLL_SHOP',{});};view.append(reroll);
- const signature=main.map(o=>o.id).join('|');if(!fresh&&lastMain!==null&&signature!==lastMain&&!reduced())offers.querySelectorAll('[data-kind=main]').forEach((n,i)=>n.animate([{opacity:0,scale:0},{opacity:1,scale:.12,offset:.15},{opacity:1,scale:1}],{duration:200,delay:i*15,easing:'cubic-bezier(.15,.7,.3,1)'}));lastMain=signature;
+ const signature=main.map(o=>o.id).join('|');if(!fresh&&lastMain!==null&&signature!==lastMain&&!reduced())offers.querySelectorAll('[data-kind=main]').forEach((n,i)=>n.animate([{opacity:0,scale:0},{opacity:1,scale:.12,offset:.15},{opacity:1,scale:1}],{duration:gameDuration(200),delay:gameDuration(i*15),easing:'cubic-bezier(.15,.7,.3,1)'}));lastMain=signature;
 }
 
 

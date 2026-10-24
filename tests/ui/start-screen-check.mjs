@@ -7,7 +7,7 @@ const saved=page=>page.evaluate(()=>localStorage.getItem('card-cascade.current')
 async function settleStartup(page,selector='#start_screen'){
  // CI caught geometry being sampled during the legitimate bottom-entry animation.
  await page.locator(selector).evaluate(async screen=>{
-  await Promise.allSettled(screen.getAnimations({subtree:true}).map(animation=>animation.finished));
+  await Promise.allSettled(screen.getAnimations({subtree:true}).filter(animation=>animation.effect.getTiming().iterations!==Infinity).map(animation=>animation.finished));
  });
 }
 async function inside(page,selector,width,height){

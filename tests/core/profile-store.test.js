@@ -38,7 +38,7 @@ test('one visible player can rename atomically without changing progress or curr
  const io=memory(),store=createProfileStore(io);store.load();store.reset(run('named'),{seeded:false});
  const before=store.getProfile();store.renameProfile('  Артур  ');
  const restored=createProfileStore(io);assert.equal(restored.load().state.runId,'named');assert.equal(restored.getProfiles().find(p=>p.id===restored.activeId).name,'Артур');assert.deepEqual(restored.getProfile(),before);
- for(const name of ['', ' '.repeat(3),'x'.repeat(17),null])assert.throws(()=>restored.renameProfile(name));
+ for(const name of ['', ' '.repeat(3),'x'.repeat(11),null])assert.throws(()=>restored.renameProfile(name));
  const write=io.write;io.write=()=>{throw Error('disk full');};assert.throws(()=>restored.renameProfile('Другое имя'));assert.equal(restored.getProfiles().find(p=>p.id===restored.activeId).name,'Артур');io.write=write;
  restored.renameProfile('Новое имя');assert.equal(restored.getProfiles().find(p=>p.id===restored.activeId).name,'Новое имя');
 });

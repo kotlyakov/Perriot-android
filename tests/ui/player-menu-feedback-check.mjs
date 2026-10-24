@@ -5,7 +5,7 @@ const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_PATH
 try{
  for(const [width,height,touch] of [[1536,688,false],[915,412,true]]){
   const context=await browser.newContext({viewport:{width,height},hasTouch:touch,reducedMotion:'reduce'}),page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(process.env.PREVIEW_URL);await page.evaluate(()=>document.fonts.ready);
-  await page.locator('#start_settings').click();assert.equal(await page.locator('#menu_tab_graphics').isVisible(),true);assert.equal(await page.locator('.options-menu').count(),0);await page.locator('#dialog-actions button').click();assert.equal(await page.locator('#start_new').isVisible(),true);
+  await page.locator('#start_settings').click();assert.equal(await page.locator('#menu_tab_graphics').count(),0);assert.equal(await page.locator('.options-menu').count(),0);await page.locator('#dialog-actions button').click();assert.equal(await page.locator('#start_new').isVisible(),true);
   await page.locator('#start_profile').click();assert.equal(await page.locator('.profile-slots').count(),0);assert.equal(await page.locator('#profile_load').count(),0);assert.equal(await page.locator('[role=progressbar]').count(),5);
   const name=page.locator('#profile_name');await name.fill('Артур');await name.press('Tab');await page.locator('#dialog-actions button').click();assert.equal(await page.locator('#start_new').isVisible(),true);assert.equal(await page.locator('.options-menu').count(),0);assert.match(await page.locator('#start_profile').textContent(),/Артур/);
   await page.reload();await page.locator('#start_profile').click();assert.equal(await name.inputValue(),'Артур');
