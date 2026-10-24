@@ -61,6 +61,8 @@ try{
    if(p<9)await page.locator('.gallery-next').click();
   }
   assert.equal(await page.locator('.gallery-next').isDisabled(),true);await page.locator('.gallery-prev').click();assert.equal(await page.locator('output').textContent(),'9 / 10');
+  await page.locator('.joker-page:not([hidden]) .gallery-joker').first().focus();await page.keyboard.press('ArrowLeft');assert.equal(await page.locator('output').textContent(),'8 / 10');await page.keyboard.press('ArrowRight');assert.equal(await page.locator('output').textContent(),'9 / 10');
+  const area=page.locator('.gallery-pages'),a=await area.boundingBox();await page.mouse.move(a.x+a.width*.8,a.y+45);await page.mouse.down();await page.mouse.move(a.x+a.width*.2,a.y+45,{steps:5});await page.mouse.up();assert.equal(await page.locator('output').textContent(),'10 / 10');assert.equal(await page.locator('#joker_gallery_details').count(),0);await page.locator('.gallery-prev').click();
   await page.locator('.joker-page:not([hidden]) .gallery-joker').first().click();await page.locator('#joker_gallery_details').waitFor({state:'visible'});assert.equal(await page.locator('#joker_gallery_details button').count(),0);await page.locator('.gallery-heading').click();assert.equal(await page.locator('#joker_gallery_details').count(),0);
   await page.close();console.log(`Standalone all150 names and paging ${width}px PASS`);
  }
