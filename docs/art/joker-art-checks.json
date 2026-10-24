@@ -13,7 +13,7 @@
     "visual": "All150 independently composed scenes reviewed; four number-label overlaps corrected and rechecked",
     "tests": "154 targeted PASS; full core1815 PASS/0 FAIL/2 expected optional private-source skips",
     "bundle": "150 standalone/native bundle outputs byte-equal to production SVG; new Android offline assets byte-equal",
-    "browser": "Awaiting current-revision CI; previous successful run does not validate this redraw."
+    "browser": "GitHub Actions40119564082 SUCCESS on8ee77a08ec6426ffc93887901fda6e3efc4341a2: restored UI3resolutions, all150 game names/art/tooltips3resolutions, standalone320/390/736, paging/keyboard/swipe and4edition pixel comparisons PASS;49PNG artifact12570680317. Representative PNGs inspected by root."
   },
   "colourComparison": {
     "baseline": "960e5e3",
@@ -2723,5 +2723,13 @@
       },
       "acceptedByUser": false
     }
-  ]
+  ],
+  "ci": {
+    "runId": 40119564082,
+    "jobId": 120947929095,
+    "sourceCommit": "8ee77a08ec6426ffc93887901fda6e3efc4341a2",
+    "conclusion": "success",
+    "screenshotsArtifactId": 12570680317,
+    "screenshots": 49
+  }
 }
