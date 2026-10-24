@@ -1,5 +1,6 @@
+import {JOKER_IDENTITIES} from './joker-identities.js';
 // Russian display names; identifiers remain unchanged. No original descriptions or assets.
-export default {
+const names={
  "c_ankh": "Анх",
  "c_aura": "Аура",
  "c_black_hole": "Черная дыра",
@@ -267,3 +268,6 @@ export default {
  "p_standard_mega_1": "Огромный стандартный набор",
  "p_standard_mega_2": "Огромный стандартный набор"
 };
+
+Object.assign(names,Object.fromEntries(Object.entries(JOKER_IDENTITIES).map(([id,meta])=>[id,meta.name])));
+export default names;

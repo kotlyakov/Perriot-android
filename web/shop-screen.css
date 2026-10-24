@@ -58,3 +58,7 @@
 .shop-card:is([data-card-set=Tarot],[data-card-set=Planet],[data-card-set=Spectral]):disabled{background:color-mix(in srgb,var(--card-type-color) 24%,#f0e5c8)!important;color:#213b3d;filter:none;opacity:1}
 .shop-card:is([data-card-set=Tarot],[data-card-set=Planet],[data-card-set=Spectral])[data-edition=negative]{background:color-mix(in srgb,var(--card-type-color) 28%,#1d3438);color:#f0e5c8}
 .shop-card:is([data-card-set=Tarot],[data-card-set=Planet],[data-card-set=Spectral])[data-edition=negative]:disabled{background:color-mix(in srgb,var(--card-type-color) 28%,#1d3438)!important;color:#f0e5c8}
+
+/* Keep every complete Joker title inside its paper strip, including long names. */
+.shop-card:has(.joker-illustration) .shop-card-name{min-height:21px;line-height:10px;font-size:9px;font-weight:500;overflow-wrap:anywhere;white-space:normal}
+.joker-illustration{background:none}

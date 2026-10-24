@@ -91,3 +91,7 @@
 .collection-view .collection-card:is([data-card-set=Tarot],[data-card-set=Planet],[data-card-set=Spectral])[data-card-state=locked]{background:color-mix(in srgb,var(--card-type-color) 24%,#263b3b);color:color-mix(in srgb,var(--card-type-color) 45%,#a7b4b1)}
 
 .collection-content{touch-action:pan-y;user-select:none}
+
+/* Approved individual Joker printing plates reserve an explicit name strip. */
+.collection-view .collection-card[data-card-set=Joker] .shop-art{inset:2px 2px 27px}
+.collection-view .collection-card .collection-joker-name{left:3px;right:3px;bottom:3px;min-height:21px;line-height:10px;font-size:9px;font-weight:500;overflow-wrap:anywhere;white-space:normal;color:#143d39}

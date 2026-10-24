@@ -1,3 +1,6 @@
+import {bundledJokerArtwork} from './joker-review-source.mjs';
+import {JOKER_IDENTITIES} from '../src/content/joker-identities.js';
+import {SUPPORTED_JOKERS,originalJokerKey} from '../src/content/jokers.js';
 import {readFile,writeFile} from 'node:fs/promises';
 import catalogue from '../src/content/apk-shop-catalog.js';
 import {createProfile,collectionEntries,deckUnlocked as nativeDeckUnlocked,stakeUnlocked as nativeStakeUnlocked} from '../src/core/profile.js';
@@ -14,15 +17,19 @@ import {ENHANCEMENT_DESCRIPTIONS,EDITION_DESCRIPTIONS,SEAL_DESCRIPTIONS} from '.
 const profile=createProfile(),entries=collectionEntries(profile,'13031990'),descriptions=Object.fromEntries(entries.map(e=>[e.id,describeShopItem({entityId:e.id})]));
 const ordinaryEntries=collectionEntries(profile);const gates={decks:Object.fromEntries(Object.keys(DECKS).map(id=>[id,nativeDeckUnlocked(profile,id)])),stakes:Object.fromEntries(Object.keys(DECKS).map(id=>[id,STAKES.map(s=>nativeStakeUnlocked(profile,id,s.level))])),challenges:Object.fromEntries(CHALLENGES.map(c=>[c.id,challengeUnlocked(profile,c.id)])),challengeMode:challengeModeUnlocked(profile)};
 const anteTargets=Array.from({length:16},(_,i)=>nativeBlindTarget(i+1).toString());
-const data={catalog:{centres:catalogue.centres.filter(c=>c.set==='Joker').map(({key,rarity})=>({key,rarity}))},profile,entries,ordinaryEntries,gates,descriptions,anteTargets,HANDS,HAND_NAMES,DECKS,CHALLENGES,STAKES,APK_BLINDS_BY_ID,APK_TAGS_BY_ID,ENHANCEMENT_DESCRIPTIONS,EDITION_DESCRIPTIONS,SEAL_DESCRIPTIONS};
+const jokerAliases=Object.fromEntries(SUPPORTED_JOKERS.map(id=>[id,originalJokerKey(id)]));
+const data={JOKER_IDENTITIES,jokerAliases,catalog:{centres:catalogue.centres.filter(c=>c.set==='Joker').map(({key,rarity})=>({key,rarity}))},profile,entries,ordinaryEntries,gates,descriptions,anteTargets,HANDS,HAND_NAMES,DECKS,CHALLENGES,STAKES,APK_BLINDS_BY_ID,APK_TAGS_BY_ID,ENHANCEMENT_DESCRIPTIONS,EDITION_DESCRIPTIONS,SEAL_DESCRIPTIONS};
 const imported=Object.keys(data).filter(k=>!['profile','entries','ordinaryEntries','gates','descriptions','anteTargets'].includes(k)).join(',');
 async function module(name,functions){let s=await readFile('src/ui/'+name+'.js','utf8');s=s.replace(/^import .*;\n/gm,'').replace(/\bexport /g,'');return `(()=>{${s}\nreturn {${functions}};})()`;}
 let css=(await Promise.all(['styles','start-screen','shop-screen','window-review','profile-review','challenge-review'].map(n=>readFile('web/'+n+'.css','utf8')))).join('\n');
 css=css.replace('/web/fonts/Rubik.ttf','data:font/ttf;base64,'+(await readFile('web/fonts/Rubik.ttf')).toString('base64'));
 const shopSource=await readFile('src/ui/shop-screen.js','utf8');
 const artSource=shopSource.slice(shopSource.indexOf('export function artwork('),shopSource.indexOf('function ticketArtwork(')).replace('export ','');
+const jokerModule=await bundledJokerArtwork();
 const template=await readFile('tools/previews/native-menu-template.html','utf8');
 const boot=`(()=>{const root=document.getElementById('pierrot-native-review');const data=${JSON.stringify(data).replaceAll('<','\\u003c')};const {${imported}}=data;const profile=data.profile;const nativeBlindTarget=ante=>BigInt(data.anteTargets[ante-1]);const collectionEntries=(p,seed)=>seed==='13031990'?data.entries:data.ordinaryEntries;const describeShopItem=({entityId})=>data.descriptions[entityId]??{name:entityId,description:''};const isVerificationSeed=s=>s==='13031990';const deckUnlocked=(p,id,seed)=>isVerificationSeed(seed)||data.gates.decks[id],stakeUnlocked=(p,id,stake,seed)=>isVerificationSeed(seed)||data.gates.stakes[id]?.[stake-1],challengeModeUnlocked=(p,seed)=>isVerificationSeed(seed)||data.gates.challengeMode,challengeUnlocked=(p,id,seed)=>isVerificationSeed(seed)||data.gates.challenges[id];
+const originalJokerKey=id=>jokerAliases[id]??id;
+const {jokerArtworkSvg}=${jokerModule};
 const artwork=(()=>{const node=(tag,className,text)=>{const n=document.createElement(tag);if(className)n.className=className;if(text!==undefined)n.textContent=text;return n;};${artSource};return artwork;})();
 const {showCardTooltip,dismissCardTooltip}=${await module('card-tooltip','showCardTooltip,dismissCardTooltip')};
 const {slideWindow,cancelWindowMotion}=${await module('window-motion','slideWindow,cancelWindowMotion')};

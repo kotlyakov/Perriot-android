@@ -1,3 +1,5 @@
+import {jokerArtworkSvg} from './joker-art.js';
+import {originalJokerKey} from '../content/jokers.js';
 import {gameDuration} from './game-speed.js';
 import {canEnterBoss} from '../core/boss-effects.js';
 import {canLeaveApkShop} from '../core/blind-progression.js';
@@ -69,7 +71,10 @@ function showTip(offer,card){
 // Independently drawn printing blocks: each catalogue identity gets its own ink,
 // plate number and geometry. These are not source-game illustrations.
 export function artwork(offer,kind){
- const key=offer.entityId??offer.originalKey??offer.id;let hash=0;for(const c of key)hash=(hash*31+c.charCodeAt(0))>>>0;
+ const key=originalJokerKey(offer.entityId??offer.originalKey??offer.id);
+ const illustration=jokerArtworkSvg(key);
+ if(illustration){const n=node('div','shop-art joker-illustration');n.dataset.jokerId=key;n.innerHTML=illustration;return n;}
+ let hash=0;for(const c of key)hash=(hash*31+c.charCodeAt(0))>>>0;
  const ink=['#176e80','#b84b37','#406b42','#7a5382','#ac772b'][hash%5],variant=hash%4;
  const motifs=[
  '<path d="M27 67L43 32L60 67L75 32L91 67Z" fill="currentColor"/><circle cx="59" cy="88" r="23" fill="none" stroke="currentColor" stroke-width="5"/><path d="M42 91Q59 107 76 91" fill="none" stroke="currentColor" stroke-width="4"/>',
