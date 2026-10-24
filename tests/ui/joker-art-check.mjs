@@ -35,6 +35,17 @@ try{
   assert.equal(new Set(seen).size,150);
   // Shared artwork also handles legacy inventory identities and retains editions.
   const alias=await page.evaluate(async()=>{const {artwork}=await import('/src/ui/shop-screen.js');return artwork({entityId:'joker_joker'},'owned').dataset.jokerId;});assert.equal(alias,'j_joker');
+  if(width===1536){
+   await page.locator('#dialog-actions button').click();await page.locator('#dialog-actions button').click();
+   await page.evaluate(async()=>{const {artwork}=await import('/src/ui/shop-screen.js');const wrap=document.createElement('div');wrap.id='joker_edition_fixture';wrap.style.cssText='position:fixed;left:20px;top:20px;width:104px;height:143px;z-index:99999';const card=document.createElement('button');card.className='shop-card shop-owned-card';card.dataset.cardSet='Joker';card.append(artwork({entityId:'j_joker'},'owned'));wrap.append(card);document.body.append(wrap);});
+   const card=page.locator('#joker_edition_fixture .shop-card'),b=await card.boundingBox();const clip={x:b.x+20,y:b.y+20,width:60,height:70};
+   const plain=await page.screenshot({clip,animations:'disabled'});
+   for(const edition of ['foil','holographic','polychrome','negative']){
+    await card.evaluate((n,value)=>n.dataset.edition=value,edition);
+    const modified=await page.screenshot({clip,animations:'disabled'});assert.equal(plain.equals(modified),false,edition+' must visibly change the opaque individual engraving');
+    await card.screenshot({path:`artifacts/joker-edition-${edition}.png`,animations:'disabled'});
+   }
+  }
   await context.close();console.log(`Game all150 titles, art, aliases and tooltips ${width}x${height} PASS`);
  }
  const built=spawnSync(process.execPath,['scripts/build-joker-review.mjs'],{encoding:'utf8'});assert.equal(built.status,0,built.stderr);
