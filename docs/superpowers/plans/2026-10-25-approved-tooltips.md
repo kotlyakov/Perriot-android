@@ -14,14 +14,14 @@ Tech stack: existing native DOM/CSS, Node tests, Playwright.
 - Keep next-tap dismissal, drag cancellation, keyboard and save/RNG behavior.
 
 ## Task 1 — semantic rendering
-- [ ] Add failing model tests for modifiers, accumulated bonuses, statuses, sale suppression and concealed details.
-- [ ] Implement src/ui/card-description.js; integrate field.js, shop-screen.js and profile-screen.js.
-- [ ] Add scoped styling in existing web stylesheet; use horizontal attached windows, fallback compact layout.
-- [ ] Run model tests and existing formatter/content tests.
+- [x] Add failing model tests for modifiers, accumulated bonuses, statuses, sale suppression and concealed details.
+- [x] Implement src/ui/card-description.js; integrate field.js, shop-screen.js and profile-screen.js.
+- [x] Add scoped styling in existing web stylesheet; use horizontal attached windows, fallback compact layout.
+- [x] Run model tests and existing formatter/content tests.
 
 ## Task 2 — bounds and verification
-- [ ] Add failing browser regression for rendered headings/statuses/seals/sale and boundaries.
-- [ ] Adapt shared placement to choose side or stacked layout, cap by available dimensions and remeasure after fonts.
-- [ ] Verify mouse/touch 1536×688, 915×412, 568×320 plus narrow viewport, large values and all four seals.
-- [ ] Run core suite, tooltip/collection/shop/drag regressions; inspect screenshots.
-- [ ] Review diff independently; record results, update У-40 and next proposed У-44. Commit and publish feature branch/PR within existing authorization; never claim unbuilt APK.
+- [x] Add failing browser regression for rendered headings/statuses/seals/sale and boundaries.
+- [x] Adapt shared placement to choose side or stacked layout, cap by available dimensions and remeasure after fonts.
+- [x] Verify mouse/touch 1536×688, 915×412, 568×320 plus narrow viewport, large values and all four seals.
+- [x] Run core suite, tooltip/collection/shop/drag regressions; inspect screenshots.
+- [x] Review diff independently; record results, update У-40 and next proposed У-44. Commit and publish feature branch/PR within existing authorization; never claim unbuilt APK.
