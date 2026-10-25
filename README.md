@@ -8,7 +8,7 @@
 
 Требуются Android8/API26+ и современный WebView с ESmodules/BigInt. Сохранения используют прежний packageID/форматы. Фактическая подписьAPK и проверки фиксируются в отчёте сборки; совместимость обновления определяется сертификатом.
 
-Локально: Node22+, `npm test` без установки зависимостей; `npm run preview` — http://127.0.0.1:4173. UI-проверки используют Playwright/Chromium. Android: `npm run android:assets`, затем `bash android/build-debug.sh`; JDK17, SDK36/BuildTools35.0.0, закреплённый GradleWrapper. Генерируемые assets/artifacts не редактировать вручную. CI выполняет свежую Gradle-компиляцию, проверку подписи/выравнивания и сохраняетAPK как artifact. Детали — `docs/android-build.md`.
+Локально: Node22+, `npm test` без установки зависимостей; `npm run preview` — http://127.0.0.1:4173. UI-проверки используют Playwright/Chromium. Android: `npm run android:assets`, затем `bash android/build-debug.sh`; JDK17, SDK36/BuildTools35.0.0, закреплённый GradleWrapper. Генерируемые assets/artifacts не редактировать вручную. Сборка0.4.49 прошла CI40177154678: свежая Gradle-компиляция, проверка подписи/выравнивания и содержимогоAPK. [Скачать APK0.4.49](https://chatgpt.com/library?file_id=libfile_ee2d9c122ad48191a4fd04d4e4d99fd6&account_id=personal). [Протокол](docs/qa/2026-10-25-preview-049.md). Детали — `docs/android-build.md`.
 
 ## История предыдущих сборок
 
