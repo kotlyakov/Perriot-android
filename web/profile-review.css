@@ -92,6 +92,6 @@
 
 .collection-content{touch-action:pan-y;user-select:none}
 
-/* One continuous illustrated face; the outlined name sits over the artwork. */
-.collection-view .collection-card[data-card-set=Joker] .shop-art{inset:0;border-radius:inherit;background:none;overflow:hidden}
-.collection-view .collection-card .collection-joker-name{left:5px;right:5px;bottom:6px;min-height:24px;line-height:11.5px;font-size:10px;font-weight:700;overflow-wrap:anywhere;white-space:normal;color:#fff1d6;background:none;-webkit-text-stroke:1.8px #20213f;paint-order:stroke fill;text-shadow:0 1px #20213f;z-index:3;pointer-events:none}
+/* Approved individual Joker printing plates reserve an explicit name strip. */
+.collection-view .collection-card[data-card-set=Joker] .shop-art{inset:2px 2px 27px}
+.collection-view .collection-card .collection-joker-name{left:3px;right:3px;bottom:3px;min-height:21px;line-height:10px;font-size:9px;font-weight:500;overflow-wrap:anywhere;white-space:normal;color:#143d39}

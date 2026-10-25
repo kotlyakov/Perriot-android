@@ -1,0 +1,63 @@
+diff --git a/tests/ui/joker-art-check.mjs b/tests/ui/joker-art-check.mjs
+index 2d8068f..3eaeeba 100644
+--- a/tests/ui/joker-art-check.mjs
++++ b/tests/ui/joker-art-check.mjs
+@@ -15,7 +15,7 @@ async function titleBounds(page,selector,titleClass){
+   if(out.length||name.scrollHeight>name.clientHeight+1)return[card.dataset.entryId+' title overflow'];
+   if(name.firstChild?.nodeType===Node.TEXT_NODE)for(const word of name.textContent.matchAll(/[А-Яа-яЁё]{3,}/g)){const part=document.createRange();part.setStart(name.firstChild,word.index);part.setEnd(name.firstChild,word.index+word[0].length);if(part.getClientRects().length>1)return[card.dataset.entryId+' must keep the word '+word[0]+' together'];}
+   if(!ink||ink.left>r.left+4||ink.top>r.top+4||ink.right<r.right-4||ink.bottom<r.bottom-4)return[card.dataset.entryId+' artwork must fill the card'];
+-  if(label.top<ink.top||label.bottom>ink.bottom||parseFloat(style.webkitTextStrokeWidth)<1.5||style.backgroundColor!=='rgba(0, 0, 0, 0)')return[card.dataset.entryId+' name must be outlined over the artwork'];
++  if(label.top<ink.top||label.bottom>ink.bottom||parseFloat(style.webkitTextStrokeWidth)<.8||style.backgroundColor!=='rgba(0, 0, 0, 0)')return[card.dataset.entryId+' name must be outlined over the artwork'];
+   return[];
+  }),titleClass);assert.deepEqual(bad,[]);
+ }
+diff --git a/tools/previews/joker-collection-template.html b/tools/previews/joker-collection-template.html
+index e0d493b..3fff1f0 100644
+--- a/tools/previews/joker-collection-template.html
++++ b/tools/previews/joker-collection-template.html
+@@ -12,7 +12,7 @@
+ #pierrot-joker-gallery .gallery-joker[aria-describedby]{border-color:#f59b05;transform:translateY(-3px)}
+ #pierrot-joker-gallery .gallery-joker .print-plate{position:absolute;inset:0;display:block}
+ #pierrot-joker-gallery .print-plate svg{display:block;width:100%;height:100%}
+-#pierrot-joker-gallery .gallery-joker-name{position:absolute;left:3px;right:3px;bottom:6px;min-height:26px;display:flex;align-items:center;justify-content:center;font-size:clamp(10px,2.7vw,12px);line-height:1.1;font-weight:700;text-align:center;overflow-wrap:normal;white-space:normal;color:#fff1d6;background:none;-webkit-text-stroke:1.8px #20213f;paint-order:stroke fill;text-shadow:0 1px #20213f;z-index:3;pointer-events:none}
++#pierrot-joker-gallery .gallery-joker-name{position:absolute;left:3px;right:3px;bottom:8px;min-height:32px;display:flex;align-items:center;justify-content:center;font-size:14px;line-height:1.12;font-weight:800;text-align:center;overflow-wrap:normal;white-space:normal;color:#fff1d6;background:none;-webkit-text-stroke:1px #20213f;paint-order:stroke fill;text-shadow:none;z-index:3;pointer-events:none}
+ #pierrot-joker-gallery .gallery-pager{display:flex;align-items:center;justify-content:center;gap:20px;margin-top:20px}
+ #pierrot-joker-gallery .gallery-pager button{min-width:52px;min-height:44px;border:0;border-radius:7px;color:#f0e5c8;background:#bf4e43;box-shadow:0 4px #722f2b;font:500 24px JokerRubik,sans-serif;touch-action:manipulation;cursor:inherit}
+ #pierrot-joker-gallery .gallery-pager button:disabled{opacity:.4}
+@@ -25,9 +25,9 @@
+ #pierrot-joker-gallery .tooltip-mult{color:#b23227}
+ #pierrot-joker-gallery .tooltip-money{color:#866016}
+ #pierrot-joker-gallery .gallery-rarity{font-size:12px;margin-top:3px}
+-@media(max-width:520px){#pierrot-joker-gallery{padding:14px 8px 18px;border-width:4px}#pierrot-joker-gallery .gallery-heading{font-size:20px;gap:8px;margin-bottom:14px}#pierrot-joker-gallery .joker-page{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 9px;padding:10px 8px}#pierrot-joker-gallery .gallery-joker{border-width:2px}#pierrot-joker-gallery .gallery-joker-name{font-size:clamp(10px,2.7vw,12px)}#pierrot-joker-gallery .gallery-total{font-size:12px}}
++@media(max-width:520px){#pierrot-joker-gallery{padding:14px 8px 18px;border-width:4px}#pierrot-joker-gallery .gallery-heading{font-size:20px;gap:8px;margin-bottom:14px}#pierrot-joker-gallery .joker-page{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 12px;padding:10px 8px}#pierrot-joker-gallery .gallery-joker{border-width:2px}#pierrot-joker-gallery .gallery-joker-name{font-size:14px}#pierrot-joker-gallery .gallery-total{font-size:12px}}
+ @media(prefers-reduced-motion:reduce){#pierrot-joker-gallery .gallery-joker{transition:none}}
+-@media(max-width:360px){#pierrot-joker-gallery{padding-inline:6px}#pierrot-joker-gallery .joker-page{column-gap:6px;padding-inline:4px}}
++@media(max-width:360px){#pierrot-joker-gallery{padding-inline:6px}#pierrot-joker-gallery .joker-page{column-gap:10px;padding-inline:4px}#pierrot-joker-gallery .gallery-joker-name{font-size:13px}}
+ </style>
+ <div class="gallery-heading">ДЖОКЕРЫ <span class="gallery-total">150 карт</span></div>
+ <div class="gallery-pages" aria-label="Коллекция джокеров">/*PAGES*/</div>
+diff --git a/web/profile-review.css b/web/profile-review.css
+index 128213a..e0824da 100644
+--- a/web/profile-review.css
++++ b/web/profile-review.css
+@@ -94,4 +94,4 @@
+ 
+ /* One continuous illustrated face; the outlined name sits over the artwork. */
+ .collection-view .collection-card[data-card-set=Joker] .shop-art{inset:0;border-radius:inherit;background:none;overflow:hidden}
+-.collection-view .collection-card .collection-joker-name{left:5px;right:5px;bottom:6px;min-height:24px;line-height:11.5px;font-size:10px;font-weight:700;overflow-wrap:anywhere;white-space:normal;color:#fff1d6;background:none;-webkit-text-stroke:1.8px #20213f;paint-order:stroke fill;text-shadow:0 1px #20213f;z-index:3;pointer-events:none}
++.collection-view .collection-card .collection-joker-name{left:3px;right:3px;bottom:6px;min-height:27px;line-height:12.5px;font-size:11px;font-weight:800;overflow-wrap:anywhere;white-space:normal;color:#fff1d6;background:none;-webkit-text-stroke:1px #20213f;paint-order:stroke fill;text-shadow:none;z-index:3;pointer-events:none}
+diff --git a/web/shop-screen.css b/web/shop-screen.css
+index 176b816..5cdf099 100644
+--- a/web/shop-screen.css
++++ b/web/shop-screen.css
+@@ -59,8 +59,8 @@
+ .shop-card:is([data-card-set=Tarot],[data-card-set=Planet],[data-card-set=Spectral])[data-edition=negative]{background:color-mix(in srgb,var(--card-type-color) 28%,#1d3438);color:#f0e5c8}
+ .shop-card:is([data-card-set=Tarot],[data-card-set=Planet],[data-card-set=Spectral])[data-edition=negative]:disabled{background:color-mix(in srgb,var(--card-type-color) 28%,#1d3438)!important;color:#f0e5c8}
+ 
+-/* Keep every complete Joker title inside its paper strip, including long names. */
+-.shop-card:has(.joker-illustration) .shop-card-name{left:5px;right:5px;bottom:6px;min-height:24px;line-height:11.5px;font-size:10px;font-weight:700;overflow-wrap:anywhere;white-space:normal;color:#fff1d6;background:none;-webkit-text-stroke:1.8px #20213f;paint-order:stroke fill;text-shadow:0 1px #20213f;z-index:3;pointer-events:none}
++/* Large solid letterforms with a thin contour; no separate title strip. */
++.shop-card:has(.joker-illustration) .shop-card-name{left:3px;right:3px;bottom:6px;min-height:27px;line-height:12.5px;font-size:11px;font-weight:800;overflow-wrap:anywhere;white-space:normal;color:#fff1d6;background:none;-webkit-text-stroke:1px #20213f;paint-order:stroke fill;text-shadow:none;z-index:3;pointer-events:none}
+ .shop-art.joker-illustration{inset:0;overflow:hidden;border-radius:inherit;background:none}
+ /* Individual plates are opaque paper: keep the existing edition ink ABOVE it. */
+ .shop-card:is([data-edition=foil],[data-edition=holographic],[data-edition=polychrome]) .joker-illustration::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:inherit;background-size:inherit;background-position:inherit;border-radius:3px}

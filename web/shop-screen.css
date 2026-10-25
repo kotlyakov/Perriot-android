@@ -60,8 +60,8 @@
 .shop-card:is([data-card-set=Tarot],[data-card-set=Planet],[data-card-set=Spectral])[data-edition=negative]:disabled{background:color-mix(in srgb,var(--card-type-color) 28%,#1d3438)!important;color:#f0e5c8}
 
 /* Keep every complete Joker title inside its paper strip, including long names. */
-.shop-card:has(.joker-illustration) .shop-card-name{left:5px;right:5px;bottom:6px;min-height:24px;line-height:11.5px;font-size:10px;font-weight:700;overflow-wrap:anywhere;white-space:normal;color:#fff1d6;background:none;-webkit-text-stroke:1.8px #20213f;paint-order:stroke fill;text-shadow:0 1px #20213f;z-index:3;pointer-events:none}
-.shop-art.joker-illustration{inset:0;overflow:hidden;border-radius:inherit;background:none}
+.shop-card:has(.joker-illustration) .shop-card-name{min-height:21px;line-height:10px;font-size:9px;font-weight:500;overflow-wrap:anywhere;white-space:normal}
+.joker-illustration{background:none}
 /* Individual plates are opaque paper: keep the existing edition ink ABOVE it. */
 .shop-card:is([data-edition=foil],[data-edition=holographic],[data-edition=polychrome]) .joker-illustration::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:inherit;background-size:inherit;background-position:inherit;border-radius:3px}
 .shop-card[data-edition=negative] .joker-illustration svg{filter:invert(1)}

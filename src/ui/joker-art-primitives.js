@@ -1,6 +1,5 @@
-// Original Pierrot colour-print vocabulary. Local coordinates, flat inks, no external art.
-export const P='#fff1d6', I='#20213f', R='#f04452', B='#3285ed', G='#ffc34a', S='#a9c9de';
-export const V='#9460d5', T='#24bdba', O='#ff873f', Y='#ffe15c', L='#82cb63', K='#ec72af';
+// Original Pierrot printmaking vocabulary. Coordinates remain local to each engraving.
+export const P='#f0e5c8', I='#143d39', R='#ca3d2a', B='#267d9b', G='#b88935', S='#8b9c94';
 export const group=(x,y,s,body,angle=0)=>`<g transform="translate(${x} ${y}) rotate(${angle}) scale(${s})">${body}</g>`;
 export const path=(d,fill='none',stroke=I,w=2)=>`<path d="${d}" fill="${fill}" stroke="${stroke}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
 export const rect=(x,y,w,h,fill=P,r=2,stroke=I,sw=2)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`;
@@ -22,7 +21,7 @@ export const flame=(x,y,s=1)=>group(x,y,s,path('M0 21C-24 18 -22 0 -13 -9C-12 0 
 export const crown=(x,y,s=1,c=G)=>group(x,y,s,path('M-17 -8L-13 9H13L17 -8L7 -2L0 -14L-7 -2Z',c)+rect(-13,9,26,5,c,1)+circle(-17,-9,2,c)+circle(0,-15,2,c)+circle(17,-9,2,c)+path('M-7 3L-5 7M5 3L7 7','none',P,1));
 export function face(x,y,s=1,role='K',color=G){return group(x,y,s,path('M-15 25Q-15 10 -7 10H7Q15 10 15 25Z',color)+path('M-8 -9Q-12 2 -6 9Q0 16 6 9Q12 2 8 -9Z',P)+path('M-10 -4Q-14 -15 -4 -17Q10 -19 11 -5L5 -9L-4 -5Z',I)+line(-5,0,-3,0)+line(3,0,5,0)+path('M-3 7Q0 9 3 7','none',I,1)+path('M-9 12L0 21L9 12M-6 19L-7 24M6 19L7 24','none',I,1)+ (role==='J'?path('M-13 -13L-11 -24L0 -19L10 -23L14 -12Z',R):crown(0,-19,.65,color))+text(0,33,role,8));}
 export function portrait(x,y,s=1,rank='K',color=B){return group(x,y,s,rect(-17,-30,34,61,color,2)+rect(-14,-27,28,55,P,1)+face(0,-3,.77,rank,rank==='Q'?R:G));}
-export const mask=(x,y,s=1,c=P,happy=false)=>group(x,y,s,path('M-19 -20Q0 -27 19 -20L16 7Q11 23 0 27Q-11 23 -16 7Z',c)+path('M-15 -10Q-9 -15 -4 -10M4 -10Q9 -15 15 -10','none',I,2)+ellipse(-9,-5,3,2,I)+ellipse(9,-5,3,2,I)+path(happy?'M0 -6L-3 6H2M-7 10Q0 21 7 10':'M0 -6L-3 6H2M-7 15Q0 9 7 15','none',I,1.5)+path('M-13 1L-11 7M11 1L9 7','none',R,1.2));
+export const mask=(x,y,s=1,c=P)=>group(x,y,s,path('M-19 -20Q0 -27 19 -20L16 7Q11 23 0 27Q-11 23 -16 7Z',c)+path('M-15 -10Q-9 -15 -4 -10M4 -10Q9 -15 15 -10','none',I,2)+ellipse(-9,-5,3,2,I)+ellipse(9,-5,3,2,I)+path('M0 -6L-3 6H2M-7 15Q0 9 7 15','none',I,1.5)+path('M-13 1L-11 7M11 1L9 7','none',R,1.2));
 export const palm=(x,y,s=1)=>group(x,y,s,path('M-25 18L-13 8L-18 -1Q-19 -7 -14 -6L-2 3L16 -3Q24 -5 25 0L8 8L22 4Q28 5 24 10L9 18L-4 23L-15 31Z',P)+path('M-10 11L0 14L11 8M-14 16L-5 20','none',I,1));
 export const basket=(x,y,s=1,closed=false)=>group(x,y,s,path('M-20 -15L-14 20H14L20 -15Z',S)+ellipse(0,-15,21,6,closed?S:P)+path('M-12 -8L-8 14M0 -8V15M12 -8L8 14','none',I,1.2)+path('M-14 7H14','none',P,1)+ (closed?rect(-23,-20,46,7,I,1):''));
 export const arrow=(d,c=R,w=3)=>path(d,'none',c,w);
