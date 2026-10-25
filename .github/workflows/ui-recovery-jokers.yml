@@ -40,3 +40,83 @@ jobs:
           name: ui-recovery-jokers-${{ github.run_id }}
           path: artifacts/*.png
           retention-days: 14
+
+  android:
+    needs: verify
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools platforms;android-36 build-tools;35.0.0'
+      - name: Prepare and check offline assets
+        run: |
+          npm run android:assets
+          python3 android/tools/check-config.py
+      - name: Fresh native compilation
+        working-directory: android
+        run: |
+          bash ./gradlew --version
+          bash ./gradlew :app:clean :app:assembleDebug --no-daemon --no-build-cache --rerun-tasks --stacktrace
+      - name: Package and verify APK
+        id: apk
+        env:
+          PREVIEW_KEYSTORE_BASE64: ${{ github.event_name != 'pull_request' && secrets.PREVIEW_KEYSTORE_BASE64 || '' }}
+          PREVIEW_KEYSTORE_PASSWORD: ${{ github.event_name != 'pull_request' && secrets.PREVIEW_KEYSTORE_PASSWORD || '' }}
+          PREVIEW_KEY_ALIAS: ${{ github.event_name != 'pull_request' && secrets.PREVIEW_KEY_ALIAS || '' }}
+          PREVIEW_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && secrets.PREVIEW_KEY_PASSWORD || '' }}
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/ci-apk
+          source_apk=android/app/build/outputs/apk/debug/app-debug.apk
+          signer="$ANDROID_HOME/build-tools/35.0.0/apksigner"
+          if [ -n "$PREVIEW_KEYSTORE_BASE64" ]; then
+            test -n "$PREVIEW_KEYSTORE_PASSWORD"
+            test -n "$PREVIEW_KEY_ALIAS"
+            test -n "$PREVIEW_KEY_PASSWORD"
+            key_file="$RUNNER_TEMP/pierrot-preview.keystore"
+            trap 'rm -f "$key_file"' EXIT
+            umask 077
+            printf '%s' "$PREVIEW_KEYSTORE_BASE64" | base64 --decode > "$key_file"
+            label=preview-stable-signature
+            apk="artifacts/ci-apk/pierrot-$label.apk"
+            "$signer" sign --ks "$key_file" --ks-key-alias "$PREVIEW_KEY_ALIAS" --ks-pass env:PREVIEW_KEYSTORE_PASSWORD --key-pass env:PREVIEW_KEY_PASSWORD --out "$apk" "$source_apk"
+            "$signer" verify --verbose --print-certs "$apk" > artifacts/ci-apk/signature.txt
+            grep -Fq 'Signer #1 certificate SHA-256 digest: 5ff24a25ecf6b43e6ae02ee44c2568fcffd335f9a2c9222dd1892168e8d40d8e' artifacts/ci-apk/signature.txt
+          else
+            test -z "$PREVIEW_KEYSTORE_PASSWORD$PREVIEW_KEY_ALIAS$PREVIEW_KEY_PASSWORD"
+            label=ci-debug-no-update-guarantee
+            apk="artifacts/ci-apk/pierrot-$label.apk"
+            cp "$source_apk" "$apk"
+            "$signer" verify --verbose --print-certs "$apk" > artifacts/ci-apk/signature.txt
+          fi
+          "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -P 16 -v 4 "$apk" > artifacts/ci-apk/alignment.txt
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$apk" > artifacts/ci-apk/package.txt
+          sha256sum "$apk" > artifacts/ci-apk/SHA256SUMS
+          printf 'commit=%s\nrun=%s\nsignature=%s\n' "$GITHUB_SHA" "$GITHUB_RUN_ID" "$label" > artifacts/ci-apk/build.txt
+          printf 'label=%s\n' "$label" >> "$GITHUB_OUTPUT"
+          printf 'APK: `%s`. Fresh Gradle compilation; installation/device checks not performed.\n' "$label" >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload verified APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: pierrot-${{ steps.apk.outputs.label }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            artifacts/ci-apk/*.apk
+            artifacts/ci-apk/SHA256SUMS
+            artifacts/ci-apk/signature.txt
+            artifacts/ci-apk/alignment.txt
+            artifacts/ci-apk/build.txt
+            artifacts/ci-apk/package.txt
+          if-no-files-found: error
+          retention-days: 30

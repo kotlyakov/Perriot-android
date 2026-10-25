@@ -37,7 +37,7 @@
       "id": "individual-joker-printing-plates",
       "source": "src/ui/joker-art.js; src/ui/joker-art-primitives.js; src/content/joker-identities.js",
       "origin": "150 individually authored original SVG engravings following the user-approved 24.10.2026 stories; no source-game art",
-      "status": "implemented150/150; visual user acceptance pending",
+      "status": "approved150/150by user2026-10-25; first illustrations and separate title fields",
       "entities": [
         "j_joker",
         "j_greedy_joker",
@@ -189,7 +189,8 @@
         "j_yorick",
         "j_chicot",
         "j_perkeo"
-      ]
+      ],
+      "approvalPassport": "docs/approved-ui/approved/jokers-first-v1.md"
     }
   ],
   "originalScreenshotsIncluded": false,
