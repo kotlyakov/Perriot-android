@@ -1,6 +1,6 @@
 import {blindReward} from '../core/stakes.js';
 import {isBossCardDebuffed} from '../core/boss-effects.js';
-import {APK_BLINDS_BY_ID} from '../content/apk-blinds.js';
+import {renderBlindHud} from './blind-hud.js';
 import {animateNumber} from './number-animation.js';
 import {showFlame} from './flame.js';
 import {pipArtwork,suitSvg} from './card-art.js';
@@ -53,8 +53,7 @@ export function showNumbers(chips,mult,animate=false){
 export function dismissCardTip(){dismissCardTooltip();}
 export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=null) {
  document.getElementById('deck').dataset.deck=state.deckId;
- const boss=state.round.blindId==='boss'?APK_BLINDS_BY_ID[state.apkBlinds?.bossId]:null;
- text('target_value',displayBlindTarget(state.round.target));text('blind_title',boss?boss.name:state.round.blindId==='big'?'Большой блайнд':'Малый блайнд');document.querySelector('#blind_token span').textContent=boss?boss.name:state.round.blindId==='big'?'БОЛЬШОЙ\nБЛАЙНД':'МАЛЫЙ\nБЛАЙНД';document.querySelector('#blind_target b').textContent=blindReward(state)?'$'.repeat(Number(blindReward(state))):'$0';document.querySelector('#round strong').textContent=state.roundNumber??1;animateNumber(document.getElementById('round_score_value'),state.round.score,{format:displayInteger});animateNumber(document.getElementById('hands_value'),state.round.handsRemaining);animateNumber(document.getElementById('discards_value'),state.round.discardsRemaining);text('money_value','$'+state.money);
+ text('target_value',displayBlindTarget(state.round.target));renderBlindHud(state);document.querySelector('#blind_target b').textContent='$'+blindReward(state);document.querySelector('#round strong').textContent=state.roundNumber??1;animateNumber(document.getElementById('round_score_value'),state.round.score,{format:displayInteger});animateNumber(document.getElementById('hands_value'),state.round.handsRemaining);animateNumber(document.getElementById('discards_value'),state.round.discardsRemaining);text('money_value','$'+state.money);
  document.querySelector('#ante strong').firstChild.textContent=String(['shop','pack'].includes(state.phase)&&state.round.blindId==='boss'?state.apkShop.context.ante:state.round.ante);
  text('hand_count',state.hand.length+'/'+state.round.handSize);text('deck_count',state.drawPile.length+'/'+Object.keys(state.cards).length);text('joker_count',state.jokers.length+'/'+(state.jokerSlots??5));
  const arcana=state.phase==='pack'&&/^p_(arcana|spectral)_/.test(state.packState?.sourceEntityId??'');

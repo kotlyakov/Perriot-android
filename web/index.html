@@ -6,10 +6,10 @@
 <link rel="stylesheet" href="/web/shop-screen.css"><link rel="stylesheet" href="/web/window-review.css"><link rel="stylesheet" href="/web/profile-review.css"><link rel="stylesheet" href="/web/challenge-review.css"></head>
 <body><main id="stage" aria-label="Карточный стол">
   <div id="hud" class="fixed"></div>
-  <section id="blind_panel" class="panel fixed" aria-label="Блайнд"></section>
+  <section id="blind_panel" class="panel fixed" aria-label="Блайнд"><div id="blind_condition" hidden></div><div id="blind_stake_label"></div></section>
   <div id="blind_title" class="fixed title">Малый блайнд</div>
   <div id="blind_token" class="fixed token"><span>МАЛЫЙ<br>БЛАЙНД</span></div>
-  <div id="blind_target" class="fixed target"><small>Минимум очков</small><strong><i class="chip-icon"></i> <span id="target_value">300</span></strong><small>Награда: <b class="gold">$$$</b></small></div>
+  <div id="blind_target" class="fixed target"><small>Минимум очков</small><strong><i id="blind_stake" class="chip-icon stake-chip" role="img" aria-label="Белая ставка"></i> <span id="target_value">300</span></strong><small>Награда: <b class="gold">$$$</b></small></div>
   <div id="round_score" class="fixed panel score-line"><span>Раунд<br>очки</span><strong><i class="chip-icon"></i> <span id="round_score_value">0</span></strong></div>
   <div id="calculation_panel" class="fixed panel"><div id="hand_name"></div><small id="hand_level"></small></div>
   <div id="chips" class="fixed score-box blue"><span id="chips_value">0</span></div><span id="times">×</span><div id="mult" class="fixed score-box red"><span id="mult_value">0</span></div>
