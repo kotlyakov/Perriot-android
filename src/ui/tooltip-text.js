@@ -23,7 +23,7 @@ export function appendTooltipContents(container,title,descriptions){
   const paragraph=doc.createElement('p');
   for(const part of formatTooltipText(description)){
    if(!part.kind){paragraph.append(doc.createTextNode(part.text));continue;}
-   const amount=doc.createElement('strong');amount.className='tooltip-effect tooltip-'+part.kind;amount.textContent=part.text;paragraph.append(amount);
+   const amount=doc.createElement('strong');amount.className='tooltip-effect tooltip-'+part.kind+(part.text.startsWith('×')?' tooltip-times':'');amount.textContent=part.text;paragraph.append(amount);
   }
   container.append(paragraph);
  }

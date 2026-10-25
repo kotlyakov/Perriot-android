@@ -24,8 +24,8 @@ try{
   const page=await browser.newPage({viewport:{width,height},hasTouch:touch,isMobile:touch});const errors=[];page.on('pageerror',e=>errors.push(e.message));await install(page,fixture());
   await page.locator('[data-offer-id=first] .shop-card').click();assert.match(await page.locator('#shop_tooltip').innerText(),/сыгранная рука содержит флеш/);
   assert.equal(await page.locator('#shop_owned .shop-buy').count(),0);
-  assert.deepEqual(await page.locator('#shop_tooltip .tooltip-mult').evaluate(el=>({text:el.textContent,weight:getComputedStyle(el).fontWeight,color:getComputedStyle(el).color,display:getComputedStyle(el).display})),{text:'+10',weight:'800',color:'rgb(255, 85, 73)',display:'inline'});
-  await page.locator('[data-offer-id=second] .shop-card').click();assert.deepEqual(await page.locator('#shop_tooltip .tooltip-effect').allTextContents(),['+20','+4']);assert.equal(await page.locator('#shop_tooltip .tooltip-chips').evaluate(el=>getComputedStyle(el).color),'rgb(9, 174, 255)');
+  assert.deepEqual(await page.locator('#shop_tooltip .tooltip-mult').evaluate(el=>({text:el.textContent,weight:getComputedStyle(el).fontWeight,color:getComputedStyle(el).color,display:getComputedStyle(el).display})),{text:'+10',weight:'800',color:'rgb(173, 36, 49)',display:'inline'});
+  await page.locator('[data-offer-id=second] .shop-card').click();assert.deepEqual(await page.locator('#shop_tooltip .tooltip-effect').allTextContents(),['+20','+4']);assert.equal(await page.locator('#shop_tooltip .tooltip-chips').evaluate(el=>getComputedStyle(el).color),'rgb(20, 88, 181)');
   if(!touch)await page.screenshot({path:'artifacts/feedback-tooltips.png'});
   const before=await saved(page);await drag(page,'first',900,95,{touch});assert.deepEqual((await saved(page)).jokers.map(j=>j.id),['second','first']);assert.equal((await saved(page)).money,before.money);
   await drag(page,'planet',1100,95,{touch});assert.deepEqual((await saved(page)).consumables.map(c=>c.id),['planet','tarot']);

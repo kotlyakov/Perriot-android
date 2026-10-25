@@ -5,7 +5,7 @@ import {animateNumber} from './number-animation.js';
 import {showFlame} from './flame.js';
 import {pipArtwork,suitSvg} from './card-art.js';
 import {scoreHand} from '../core/score.js';
-import {appendTooltipContents} from './tooltip-text.js';
+import {appendCardDescription} from './card-description.js';
 import {showCardTooltip,dismissCardTooltip} from './card-tooltip.js';
 import {describeCardModifiers} from '../content/card-modifier-display.js';
 import {exactText} from '../core/numbers.js';
@@ -88,13 +88,7 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
    b.innerHTML=hidden?'<span class="deck-seal" aria-hidden="true"><svg viewBox="0 0 32 32"><path fill="currentColor" d="M16 0Q19 13 32 16Q19 19 16 32Q13 19 0 16Q13 13 16 0Z"/></svg></span>':cardMarkup(card)+(debuffed?'<span class=debuff-stamp>Ослаблена</span>':'');b.disabled=busy || !selectable;
    function showTip(anchor=b){
      const tip=document.createElement('div');tip.className='card-tip';tip.setAttribute('role','tooltip');
-     if(hidden)appendTooltipContents(tip,'Скрытая карта',['Неизвестна до игры или сброса.']);
-     else {
-      const title=document.createDocumentFragment();
-      if(card.enhancement==='stone')title.append(document.createTextNode('Каменная карта'));
-      else{const suit=document.createElement('span');title.append(document.createTextNode(rankLabel(card.rank)+' '));suit.style.color=SUITS[card.suit][1];suit.textContent=({clubs:'треф',diamonds:'бубен',hearts:'червей',spades:'пик'})[card.suit];title.append(suit);}
-      appendTooltipContents(tip,title,[`+${debuffed?0:card.enhancement==='stone'?50:card.rank===14?11:Math.min(card.rank,10)} очков`,...describeCardModifiers(card),...(debuffed?['Не даёт фишек и не запускает эффекты джокеров за эту карту.']:[])]);
-     }
+     appendCardDescription(tip,card,hidden?{concealed:true,title:'Скрытая карта',description:'Неизвестна до игры или сброса.'}:{debuffed});
      tip.dataset.cardId=id;showCardTooltip(tip,anchor);
    }
    function selectAndDescribe(){

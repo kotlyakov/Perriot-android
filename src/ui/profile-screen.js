@@ -1,4 +1,5 @@
 import {showCardTooltip,dismissCardTooltip} from './card-tooltip.js';
+import {appendCardDescription} from './card-description.js';
 import catalog from '../content/apk-shop-catalog.js';
 import {artwork} from './shop-screen.js';
 import {collectionEntries} from '../core/profile.js';
@@ -91,9 +92,7 @@ export function renderCollectionView(profile,seed,{onNavigate}={}){
    const rows=entries.filter(entry=>entry.set===set).sort((a,b)=>(a.order??0)-(b.order??0)),capacities=collectionRows[set],size=capacities.reduce((n,x)=>n+x,0),pages=Math.max(1,Math.ceil(rows.length/size));page=Math.max(0,Math.min(page,pages-1));
    const grid=element('div','collection-grid');grid.setAttribute('aria-label','Карты раздела');grid.dataset.set=set;grid.dataset.cardSet=set;let offset=page*size;
    const tooltip=element('aside','collection-details collection-tooltip');tooltip.id='collection_details';tooltip.hidden=true;tooltip.setAttribute('role','tooltip');tooltip.setAttribute('aria-live','polite');
-   function details(entry,card){const known=entry.discovered,display=known||!entry.unlocked?localized(entry):null,name=display?.name??'Не обнаружено';let text=!entry.unlocked?(entry.condition||'Выполните условие открытия.'):known?display.description:'Найдите эту карту в обычной партии.';if(set==='Blind'){const blind=APK_BLINDS_BY_ID[entry.id];text=known?`Набрать: ${blind.mult} × базовые очки анте. Награда: $${blind.dollars}. ${text}`:'Победите этот блайнд в обычной партии, чтобы открыть его описание.';}if(known&&entry.sticker)text+=` Победа: ${STAKES[entry.sticker-1]?.name??entry.sticker}.`;tooltip.replaceChildren(element('strong','',name));
-    if(known&&set==='Joker'){const rarity=catalog.centres.find(centre=>centre.key===entry.id)?.rarity,badge=element('span','collection-rarity',({1:'Обычный',2:'Необычный',3:'Редкий',4:'Легендарный'})[rarity]??'Джокер');badge.dataset.rarity=String(rarity);tooltip.append(badge);}
-    tooltip.append(element('p','',text||'Описание отсутствует.'));showCardTooltip(tooltip,card,{container:root});
+   function details(entry,card){const known=entry.discovered,display=known||!entry.unlocked?localized(entry):null,name=display?.name??'Не обнаружено';let text=!entry.unlocked?(entry.condition||'Выполните условие открытия.'):known?display.description:'Найдите эту карту в обычной партии.';if(set==='Blind'){const blind=APK_BLINDS_BY_ID[entry.id];text=known?`Набрать: ${blind.mult} × базовые очки анте. Награда: $${blind.dollars}. ${text}`:'Победите этот блайнд в обычной партии, чтобы открыть его описание.';}if(known&&entry.sticker)text+=` Победа: ${STAKES[entry.sticker-1]?.name??entry.sticker}.`;appendCardDescription(tooltip,{entityId:entry.id,set},{collection:true,concealed:!known||!entry.unlocked,title:name,description:text||'Описание отсутствует.'});showCardTooltip(tooltip,card,{container:root});
    }
 
    for(const capacity of capacities){const row=element('div','collection-card-row');row.style.setProperty('--collection-columns',capacity);for(const entry of rows.slice(offset,offset+capacity)){

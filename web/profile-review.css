@@ -95,3 +95,60 @@
 /* Approved individual Joker printing plates reserve an explicit name strip. */
 .collection-view .collection-card[data-card-set=Joker] .shop-art{inset:2px 2px 27px}
 .collection-view .collection-card .collection-joker-name{left:3px;right:3px;bottom:3px;min-height:21px;line-height:10px;font-size:9px;font-weight:500;overflow-wrap:anywhere;white-space:normal;color:#143d39}
+.approved-tooltip.approved-tooltip{position:absolute;z-index:150!important;display:grid!important;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:12px;width:530px;padding:0!important;margin:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;text-align:left!important;color:#29251f!important;line-height:1.4;font-size:16px;box-sizing:border-box;pointer-events:auto;overflow:visible;isolation:isolate}
+.approved-tooltip.approved-tooltip[hidden]{display:none!important}
+.approved-tooltip:not(:has(.tooltip-modifiers)){grid-template-columns:minmax(0,1fr);width:290px}
+.approved-tooltip.tooltip-stacked{grid-template-columns:minmax(0,1fr);width:360px}
+.approved-tooltip .tooltip-main{background:#f1e5c9;border:2px solid #aa916a;border-radius:9px;box-shadow:2px 4px #102d2666;min-width:0;overflow:hidden}
+.approved-tooltip .tooltip-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#dfccaa;padding:9px 11px;color:#29251f}
+.approved-tooltip .tooltip-heading>.tooltip-title{color:#29251f;display:block;font-size:18px;line-height:1.3;font-weight:700;overflow-wrap:anywhere;min-width:0}
+.approved-tooltip .tooltip-base{font-size:25px;line-height:1;font-weight:800;white-space:nowrap}
+.approved-tooltip .tooltip-body{padding:10px 11px;color:#29251f}
+.approved-tooltip p,.collection-view .approved-tooltip p{color:#29251f!important;background:none!important;margin:0 0 6px!important;padding:0!important;border-radius:0;font-size:15px!important;line-height:1.4!important;overflow-wrap:anywhere}
+.approved-tooltip p:last-child{margin-bottom:0!important}
+.approved-tooltip .tooltip-chips{color:#1458b5!important}
+.approved-tooltip .tooltip-mult{color:#ad2431!important}
+.approved-tooltip .tooltip-money{color:#805607!important}
+.approved-tooltip .tooltip-level{color:#29251f!important}
+.approved-tooltip .tooltip-times{background:#a51f2e!important;color:#fff7e8!important;padding:1px 5px;border-radius:4px;white-space:nowrap}
+.approved-tooltip .tooltip-accumulated{margin:0 0 8px}
+.approved-tooltip .tooltip-accumulated p{font-size:14px!important}
+.approved-tooltip .tooltip-accumulated .tooltip-effect{font-size:32px;font-weight:800;line-height:1.15}
+.approved-tooltip .tooltip-statuses{display:flex;gap:6px;flex-wrap:wrap;padding:0 10px 10px;color:#30251d}
+.approved-tooltip .tooltip-status{flex:1 1 105px;display:flex;align-items:flex-start;gap:6px;padding:7px;border-radius:5px;border:1px solid #9c7524;background:#e6c36b;min-width:0}
+.approved-tooltip .tooltip-status-perishable{background:#e9b68a;border-color:#af6937}
+.approved-tooltip .tooltip-status-eternal{background:#d7c4e7;border-color:#8866a4}
+.approved-tooltip .tooltip-status-icon{font-size:20px;line-height:1.1;flex:none;color:#30251d}
+.approved-tooltip .tooltip-status-perishable .tooltip-status-icon{font-size:0;width:15px;height:21px;background:#613a22;clip-path:polygon(0 0,100% 0,100% 10%,85% 10%,85% 25%,60% 50%,85% 75%,85% 90%,100% 90%,100% 100%,0 100%,0 90%,15% 90%,15% 75%,40% 50%,15% 25%,15% 10%,0 10%)}
+.approved-tooltip .tooltip-status-info{min-width:0;overflow-wrap:anywhere}
+.approved-tooltip .tooltip-status-name{display:block;font-size:15px;font-weight:800;color:#30251d;line-height:1.2;margin-bottom:3px}
+.approved-tooltip .tooltip-status-detail{display:block;font-size:12px;font-weight:400;color:#30251d;line-height:1.3}
+.approved-tooltip .tooltip-footer{display:flex;justify-content:flex-end;padding:0 10px 9px}
+.approved-tooltip .tooltip-sale{display:flex;gap:6px;align-items:center;border:1px solid #9b7025;background:#e4c16c;border-radius:5px;padding:2px 6px;color:#392b12;max-width:100%;font-size:10px;flex-wrap:wrap}
+.approved-tooltip .tooltip-sale strong{font-size:16px;overflow-wrap:anywhere;min-width:0;color:#392b12}
+.approved-tooltip .tooltip-modifiers{display:flex;flex-direction:column;gap:10px;min-width:0}
+.approved-tooltip .tooltip-modifier{position:relative;border:2px solid #aa916a;border-left-width:5px;border-radius:7px;padding:9px 10px;background:#efe0bf;box-shadow:2px 4px #102d2666;min-width:0;overflow-wrap:anywhere}
+.approved-tooltip .tooltip-modifier:before{content:'';position:absolute;left:-16px;top:16px;width:10px;height:12px;background:#cbb589;border-top:2px solid #aa916a;border-bottom:2px solid #aa916a}
+.approved-tooltip .tooltip-material-title{display:block;color:#29251f;font-size:15px;margin-bottom:4px;font-weight:700}
+.approved-tooltip .tooltip-material-foil{background:repeating-linear-gradient(135deg,#edf0f4 0px,#edf0f4 9px,#dfe5ec 9px,#dfe5ec 10px);border-color:#8896aa}
+.approved-tooltip .tooltip-material-steel{background:linear-gradient(110deg,#c9d5db,#e0e7e9 55%,#bdcbd1);border-color:#647e8c}
+.approved-tooltip .tooltip-material-polychrome{background:linear-gradient(105deg,#eed0d8,#e5d8ee 34%,#cee7e6 68%,#eee4bf);border-color:#9d749d}
+.approved-tooltip .tooltip-material-holographic{background:linear-gradient(115deg,#cee5e8,#e4d6eb,#d1e7da);border-color:#8877a2}
+.approved-tooltip .tooltip-material-negative{background:#e3dcec;border-color:#75628d}
+.approved-tooltip .tooltip-material-gold{background:#eddb9c;border-color:#a58226}
+.approved-tooltip .tooltip-material-glass{background:linear-gradient(125deg,#e1efec,#c9deda);border-color:#7e9e9b}
+.approved-tooltip .tooltip-seal-row{display:flex;align-items:center;gap:10px;padding:10px 11px;color:#29251f}
+.approved-tooltip .tooltip-seal-description{min-width:0;font-size:14px}
+.approved-tooltip .tooltip-seal-description>strong{color:#29251f;font-size:15px}
+.approved-tooltip .tooltip-wax{--wax:#b93637;--shine:#ec7770;--shade:#732021;flex:none;width:49px;height:49px;position:relative;display:inline-flex;align-items:center;justify-content:center;isolation:isolate;filter:drop-shadow(1px 3px 1px #4c231a55);color:#ffe8c3}
+.approved-tooltip .tooltip-wax:before{content:'';position:absolute;inset:0;z-index:-2;background:linear-gradient(140deg,var(--shine),var(--wax) 40%,var(--shade));clip-path:polygon(50% 0,60% 7%,72% 3%,78% 14%,90% 14%,90% 27%,100% 34%,94% 46%,100% 58%,89% 65%,89% 78%,76% 81%,70% 94%,57% 91%,48% 100%,37% 92%,25% 96%,20% 82%,7% 79%,10% 65%,0 56%,6% 44%,1% 31%,14% 25%,16% 12%,30% 14%,37% 3%)}
+.approved-tooltip .tooltip-wax:after{content:'';position:absolute;inset:7px;border:2px solid #ffdba766;border-radius:50%;box-shadow:inset 1px 2px 3px var(--shade),0 1px 1px var(--shine);z-index:-1}
+.approved-tooltip .tooltip-wax-blue{--wax:#2567aa;--shine:#69a8dd;--shade:#173f72}
+.approved-tooltip .tooltip-wax-gold{--wax:#bb8a23;--shine:#f1d56e;--shade:#805815}
+.approved-tooltip .tooltip-wax-purple{--wax:#7747a6;--shine:#b88add;--shade:#4e296f}
+.approved-tooltip .tooltip-wax-symbol{font-size:24px;font-weight:700;color:#ffe8c3;text-shadow:0 1px #ffffff44,0 -1px #0008}
+.approved-tooltip.tooltip-stacked .tooltip-modifier:before{display:none}
+.approved-tooltip{--tooltip-safe-left:env(safe-area-inset-left,0px);--tooltip-safe-right:env(safe-area-inset-right,0px);--tooltip-safe-top:env(safe-area-inset-top,0px);--tooltip-safe-bottom:env(safe-area-inset-bottom,0px);animation:approved-tooltip-appear .11s ease-out}
+.approved-tooltip{touch-action:pan-y}
+@keyframes approved-tooltip-appear{from{opacity:0}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.approved-tooltip{animation:none}}

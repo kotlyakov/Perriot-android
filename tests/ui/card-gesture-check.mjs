@@ -17,7 +17,7 @@ for(const [width,height,touch,reduced] of [[1536,688,false,false],[915,412,true,
  const input=async(type,x,y)=>touch?client.send('Input.dispatchTouchEvent',{type:({down:'touchStart',move:'touchMove',up:'touchEnd',cancel:'touchCancel'})[type],touchPoints:['up','cancel'].includes(type)?[]:[{x,y,id:1}]}):type==='down'?page.mouse.move(x,y).then(()=>page.mouse.down()):type==='move'?page.mouse.move(x,y):page.mouse.up();
  const id=s.hand[0],card=page.locator(`#hand [data-card-id="${id}"]`),box=await card.boundingBox(),x=box.x+10*width/1536,y=box.y+box.height*.6;
  const neighbor=page.locator('#hand .playing-card').nth(1),oldLeft=await neighbor.evaluate(n=>n.style.left);
- await input('down',x,y);await page.waitForTimeout(400);assert.match(await page.locator('.card-tip').innerText(),/Q.*пик[\s\S]*\+10 очков/);
+ await input('down',x,y);await page.waitForTimeout(400);assert.match(await page.locator('.card-tip').innerText(),/Дама.*пик[\s\S]*\+10/);
  await input('move',x+width*.38,y-30);await page.waitForFunction(()=>!!document.querySelector('.dragging'));
  assert.notEqual(await neighbor.evaluate(n=>n.style.left),oldLeft,'Neighbors reserve insertion slot while holding');assert.equal((await saved()).revision,s.revision,'Drag preview must not commit');
  if(!touch)await page.screenshot({path:'artifacts/card-drag-preview.png'});
