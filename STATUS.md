@@ -1,6 +1,6 @@
 # Пьеро — текущий статус
 
-25.10.2026. Репозиторий kotlyakov/Perriot-android, ветка feat/menu-motion. Брать HEAD этой ветки.
+25.10.2026. Репозиторий kotlyakov/Perriot-android, ветка feat/menu-motion. Брать HEAD этой ветки. Проверенный код78612f0eccf80c00d6515b2f6d448f8bb65d07a2 опубликован; последующие документальные коммиты не меняют приложение.
 
 ## Текущий выбор
 
@@ -12,7 +12,7 @@
 
 Нет различий с960e5e3 вsrc/web/scripts/assets/tests/tools/previews. Все150SVG и источники art/primitives совпадают по первымSHA256. Свежие150XML/sharpPASS,150bundleSVGbyte-equal. Новый standalone653867байт полностью равен первому показу; native export929438байт. Полный локальныйcore1817total/1815PASS/0FAIL/2expected optional skips. Android source/art/CSS assets побайтно равны source.
 
-Browser CI текущего восстановления ожидается; исторический40117218263 проверял первоначальный код и не выдаётся за новый запуск.
+Новый GitHub Actions40164023164 SUCCESS на78612f0:1815corePASS/0FAIL/2optional skips; восстановленныйhome/settings/speed/persist/play на1536×688/915×412/568×320PASS; все150джокеров/названий/подсказок/aliases на этих3разрешенияхPASS; standalone320/390/736 со страницами/клавиатурой/свайпамиPASS;4издания меняют рисунок.49PNG artifact12588040325, первые страницы320/736 просмотрены.
 
 ## Показ и границы
 

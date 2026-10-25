@@ -2576,6 +2576,14 @@
     "freshSharpRendered": 150,
     "bundleEqual": 150,
     "localCore": "1817total/1815PASS/0FAIL/2expected optional skips",
-    "currentBrowser": "Awaiting current restoration CI; historical original run40117218263 was successful."
+    "currentBrowser": "CI40164023164 SUCCESS on78612f0eccf80c00d6515b2f6d448f8bb65d07a2:1815corePASS/0FAIL/2optional skips; restored UI3resolutions, all150 joker art/names/tooltips3resolutions, standalone320/390/736 paging/keyboard/swipe and4edition pixel comparisons PASS.49PNG artifact12588040325; first gallery320/736 screenshots inspected.",
+    "ci": {
+      "runId": 40164023164,
+      "jobId": 121081268256,
+      "sourceCommit": "78612f0eccf80c00d6515b2f6d448f8bb65d07a2",
+      "conclusion": "success",
+      "artifactId": 12588040325,
+      "screenshots": 49
+    }
   }
 }
