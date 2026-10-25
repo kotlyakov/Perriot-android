@@ -1,3 +1,5 @@
+25.10.2026 — У-44а выполнен технически: APK0.4.51/code64, source630c405a, CI40208756910SUCCESS (1827corePASS/2skip,9Chromium,freshAndroid). Утверждённый блок блайнда внедрён; общийУ-44 открыт. PR47 открыт вfeat/approved-tooltips, не слит.
+
 25.10.2026 — У-44а: пользователь утвердил блок блайнда; постоянное условие босса и жетон ставки внедрены вfeat/blind-hud.672ChromiumcasesPASS,4modeltestsRED→GREEN, fullcore1827PASS/2skip. CI/APKкандидата0.4.51/code64 ожидаются. У-44 целиком остаётся открытым. Паспорт docs/approved-ui/approved/blind-hud-v1.md.
 
 25.10.2026 — У-40: внедрён вAPK0.4.50/code63; source24a1689f, CI40191404365SUCCESS (1823corePASS/2skip,8Chromium, freshAndroid/signature/alignment). Дизайн принят, пользовательская проверка внедрения отдельно. PR46 открыт, не слит.
