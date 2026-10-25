@@ -5,6 +5,9 @@ import {nativeBlindTarget} from '../../src/core/blind-progression.js';
 import {renderCollectionView,renderProfileView} from '../../src/ui/profile-screen.js';
 class Node {
  constructor(tag){this.tagName=tag;this.children=[];this.dataset={};this.attributes={};this.style={setProperty:(key,value)=>{this.style[key]=value;}};this._text='';}
+ get ownerDocument(){return globalThis.document;}
+ get childNodes(){return this.children;}
+ get classList(){return {add:(name)=>{this.className=[this.className,name].filter(Boolean).join(' ');}};}
  set textContent(value){this._text=String(value);this.children=[];}
  get textContent(){return this._text+this.children.map(node=>node.textContent).join('');}
  append(...nodes){for(const node of nodes)node.parentElement=this;this.children.push(...nodes);}
@@ -18,7 +21,7 @@ const all=node=>node.children.flatMap(child=>[child,...all(child)]);
 const find=(root,id)=>[root,...all(root)].find(node=>node.id===id);
 const cards=root=>all(root).filter(node=>node.className==='collection-card');
 const rows=root=>all(root).filter(node=>node.className==='collection-card-row');
-globalThis.document={createElement:tag=>new Node(tag)};
+globalThis.document={createElement:tag=>new Node(tag),createTextNode:text=>{const n=new Node('#text');n.textContent=text;return n;}};
 const profile=createProfile(),before=JSON.stringify(profile),navigation=[];
 const collection=renderCollectionView(profile,undefined,{onNavigate:state=>navigation.push(state)});
 assert.equal(collection.dataset.view,'index');assert.equal(cards(collection).length,0);
@@ -51,7 +54,7 @@ assert.equal(view.attributes['aria-label'],'Профиль игрока');
 assert.equal(find(view,'profile_slot_2'),undefined);
 assert.equal(find(view,'profile_load'),undefined);
 assert.equal(find(view,'profile_reset'),undefined);
-const nameInput=find(view,'profile_name');assert.ok(nameInput);assert.equal(nameInput.value,'Игрок');assert.equal(nameInput.maxLength,16);
+const nameInput=find(view,'profile_name');assert.ok(nameInput);assert.equal(nameInput.value,'Игрок');assert.equal(nameInput.maxLength,10);
 nameInput.value='  Новое имя  ';nameInput.onchange();assert.deepEqual(renamed,['Новое имя']);
 assert.equal(all(view).filter(node=>node.className?.split(' ').includes('profile-progress-item')).length,5,'Overall plus four detail fractions');
 let failRename=true;const guarded=renderProfileView(profile,{name:'Сохранено',onRename:value=>{if(failRename)throw Error('disk full');return value;}}),guardedInput=find(guarded,'profile_name');guardedInput.value='Потеря';guardedInput.onchange();assert.equal(guardedInput.value,'Сохранено');assert.match(find(guarded,'profile_name_status').textContent,/Не удалось/);assert.equal(find(guarded,'profile_name_status').attributes.role,'status');failRename=false;guardedInput.value='Ещё раз';guardedInput.onchange();assert.equal(guardedInput.value,'Ещё раз');assert.equal(find(guarded,'profile_name_status').textContent,'');
@@ -72,7 +75,7 @@ assert.ok(cards(collection).some(card=>card.children.some(child=>child.className
 collection.back();
 for(const set of ['Tarot','Planet','Spectral'])assert.equal(find(collection,'collection_category_'+set).dataset.cardSet,set);
 assert.equal(JSON.stringify(profile),before,'Views never mutate profile/unlocks');
-const seeded=renderCollectionView(profile,'13031990');find(seeded,'collection_category_Joker').click();assert.ok(cards(seeded).every(card=>card.dataset.discovered==='true'),'Verification seed behavior stays intact');assert.ok(cards(seeded).every(card=>card.children.some(child=>child.className==='shop-art'&&child.innerHTML.includes('<svg'))),'Discovered portraits reuse original project artwork');assert.ok(cards(seeded).every(card=>card.attributes['aria-pressed']===undefined),'Collection portraits do not become selected');cards(seeded)[0].click();assert.ok(all(find(seeded,'collection_details')).some(node=>node.className==='collection-rarity'&&node.dataset.rarity==='1'));assert.equal(JSON.stringify(profile),before);
+const seeded=renderCollectionView(profile,'13031990');find(seeded,'collection_category_Joker').click();assert.ok(cards(seeded).every(card=>card.dataset.discovered==='true'),'Verification seed behavior stays intact');assert.ok(cards(seeded).every(card=>card.children.some(child=>child.className?.split(' ').includes('shop-art')&&child.innerHTML.includes('<svg'))),'Discovered portraits reuse original project artwork');assert.ok(cards(seeded).every(card=>card.attributes['aria-pressed']===undefined),'Collection portraits do not become selected');cards(seeded)[0].click();assert.ok(all(find(seeded,'collection_details')).some(node=>node.className==='tooltip-heading'));assert.ok(!all(find(seeded,'collection_details')).some(node=>node.className==='collection-rarity'),'No subtitle below approved title');assert.equal(JSON.stringify(profile),before);
 const animations=[];Node.prototype.animate=function(frames,options){let finish;const motion={finished:new Promise(resolve=>{finish=resolve;}),cancel(){finish();}};animations.push({frames,options,finish});return motion;};
 find(collection,'collection_category_Joker').click();find(collection,'collection_next').click();assert.equal(animations.length,1);assert.equal(animations[0].frames[0].transform,'translateX(24px)');assert.equal(animations[0].options.duration,180);
 find(collection,'collection_next').click();assert.equal(find(collection,'collection_page').textContent,'2 / 10','Repeated navigation during animation is ignored');

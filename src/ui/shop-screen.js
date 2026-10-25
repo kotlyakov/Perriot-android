@@ -4,7 +4,7 @@ import {gameDuration} from './game-speed.js';
 import {canEnterBoss} from '../core/boss-effects.js';
 import {canLeaveApkShop} from '../core/blind-progression.js';
 import {describeShopItem as describeCatalogueItem,displayPlayingCard} from '../content/shop-display.js';
-import {appendTooltipContents} from './tooltip-text.js';
+import {appendCardDescription} from './card-description.js';
 import {showCardTooltip,dismissCardTooltip} from './card-tooltip.js';
 import {getRerollCost,canBuyShopCard,hasJokerSpace,hasConsumableSpace,isPlayingShopCard} from '../core/shop.js';
 import {canUseConsumable,supportsConsumableEffect} from '../core/consumables.js';
@@ -63,9 +63,10 @@ function money(value,width=56,max=27){const n=node('span','shop-money','$'+value
 function rect(n,x,y,w,h){Object.assign(n.style,{left:x+'px',top:y+'px',width:w+'px',height:h+'px'});return n;}
 function dismissTip(){if(tip?.isConnected)dismissCardTooltip();tip=null;}
 function clearSelection(){selected=null;dismissTip();for(const root of [view,packView,document.getElementById('shop_owned')]){root?.querySelectorAll('.shop-choice').forEach(n=>{n.classList.remove('is-selected');n.querySelector('.shop-card')?.setAttribute('aria-pressed','false');});root?.querySelectorAll('.shop-buy,.shop-use').forEach(n=>n.remove());}}
-function showTip(offer,card){
- dismissTip();if(card.classList.contains('acorn-hidden'))return;const details=describeShopItem(offer,{owned:card.classList.contains('shop-owned-card')});tip=node('aside','shop-tooltip');tip.setAttribute('role','tooltip');tip.id='shop_tooltip';
- appendTooltipContents(tip,details.name,[details.description,...jokerStickers(offer).map(row=>row.label+': '+row.description)]);
+function showTip(offer,card,state,busy){
+ dismissTip();if(card.classList.contains('acorn-hidden'))return;const details=describeShopItem({...offer,edition:'base'},{owned:card.classList.contains('shop-owned-card')});tip=node('aside','shop-tooltip');tip.setAttribute('role','tooltip');tip.id='shop_tooltip';
+ const owned=card.classList.contains('shop-owned-card')||card.closest('[data-kind]')?.dataset.kind==='consumable',area=card.classList.contains('shop-owned-card')?'jokers':'consumables';
+ appendCardDescription(tip,offer,{owned,state,title:details.name,description:details.description,saleAllowed:!busy&&canSellOwned(state,offer,area)});
  showCardTooltip(tip,card);
 }
 // Independently drawn printing blocks: each catalogue identity gets its own ink,
@@ -122,7 +123,7 @@ function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
   }
  }
  // Pointer selection is committed on release; captured touch need not emit a click.
- card.onclick=e=>{if(e.detail===0&&!e.pointerType&&!e.sourceCapabilities?.firesTouchEvents&&!busy){if(['owned','consumable','pack'].includes(kind))select();showTip(offer,card);}};
+ card.onclick=e=>{if(e.detail===0&&!e.pointerType&&!e.sourceCapabilities?.firesTouchEvents&&!busy){if(['owned','consumable','pack'].includes(kind))select();showTip(offer,card,state,busy);}};
  card.onpointerdown=e=>{
   if(busy||card.disabled||e.button!==0)return;cancelDrag?.();cancelReturn?.();
   const inventory=kind==='owned'||kind==='consumable',area=kind==='owned'?'jokers':'consumables';
@@ -160,7 +161,7 @@ function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
   function end(ev){
    if(ev.pointerId!==e.pointerId)return;
    const bounds=zone?.getBoundingClientRect(),drop=dragged&&bounds&&ev.clientX>=bounds.left&&ev.clientX<=bounds.right&&ev.clientY>=bounds.top&&ev.clientY<=bounds.bottom,available=zone?.dataset.available==='true';cleanup(dragged&&!(drop&&available));
-   if(!dragged){if(!busy){if(['owned','consumable','pack'].includes(kind))select();showTip(offer,card);}return;}
+   if(!dragged){if(!busy){if(['owned','consumable','pack'].includes(kind))select();showTip(offer,card,state,busy);}return;}
    if(drop){if(available)callbacks.onAction?.(inventory?'SELL_OWNED_CARD':kind==='booster'?'OPEN_BOOSTER':kind==='voucher'?'BUY_VOUCHER':'BUY_SHOP_CARD',inventory?{area,cardId:offer.id}:{offerId:offer.id});else callbacks.onNotice?.(inventory?'Эту карту нельзя продать.':'Покупка недоступна: проверьте эффект карты, деньги и свободные места.');}
    else if(dragged&&inventory){
     const siblings=[...document.querySelectorAll(`#shop_owned [data-kind=${kind}]`)],cardBounds=card.getBoundingClientRect();
@@ -170,7 +171,7 @@ function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
   }
   cancelDrag=cancel;card.addEventListener('pointermove',move);card.addEventListener('pointerup',end);card.addEventListener('pointercancel',cancel);card.addEventListener('lostpointercapture',cancel);card.addEventListener('keydown',escape);
  };
- card.onkeydown=e=>{if(e.key==='Escape'){cancelDrag?.();clearSelection();}if(e.key==='F1'){e.preventDefault();showTip(offer,card);}};
+ card.onkeydown=e=>{if(e.key==='Escape'){cancelDrag?.();clearSelection();}if(e.key==='F1'){e.preventDefault();showTip(offer,card,state,busy);}};
  if(selected?.id===offer.id)select();return wrap;
 }
 function ensureView(){
