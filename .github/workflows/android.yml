@@ -50,7 +50,7 @@ jobs:
         env:
           PLAYWRIGHT_MODULE: ${{ runner.temp }}/pierrot-browser/node_modules/playwright
           QA_SCREENSHOT: artifacts/cashout-review045.png
-          UI_TOOLTIP_REVIEW: ${{ github.head_ref == 'feat/approved-tooltips' && '1' || '' }}
+          UI_TOOLTIP_REVIEW: ${{ (github.head_ref == 'feat/approved-tooltips' || github.head_ref == 'feat/blind-hud') && '1' || '' }}
           UI_REVIEW_ONLY: ${{ github.head_ref == 'feat/ui-windows-review' && '1' || '' }}
         run: node scripts/ci-browser.mjs
       - name: Browser screenshots
