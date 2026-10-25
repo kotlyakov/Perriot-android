@@ -1,6 +1,6 @@
 # Пьеро — текущий статус
 
-25.10.2026. У-40 внедрён технически в feat/approved-tooltips от актуальной feat/menu-motion2fdf4fc. [PR46](https://github.com/kotlyakov/Perriot-android/pull/46) открыт в feat/menu-motion; не слит. Первый sourcead4cb767, последующая правка — актуализация UI-проверок и документации. Кандидат0.4.50-preview/code63.
+25.10.2026. У-40 внедрён технически в feat/approved-tooltips от актуальной feat/menu-motion2fdf4fc. [PR46](https://github.com/kotlyakov/Perriot-android/pull/46) открыт в feat/menu-motion; не слит. Первый sourcead4cb767, последующая правка — актуализация UI-проверок и документации. APK0.4.50-preview/code63 собран и передаётся на пользовательскую проверку.
 
 ## Результат
 
@@ -10,10 +10,10 @@
 
 ## Проверки
 
-Локально1823corePASS/0FAIL/2optional skips;9Chromiumнаборов и отдельныйDOMcheckPASS.120граничныхразмещений/4viewportPASS; снимки просмотрены. Home/settings/speed/persist/playPASSна1536/915/568. Два замечания независимого ревью исправлены; регрессии scroll и верхнего рядаRED→GREEN. ПервыйCI40191024512:core/AndroidSUCCESS; новый tooltipPASS, старый общийbrowserупал на скрытом поле seed (воспроизведено на неизменённой базе). Повторный целевойCI ожидается; общий устаревшийbrowserпуть не объявлен зелёным.
+Локально1823corePASS/0FAIL/2optional skips;9Chromiumнаборов и отдельныйDOMcheckPASS.120граничныхразмещений/4viewportPASS; снимки просмотрены. Home/settings/speed/persist/playPASSна1536/915/568. Два замечания независимого ревью исправлены; регрессии scroll и верхнего рядаRED→GREEN. ПервыйCI40191024512:core/AndroidSUCCESS; новый tooltipPASS, старый общийbrowserупал на скрытом поле seed (воспроизведено на неизменённой базе). ПовторныйCI40191404365SUCCESS:1823corePASS/2optional skips,8целевыхChromiumнаборовPASS, freshAndroid/signature/alignmentPASS. Общий устаревшийbrowserпуть не объявлен зелёным.
 
 ## Следующий шаг
 
-Дождаться результата повторногоCI и передатьAPK0.4.50. Последняя выданнаяAPK0.4.49-preview/code62 (CI40177154678), исходники581cd7f. Новая сборка ещё не передана. ФизическийAndroid/пользовательская приёмка внедрения открыты.
+[APK0.4.50-preview](https://chatgpt.com/library?file_id=libfile_54638ed3c5d08191a0c723833077e22b&account_id=personal). Source24a1689f; testedMerge14088adf имеет то же деревоf17c65a2. Все104offlineassets побайтно совпали, ZIPCRC/SHA256PASS. APK1379660байт, SHA256ce9538df0bef2fbd7faa1a9a0c0bd00780f663e179adaca1c3bd190d7c710f71;artifact12597957697. Подпись CIdebug; обновление поверх предыдущей установки не гарантировано, удаление стирает её прогресс. ФизическийAndroid/пользовательская приёмка внедрения открыты.
 
 Следующее предложение — первый срез У-44: постоянное условие босса и жетон ставки вHUD. До выбора пользователя не реализуется. У-41/42 уже технически выполнены; не переделывать. Остальные открытые пункты — каноническийBACKLOG.md.
