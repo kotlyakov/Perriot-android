@@ -11,7 +11,7 @@ try{
   const s=createRun('performance',{runId:'performance',money:4n});s.phase='playing';s.round.target=10000n;
   s.hand=Object.keys(s.cards).slice(0,8);s.drawPile=Object.keys(s.cards).slice(8);
   s.jokers=[{id:'performance-joker',entityId:'j_joker',originalKey:'j_joker',set:'Joker',edition:'base',sellCost:2n}];
-  s.consumables=[{id:'performance-tarot',entityId:'c_fool',originalKey:'c_fool',set:'Tarot',edition:'base',sellCost:1n}];
+  s.consumables=[{id:'performance-tarot',entityId:'c_strength',originalKey:'c_strength',set:'Tarot',edition:'base',sellCost:1n}];
   localStorage.setItem('card-cascade.current',serializeState(s));
  });
  await page.reload();await enterRun(page);await page.waitForFunction(()=>document.querySelector('#hand .playing-card')&&!document.getElementById('sort_rank').disabled);
@@ -32,4 +32,15 @@ try{
  const after=await cdp.send('Performance.getMetrics');const delta=Object.fromEntries(after.metrics.filter(m=>['ScriptDuration','TaskDuration','LayoutCount','RecalcStyleCount'].includes(m.name)).map(m=>[m.name,m.value-before.metrics.find(v=>v.name===m.name).value]));
  console.log(JSON.stringify({selection:report,metrics:delta,cpuThrottle:4}));
  assert.ok(report.handPreserved,'Selecting cards must preserve live hand nodes and animations');assert.ok(report.ownedPreserved,'Selecting a hand card must preserve owned joker/consumable nodes');assert.equal(report.removed,0);assert.ok(report.selectionCleared&&report.saveUnchanged);
+ const consumable=page.locator('[data-offer-id=performance-tarot] .shop-card');await consumable.click();
+ const use=page.locator('[data-offer-id=performance-tarot] .shop-use');assert.ok(await use.isDisabled());
+ const first=page.locator('#hand .playing-card').first();await first.click();assert.ok(await use.isEnabled(),'A selected consumable must see newly selected targets');
+ await first.click();assert.ok(await use.isDisabled(),'Deselecting the final target disables use');
+ await first.click();await page.locator('#hand .playing-card').nth(1).click();
+ const targets=await page.locator('#hand .selected').evaluateAll(ns=>ns.map(n=>n.dataset.cardId));
+ const beforeRanks=await page.evaluate(async ids=>{const {deserializeState}=await import('/src/persistence/save.js');const s=deserializeState(localStorage.getItem('card-cascade.current'));return ids.map(id=>s.cards[id].rank);},targets);
+ await use.evaluate(n=>n.click());await page.waitForFunction(()=>!document.getElementById('sort_rank').disabled&&!document.querySelector('.motion-copy'));
+ const ranks=await page.evaluate(async ids=>{const {deserializeState}=await import('/src/persistence/save.js');const s=deserializeState(localStorage.getItem('card-cascade.current'));return ids.map(id=>s.cards[id].rank);},targets);
+ assert.deepEqual(ranks,beforeRanks.map(n=>n===14?2:n+1),'Use action receives current targets and changes exactly those ranks');
+ console.log('Live consumable availability, target changes and application PASS');
 }finally{await browser.close();}

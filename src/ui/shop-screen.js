@@ -50,6 +50,7 @@ export function jokerStickers(offer){
  return rows;
 }
 
+let currentTargets=[];
 let view=null,packView=null,selected=null,tip=null,lastMain=null,entryMotion,cancelDrag,cancelReturn,lastAcornRound=null;
 const reduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
 const node=(tag,className,text)=>{const n=document.createElement(tag);if(className)n.className=className;if(text!==undefined)n.textContent=text;return n;};
@@ -217,7 +218,17 @@ function renderOwned(state,busy,callbacks){
  document.getElementById('joker_count').textContent=jokers.length+'/'+((state.jokerSlots??5)+jokers.filter(j=>j.edition==='negative').length);
  document.getElementById('consumable_count').textContent=(state.consumables?.length??0)+'/'+((state.consumableSlots??2)+(state.consumables??[]).filter(c=>c.edition==='negative').length);
 }
+// Keep selection-only updates visible to existing consumable action handlers.
+export function updateShopTargets(state,busy,ids){
+ currentTargets.splice(0,currentTargets.length,...ids);
+ if(selected?.kind!=='consumable')return;
+ const offer=state.consumables?.find(c=>c.id===selected.id),use=document.querySelector('#shop_owned .shop-use');
+ if(!offer||!use)return;
+ const capability=canUseConsumable(state,offer,currentTargets);
+ use.disabled=busy||!capability.available;use.title=capability.reason??'Использовать расходную карту';
+}
 export function renderShop(state,busy,{onAction,onNotice,targetCardIds=[]}={}){
+ targetCardIds=[...targetCardIds];currentTargets=targetCardIds;
  cancelDrag?.();cancelReturn?.();
  const acornRound=state.phase==='playing'&&!state.bossState?.disabled&&state.bossState?.id==='bl_final_acorn'?`${state.runId}:${state.roundNumber}`:null;
  // Native setup unhighlights before shuffling; an old highlight must not track
