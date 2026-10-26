@@ -4,3 +4,11 @@
 @keyframes spectral-rainbow{0%{background-position:0% 0%,100% 100%,0% 50%}50%{background-position:60% 80%,30% 40%,100% 50%}100%{background-position:0% 0%,100% 100%,0% 50%}}
 @keyframes spectral-sparkle{from{opacity:.2;filter:brightness(1)}to{opacity:.45;filter:brightness(1.25)}}
 @media(prefers-reduced-motion:reduce){.spectral-shimmer{animation:none;opacity:.3}}
+
+/* Approved26.10: colour the paper itself, keeping the engraving above it. */
+.spectral-paper-stop{animation:spectral-paper-colors 3.6s linear infinite}
+.spectral-paper-stop:nth-child(2){animation-delay:-.9s}
+.spectral-paper-stop:nth-child(3){animation-delay:-1.8s}
+.spectral-paper-stop:nth-child(4){animation-delay:-2.7s}
+@keyframes spectral-paper-colors{0%,100%{stop-color:#f3b7d5}25%{stop-color:#f8dfab}50%{stop-color:#afe5df}75%{stop-color:#c8b9ef}}
+@media(prefers-reduced-motion:reduce){.spectral-paper-stop{animation:none}}

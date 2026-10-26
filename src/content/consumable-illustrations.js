@@ -63,5 +63,7 @@ add('c_black_hole','Spectral','Чёрная воронка поглощает д
 
 export function consumableArtworkSvg(id){
  const plate=CONSUMABLE_ILLUSTRATIONS[id];if(!plate)return '';
- return `<svg viewBox="0 0 118 138" aria-hidden="true" data-consumable-id="${id}"><rect x="7" y="8" width="104" height="122" rx="2" fill="${P}" stroke="${I}" stroke-width="1.2"/><path d="M12 15H32M86 123H106" stroke="${G}" stroke-width="1.2"/><g data-engraving="${id}">${plate.scene}</g></svg>`;
+ const paper=plate.set==='Tarot'?'#efb377':plate.set==='Planet'?'#a5d9ec':`url(#${id}-paper)`;
+ const gradient=plate.set==='Spectral'?`<defs><linearGradient id="${id}-paper" x1="0" y1="0" x2="1" y2="1"><stop class="spectral-paper-stop" offset="0" stop-color="#f3b7d5"/><stop class="spectral-paper-stop" offset=".33" stop-color="#f8dfab"/><stop class="spectral-paper-stop" offset=".67" stop-color="#afe5df"/><stop class="spectral-paper-stop" offset="1" stop-color="#c8b9ef"/></linearGradient></defs>`:'';
+ return `<svg viewBox="0 0 118 138" aria-hidden="true" data-consumable-id="${id}" data-consumable-set="${plate.set}">${gradient}<rect x="7" y="8" width="104" height="122" rx="2" fill="${paper}" stroke="${I}" stroke-width="1.2"/><path d="M12 15H32M86 123H106" stroke="${G}" stroke-width="1.2"/><g data-engraving="${id}">${plate.scene}</g></svg>`;
 }
