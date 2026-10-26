@@ -219,13 +219,10 @@ function renderOwned(state,busy,callbacks){
  document.getElementById('consumable_count').textContent=(state.consumables?.length??0)+'/'+((state.consumableSlots??2)+(state.consumables??[]).filter(c=>c.edition==='negative').length);
 }
 // Keep selection-only updates visible to existing consumable action handlers.
-export function updateShopTargets(state,busy,ids){
+export function updateShopTargets(ids){
  currentTargets.splice(0,currentTargets.length,...ids);
- if(selected?.kind!=='consumable')return;
- const offer=state.consumables?.find(c=>c.id===selected.id),use=document.querySelector('#shop_owned .shop-use');
- if(!offer||!use)return;
- const capability=canUseConsumable(state,offer,currentTargets);
- use.disabled=busy||!capability.available;use.title=capability.reason??'Использовать расходную карту';
+ // Match a full render: changing hand targets closes the previous owned-card selection.
+ clearSelection();
 }
 export function renderShop(state,busy,{onAction,onNotice,targetCardIds=[]}={}){
  targetCardIds=[...targetCardIds];currentTargets=targetCardIds;
