@@ -3,7 +3,7 @@ import {isBossCardDebuffed} from '../core/boss-effects.js';
 import {renderBlindHud} from './blind-hud.js';
 import {animateNumber} from './number-animation.js';
 import {showFlame} from './flame.js';
-import {pipArtwork,suitSvg} from './card-art.js';
+import {pipArtwork,suitSvg,courtArtwork} from './card-art.js';
 import {scoreHand} from '../core/score.js';
 import {appendCardDescription} from './card-description.js';
 import {showCardTooltip,dismissCardTooltip} from './card-tooltip.js';
@@ -20,7 +20,7 @@ function cardFaceMarkup(card) {
  if(card.enhancement==='stone')return '<svg class="stone-face" viewBox="0 0 70 124" aria-hidden="true"><defs><linearGradient id="stone-slab" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#b9b2a4"/><stop offset="1" stop-color="#57564f"/></linearGradient></defs><path d="M12 7L57 11L65 42L60 110L42 119L10 108L5 58Z" fill="url(#stone-slab)" stroke="#343b3c" stroke-width="3"/><path d="M15 32L31 20L43 39L57 27M10 70L29 58L39 76L61 61M18 103L31 88L50 105" fill="none" stroke="#d9d2c3" stroke-width="4" opacity=".62"/><circle cx="28" cy="46" r="5" fill="#474d4c"/><circle cx="49" cy="89" r="7" fill="#404645"/></svg>';
  const [symbol,color]=SUITS[card.suit],rank=rankLabel(card.rank);
  let inside='';
- if(card.rank>=11 && card.rank<=13)inside=`<svg class="face" viewBox="0 0 70 124" aria-hidden="true"><rect x="1" y="1" width="68" height="122" rx="2" fill="none" stroke="${color}" stroke-width="2"/><path d="M10 27L15 10L26 18L35 5L44 18L56 10L60 27Z" fill="${color}"/><circle cx="35" cy="40" r="15" fill="#d8b98c" stroke="${color}" stroke-width="2"/><path d="M19 38L27 35M44 35L52 38M29 48Q35 53 41 48" fill="none" stroke="${color}" stroke-width="2"/><path d="M9 104L14 65L35 55L57 66L63 104Z" fill="${color}"/><path d="M18 67L51 102M52 67L20 104" stroke="#f0e5c8" stroke-width="7"/>${suitSvg(card.suit).replace('<svg ','<svg x="23" y="72" width="24" height="24" style="color:#f0e5c8" ')}<path d="M6 116H64" stroke="${color}" stroke-width="3"/></svg>`;
+ if(card.rank>=11 && card.rank<=13)inside=courtArtwork(card);
  else {
    inside=pipArtwork(card);
  }
@@ -101,7 +101,7 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
    b.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();if(!e.repeat&&!b.disabled)selectAndDescribe();}});
    b.addEventListener('pointerdown',e=>{
      if(b.disabled || e.button!==0)return;e.preventDefault();b.setPointerCapture(e.pointerId);
-     const x=e.clientX,y=e.clientY,scale=document.getElementById('stage').getBoundingClientRect().width/1536;let dragged=false,to=i,held=false;
+     const x=e.clientX,y=e.clientY,scale=document.getElementById('stage').getBoundingClientRect().width/document.getElementById('stage').offsetWidth;let dragged=false,to=i,held=false;
      const holdTimer=setTimeout(()=>{if(!b.isConnected||dragged)return;held=true;showTip();},350);
      const slots=[...hand.children].map(n=>({id:n.dataset.cardId,left:n.style.left,top:n.style.top,transform:n.style.transform}));
      function move(ev){if(ev.pointerId!==e.pointerId)return;

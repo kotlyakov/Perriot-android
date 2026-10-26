@@ -81,3 +81,33 @@ dialog.menu-dialog[data-window=settings] #dialog-body{height:auto;min-height:210
 .settings-paper-unfolding::after{content:"";position:absolute;inset:0;pointer-events:none;background:conic-gradient(from 25deg at 40% 45%,#10262600 0deg,#ecd6a755 40deg,#081e1e88 100deg,#10262600 160deg,#ecd6a766 240deg,#10262600 360deg),repeating-linear-gradient(118deg,transparent 0 16%,#f0e5c844 16.5%,#081e1e66 17%,transparent 18% 35%);animation:settings-paper-flatten 152ms ease-out both}
 @keyframes settings-paper-flatten{0%,28%{opacity:1}65%{opacity:.55}100%{opacity:0}}
 @media(prefers-reduced-motion:reduce){.settings-paper-unfolding::after{display:none}}
+
+/* Approved two-column hand reference: all twelve rules remain inspectable. */
+.run-hand-columns{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:18px;height:100%;align-items:start}
+.run-hand-columns .run-hands{display:flex;flex-direction:column;gap:5px}
+.menu-dialog .run-hand-columns .run-hand{grid-template-columns:58px minmax(0,1fr) 58px 12px 42px 23px;gap:5px;min-height:29px;height:29px;margin:0;padding:2px 5px;text-align:left;box-shadow:none;border:2px solid transparent;background:#16372f;line-height:1.1}
+.run-hand-columns .run-hand[aria-pressed=true]{border-color:#ecc771;background:#4d5f3d}
+.run-hand-columns .run-hand strong{font-size:15px;white-space:nowrap}.run-hand-columns .run-hand span{font-size:13px}.run-hand-columns .run-hand b{font-size:14px;padding:3px}.run-hand-columns .run-hand .hand-level{font-size:12px;padding:3px}.run-hand-columns .hand-played{font-size:12px;padding:3px}
+.hand-help{background:#f0e3c6;color:#29251d;border:2px solid #b09a72;border-radius:9px;box-shadow:2px 4px #122e26;overflow:hidden}
+.hand-help-name{padding:10px 12px;margin:0;background:#dcc59c;font-size:22px}
+.menu-dialog .hand-help-description{padding:10px 12px;margin:0;font-size:16px;line-height:1.35}
+.hand-help-cards{display:flex;justify-content:center;gap:6px;padding:4px 10px 12px}
+.hand-help-card{height:73px;width:49px;border:1px solid #af9b73;border-radius:5px;background:#f7eed9;color:#23392f;font-size:20px;font-weight:700;display:grid;place-items:center;box-shadow:0 2px #b4a180}.hand-help-card[data-red=true]{color:#ad3036}
+.menu-dialog .hand-help-score{padding:9px 12px;border-top:1px solid #c6b38b;margin:0;font-size:15px;line-height:1.3}
+.menu-dialog .run-blind{padding:8px}.menu-dialog .run-blind h2{margin:0 0 8px}.menu-dialog .run-blind .run-blind-status{margin:0;font-size:18px;padding:6px;border-radius:6px;background:#456e61}.run-blind[data-status=current]{border-color:#ecc771}.run-blind[data-status=skipped] .run-blind-status{background:#86653a}.run-blind[data-status=defeated] .run-blind-status{background:#277c5c}
+.menu-dialog .run-blind-token{width:65px;height:65px;margin:8px auto;font-size:31px}.menu-dialog .run-blind .run-blind-target{margin:5px 0}.menu-dialog .run-blind .run-blind-description{min-height:0;font-size:15px!important;line-height:1.2}
+.run-blind-tag{margin-top:10px;padding:8px;border:2px dashed #d7c49a;border-radius:7px;background:#24483f}.menu-dialog .run-blind-tag strong{margin:0;font-size:16px}.menu-dialog .run-blind-tag p{margin:6px 0 0;font-size:14px!important;line-height:1.25}
+.run-stake-rules{display:grid;grid-template-columns:1fr 1fr;gap:10px}.run-stake-rule{display:grid;grid-template-columns:40px 1fr;gap:5px 10px;align-items:center;padding:10px;background:#173733;border-radius:8px}.run-stake-rule strong{font-size:18px}.menu-dialog .run-stake-rule p{grid-column:2;margin:0;font-size:15px;line-height:1.3}.run-stake-rule .start-stake-chip{grid-row:1/3;width:34px;height:34px;font-size:15px}
+
+/* Russian reference UIBox dimensions, separate from approved settings and the
+   deliberately wider two-column hand reference. One logical unit = 688/12.4px. */
+dialog.menu-dialog[data-window=collection-index]{width:646px}
+.menu-dialog[data-window=collection-index] #dialog-body{height:394px;padding:10px}
+dialog.menu-dialog[data-window=profile]{width:642px}
+.menu-dialog[data-window=profile] #dialog-body{height:350px}
+.menu-dialog[data-window=collection-index] .collection-view{padding:4px;gap:10px}
+.menu-dialog[data-window=collection-index] .collection-categories{gap:14px}
+.menu-dialog[data-window=collection-index] .collection-category-column{gap:8px}
+.menu-dialog[data-window=collection-index] .collection-categories button{font-size:18px;padding:7px}
+.menu-dialog[data-window=collection-index] .collection-consumables{padding:7px;gap:7px}
+.menu-dialog[data-window=collection-index] .collection-consumables button{font-size:17px;padding:4px}

@@ -3,6 +3,7 @@ import {EDITION_DESCRIPTIONS,ENHANCEMENT_DESCRIPTIONS,SEAL_DESCRIPTIONS} from '.
 import {originalJokerKey} from '../content/jokers.js';
 import {ITEM7_JOKER_DEFAULTS} from '../core/joker-item7-lifecycle.js';
 import {appendTooltipContents} from './tooltip-text.js';
+import {cardRelatedHelp} from '../content/card-related-help.js';
 
 const materialNames={foil:'Фольговый',holographic:'Голографический',polychrome:'Полихромный',negative:'Негативный',steel:'Стальной',glass:'Стеклянный',gold:'Золотой',stone:'Каменный'};
 const withoutName=text=>text.slice(text.indexOf(':')+1).trim();
@@ -10,8 +11,9 @@ const number=value=>String(value).replace('.',',');
 export function cardDescription(card={},options={}){
  const {owned=false,collection=false,concealed=false,saleAllowed=true,state}=options;
  const details=concealed?{}:describeShopItem({...card,edition:'base'}),playing=concealed?null:displayPlayingCard(card);
- const result={title:options.title??details.name??'Карта',baseChips:null,descriptions:[],accumulated:[],modifiers:[],seal:null,statuses:[],sale:null};
+ const result={title:options.title??details.name??'Карта',baseChips:null,descriptions:[],accumulated:[],modifiers:[],relatedHelp:[],seal:null,statuses:[],sale:null};
  if(concealed){result.descriptions=[options.description??'Описание неизвестно.'];return result;}
+ result.relatedHelp=cardRelatedHelp(card,options);
  if(playing){
   if(playing.enhancement!=='stone')result.baseChips=playing.rank===14?11:Math.min(playing.rank,10);
   if(playing.permaBonus)result.descriptions.push(`Постоянный бонус: +${playing.permaBonus} фишек.`);
@@ -51,6 +53,6 @@ export function appendCardDescription(container,card,options={}){
  if(d.statuses.length){const row=el('div','tooltip-statuses');for(const status of d.statuses){const badge=el('div','tooltip-status tooltip-status-'+status.id),icon=el('span','tooltip-status-icon',({rental:'$',eternal:'∞',perishable:'⌛'})[status.id]);icon.setAttribute('aria-hidden','true');const info=el('span','tooltip-status-info');info.append(el('strong','tooltip-status-name',status.title),el('span','tooltip-status-detail',status.detail));badge.append(icon,info);row.append(badge);}main.append(row);}
  if(d.sale!==null){const foot=el('div','tooltip-footer'),price=el('span','tooltip-sale');price.append(el('span','','ПРОДАЖА'),el('strong','',d.sale));foot.append(price);main.append(foot);}
  container.append(main);
- if(d.modifiers.length){const side=el('div','tooltip-modifiers');for(const m of d.modifiers){const box=el('section','tooltip-modifier tooltip-material-'+m.id);box.append(el('strong','tooltip-material-title',m.title));text(box,m.description);side.append(box);}container.append(side);}
+ if(d.modifiers.length||d.relatedHelp.length){const side=el('div','tooltip-modifiers');for(const m of d.modifiers){const box=el('section','tooltip-modifier tooltip-material-'+m.id);box.append(el('strong','tooltip-material-title',m.title));text(box,m.description);side.append(box);}for(const info of d.relatedHelp){const box=el('section','tooltip-modifier tooltip-related-help'+(info.material?' tooltip-material-'+info.material:''));box.dataset.relatedId=info.id;box.dataset.relatedKind=info.kind;box.append(el('strong','tooltip-material-title',info.title));text(box,info.description);side.append(box);}container.append(side);}
  return container;
 }

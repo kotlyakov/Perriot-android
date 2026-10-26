@@ -1,0 +1,44 @@
+/* Original printing-workshop finishes. The drawing stays below two translucent light layers. */
+.card-material{isolation:isolate;--material-x:48%;--material-y:38%}
+.card-material>.card-material-layer{position:absolute;inset:2px;border-radius:inherit;pointer-events:none;z-index:2;overflow:hidden}
+.card-material>.material-grain{opacity:.16;background:repeating-linear-gradient(124deg,#fff 0 1px,transparent 1px 5px);mix-blend-mode:soft-light}
+.card-material>.material-light{opacity:.34;background:radial-gradient(ellipse at var(--material-x) var(--material-y),#fff8,transparent 58%);background-size:180% 180%;animation:material-drift 8s ease-in-out infinite alternate;mix-blend-mode:soft-light}
+/* Replace the old face-wide static washes rather than accumulating them. */
+.card-material.playing-card[data-edition]::before{background:none;box-shadow:none}
+.card-material.shop-card[data-edition] .shop-art{background:none;animation:none}
+.card-material.shop-card[data-edition] .joker-illustration::after{display:none}
+.card-material[data-edition=foil]>.material-grain{opacity:.38;background:repeating-linear-gradient(119deg,#effcff99 0 1px,#426e8b55 1px 3px,#b5d0df88 3px 7px);mix-blend-mode:multiply}
+.card-material[data-edition=foil]>.material-light{opacity:.62;background-image:radial-gradient(ellipse at var(--material-x) var(--material-y),#fff 0,#d5efff88 17%,transparent 48%),linear-gradient(110deg,transparent 30%,#dff9ff88 45%,#28476244 51%,transparent 65%);mix-blend-mode:soft-light;animation-duration:6s}
+.card-material[data-edition=holographic]>.material-grain{opacity:.3;background:repeating-radial-gradient(ellipse at var(--material-x) var(--material-y),transparent 0 5px,#71bfc777 6px,#f0abea77 7px,transparent 9px 15px);mix-blend-mode:color-burn}
+.card-material[data-edition=holographic]>.material-light{opacity:.47;background-image:linear-gradient(112deg,#ed9ac3bb,#80dce5aa 24%,#f9e4a7aa 45%,#a3a0ecbb 66%,#ec94bfbb);background-size:250% 250%;mix-blend-mode:hard-light;animation-duration:9s}
+.card-material[data-edition=polychrome]>.material-grain{opacity:.14;background:repeating-conic-gradient(from 30deg at var(--material-x) var(--material-y),#fc7c7c 0deg,#f9e180 60deg,#75d9b2 120deg,#77b9ec 180deg,#b18ae1 240deg,#fc7c7c 360deg);mix-blend-mode:color}
+.card-material[data-edition=polychrome]>.material-light{opacity:.64;background-image:conic-gradient(from 50deg at var(--material-x) var(--material-y),#f18798,#f1d680,#79d6ae,#7ebee8,#b68ada,#f18798);background-size:180% 180%;mix-blend-mode:color;animation-duration:5s}
+.card-material[data-edition=negative]{background-color:#22343c;color:#f2dfb9}
+.card-material[data-edition=negative] :is(.corner,.face,.pip-art,.stone-face,.shop-art>svg,.joker-illustration svg){filter:invert(1) hue-rotate(165deg)}
+.card-material[data-edition=negative]>.material-grain{opacity:.16;background:repeating-linear-gradient(55deg,transparent 0 9px,#a1fff055 10px 11px)}
+.card-material[data-edition=negative]>.material-light{opacity:.52;background-image:radial-gradient(ellipse at var(--material-x) var(--material-y),#cbffed55,transparent 50%),linear-gradient(115deg,transparent 20%,#b9fff344 38%,#e9c9ff77 48%,transparent 62%);mix-blend-mode:screen}
+/* Improvement materials remain independent of edition layers. */
+.card-material.playing-card[data-enhancement=steel]{background:repeating-linear-gradient(4deg,#ffffff16 0 1px,transparent 1px 4px),linear-gradient(115deg,#6f8492,#dae4e7 28%,#8297a1 43%,#c1d0d6 60%,#5c727e);border-color:#596c76}
+.card-material.playing-card[data-enhancement=glass]{background:linear-gradient(126deg,#f4ffffee 0 25%,#9ccfddaa 26% 28%,#e2f8f6dd 29% 60%,#ffffffee 61% 63%,#b9dde3dd 64%);border-color:#8eb6be;box-shadow:inset 0 0 0 3px #fff9,inset 0 0 12px #4d9ca988,0 5px 0 #183a3855}
+.card-material.playing-card[data-enhancement=gold]{background:repeating-linear-gradient(35deg,#fff8 0 1px,transparent 1px 7px),linear-gradient(115deg,#b58322,#f6df83 25%,#bf8b21 49%,#f4d579 63%,#aa761b);border-color:#795514}
+.card-material.playing-card[data-enhancement=bonus]{background:radial-gradient(circle,#729bb644 1px,transparent 1.6px) 0 0/6px 6px,#e1e8dc;border-color:#5483a1}
+.card-material.playing-card[data-enhancement=mult]{background:repeating-linear-gradient(45deg,#bb535318 0 2px,transparent 2px 9px),#f4e4d1;border-color:#ad5754}
+.card-material.playing-card[data-enhancement=wild]{background:linear-gradient(135deg,#f3c7c344,#ead29444,#add7bb44,#bec7e344),#f0e5c8;border-color:#af8f67}
+.card-material.playing-card[data-enhancement=lucky]{background:radial-gradient(circle at 20% 25%,#cfaf5e55 0 2px,transparent 2.5px) 0 0/15px 19px,#efe3bc;border-color:#b69549}
+/* Wax seal silhouette and embossed centre match the approved tooltip motif. */
+.playing-card .playing-seal{--wax:#b93637;--shine:#ec7770;--shade:#732021;width:30px;height:30px;border:0;border-radius:0;background:linear-gradient(140deg,var(--shine),var(--wax) 40%,var(--shade));clip-path:polygon(50% 0,60% 7%,72% 3%,78% 14%,90% 14%,90% 27%,100% 34%,94% 46%,100% 58%,89% 65%,89% 78%,76% 81%,70% 94%,57% 91%,48% 100%,37% 92%,25% 96%,20% 82%,7% 79%,10% 65%,0 56%,6% 44%,1% 31%,14% 25%,16% 12%,30% 14%,37% 3%);color:#ffe8c3;font-size:20px;text-shadow:0 1px #ffffff44,0 -1px #0008;box-shadow:none;filter:drop-shadow(1px 2px 1px #4c231a55)}
+.playing-card .playing-seal::before{content:'';position:absolute;inset:4px;border:1.5px solid #ffdba766;border-radius:50%;box-shadow:inset 1px 2px 2px var(--shade),0 1px 1px var(--shine)}
+.playing-card .playing-seal[data-seal=blue]{--wax:#2567aa;--shine:#69a8dd;--shade:#173f72}
+.playing-card .playing-seal[data-seal=purple]{--wax:#7747a6;--shine:#b88add;--shade:#4e296f}
+.playing-card .playing-seal[data-seal=gold]{--wax:#bb8a23;--shine:#f1d56e;--shade:#805815}
+.playing-card .playing-seal[data-seal=gold]::after{content:'';position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,#fff6ba99 48%,transparent 65%);background-size:240% 100%;mix-blend-mode:screen;animation:material-drift 4s ease-in-out infinite alternate}
+/* Select existing scene groups: approved SVG data and their printed frames stay intact. */
+.card-material[data-animated-art=j_satellite] svg[data-joker-id]>g{transform-origin:59px 70px;animation:art-orbit 7s ease-in-out infinite alternate}
+.card-material[data-animated-art=j_hologram] svg[data-joker-id]>g{animation:art-hologram 4s ease-in-out infinite alternate}
+@keyframes material-drift{from{background-position:5% 15%}to{background-position:95% 85%}}
+@keyframes art-orbit{from{transform:translateY(-1px) rotate(-1deg)}to{transform:translateY(1px) rotate(1deg)}}
+@keyframes art-hologram{from{filter:drop-shadow(-1px 0 #59becb44);opacity:.84}to{filter:drop-shadow(1px -1px #bc82dc77);opacity:1}}
+@media(prefers-reduced-motion:reduce){.card-material>.material-light,.playing-card .playing-seal[data-seal=gold]::after,.card-material[data-animated-art] svg[data-joker-id]>g{animation:none}}
+.joker-sticker:is([data-sticker=rental],[data-sticker=eternal]){position:relative;overflow:hidden;box-shadow:inset 0 1px #fff8,inset 0 -1px #4b301b44,0 1px 2px #0004}
+.joker-sticker:is([data-sticker=rental],[data-sticker=eternal])::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 30%,#fff5c477 48%,transparent 66%);background-size:250% 100%;animation:material-drift 6s ease-in-out infinite alternate}
+@media(prefers-reduced-motion:reduce){.joker-sticker:is([data-sticker=rental],[data-sticker=eternal])::after{animation:none}}

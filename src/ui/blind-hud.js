@@ -21,7 +21,7 @@ export function renderBlindHud(state){
  const fit=()=>{
   if(!title.isConnected||title.hidden)return;
   fitText(title,28,18);if(!condition.hidden)fitText(condition,14,12);
-  const token=document.querySelector('#blind_token span');fitText(token,16,11);
+  const token=document.querySelector('#blind_token span');token.style.whiteSpace=d.isBoss?'normal':'pre';fitText(token,16,11);
   const number=document.getElementById('target_value'),valueRow=number.parentElement;
   number.style.fontSize='31px';let size=31;
   while(size>16&&valueRow.scrollWidth>valueRow.clientWidth+1){size-=.5;number.style.fontSize=size+'px';}

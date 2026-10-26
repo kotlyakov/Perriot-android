@@ -1,3 +1,5 @@
+import {installCardMaterials} from './card-materials.js';
+import {prepareCardTransformation,prepareCardDissolve,preparePackOpening,juiceCard,dissolveCard} from './card-motion.js';
 import {slideWindow,cancelWindowMotion} from './window-motion.js';
 import {gameDuration} from './game-speed.js';
 import {createOptionsView,createSettingsView,createRunInfoView,createEndView} from './menu-windows.js';
@@ -100,6 +102,13 @@ async function perform(type,ids,mode,fields={}) {
  if(result.error){busy=false;audio.play('error');notice('Действие недоступно');render();return;}
  if(type==='CONTINUE_ENDLESS')for(const button of document.getElementById('dialog-actions').children)button.disabled=true;
  try{repository.save(result.state,result.events);}catch{busy=false;render();storageError();return;}
+ const changed=[...new Set(result.events.filter(e=>['playing_card_changed','card_enhanced','playing_card_copied','playing_card_seal_changed','playing_card_edition_changed'].includes(e.type)).map(e=>e.cardId))];
+ const removed=result.events.filter(e=>e.type==='playing_card_destroyed').map(e=>e.cardId);
+ const transform=changed.length?prepareCardTransformation(changed,result.state.cards):null;
+ // Played cards must reach the scoring area before their destruction is shown.
+ const removedFromHand=type==='PLAY_HAND'?removed.filter(id=>!(ids??[]).includes(id)):removed;
+ const dissolve=removedFromHand.length?prepareCardDissolve(removedFromHand):null;
+ const pack=type==='OPEN_BOOSTER'?preparePackOpening(fields.offerId):null;
  const cue=soundForAction(type);
  if(cue)audio.play(cue);audio.setScene(result.state.phase==='shop'?'shop':'table');
  if(type==='CONTINUE_ENDLESS'){state=result.state;dismissDialog();busy=false;render();return;}
@@ -116,6 +125,7 @@ async function perform(type,ids,mode,fields={}) {
  const compact=outgoing?prepareHandMovement():null;
  state=result.state;if(!['REORDER_HAND','SET_SORT'].includes(type))selected.clear();
  render(outgoing?remaining:state.hand,type==='PLAY_HAND'?state.lastScore:null);
+ await Promise.all([transform?.(),dissolve?.(),pack?.()]);
  animateCounters(previousRound,state.round);
  const moneyMotion=animateMoney(previousMoney,state.money);
  const closing=compact?.();
@@ -128,6 +138,7 @@ async function perform(type,ids,mode,fields={}) {
      await liftScoringCards(state.lastScore.scoringCardIds);
      await animateScore(result.events,event=>audio.play(event.type==='score_repeat'?'repeat':event.type==='score_money'?'money':event.operation.includes('mult')?'mult':'chips'));
      await animateShatteredCards(result.events.filter(event=>event.type==='card_shattered').map(event=>event.cardId));
+     await Promise.all(removed.map(id=>dissolveCard(document.querySelector(`.played-card:not([data-shattered="true"])[data-card-id="${id}"]`))));
      await animateNumber(document.getElementById('round_score_value'),state.round.score,{animate:true,from:previousScore,duration:480,format:displayInteger});
      if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.getElementById('round_score_value').animate([{scale:1.18},{scale:1}],{duration:gameDuration(280)});
    }
@@ -169,6 +180,8 @@ document.getElementById('deck').onclick=()=>{
  if(busy||!state||state.winPending)return;openDialog('Колода',createDeckView(roundDeckView(state)),[['Назад',closeDialog]]);
 };
 globalThis.cardGamePause=()=>audio.setActive(false); // Actions are persisted before animation; no pending I/O on pause.
+installCardMaterials(document);
+document.addEventListener('pointerup',event=>{const card=event.target.closest?.('.playing-card,.shop-card');if(card&&!busy)juiceCard(card);},{passive:true});
 const loaded=repository.load();
 if(loaded.status==='current'){state=loaded.state;render();showMenu();}
 else if(loaded.status==='empty')showMenu();

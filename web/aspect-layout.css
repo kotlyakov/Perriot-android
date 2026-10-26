@@ -1,0 +1,4 @@
+/* The fixed logical room can extend into the viewport margins on 16:9. */
+body:has(#stage[data-layout-profile="native-room"]){background:#225449}
+/* Transparent inferred slot bounds are metadata, not a visible frame. */
+#stage[data-layout-profile="native-room"] #consumable_region_inferred{pointer-events:none}

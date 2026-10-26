@@ -1,3 +1,4 @@
+import {juiceCard,cardMotion} from './card-motion.js';
 import {gameDuration} from './game-speed.js';
 // Integer-only presentation. The committed game state is never interpolated.
 const jobs=new WeakMap();
@@ -18,20 +19,20 @@ export function animateNumber(node,value,{animate=false,from,duration=220,format
 export function animateCounters(before,after){
  for(const [id,key,kind] of [['hands_value','handsRemaining','chips'],['discards_value','discardsRemaining','mult']]){
    const difference=after[key]-before[key];if(!difference)continue;
-   const node=document.getElementById(id);animateNumber(node,after[key],{animate:true,from:before[key],duration:320});
+   const node=document.getElementById(id);juiceCard(node);animateNumber(node,after[key],{animate:true,from:before[key],duration:320});
    const pop=document.createElement('span');pop.className='score-pop counter-pop '+kind;pop.textContent=(difference>0?'+':'')+difference;pop.dataset.counter=id;
    const region=node.parentElement;pop.style.left=parseFloat(region.style.left)+region.offsetWidth/2+'px';pop.style.top=parseFloat(region.style.top)-12+'px';document.getElementById('stage').append(pop);
    if(matchMedia('(prefers-reduced-motion: reduce)').matches){pop.remove();continue;}
-   pop.animate([{opacity:1,translate:'0 0'},{opacity:1,translate:'0 -15px',offset:.6},{opacity:0,translate:'0 -27px'}],{duration:gameDuration(700),easing:'ease-out'}).finished.then(()=>pop.remove());
+   cardMotion(pop,[{opacity:1,translate:'0 0'},{opacity:1,translate:'0 -15px',offset:.6},{opacity:0,translate:'0 -27px'}],{duration:gameDuration(700),easing:'ease-out'}).then(()=>pop.remove());
  }
 }
 export function animateMoney(before,after){
  const delta=after-before;if(!delta)return Promise.resolve();
- const node=document.getElementById('money_value');
+ const node=document.getElementById('money_value');juiceCard(node);
  const motion=animateNumber(node,after,{animate:true,from:before,duration:380,format:n=>'$'+n});
  if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
   const pop=document.createElement('span');pop.className='score-pop money-pop '+(delta>0n?'gold':'scarlet');pop.textContent=(delta>0n?'+':'−')+'$'+(delta>0n?delta:-delta);pop.style.fontWeight='800';pop.style.left='347px';pop.style.top='506px';document.getElementById('stage').append(pop);
-  pop.animate([{opacity:1,translate:'0 0'},{opacity:1,translate:'0 -15px',offset:.6},{opacity:0,translate:'0 -28px'}],{duration:gameDuration(680),easing:'ease-out'}).finished.then(()=>pop.remove());
+  cardMotion(pop,[{opacity:1,translate:'0 0'},{opacity:1,translate:'0 -15px',offset:.6},{opacity:0,translate:'0 -28px'}],{duration:gameDuration(680),easing:'ease-out'}).then(()=>pop.remove());
  }
  return motion;
 }

@@ -4,3 +4,24 @@ export const PIP_LAYOUTS={1:[[36,57]],2:[[36,12],[36,102]],3:[[36,12],[36,57],[3
 const paths={hearts:'M0 8C-18-3-12-15 0-6C12-15 18-3 0 8Z',diamonds:'M0-11L8 0L0 11L-8 0Z',spades:'M0-11C-3-6-13 0-8 5C-5 8-2 6-1 4L-3 10H3L1 4C2 6 5 8 8 5C13 0 3-6 0-11Z',clubs:'M0-11C-7-11-8-3-3-1C-12-5-14 5-7 7C-4 8-1 5-1 3L-3 10H3L1 3C1 5 4 8 7 7C14 5 12-5 3-1C8-3 7-11 0-11Z'};
 export function suitSvg(suit){return `<svg viewBox="-14 -14 28 28" aria-hidden="true"><path fill="currentColor" d="${paths[suit]}"/></svg>`;}
 export function pipArtwork(card){const n=card.rank===14?1:card.rank;return `<svg class="pip-art" viewBox="0 0 72 114" aria-hidden="true">${PIP_LAYOUTS[n].map(([x,y])=>`<g class="pip" data-x="${x}" data-y="${y}" transform="translate(${x} ${y}) rotate(${y>57?180:0}) scale(${n===1?1.8:.82})"><path fill="currentColor" d="${paths[card.suit]}"/></g>`).join('')}</svg>`;}
+
+// Twelve original court characters: apprentice, queen and elder king in each
+// workshop guild. Attributes belong to the character, never replace rank/pips.
+const COURT_ATTRIBUTES={
+ spades:[['sword','M54 88V42L58 29L62 42V88ZM49 83H67M58 88V107'],['quill','M50 96Q49 67 64 41Q69 62 51 82M52 79L64 56M54 70L64 68'],['sceptre','M57 109V47M50 51H64M57 29L64 39L57 47L50 39Z']],
+ hearts:[['lute','M56 105Q40 103 43 91Q44 83 51 81L58 54L63 55L57 83Q70 90 65 99Q62 104 56 105ZM51 92L59 64M49 96L61 98'],['rose','M57 108V73M57 94Q44 95 45 86Q54 83 57 94M57 86Q66 76 67 86Q66 92 57 92M57 69Q45 68 48 59Q48 48 57 53Q68 48 67 59Q72 68 57 72ZM54 60Q58 55 62 61L57 66Z'],['chalice','M46 65H67L64 83Q58 93 50 83ZM57 89V105M48 107H66M46 69H41Q39 83 50 82M67 69H69Q71 82 64 82']],
+ clubs:[['hammer','M57 107V62M45 51H66V64H45ZM50 53V61'],['branch','M55 109Q57 80 58 53M58 67Q44 65 45 55Q58 52 58 67M57 78Q69 78 68 66Q57 66 57 78M56 92Q44 89 45 81Q57 79 56 92'],['oak-staff','M57 110V65M52 64Q43 61 47 53Q42 44 51 42Q56 31 62 43Q73 40 70 51Q76 59 66 64ZM57 65V47M57 56L49 51M58 57L65 50']],
+ diamonds:[['coin','M57 70A15 15 0 1 0 57 100A15 15 0 1 0 57 70ZM57 75L64 85L57 95L50 85Z'],['spindle','M57 108V45M52 52H62M51 65L63 71L51 77L63 83L51 89M49 93H65M57 45L60 38'],['scales','M57 108V54M44 65H69M47 65L40 86H53ZM66 65L59 86H69ZM50 109H64M57 46L61 52L57 58L53 52Z']]
+};
+const COURT_INKS={spades:'#283c53',hearts:'#bb3034',clubs:'#143d39',diamonds:'#ca502a'};
+export function courtArtwork({suit,rank}){
+ const ink=COURT_INKS[suit],paper='#f0e5c8',gold='#b88935',role=rank-11,index=['spades','hearts','clubs','diamonds'].indexOf(suit);
+ const [attribute,shape]=COURT_ATTRIBUTES[suit][role];
+ const stroke=(d,color=ink,width=1.6)=>`<path d="${d}" fill="none" stroke="${color}" stroke-width="${width}" stroke-linecap="round" stroke-linejoin="round"/>`;
+ const head=role===0?'<path d="M16 25L18 12L36 7L44 20L35 25Z" fill="'+ink+'"/><path d="M20 12L27 20L37 16" fill="none" stroke="'+gold+'" stroke-width="3"/>':role===1?'<path d="M15 46Q8 25 23 17Q43 12 45 38L41 51Z" fill="'+ink+'"/><path d="M18 20L16 10L25 15L31 6L37 15L43 10L41 23Z" fill="'+gold+'"/>':'<path d="M15 29L15 14L23 19L30 7L37 19L44 13L43 29Z" fill="'+gold+'"/><path d="M16 35Q12 59 30 68Q47 56 43 35Z" fill="'+ink+'"/>';
+ const hair=[stroke('M17 31Q16 23 25 23M37 24L41 31',ink,3),stroke('M15 33Q7 44 15 56M42 30Q50 41 43 58',ink,3),stroke('M18 29L16 41M41 29L44 42',gold,2)][index%3];
+ const face=role===0?'M18 26Q31 17 42 28L39 45L30 52L20 44Z':role===1?'M20 26Q30 19 39 28L38 43Q30 56 22 43Z':'M19 29Q31 23 41 30L39 44L31 53L22 44Z';
+ const beard=role===2?`<path d="M20 40L26 44L31 42L35 45L41 40L38 58L30 ${63-index*2}L23 56Z" fill="${index%2?gold:paper}" stroke="${ink}" stroke-width="1"/>${stroke('M26 51L28 57M34 51L32 58',ink,.8)}`:'';
+ const attire=role===0?'M8 113L13 65L28 54L43 59L52 81L45 114Z':role===1?'M7 114L14 66L27 55L41 60L50 111Z':'M6 114L9 68L27 60L44 65L51 114Z';
+ return `<svg class="face court-illustration" data-court="${suit}-${rank}" viewBox="0 0 70 124" aria-hidden="true"><rect x="2" y="2" width="66" height="120" rx="2" fill="${paper}" stroke="${ink}" stroke-width="1.3"/>${stroke('M6 7H21M49 117H64',gold,1)}${head}<path d="${face}" fill="${paper}" stroke="${ink}" stroke-width="1.5"/>${hair}${stroke('M23 33H25M33 33H35M29 34L27 39H30M25 44Q29 46 33 43',ink,1.1)}${beard}<path d="${attire}" fill="${ink}" stroke="${ink}" stroke-width="1.5"/>${stroke(role===0?'M14 69L39 101M18 68L43 99':'M17 67L29 81L40 68M29 81V108',gold,role===0?5:2.5)}${[79,88,97].map(y=>`<path d="M13 ${y}L22 ${y+6}M35 ${y+5}L42 ${y}" stroke="${paper}" stroke-width=".8"/>`).join('')}<g transform="translate(27 96) scale(.55)"><path d="${paths[suit]}" fill="${paper}"/></g><g data-attribute="${attribute}" transform="translate(-5 0)" fill="${paper}" stroke="${ink}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="${shape}"/></g><path d="M40 86Q49 80 54 84L55 90L48 93L41 92Z" fill="${paper}" stroke="${ink}" stroke-width="1.3"/>${stroke('M9 115H63',ink,1)}</svg>`;
+}
