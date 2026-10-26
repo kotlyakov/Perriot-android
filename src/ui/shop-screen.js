@@ -1,4 +1,5 @@
 import {jokerArtworkSvg} from './joker-art.js';
+import {consumableArtworkSvg} from '../content/consumable-illustrations.js';
 import {originalJokerKey} from '../content/jokers.js';
 import {gameDuration} from './game-speed.js';
 import {canEnterBoss} from '../core/boss-effects.js';
@@ -73,6 +74,8 @@ function showTip(offer,card,state,busy){
 // plate number and geometry. These are not source-game illustrations.
 export function artwork(offer,kind){
  const key=originalJokerKey(offer.entityId??offer.originalKey??offer.id);
+ const consumable=consumableArtworkSvg(key);
+ if(consumable){const n=node('div','shop-art consumable-illustration');n.dataset.consumableId=key;n.innerHTML=consumable;return n;}
  const illustration=jokerArtworkSvg(key);
  if(illustration){const n=node('div','shop-art joker-illustration');n.dataset.jokerId=key;n.innerHTML=illustration;return n;}
  let hash=0;for(const c of key)hash=(hash*31+c.charCodeAt(0))>>>0;
@@ -128,7 +131,7 @@ function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
   if(busy||card.disabled||e.button!==0)return;cancelDrag?.();cancelReturn?.();
   const inventory=kind==='owned'||kind==='consumable',area=kind==='owned'?'jokers':'consumables';
   const purchasable=state.phase==='shop'&&!inventory,draggable=purchasable||inventory&&canManageInventory(state);
-  const startX=e.clientX,startY=e.clientY,scale=document.getElementById('stage').getBoundingClientRect().width/1536;let dragged=false,zone,ghost;
+  const startX=e.clientX,startY=e.clientY,scale=document.getElementById('stage').getBoundingClientRect().width/document.getElementById('stage').offsetWidth;let dragged=false,zone,ghost;
   card.setPointerCapture?.(e.pointerId);
   function cleanup(animateHome=false){
    zone?.remove();
@@ -216,7 +219,8 @@ function renderOwned(state,busy,callbacks){
  let owned=document.getElementById('shop_owned');if(!owned){owned=node('div','shop-owned');owned.id='shop_owned';document.getElementById('stage').append(owned);}owned.replaceChildren();
  const jokers=state.jokers,step=jokers.length<=3?220:Math.min(130,560/Math.max(1,jokers.length-1)),jokerStart=744-52-step*(jokers.length-1)/2;
  jokers.forEach((o,i)=>owned.append(choice(o,'owned',i,state,busy,callbacks,jokerStart+i*step,23,104,143)));
- (state.consumables??[]).forEach((o,i,a)=>owned.append(choice(o,'consumable',i,state,busy,callbacks,1145+(i-(a.length-1)/2)*103,25,96,141)));
+ const consumables=state.consumables??[],consumableStep=Math.min(103,164/Math.max(1,consumables.length-1));
+ consumables.forEach((o,i,a)=>owned.append(choice(o,'consumable',i,state,busy,callbacks,1145+(i-(a.length-1)/2)*consumableStep,25,96,141)));
  document.getElementById('joker_count').textContent=jokers.length+'/'+((state.jokerSlots??5)+jokers.filter(j=>j.edition==='negative').length);
  document.getElementById('consumable_count').textContent=(state.consumables?.length??0)+'/'+((state.consumableSlots??2)+(state.consumables??[]).filter(c=>c.edition==='negative').length);
 }

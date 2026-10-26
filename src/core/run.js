@@ -61,7 +61,7 @@ export function createRun(seed, {runId,deckId='red',stake=1,money,referenceRng=f
   }
   const state={
     schemaVersion:1,runId,seed,revision:0,phase:'blind_selection',deckId,cards,
-    winAnte:8,won:false,winNotified:false,winPending:false,
+    blindHistory:[],winAnte:8,won:false,winNotified:false,winPending:false,
     hand:[],drawPile:Object.keys(cards),discardPile:[],jokers:[],
     handLevels:Object.fromEntries(Object.keys(HANDS).map(id=>[id,1])),
     discoveredHands:Object.keys(HANDS).slice(0,9),
@@ -173,6 +173,7 @@ function loseRound(next,events){applyTagRoundEnd(next,events);const end=applyRou
       if(next.phase==='game_over')events.push({type:'round_lost',score:next.round.score});
 }
 function finishAction(before,next,action,events){
+
   finishItem7Action(before,next,action,events);
   const modifiers=challengeFor(next)?.modifiers;
   if(modifiers){
@@ -194,6 +195,13 @@ function finishAction(before,next,action,events){
     if(next.phase!=='playing'&&next.bossState?.id==='bl_final_acorn')next.bossState.hiddenJokerIds=[];
     if(next.apkShop)next.apkShop.context=currentApkShopContext(next);
   }
+  // Optional presentation history stays absent in older replay checkpoints.
+  if(before.blindHistory){
+    if(before.round.ante!==next.round.ante)next.blindHistory=[];
+    const outcome=action.type==='SKIP_BLIND'?'skipped':before.phase==='playing'&&next.phase==='round_won'?'defeated':null;
+    if(outcome)next.blindHistory=[...before.blindHistory.filter(entry=>entry.ante===before.round.ante&&entry.blindId!==before.round.blindId),{ante:before.round.ante,blindId:before.round.blindId,outcome}];
+  }
+
 }
 export function replayEffectActions(before,actions){
   let state=structuredClone(before);

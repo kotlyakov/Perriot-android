@@ -10,7 +10,7 @@ android {
         applicationId = "ru.cardcascade.game.preview"
         minSdk = 26
         targetSdk = 36
-        versionCode = 64
+        versionCode = 65
         versionName = "0.4.51-preview"
     }
     compileOptions {

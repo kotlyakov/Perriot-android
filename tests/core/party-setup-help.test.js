@@ -1,0 +1,8 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {handHelp} from '../../src/ui/hand-help.js';
+import {HANDS} from '../../src/content/hands.js';
+import {evaluateHand} from '../../src/core/hands.js';
+import {blindInfoStatus} from '../../src/ui/menu-windows.js';
+test('all twelve ordinary examples evaluate as their advertised hand',()=>{for(const id of Object.keys(HANDS)){const help=handHelp(id,{handLevels:{[id]:3}});assert.equal(evaluateHand(help.cards).handId,id);assert.equal(help.level,3);assert.equal(help.chips,HANDS[id].chips+HANDS[id].chipGain*2);assert.equal(help.mult,HANDS[id].mult+HANDS[id].multGain*2);}});
+test('help explains active recognition modifiers without claiming ordinary five-card rules always apply',()=>{const state={jokers:[{entityId:'j_four_fingers'},{entityId:'j_shortcut'}]};assert.match(handHelp('straight_flush',state).description,/наборы могут различаться/);assert.match(handHelp('straight',state).description,/пропустить один ранг/);assert.doesNotMatch(handHelp('straight',{jokers:state.jokers.map(j=>({...j,debuffed:true}))}).description,/достаточно 4/);assert.match(handHelp('flush',state).description,/Дикая карта/);});
+test('blind outcomes use ante-scoped exact history and truthful legacy fallback',()=>{const state={phase:'playing',round:{ante:2,blindId:'big'},blindHistory:[{ante:1,blindId:'small',outcome:'skipped'}]};assert.equal(blindInfoStatus(state,'small'),'completed');assert.equal(blindInfoStatus(state,'big'),'current');assert.equal(blindInfoStatus(state,'boss'),'upcoming');state.blindHistory.push({ante:2,blindId:'small',outcome:'skipped'});assert.equal(blindInfoStatus(state,'small'),'skipped');assert.equal(blindInfoStatus({...state,phase:'shop'},'big'),'defeated');});

@@ -150,3 +150,13 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
  .audio-settings label{font-size:15px;margin-top:6px}
  .audio-dialog #dialog-actions button{margin-top:4px;padding:10px 16px}
 }
+
+/* Original consumable scenes reserve the existing name band. */
+.consumable-illustration{background:none}
+.collection-view .collection-card:has(.consumable-illustration) .shop-art{inset:2px 2px 27px;background:none}
+
+/* Slow procedural table movement; approved home artwork stays untouched. */
+#stage:not(:has(#start_screen)){animation:table-breathe 18s ease-in-out infinite alternate;background-size:115% 115%,130% 130%,100% 100%}
+#stage:not(:has(#start_screen))::after{background:repeating-linear-gradient(0deg,#08241d05 0 1px,transparent 1px 4px),radial-gradient(ellipse at center,transparent 52%,#001e1829 100%)}
+@keyframes table-breathe{from{background-position:0% 0%,0% 20%,0 0}to{background-position:100% 70%,75% 100%,0 0}}
+@media(prefers-reduced-motion:reduce){#stage:not(:has(#start_screen)){animation:none}}

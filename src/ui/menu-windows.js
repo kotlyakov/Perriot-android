@@ -1,3 +1,6 @@
+import {createHandHelp} from './hand-help.js';
+import {APK_HAND_NAMES} from '../core/apk-shop-state.js';
+import {APK_TAGS_BY_ID} from '../content/apk-tags.js';
 import {animateSettingsPaper} from './settings-paper.js';
 import {GAME_SPEEDS,getGameSpeed,setGameSpeed} from './game-speed.js';
 import {showCardTooltip} from './card-tooltip.js';
@@ -51,12 +54,28 @@ export function createSettingsView({values={music:.35,effects:.7},onVolume=()=>{
    refreshSpeed();speedRow.append(caption,track);body.append(speedRow);}
  },{paperMotion:true});view.dataset.window='settings';return view;
 }
-export function createRunInfoView(state,{blindChoices=[],voucherFamilies=[]}={}){
+export function blindInfoStatus(state,id,history=state.blindHistory??[]){
+ const recorded=history.findLast(item=>item.ante===state.round.ante&&item.blindId===id);
+ if(recorded)return recorded.outcome;
+ const order=['small','big','boss'],index=order.indexOf(id),current=order.indexOf(state.round.blindId);
+ return index<current?'completed':index>current?'upcoming':['round_won','shop','pack'].includes(state.phase)?'defeated':'current';
+}
+export function createRunInfoView(state,{blindChoices=[],voucherFamilies=[],blindHistory=state.blindHistory??[]}={}){
  const view=tabbedWindow(runInfoTabs(state),(tab,body)=>{
   if(tab==='hands'){
-   const grid=el('div','run-hands');for(const r of handInfoRows(state)){const row=el('div','run-hand');row.append(el('span','hand-level','Ур. '+r.level),el('strong','',r.name),el('b','hand-chips',r.chips),el('span','','×'),el('b','hand-mult',r.mult),el('span','','#'),el('span','hand-played',state.handUsage?.[r.id]??0));grid.append(row);}body.append(grid);
+   const columns=el('div','run-hand-columns'),grid=el('div','run-hands');
+   const rows=handInfoRows({...state,discoveredHands:Object.keys(HANDS)});let selected=rows.find(r=>(state.discoveredHands??[]).includes(r.id))?.id??rows[0].id;
+   function select(id){selected=id;for(const row of grid.children)row.setAttribute('aria-pressed',String(row.dataset.hand===id));columns.querySelector('.hand-help')?.remove();columns.append(createHandHelp(id,state));}
+   for(const r of rows){const row=button('run_hand_'+r.id,'',()=>select(r.id),'run-hand');row.dataset.hand=r.id;row.setAttribute('aria-controls','run_hand_help');row.append(el('span','hand-level','Ур. '+r.level),el('strong','',r.name),el('b','hand-chips',r.chips),el('span','','×'),el('b','hand-mult',r.mult),el('span','hand-played',state.handUsage?.[r.id]??0));grid.append(row);}columns.append(grid);select(selected);body.append(columns);
   }else if(tab==='blinds'){
-   const grid=el('div','run-blinds');for(const [id,label] of [['small','Малый блайнд'],['big','Большой блайнд'],['boss','Босс']]){const p=el('article','run-blind');p.append(el('h2','',label),el('p','',id==='boss'?(APK_BLINDS_BY_ID[state.apkBlinds?.bossId]?.nameRu??APK_BLINDS_BY_ID[state.apkBlinds?.bossId]?.name??'Босс'):id==='small'?'Первый блайнд анте':'Второй блайнд анте'));const meta=blindChoices.find(b=>b.id===id);p.append(el('div','run-blind-token',id==='boss'?'♠':id==='big'?'●●':'●'));if(meta){p.append(el('small','','Набрать минимум'),el('strong','run-blind-target',meta.target),el('p','run-blind-description',meta.description??''),el('span','gold','Награда: $'+meta.reward));}p.append(el('strong','run-blind-status',state.round.blindId===id?'Текущий блайнд':'Анте '+state.round.ante));grid.append(p);}body.append(grid);
+   const grid=el('div','run-blinds');for(const [id,label] of [['small','Малый блайнд'],['big','Большой блайнд'],['boss','Босс']]){
+    const p=el('article','run-blind'),status=blindInfoStatus(state,id,blindHistory);p.dataset.status=status;p.dataset.blind=id;
+    p.append(el('h2','',label),el('strong','run-blind-status',({current:'Текущий блайнд',upcoming:'Предстоящий',defeated:'Побеждён',skipped:'Пропущен',completed:'Пройден'})[status]));
+    const boss=APK_BLINDS_BY_ID[state.apkBlinds?.bossId];p.append(el('div','run-blind-token',id==='boss'?'♠':id==='big'?'●●':'●'));
+    if(id==='boss')p.append(el('p','',boss?.nameRu??boss?.name??'Босс'));
+    const meta=blindChoices.find(b=>b.id===id);if(meta)p.append(el('small','','Набрать минимум'),el('strong','run-blind-target',meta.target),el('p','run-blind-description',meta.description??''),el('span','gold','Награда: $'+meta.reward));
+    const tag=APK_TAGS_BY_ID[state.apkBlinds?.tags?.[id]];if(tag){const reward=el('aside','run-blind-tag');reward.append(el('strong','',status==='skipped'?'Тег получен: '+tag.name:'За пропуск: '+tag.name),el('p','',tag.description));if(tag.id==='tag_orbital'){const orbital=state.apkBlinds?.orbitalHands?.[id];reward.append(el('p','','Комбинация: '+(HAND_NAMES[Object.keys(HAND_NAMES).find(k=>k===orbital||APK_HAND_NAMES[k]===orbital)]??orbital??'—')));}p.append(reward);}grid.append(p);
+   }body.append(grid);
   }else if(tab==='vouchers'){
    const ids=state.apkShop?.context.usedVoucherIds??[];if(!ids.length){body.append(el('p','menu-empty','В этой партии билетов пока нет.'));return;}
    body.append(el('h2','','Использованные билеты'));const groups=new Map();
@@ -65,7 +84,7 @@ export function createRunInfoView(state,{blindChoices=[],voucherFamilies=[]}={})
    const tip=el('aside','voucher-tooltip');tip.id='used_voucher_tooltip';tip.setAttribute('role','tooltip');tip.hidden=true;
    for(let offset=0;offset<rows.length;offset+=offset===10?rows.length:5){const row=el('div','used-voucher-row');for(const family of rows.slice(offset,offset===10?rows.length:offset+5)){const stack=el('div','used-voucher-family');family.forEach((id,index)=>{const meta=describeShopItem({entityId:id}),card=button('used_'+id,meta.name,()=>{appendCardDescription(tip,{entityId:id},{title:meta.name,description:meta.description});showCardTooltip(tip,card,{container:body});});card.style.setProperty('--voucher-index',index);stack.append(card);});row.append(stack);}area.append(row);if(offset>=10)break;}
    body.append(area,tip);
-  }else {const s=STAKES.find(s=>s.level===(state.stake??1));body.append(el('h2','',s?.name??'Белая ставка'),el('p','settings-summary',s?.description??''),el('p','menu-note','Действуют ограничения предыдущих ставок.'));}
+  }else {const rules=el('div','run-stake-rules');for(const s of STAKES.filter(s=>s.level<=(state.stake??1))){const row=el('article','run-stake-rule'),chip=el('span','start-stake-chip',s.level);chip.style.setProperty('--stake-color',s.color);row.append(chip,el('strong','',s.name+(s.level===state.stake?' · текущая':'')),el('p','',s.description));rules.append(row);}body.append(rules);}
  });view.dataset.window='party';return view;
 }
 
