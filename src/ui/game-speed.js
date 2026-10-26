@@ -11,3 +11,7 @@ export function setGameSpeed(value){
 // Presentation timing only: rules, RNG, audio pitch and window motion stay independent.
 export const gameDuration=ms=>ms/speed;
 
+
+// Reading has a perceptual floor even when physical card flights run at 4×.
+export const scorePopDuration=()=>Math.max(600,gameDuration(600));
+export const scoreEventDuration=ms=>Math.max(180,gameDuration(ms));

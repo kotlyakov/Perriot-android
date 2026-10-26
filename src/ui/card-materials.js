@@ -2,6 +2,10 @@
 const CARD='.playing-card,.shop-card,.collection-card';
 const SPECIAL=new Set(['j_satellite','j_hologram']);
 export function applyCardMaterials(element) {
+ const spectral=element.dataset.cardSet==='Spectral'&&!element.matches('.hidden-card,.acorn-hidden,[data-card-state=locked],[data-card-state=unseen]');
+ const shimmer=element.querySelector(':scope > .spectral-shimmer');
+ if(spectral&&!shimmer){const layer=element.ownerDocument.createElement('span');layer.className='spectral-shimmer';layer.setAttribute('aria-hidden','true');element.append(layer);}
+ if(!spectral&&shimmer)shimmer.remove();
  if(element.matches('.hidden-card,.acorn-hidden'))return;
  const art=element.querySelector('svg[data-joker-id]');
  const id=art?.dataset.jokerId;
@@ -31,7 +35,7 @@ export function installCardMaterials(root=document) {
   }
   for(const card of cards)applyCardMaterials(card);
  });
- observer.observe(root,{subtree:true,childList:true,attributes:true,attributeFilter:['data-edition','data-enhancement']});
+ observer.observe(root,{subtree:true,childList:true,attributes:true,attributeFilter:['data-edition','data-enhancement','data-card-set','data-card-state']});
  let active=null;
  function reset(){if(active){active.style.removeProperty('--material-x');active.style.removeProperty('--material-y');active=null;}}
  function move(event){

@@ -1,0 +1,6 @@
+/* Approved24.10: orange Tarot, sky-blue planets, permanent Spectral rainbow. */
+.collection-categories button[data-card-set=Planet]{background:#93c5d9;color:#153d48;text-shadow:none}
+.spectral-shimmer{position:absolute;inset:0 0 24px;z-index:2;border-radius:inherit;pointer-events:none;opacity:.3;mix-blend-mode:soft-light;background:radial-gradient(circle at 22% 30%,#fff 0 1px,transparent 3px),radial-gradient(circle at 76% 62%,#fff 0 1px,transparent 4px),linear-gradient(120deg,#ff7993,#ffc76a,#a8f29d,#74daef,#a59aee,#f293d4,#ff7993);background-size:130% 180%,180% 140%,350% 350%;animation:spectral-rainbow 1.8s linear infinite,spectral-sparkle .9s ease-in-out infinite alternate}
+@keyframes spectral-rainbow{0%{background-position:0% 0%,100% 100%,0% 50%}50%{background-position:60% 80%,30% 40%,100% 50%}100%{background-position:0% 0%,100% 100%,0% 50%}}
+@keyframes spectral-sparkle{from{opacity:.2;filter:brightness(1)}to{opacity:.45;filter:brightness(1.25)}}
+@media(prefers-reduced-motion:reduce){.spectral-shimmer{animation:none;opacity:.3}}

@@ -1,5 +1,6 @@
 import {jokerArtworkSvg} from './joker-art.js';
 import {consumableArtworkSvg} from '../content/consumable-illustrations.js';
+import {collectionArtworkSvg} from '../content/collection-illustrations.js';
 import {originalJokerKey} from '../content/jokers.js';
 import {gameDuration} from './game-speed.js';
 import {canEnterBoss} from '../core/boss-effects.js';
@@ -78,18 +79,10 @@ export function artwork(offer,kind){
  if(consumable){const n=node('div','shop-art consumable-illustration');n.dataset.consumableId=key;n.innerHTML=consumable;return n;}
  const illustration=jokerArtworkSvg(key);
  if(illustration){const n=node('div','shop-art joker-illustration');n.dataset.jokerId=key;n.innerHTML=illustration;return n;}
- let hash=0;for(const c of key)hash=(hash*31+c.charCodeAt(0))>>>0;
- const ink=['#176e80','#b84b37','#406b42','#7a5382','#ac772b'][hash%5],variant=hash%4;
- const motifs=[
- '<path d="M27 67L43 32L60 67L75 32L91 67Z" fill="currentColor"/><circle cx="59" cy="88" r="23" fill="none" stroke="currentColor" stroke-width="5"/><path d="M42 91Q59 107 76 91" fill="none" stroke="currentColor" stroke-width="4"/>',
- '<path d="M25 34H93V100H25Z" fill="none" stroke="currentColor" stroke-width="5"/><path d="M25 55H93M25 78H93M47 34V100M71 34V100" stroke="currentColor" stroke-width="3"/><circle cx="59" cy="67" r="16" fill="currentColor"/>',
- '<path d="M59 25L92 67L59 111L26 67Z" fill="none" stroke="currentColor" stroke-width="5"/><path d="M59 42L79 67L59 94L39 67Z" fill="currentColor"/><circle cx="59" cy="67" r="9" fill="#f0e5c8"/>',
- '<circle cx="59" cy="68" r="35" fill="none" stroke="currentColor" stroke-width="5"/><path d="M27 98L90 36M25 69H93M59 33V103" stroke="currentColor" stroke-width="5"/><circle cx="59" cy="68" r="16" fill="currentColor"/>'
- ];
- const n=node('div','shop-art');n.style.setProperty('--shop-ink',ink);
- n.innerHTML=`<svg viewBox="0 0 118 138" aria-hidden="true"><path d="M8 8H110V130H8Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 14H105M13 124H105" stroke="currentColor" stroke-width="2"/>${motifs[variant]}<path d="M17 19H33M85 119H101" stroke="currentColor" stroke-width="5"/></svg>`;
- if(kind==='booster')n.append(node('span','shop-pack-stamp','ПЬЕРО'));
- n.append(node('span','shop-plate',String(hash%999+1).padStart(3,'0')));return n;
+ const collection=collectionArtworkSvg(key);
+ if(collection){const n=node('div','shop-art collection-illustration');n.dataset.collectionArtId=key;n.innerHTML=collection;return n;}
+ // Unknown offers have no invented catalogue plate. Known identities are drawn above.
+ return node('div','shop-art');
 }
 function ticketArtwork(offer,details){
  const main=node('span','ticket-main'),stub=node('span','ticket-stub');
