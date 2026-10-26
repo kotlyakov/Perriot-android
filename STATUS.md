@@ -1,3 +1,5 @@
+26.10.2026 — QA-PERF этап 2 начат по команде пользователя «Давай следующий». Добавлен tests/ui/gesture-stress-check.mjs (24 drag/move/up/cancel для mouse/touch; контроль потерянных карт, зависшего drag, подсказок, порядка после cancel). Тест ещё НЕ запущен и не подтверждён; джокеры, продажа, multitouch впереди. План: docs/qa/performance-stability-plan.md. Этап 1 также не завершён без измерений. APK и механики не менялись.
+
 26.10.2026 — начат QA-PERF аудит фризов/вылетов/геометрии по поручению пользователя. План: docs/qa/performance-stability-plan.md; ветка qa/performance-stability-audit. Этап 1: добавлен tests/ui/performance-stress-check.mjs (100 быстрых нажатий в desktop/touch, JS errors, long tasks, DOM/heap, геометрия руки). Прогон и численные результаты ещё не подтверждены; остальные этапы не начаты. Без изменений игровых механик и APK.
 
 # Пьеро — текущий статус
