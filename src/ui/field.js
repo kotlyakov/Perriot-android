@@ -24,7 +24,7 @@ function cardFaceMarkup(card) {
  else {
    inside=pipArtwork(card);
  }
- return `<span class="corner" style="color:${color}">${rank}<span>${suitSvg(card.suit)}</span></span>${inside}<span class="corner bottom" style="color:${color}">${rank}<span>${suitSvg(card.suit)}</span></span>`;
+ return `<span class="corner" style="color:${color}">${rank}<span>${suitSvg(card.suit,card.enhancement==='wild')}</span></span>${inside}<span class="corner bottom" style="color:${color}">${rank}<span>${suitSvg(card.suit,card.enhancement==='wild')}</span></span>`;
 }
 export function cardMarkup(card){
  const seal={red:'↻',gold:'$',blue:'✦',purple:'◇'}[card.seal];
