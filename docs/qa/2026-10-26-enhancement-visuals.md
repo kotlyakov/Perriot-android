@@ -10,4 +10,15 @@
 
 Основныерисункиджокеров/расходников, замки/цепи/пагинация/рамка/палитра, скорость/подсчёт не менялись. Исправлены прежниеUIassertions о текстовыхполосках, т.к. они теперь намеренноубраны; проверкирезультатаТаро/перезаписи/сохранения и RNGсохранены.
 
-CI/APKещёожидаются. База5294fcd, веткаfix/enhancement-visuals. Это кандидатдляпроверкиновоговида, не объявленнаяпользовательскаяприёмка. ФизическийAndroidнеподменяетсяChromium.
+ИтоговыйCI40343773260SUCCESS:1854corePASS/0FAIL/2skip,32browser-набораPASS,freshAndroidPASS. База5294fcd, веткаfix/enhancement-visuals. Это кандидатдляпроверкиновоговида, не объявленнаяпользовательскаяприёмка. ФизическийAndroidнеподменяетсяChromium.
+
+
+## Собранный кандидат
+
+Source6fb68d0f4d3ad49e8f892aa40a4c7ce7be505b3b, tree2aee8961b62482dfd167aa2483cdd5ca9a423301. Testedmergefd60fc497e66bee32cbef2582855991d7d62d246 имеет то же дерево. CI40343773260SUCCESS: core/browser/Android. Независимыйread-onlyreview:существенныхзамечанийнет. ДобавленыпроверкиQ/A/Kсnegative/foil; базовыеигровыепипывfixtureраскрашеныкаквproduction,dialogзакрытпередснимкомживыхкарт.
+
+APK0.4.54-preview/code67,1425821байт, SHA2567ec7961ae580411fda23e2ad97223115e474cd01760daae48449a51cabe16f88; artifact12660397180. ZIPCRC/SHA256/signaturev2/zipalign/117offlineassets/indexbyteequalityPASS. APK: https://chatgpt.com/library?file_id=libfile_e99a539407108191880f2aad45211099&account_id=personal
+
+ПодписьCIdebugdb6c955d56c67edf1d4131b754df225828f32ccee2fd869ee54c626e0d458c85 отличается от0.4.53; прямоеобновлениеегоустановкиневозможно. Неудалятьстаруюустановкубезпереносапрогресса. Стабильныйpreview-keystoreпо-прежнемунеподставлен. PR50 открыт вfix/collection-restoreбезслияния. ФизическаяAndroid-проверка/приёмкановоговидаоткрыты.
+
+Browserartifact12660083280 содержит кадры полного прогона; enhancement-visuals1536/915/568, Wild/Lucky/targetedTarot и прежние коллекции/подсказки/жестыPASS. Локальные кадры новой коллекции и игровых примеров просмотрены; физическая Android-приёмка не заявляется. Последующий отчётный коммит не меняет проверенныеAPK/игровыересурсы.

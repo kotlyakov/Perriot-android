@@ -1,4 +1,4 @@
-26.10.2026 — У-53: fix/enhancement-visuals, кандидат0.4.54/code67, новые2modelRED→GREEN и3viewportUI, core1854PASS/2skip. CI/APKожидаются; STATUS.md/QAактуальны.
+26.10.2026 — У-53: fix/enhancement-visuals, кандидат0.4.54/code67, новые2modelRED→GREEN и3viewportUI, core1854PASS/2skip. CI40343773260SUCCESS,32browser/freshAndroid,source6fb68d0f, APK0.4.54/code67 сохранён,PR50 открыт; STATUS.md/QAактуальны.
 
 26.10.2026 — исправление У-50/51/52поотклонению0.4.52. fix/collection-restore, кандидат0.4.53/code66,1852corePASS/2skip, новыеконтрактныеUIнаборыPASS; CI40307012731SUCCESS,28browser,freshAndroid; APK0.4.53/code66 сохранён. Source d26eee51, PR49 открыт.117offlineassets/index/CRC/signature/alignmentPASS; подпись другая, поверх0.4.52необновляется. Документы: STATUS.md и QA2026-10-26-collection-restoration.md.
 
