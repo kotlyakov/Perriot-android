@@ -156,8 +156,9 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .collection-view .collection-card:has(.consumable-illustration) .shop-art{inset:2px 2px 27px;background:none}
 
 /* Slow procedural table movement; approved home artwork stays untouched. */
-#stage:not(:has(#start_screen)){animation:table-breathe 18s ease-in-out infinite alternate;background-size:115% 115%,130% 130%,100% 100%}
+#stage{isolation:isolate}
+#stage:not(:has(#start_screen))::before{content:"";position:absolute;inset:-5%;z-index:-1;pointer-events:none;background:inherit;background-size:115% 115%,130% 130%,100% 100%;will-change:transform;animation:table-breathe 18s ease-in-out infinite alternate}
 #stage:not(:has(#start_screen))::after{background:repeating-linear-gradient(0deg,#08241d05 0 1px,transparent 1px 4px),radial-gradient(ellipse at center,transparent 52%,#001e1829 100%)}
-@keyframes table-breathe{from{background-position:0% 0%,0% 20%,0 0}to{background-position:100% 70%,75% 100%,0 0}}
-@media(prefers-reduced-motion:reduce){#stage:not(:has(#start_screen)){animation:none}}
+@keyframes table-breathe{from{transform:translate(-1%,-1%) scale(1.015)}to{transform:translate(1%,1%) scale(1.04)}}
+@media(prefers-reduced-motion:reduce){#stage:not(:has(#start_screen))::before{animation:none;will-change:auto}}
 .collection-view .collection-card:has(.collection-illustration):not([data-card-set=Back]) .shop-art{inset:2px 2px 27px;background:none}
