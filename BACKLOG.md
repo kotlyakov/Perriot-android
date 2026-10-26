@@ -1,3 +1,5 @@
+26.10.2026 — У-55 включён в итоговуюAPK0.4.56/code69. CI40360431210SUCCESS:1854corePASS/2skip,34browserPASS,Android/signature/alignmentPASS. Проверка плавности на физическом телефоне открыта; STATUS.md и docs/qa/2026-10-26-performance-056.md.
+
 26.10.2026 — У-55 | Высокий, приоритет пользователя | Фризы выбора карт/анимаций | Не пересоздавать руку и остальные области при выборе; фон не перерисовывает поле каждый кадр; жесты/правила/утверждённая графика сохраняются | Исправлено локально, проверяется единая APK0.4.56/code69 | selection-performance/table-performance и card-gesture PASS; docs/qa/2026-10-26-performance-056.md.
 
 26.10.2026 — единая APK0.4.55/code68 готова к пользовательской проверке. CI40354184178 SUCCESS:1854corePASS/2optional skips,32browserPASS,Android/signature/alignmentPASS. У-54 включён. Приёмка на физическом телефоне открыта; docs/qa/2026-10-26-integrated-055.md.
