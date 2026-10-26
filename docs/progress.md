@@ -1,4 +1,4 @@
-26.10.2026 — исправление У-50/51/52поотклонению0.4.52. fix/collection-restore, кандидат0.4.53/code66,1852corePASS/2skip, новыеконтрактныеUIнаборыPASS; CI/APKожидаются. Документы: STATUS.md и QA2026-10-26-collection-restoration.md.
+26.10.2026 — исправление У-50/51/52поотклонению0.4.52. fix/collection-restore, кандидат0.4.53/code66,1852corePASS/2skip, новыеконтрактныеUIнаборыPASS; CI40307012731SUCCESS,28browser,freshAndroid; APK0.4.53/code66 сохранён. Source d26eee51, PR49 открыт.117offlineassets/index/CRC/signature/alignmentPASS; подпись другая, поверх0.4.52необновляется. Документы: STATUS.md и QA2026-10-26-collection-restoration.md.
 
 26.10.2026 — автономная доводка0.4.52/code65 вfeat/autonomous-polish. Завершено: source94489a8, CI40274302617SUCCESS,1845corePASS/2skip,23browser,freshAndroid; APK0.4.52/code65 сохранён. PR48 открыт, не слит. Полный актуальный статус — STATUS.md, QA2026-10-26-autonomous-polish.md. Ранее утверждённое оформление сохранено; физическийAndroid не заявлен.
 

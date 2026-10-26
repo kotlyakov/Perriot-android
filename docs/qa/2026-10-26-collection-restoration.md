@@ -30,4 +30,15 @@
 
 Независимыйreviewобнаружил2важныхпробела: AndroidотключалDOMstorage, а контрактныеsuiteработали только вименованныхветках. Исправлено: domStorageEnabled=true для UIподтверждений на фиксированномHTTPSassetorigin; сохранения/профиль по-прежнему nativeAtomicFile, внешняя навигация/CSPнеослаблены. Пятьновыхконтрактныхsuiteпостоянно выполняютсяпередостальнымивкаждомрежимеCI, включаяmain. Reviewподтвердил исправления без оставшихсясущественныхнаходок.
 
-ОкончательныйCI/freshAndroid/APKкандидата ожидаются. Не переносить локальныйbrowserPASS на физический Android или на пользовательскую приёмку новых рисунков. Паспорт docs/approved-ui/approved/collection-v1.md обязателен при следующих изменениях.
+Итоговый CI40307012731SUCCESS на sourced26eee51f4c164c1f87239438ea850a360910669:1852corePASS/0FAIL/2optional skips,28browser-наборовPASS, freshAndroidPASS. Не переносить локальныйbrowserPASS на физический Android или на пользовательскую приёмку новых рисунков. Паспорт docs/approved-ui/approved/collection-v1.md обязателен при следующих изменениях.
+
+
+## Проверенная сборка и передача
+
+Source d26eee51f4c164c1f87239438ea850a360910669, tree3ab0caff71eec77d07f3706f637a88ceaede7ee1. Testedmerge0cd7b80b723fa9790420f8a61f3e2d9e6e7de67f имеет то же дерево. Итоговый CI40307012731SUCCESS. Browserartifact12643198393 содержит171PNG, включая вложенные окна/aspect; CRCпроверен, кадры замков/открытия и наборов просмотрены. ActualCI4×: конфигурация600мс, непрозрачность≈460–467мс, cadence≈181мс, наложенийодногоисточника0, конечныхвисящихнадписей0.
+
+APK0.4.53-preview/code66,1424305байт, SHA256eb0494d7a29f2306ff78e288af20b56d575573f81d82d4ed1f3771cfc8220a02; artifact12643277263. ZIPCRC/SHA256/117offlineassets/index byte equalityPASS, signaturev2/zipalignPASS. APK: https://chatgpt.com/library?file_id=libfile_74f968e228e0819193739f044dd6331b&account_id=personal
+
+ПодписьCIdebuge35a6f0e9c1750f9c41ac1a3b7424dedc1ad81b5b49c91d516fe0f2b06c34384 отличается от0.4.52(2095f9de...). Обновление поверх именно0.4.52 с той подписью невозможно. Не рекомендовать удалять старую установку без переноса прогресса. Стабильныйrelease-keystore не настроен; старого приватногоdebugключа у этой среды нет.
+
+PR49 https://github.com/kotlyakov/Perriot-android/pull/49 открыт вfeat/autonomous-polish, не слит. Последующий отчётный коммит не меняетAPK/игровые ресурсы. Физическая Android-проверка перезапуска/пользовательская приёмка нового рисунка остаются открыты; source-level DOMstorage включён и nativecompilePASS. Отдельно сохранён обязательный collection-v1 и его постоянно запускаемые5контрактныхsuite.
