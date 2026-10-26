@@ -21,7 +21,8 @@ import {showFlame} from './flame.js';
 import {animationHeldCardIds,preparePlayedCards,prepareDrawnCards,prepareHandMovement,animateShatteredCards} from './play-animation.js';
 import {createRun,dispatch} from '../core/run.js';
 import {createProfileStore} from '../persistence/profile-store.js';
-import {profileRunContext,deckUnlocked,stakeUnlocked,legendaryWinIds} from '../core/profile.js';
+import {observeCollectionUnlocks} from './collection-unlock.js';
+import {collectionEntries,profileRunContext,deckUnlocked,stakeUnlocked,legendaryWinIds} from '../core/profile.js';
 import {chooseProfileSeed} from '../core/profile-seed.js';
 import {renderProfileView,renderCollectionView} from './profile-screen.js';
 import {createBackend} from '../persistence/backend.js';
@@ -79,7 +80,7 @@ function newState({deckId='red',seed,stake=1,challengeId}={}){
  return createRun(selectedSeed,{runId:crypto.randomUUID(),deckId,stake,challengeId,money:4n,referenceRng:true,referenceShop:true,...profileRunContext(profile,selectedSeed),reducedMotion:matchMedia('(prefers-reduced-motion: reduce)').matches});
 }
 function startFresh(options){if(busy)return;try{const next=newState(options);repository.reset(next,{seeded:isVerificationSeed(next.seed)||!options?.challengeId&&!!options?.seed,challenge:!!options?.challengeId});state=next;selected.clear();closeDialog();removeStartScreen();render();}catch{storageError();}}
-function showMenu(){if(busy)return;dismissDialog();renderStartScreen({hasSave:!!state,savedState:state?{...state,seeded:repository.getProfile()?.runs?.[state.runId]?.seeded??false}:undefined,continueChallengeId:state?.challengeId,profile:repository.getProfile(),profileName:repository.getProfiles().find(p=>p.id===repository.activeId)?.name,onContinue:()=>{try{repository.save(state,[],{continued:true});removeStartScreen();render();}catch{storageError();}},onNew:startFresh,onSettings:()=>showSettings(showMenu),onCollection:()=>showCollection(closeDialog),onProfile:showProfile});}
+function showMenu(){if(busy)return;observeCollectionUnlocks(collectionEntries(repository.getProfile()),repository.activeId);dismissDialog();renderStartScreen({hasSave:!!state,savedState:state?{...state,seeded:repository.getProfile()?.runs?.[state.runId]?.seeded??false}:undefined,continueChallengeId:state?.challengeId,profile:repository.getProfile(),profileName:repository.getProfiles().find(p=>p.id===repository.activeId)?.name,onContinue:()=>{try{repository.save(state,[],{continued:true});removeStartScreen();render();}catch{storageError();}},onNew:startFresh,onSettings:()=>showSettings(showMenu),onCollection:()=>showCollection(closeDialog),onProfile:showProfile});}
 function showProfile(){
  const name=repository.getProfiles().find(p=>p.id===repository.activeId)?.name??'Игрок';
  openDialog('Профиль игрока',renderProfileView(repository.getProfile(),{name,onRename:next=>{
@@ -161,7 +162,7 @@ function sort(mode){if(busy || (state?.phase!=='playing'&&!targetPackOpen()))ret
 document.getElementById('sort_rank').onclick=()=>sort('rank');document.getElementById('sort_suit').onclick=()=>sort('suit');
 async function copySeed(seed){try{await navigator.clipboard.writeText(String(seed));notice('Сид скопирован');}catch{notice('Не удалось скопировать сид: '+seed);}}
 function showRunSetup(){if(busy)return;dismissDialog();renderStartScreen({hasSave:!!state,savedState:state?{...state,seeded:repository.getProfile()?.runs?.[state.runId]?.seeded??false}:undefined,fromRun:true,onBack:()=>{removeStartScreen();if(state?.phase==='game_over')showLoss();else render();},profileName:repository.getProfiles().find(p=>p.id===repository.activeId)?.name,profile:repository.getProfile(),onNew:startFresh,onContinue:()=>{removeStartScreen();render();},onSettings:()=>showSettings(showMenu),onCollection:()=>showCollection(closeDialog),onProfile:showProfile});document.getElementById('start_new').click();}
-function showCollection(back=showMenu){let view;view=renderCollectionView(repository.getProfile(),state?.seed,{onNavigate:({view:page,set})=>{dialog.dataset.window=page==='index'?'collection-index':'collection';dialog.dataset.collectionSet=set??'';}});openDialog('Коллекция',view,[['Назад',()=>{if(!view.back?.())back();}]]);dialog.dataset.window='collection-index';}
+function showCollection(back=showMenu){let view;view=renderCollectionView(repository.getProfile(),undefined,{profileId:repository.activeId,onNavigate:({view:page,set})=>{dialog.dataset.window=page==='index'?'collection-index':'collection';dialog.dataset.collectionSet=set??'';}});openDialog('Коллекция',view,[['Назад',()=>{if(!view.back?.())back();}]]);dialog.dataset.window='collection-index';}
 function showOptions(){
  if(busy||victoryProtected())return;
  const inRun=!!state&&!document.getElementById('start_screen');

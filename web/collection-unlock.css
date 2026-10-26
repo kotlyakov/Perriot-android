@@ -1,0 +1,15 @@
+/* The frame follows the shared tooltip's aria-describedby lifetime. */
+.collection-view .collection-card[aria-describedby]{border-color:var(--card-type-color,#e4af58);box-shadow:0 0 0 3px var(--card-type-color,#e4af58),0 4px #071d21}
+.collection-lock{position:absolute;inset:0;display:block;pointer-events:none;overflow:hidden;border-radius:3px;z-index:3}
+.collection-lock-veil{position:absolute;inset:0;background:#3e4748;box-shadow:inset 0 0 16px #152124}
+.collection-lock svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.collection-lock-shackle{transform-origin:25px 44px}
+.collection-unlocking .collection-lock-shackle{animation:collection-lock-open 1600ms ease-in-out both}
+.collection-unlocking .collection-chain-link{transform-box:fill-box;transform-origin:center;animation:collection-chain-fall 1100ms cubic-bezier(.35,0,.7,1) calc(330ms + var(--link-delay)) both}
+.collection-unlocking .collection-padlock{animation:collection-padlock-fall 1600ms ease-in both}
+.collection-unlocking .collection-lock-veil{animation:collection-lock-colour 1600ms ease-in-out both}
+@keyframes collection-lock-open{0%,12%{transform:translateY(0) rotate(0)}30%,100%{transform:translateY(-6px) rotate(-35deg)}}
+@keyframes collection-chain-fall{0%{translate:0 0;rotate:0deg;opacity:1}45%{translate:var(--link-x) 9px;rotate:var(--link-turn);opacity:1}100%{translate:var(--link-x) var(--link-fall);rotate:var(--link-turn);opacity:0}}
+@keyframes collection-padlock-fall{0%,42%{translate:0 0;opacity:1}85%,100%{translate:0 36px;opacity:0}}
+@keyframes collection-lock-colour{0%,20%{opacity:1}80%,100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.collection-unlocking .collection-lock{display:none}.collection-unlocking .collection-lock *{animation:none!important}}

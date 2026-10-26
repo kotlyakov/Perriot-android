@@ -27,7 +27,9 @@ class MainActivity : Activity() {
             // Honour width=device-width and fit initial content to the WebView viewport.
             useWideViewPort = true
             loadWithOverviewMode = true
-            domStorageEnabled = false
+            // UI-only collection acknowledgements survive WebView/process restarts.
+            // Runs and profile progress still use the native AtomicFile bridge.
+            domStorageEnabled = true
             allowFileAccess = false
             allowContentAccess = false
             mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
