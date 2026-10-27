@@ -1,0 +1,42 @@
+name: QA performance and layout
+
+on:
+  push:
+    branches:
+      - qa/performance-stability-audit
+  workflow_dispatch:
+
+jobs:
+  core:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Layout resize regression
+        run: node --test tests/core/layout-resize.test.js
+      - name: Core suite
+        run: npm test
+
+  ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright Chromium
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Mobile layout
+        run: npm run test:mobile
+      - name: Rapid selection
+        run: UI_CHECK_SCRIPT=tests/ui/performance-stress-check.mjs node scripts/check-ui.mjs
+      - name: Render churn
+        run: UI_CHECK_SCRIPT=tests/ui/render-churn-check.mjs node scripts/check-ui.mjs
+      - name: Gesture stress
+        run: UI_CHECK_SCRIPT=tests/ui/gesture-stress-check.mjs node scripts/check-ui.mjs
