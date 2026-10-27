@@ -20,12 +20,15 @@ export function viewportLayout(width,height,{home=false}={}){
 }
 export function installLayout() {
  for(const [id,[x,y,w,h]] of Object.entries(LAYOUT))Object.assign(document.getElementById(id).style,{left:x+'px',top:y+'px',width:w+'px',height:h+'px'});
- const stage=document.getElementById('stage');let lastHome;
+ const stage=document.getElementById('stage');let lastHome,lastWidth,lastHeight;
  function resize(){
    // clientWidth is the viewport, even when the scaled room extends sideways.
    const width=document.documentElement.clientWidth,height=document.documentElement.clientHeight;
    if(!width || !height)return;
-   lastHome=!!document.getElementById('start_screen');
+   const home=!!document.getElementById('start_screen');
+   // ResizeObserver, visualViewport and window often report the same resize.
+   if(width===lastWidth&&height===lastHeight&&home===lastHome)return;
+   lastWidth=width;lastHeight=height;lastHome=home;
    const layout=viewportLayout(width,height,{home:lastHome});
    document.documentElement.style.setProperty('--ui-scale',layout.uiScale);
    document.documentElement.style.setProperty('--deck-scale',Math.min(width/1536,height/709));

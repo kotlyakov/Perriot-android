@@ -702,7 +702,7 @@ function decodeEffectReplay(payload){
   if(journal.version===1)requireValue(beforePayload.state.lastScore===null&&beforePayload.state.phase==='playing');
   const before=deserializeState(journal.before);
   if(journal.version===1)requireValue(hasEffectMechanisms(before)&&journal.actions[0]?.type==='PLAY_HAND');
-  const fields={PLAY_HAND:['cardIds'],DISCARD:['cardIds'],REORDER_HAND:['cardIds'],SET_SORT:['mode'],CONTINUE_ENDLESS:[],START_BLIND:[],CASH_OUT:[],SKIP_BLIND:[],LEAVE_SHOP:[],REROLL_SHOP:[],REORDER_JOKERS:['cardIds'],REORDER_CONSUMABLES:['cardIds'],SELL_OWNED_CARD:['area','cardId'],SELL_JOKER:['jokerId'],BUY_SHOP_CARD:['offerId'],BUY_VOUCHER:['offerId'],REROLL_BOSS:[],OPEN_BOOSTER:['offerId'],USE_PACK_CARD:['cardId','targetCardIds'],SKIP_PACK:[],USE_CONSUMABLE:['cardId','targetCardIds']};
+  const fields={PLAY_HAND:['cardIds'],DISCARD:['cardIds'],REORDER_HAND:['cardIds'],SET_SORT:['mode'],CONTINUE_ENDLESS:[],START_BLIND:[],CASH_OUT:[],SKIP_BLIND:['blindId'],LEAVE_SHOP:[],REROLL_SHOP:[],REORDER_JOKERS:['cardIds'],REORDER_CONSUMABLES:['cardIds'],SELL_OWNED_CARD:['area','cardId'],SELL_JOKER:['jokerId'],BUY_SHOP_CARD:['offerId'],BUY_AND_USE_SHOP_CARD:['offerId','targetCardIds'],BUY_VOUCHER:['offerId'],REROLL_BOSS:[],OPEN_BOOSTER:['offerId'],USE_PACK_CARD:['cardId','targetCardIds'],SKIP_PACK:[],USE_CONSUMABLE:['cardId','targetCardIds']};
   const legacyActions=['PLAY_HAND','DISCARD','REORDER_HAND','SET_SORT','CONTINUE_ENDLESS'];
   for(const action of journal.actions){
     requireValue(action&&typeof action==='object'&&!Array.isArray(action)&&Object.hasOwn(fields,action.type));
@@ -711,7 +711,7 @@ function decodeEffectReplay(payload){
   }
   const expected=replayEffectActions(before,journal.actions);
   if(journal.version===1)requireValue(expected.lastScore!==null);
-  else requireValue(before.challengeId||hasEffectMechanisms(before)||hasEffectMechanisms(expected)||hasJokerStickers(before)||journal.actions.some(a=>['USE_CONSUMABLE','USE_PACK_CARD'].includes(a.type))||before.rng?.apk&&journal.actions.some(a=>a.type==='PLAY_HAND'));
+  else requireValue(before.challengeId||hasEffectMechanisms(before)||hasEffectMechanisms(expected)||hasJokerStickers(before)||journal.actions.some(a=>['USE_CONSUMABLE','USE_PACK_CARD','BUY_AND_USE_SHOP_CARD'].includes(a.type))||before.rng?.apk&&journal.actions.some(a=>a.type==='PLAY_HAND'));
   const actual={...raw};delete actual.effectReplay;
   requireValue(canonical(actual)===canonical(encodeState(expected).state));
   expected.effectReplay={version:journal.version,before,actions:structuredClone(journal.actions)};return expected;

@@ -61,8 +61,8 @@ button.start-profile{display:flex;flex-direction:column;align-items:stretch;just
 .start-setup #setup_seed_paste{height:34px;font-size:17px;margin:0;padding:3px 8px}
 .start-setup .start-seed-notice{grid-column:1/-1;font-size:13px;line-height:16px;color:#ecc771}
 
-/* Russian New Run: 10.94 × 10.98592 units; home unchanged. */
-.start-screen .start-setup:not(.start-challenges):not(.start-challenge-overview){left:464px;top:24px;width:608px;height:610px;padding:12px 14px;grid-template-rows:40px 170px 22px 110px 66px 78px 54px;gap:6px}
+/* Setup has room for Russian descriptions; the approved home stays unchanged. */
+.start-screen .start-setup:not(.start-challenges):not(.start-challenge-overview){left:388px;top:34px;width:760px;height:610px;padding:12px 14px;grid-template-rows:40px 170px 22px 110px 66px 78px 54px;gap:6px}
 .start-screen .start-setup:not(.start-challenges):not(.start-challenge-overview) .start-tabs{gap:10px}
 .start-screen .start-setup:not(.start-challenges):not(.start-challenge-overview) .start-tabs button{flex:1;min-width:0;width:auto;font-size:19px;padding:3px 6px}
 .start-screen .start-setup:not(.start-challenges):not(.start-challenge-overview) .start-deck-row{height:170px;padding:5px 9px;grid-template-columns:96px minmax(0,1fr) 20px;gap:10px}
@@ -75,4 +75,7 @@ button.start-profile{display:flex;flex-direction:column;align-items:stretch;just
 .start-screen .start-setup:not(.start-challenges):not(.start-challenge-overview) .start-stake-choices{margin:0;grid-template-columns:40px minmax(0,1fr) 40px;gap:8px}
 .start-screen .start-setup:not(.start-challenges):not(.start-challenge-overview) .start-stake-choices>button{width:40px}
 .start-screen .start-setup[data-mode=continue] .start-deck-row{margin:0 48px}
-.start-screen .start-setup .start-deck-info .start-continue-summary{font-size:15px;line-height:18px;min-height:0}
+.start-screen .start-setup:not(.start-challenges):not(.start-challenge-overview) .start-deck-info .start-continue-summary{display:grid;grid-template-columns:minmax(0,1fr);justify-content:stretch;font-size:15px;line-height:18px;min-height:0;padding:5px 10px}
+
+.start-screen .start-setup .start-seed-label[hidden]{display:grid!important;visibility:hidden}
+.start-screen .start-setup[data-mode=continue]:not(.start-challenges):not(.start-challenge-overview) .start-stake-choices{grid-template-columns:minmax(0,1fr)}

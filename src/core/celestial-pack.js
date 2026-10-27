@@ -24,7 +24,7 @@ function physicalCard(offer){const [suit,rank]=offer.frontKey.split('_'),value=(
 export function canUsePackCard(state,card,targetCardIds=[]){
  if(state.phase!=='pack'||!state.packState?.cards.some(c=>c.id===card?.id))return {available:false,code:'CARD_NOT_FOUND',reason:'Карта набора недоступна.'};
  const kind=config(state.packState.sourceEntityId).kind;
- if(kind==='Buffoon')return supportsJoker(card)&&hasJokerSpace(state,card)?{available:true,code:null,reason:null}:{available:false,code:'USE_UNAVAILABLE',reason:'Нет места для джокера или эффект недоступен.'};
+ if(kind==='Buffoon')return supportsJoker(card)&&hasJokerSpace(state,card)?{available:true,code:null,reason:null}:{available:false,code:'USE_UNAVAILABLE',reason:hasJokerSpace(state,card)?'Эффект Джокера недоступен.':'Нет места для Джокера.'};
  if(kind==='Standard')return Object.keys(state.cards).length<10000?{available:true,code:null,reason:null}:{available:false,code:'USE_UNAVAILABLE',reason:'Достигнут предел размера колоды.'};
  const staged={...state,phase:'pack',consumables:[...(state.consumables??[]),card]};
  return canUseConsumable(staged,card,targetCardIds,{fromPack:true});

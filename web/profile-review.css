@@ -95,7 +95,7 @@
 /* Approved individual Joker printing plates reserve an explicit name strip. */
 .collection-view .collection-card[data-card-set=Joker] .shop-art{inset:2px 2px 27px}
 .collection-view .collection-card .collection-joker-name{left:3px;right:3px;bottom:3px;min-height:21px;line-height:10px;font-size:9px;font-weight:500;overflow-wrap:anywhere;white-space:normal;color:#143d39}
-.approved-tooltip.approved-tooltip{position:absolute;z-index:150!important;display:grid!important;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:12px;width:530px;padding:0!important;margin:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;text-align:left!important;color:#29251f!important;line-height:1.4;font-size:16px;box-sizing:border-box;pointer-events:auto;overflow:visible;isolation:isolate}
+.approved-tooltip.approved-tooltip{position:absolute;z-index:150!important;display:grid!important;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:start;gap:12px;width:530px;padding:0!important;margin:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;text-align:left!important;color:#29251f!important;line-height:1.4;font-size:16px;box-sizing:border-box;pointer-events:auto;overflow:visible;isolation:isolate}
 .approved-tooltip.approved-tooltip[hidden]{display:none!important}
 .approved-tooltip:not(:has(.tooltip-modifiers)){grid-template-columns:minmax(0,1fr);width:290px}
 .approved-tooltip.tooltip-stacked{grid-template-columns:minmax(0,1fr);width:360px}

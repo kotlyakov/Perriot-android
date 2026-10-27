@@ -1,4 +1,5 @@
 import russianNames from './shop-names-ru.js';
+import catalog from './apk-shop-catalog.js';
 import {EDITION_DESCRIPTIONS,describeCardModifiers} from './card-modifier-display.js';
 import {supportsJoker,originalJokerKey} from './jokers.js';
 import {supportsConsumableEffect} from '../core/consumables.js';
@@ -178,6 +179,13 @@ Object.assign(descriptions,{
  c_hex:'Добавляет Полихромию случайному джокеру без издания и уничтожает остальных, кроме Вечных.',
  c_cryptid:'Добавляет в руку 2 точные копии 1 выбранной карты.',
 });
+// Counts match the five native pack families, including their distinct normal sizes.
+for(const pack of catalog.centres.filter(card=>card.set==='Booster')){
+ const compact=['Buffoon','Spectral'].includes(pack.kind),size=pack.key.includes('_normal_')?(compact?2:3):(compact?4:5),choices=pack.key.includes('_mega_')?2:1;
+ const contents={Arcana:'карты Таро',Celestial:'карты Планет',Standard:'обычные и усиленные игральные карты, возможны издания и печати',Spectral:'Спектральные карты',Buffoon:'карты джокеров'}[pack.kind];
+ const action=pack.kind==='Standard'?'и добавьте в колоду':pack.kind==='Buffoon'?'и добавьте к своим джокерам':'и используйте сразу';
+ descriptions[pack.key]=`Содержит ${contents}. Предлагается карт: ${size}. Выберите ${choices} ${action}.`;
+}
 // Standard pack offers retain their native front identity in storage. Expand it
 // only for the existing playing-card renderer and tooltip.
 export function displayPlayingCard(offer){

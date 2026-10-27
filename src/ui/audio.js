@@ -12,7 +12,7 @@ const cues={
  reroll:[294,392,494],pack:[392,494,587,784],use:[587,784],skip:[330,494],
  chips:[660],mult:[880],repeat:[784,988],money:[988],win:[523,659,784,1047],lose:[330,294,220],error:[147,139]
 };
-export const soundForAction=type=>({START_BLIND:'deal',PLAY_HAND:'deal',DISCARD:'discard',BUY_SHOP_CARD:'buy',BUY_VOUCHER:'buy',SELL_OWNED_CARD:'sell',SELL_JOKER:'sell',REROLL_SHOP:'reroll',REROLL_BOSS:'reroll',OPEN_BOOSTER:'pack',USE_CONSUMABLE:'use',USE_PACK_CARD:'use',SKIP_BLIND:'skip',CASH_OUT:'money'})[type];
+export const soundForAction=type=>({START_BLIND:'deal',PLAY_HAND:'deal',DISCARD:'discard',BUY_SHOP_CARD:'buy',BUY_AND_USE_SHOP_CARD:'use',BUY_VOUCHER:'buy',SELL_OWNED_CARD:'sell',SELL_JOKER:'sell',REROLL_SHOP:'reroll',REROLL_BOSS:'reroll',OPEN_BOOSTER:'pack',USE_CONSUMABLE:'use',USE_PACK_CARD:'use',SKIP_BLIND:'skip',CASH_OUT:'money'})[type];
 export function createGameAudio({contextFactory=()=>new (globalThis.AudioContext??globalThis.webkitAudioContext)()}={}){
  let context,effects,music,timer,step=0,active=true,unlocked=false,scene='menu',volumes={...defaults};
  const voices=new Set();let lastCue=-Infinity;

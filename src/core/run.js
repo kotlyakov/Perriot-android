@@ -146,7 +146,7 @@ export function dispatch(state,action,shopOptions={}){
   let next=result.state;
   try{next=openPendingTagPack(next,result.events);result.state=next;}catch(error){return {state,events:[],error:{code:'INVALID_STATE',message:error.message}};}
   try{finishAction(state,next,action,result.events);}catch(error){return {state,events:[],error:{code:'INVALID_STATE',message:error.message}};}
-  const spectralUse=action.type==='USE_CONSUMABLE'&&state.consumables?.some(card=>card.id===action.cardId&&card.set==='Spectral')||action.type==='USE_PACK_CARD'&&state.packState?.cards.some(card=>card.id===action.cardId&&card.set==='Spectral');
+  const spectralUse=action.type==='USE_CONSUMABLE'&&state.consumables?.some(card=>card.id===action.cardId&&card.set==='Spectral')||action.type==='USE_PACK_CARD'&&state.packState?.cards.some(card=>card.id===action.cardId&&card.set==='Spectral')||action.type==='BUY_AND_USE_SHOP_CARD'&&state.shop?.main.some(card=>card.id===action.offerId&&card.set==='Spectral');
   let journal;
   if(state.challengeId){
     if(state.effectReplay?.actions.length>=10000)return {state,events:[],error:{code:'INVALID_STATE',message:'Effect history limit reached'}};
@@ -235,7 +235,7 @@ function dispatchCore(state, action, shopOptions={}) {
   if(action.type==='BUY_VOUCHER')return applyVoucherAction(state,action);
   if(action.type==='REROLL_BOSS')return applyBossRerollAction(state,action);
   if(action.type==='SKIP_BLIND')return applySkipBlind(state,action);
-  if(['BUY_SHOP_CARD','SELL_JOKER','REROLL_SHOP','LEAVE_SHOP'].includes(action.type))return applyShopAction(state,action,shopOptions);
+  if(['BUY_SHOP_CARD','BUY_AND_USE_SHOP_CARD','SELL_JOKER','REROLL_SHOP','LEAVE_SHOP'].includes(action.type))return applyShopAction(state,action,shopOptions);
   if(action.type==='CASH_OUT') {
     if(state.phase!=='round_won')return reject('INVALID_PHASE','Round has not been won');
     let quote;try{quote=getCashout(state);}catch{return reject('INVALID_STATE','Invalid cashout state');}

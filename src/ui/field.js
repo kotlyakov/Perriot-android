@@ -56,7 +56,7 @@ export function renderHandSelection(state,selected,busy,scoringPreview=null){
  const arcana=state.phase==='pack'&&/^p_(arcana|spectral)_/.test(state.packState?.sourceEntityId??'');
  const hiddenCardIds=new Set(state.phase==='playing'?[...(state.bossState?.hiddenCardIds??[]),...(state.challengeFlippedCardIds??[])]:[]);
  const hiddenSelection=state.hand.some(id=>selected.has(id)&&hiddenCardIds.has(id));
- const played=state.hand.filter(id=>selected.has(id)).map(id=>state.cards[id]);
+ const played=state.phase==='playing'?state.hand.filter(id=>selected.has(id)).map(id=>state.cards[id]):[];
  let preview=hiddenSelection?null:scoringPreview;try{if(!hiddenSelection && !preview && played.length)preview=scoreHand(state,played);}catch{}
  text('hand_name',preview?HAND_NAMES[preview.handId]:'');text('hand_level',preview?'Ур. '+state.handLevels[preview.handId]:'');
  const base=preview?.trace[0]?.after;

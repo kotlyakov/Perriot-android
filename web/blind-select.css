@@ -19,3 +19,6 @@
 .blind-boss-description{margin:10px 0 0;font-size:15px;line-height:1.25}.blind-choice-boss .blind-choice-token{font-size:12px;line-height:14px}
 .blind-tag-tooltip{position:absolute;left:474px;top:100px;width:688px;min-height:90px;padding:12px 18px;border:3px solid #bd9350;border-radius:10px;background:#142e2c;box-shadow:0 5px #102626;pointer-events:auto;text-align:left;font-size:18px;line-height:1.25;z-index:2}.blind-tag-tooltip>.tooltip-title{color:#f3dba7}.blind-tag-tooltip p{margin:5px 0 0}
 
+
+.blind-skip-row .blind-tag{padding:0;border:0;background:transparent;box-shadow:none;display:grid;place-items:center}
+.blind-tag svg{display:block;width:44px;height:44px}
