@@ -21,7 +21,12 @@ try {
    }else{
     if(type==='down'){await page.mouse.move(x,y);await page.mouse.down();}
     else if(type==='move')await page.mouse.move(x,y);
-    else await page.mouse.up();
+    else if(type==='cancel'){
+     // A physical mouse release is pointerup, NOT pointercancel. Dispatch an
+     // explicit cancellation to the captured card, then release the mouse.
+     await page.evaluate(()=>document.querySelector('#hand .dragging')?.dispatchEvent(new PointerEvent('pointercancel',{bubbles:true,pointerId:1})));
+     await page.mouse.up();
+    }else await page.mouse.up();
    }
   };
   const ids=await page.locator('#hand .playing-card').evaluateAll(ns=>ns.map(n=>n.dataset.cardId));
@@ -38,7 +43,7 @@ try {
    assert.equal(await page.locator('.card-tip').count(),0,'Orphan tooltip');
    const after=await page.locator('#hand .playing-card').evaluateAll(ns=>ns.map(n=>n.dataset.cardId));
    assert.deepEqual([...after].sort(),[...ids].sort(),'Card identity lost');
-   if(i%3===0)assert.deepEqual(after,before,'Cancelled gesture changed hand order');
+   if(i%3===0)assert.deepEqual(after,before,`Cancelled gesture changed hand order (touch=${touch}, iteration=${i})`);
   }
   assert.deepEqual(errors,[],'Unhandled page error');
   console.log(JSON.stringify({scenario:'rapid-gesture-cancel',touch,iterations:24,cards:ids.length,errors}));
