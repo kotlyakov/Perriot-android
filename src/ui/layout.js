@@ -9,16 +9,23 @@ export const LAYOUT={
 export function installLayout() {
  for(const [id,[x,y,w,h]] of Object.entries(LAYOUT))Object.assign(document.getElementById(id).style,{left:x+'px',top:y+'px',width:w+'px',height:h+'px'});
  const stage=document.getElementById('stage');
+ let pending=false,lastWidth=0,lastHeight=0;
  function resize(){
+   if(pending)return;
+   pending=true;
+   requestAnimationFrame(()=>{pending=false;applySize();});
+ }
+ function applySize(){
    // Mobile innerWidth can include the unscaled stage's overflow (1536px).
    // The root client box is the actual available viewport, independent of content.
    const width=document.documentElement.clientWidth,height=document.documentElement.clientHeight;
-   if(!width || !height)return;
+   if(!width || !height || (width===lastWidth && height===lastHeight))return;
+   lastWidth=width;lastHeight=height;
    const scale=Math.min(width/1536,height/688);
    document.documentElement.style.setProperty("--deck-scale",Math.min(width/1536,height/709));
    Object.assign(stage.style,{transform:`scale(${scale})`,left:(width-1536*scale)/2+'px',top:(height-688*scale)/2+'px'});
  }
  new ResizeObserver(resize).observe(document.documentElement);
  window.visualViewport?.addEventListener('resize',resize);
- addEventListener('resize',resize);resize();
+ addEventListener('resize',resize);applySize();
 }
