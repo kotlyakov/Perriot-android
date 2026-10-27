@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - qa/performance-stability-audit
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'scripts/**'
+      - '.github/workflows/qa-performance.yml'
+      - 'package.json'
   workflow_dispatch:
 
 jobs:
