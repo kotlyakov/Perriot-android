@@ -44,3 +44,13 @@
 
 ### 27.10.2026 — регрессионная проверка layout
 Добавлен `tests/core/layout-resize.test.js`: эмуляция нескольких resize/ResizeObserver событий, отсутствие повторных записей при неизменном viewport и пересчёт при повороте. Тест доступен через `node --test tests/core/layout-resize.test.js` или `npm test`. Фактический запуск в этой сессии не состоялся: рабочая копия репозитория недоступна в локальном контейнере (GitHub DNS недоступен); GitHub connector сохранил коммит, но не предоставляет запуск команд. **Не считать тест пройденным.** Далее: CI или локальный прогон, `test:mobile`, стресс-тесты, Android WebView.
+
+## 27.10.2026 — первый фактический CI-прогон
+CI добавлен: `.github/workflows/qa-performance.yml` (GitHub Actions, Node 22, Chromium Playwright). Первый прогон: https://github.com/kotlyakov/Perriot-android/actions/runs/40451666362 . Повторный прогон после исправления теста и flame: https://github.com/kotlyakov/Perriot-android/actions/runs/40451843633 .
+- **PASS**: `node --test tests/core/layout-resize.test.js`; в полном наборе также PASS новый `tests/core/flame-lifecycle.test.js`.
+- **PASS**: `npm run test:mobile` — 7 разрешений и поворот.
+- **PASS**: `tests/ui/performance-stress-check.mjs` — по 100 выборов на desktop/touch, ошибок JS и long tasks в этих прогонах не зарегистрировано. p95 Playwright action wall time: ~34–35 мс desktop, ~51–52 мс touch; максимумы ~940–963 мс включают ожидание Playwright, это не frame-time.
+- **PASS**: `tests/ui/render-churn-check.mjs` — при 30 выборах **248 DOM-узлов руки добавлено и 248 удалено** (для mouse и touch). Подтверждён существенный DOM churn, требуется оптимизация пункта 3.
+- **FAIL**: `npm test` — 2 из 1653 тестов (1649 pass, 2 skipped) на расчёте `endless-targets.test.js` (Ante18, native BigInt/binary64); не относится непосредственно к layout/flame, требует отдельного разбора.
+- **FAIL**: `gesture-stress-check.mjs` — первый прогон выявил ошибку теста: для mouse 'cancel' отправлялся mouse.up; после исправления mouse-сценарий PASS 24/24. В touch-сценарии последующего прогона `boundingBox()` вернул null; диагностика/проверка жестов остаётся открытой.
+- **Ограничения**: это Chromium CI, не Android WebView и не аппаратный FPS/ANR. Этап 4 не объявлять полностью завершённым. Локальная рабочая копия в контейнере по-прежнему недоступна из-за DNS, но GitHub Actions выполняет тесты.
