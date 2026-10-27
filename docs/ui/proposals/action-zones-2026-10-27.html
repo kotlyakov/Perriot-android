@@ -16,16 +16,17 @@
    </div>
    <div class="pp-pack-footer" hidden data-pack-footer>Пропустить набор</div>
   </div>
-  <div class="pp-use pp-zone"><strong data-use>КУПИТЬ<br>И ПРИМЕНИТЬ</strong><span data-use-detail>За $4</span></div>
+  <div class="pp-use pp-zone"><strong data-use>КУПИТЬ И<br>ПРИМЕНИТЬ</strong><span data-use-detail>За $4</span></div>
  </div>
  <p class="text-small" aria-live="polite" data-caption>Области появляются при перетаскивании карты.</p>
  <style>
- #pierrot-action-proposal .pp-table{--pp-side:clamp(84px,16vw,120px);display:grid;grid-template-columns:minmax(0,1fr) var(--pp-side);grid-template-rows:var(--pp-side) minmax(205px,1fr);gap:10px;background:#225449;color:#f6f2df;padding:12px;border-radius:12px;font-family:Rubik,Arial,sans-serif;margin-top:10px}
+ #pierrot-action-proposal .pp-table{--pp-side:clamp(104px,16vw,130px);display:grid;grid-template-columns:minmax(0,1fr) var(--pp-side);grid-template-rows:var(--pp-side) minmax(205px,1fr);gap:10px;background:#225449;color:#f6f2df;padding:12px;border-radius:12px;font-family:Rubik,Arial,sans-serif;margin-top:10px}
  #pierrot-action-proposal .pp-zone{border:3px solid #d6e2c9;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;text-align:center;padding:8px;box-shadow:0 4px #102e26;overflow-wrap:anywhere}
  #pierrot-action-proposal .pp-zone strong{font-size:clamp(12px,2.2vw,19px);font-weight:700;line-height:1.3}
  #pierrot-action-proposal .pp-zone span{font-size:12px;line-height:1.2}
  #pierrot-action-proposal .pp-buy{background:#287553;grid-area:1/1}
  #pierrot-action-proposal .pp-sell{background:#b55f25;border-color:#f6c35d;grid-area:1/2;aspect-ratio:1}
+ #pierrot-action-proposal .pp-use strong{white-space:nowrap;overflow-wrap:normal;word-break:normal;font-size:clamp(12px,2vw,16px)}
  #pierrot-action-proposal .pp-use{background:#327da3;border-color:#b2e2ee;grid-area:2/2}
  #pierrot-action-proposal .pp-zone[data-off=true]{background:#3d5550;border-color:#779087;color:#d3d9ce;box-shadow:none}
  #pierrot-action-proposal .pp-content{grid-area:2/1;min-width:0;display:flex;flex-direction:column;gap:14px;justify-content:space-between}
@@ -50,7 +51,7 @@
   for(const button of root.querySelectorAll('[data-scene]'))if(button.tagName==='BUTTON')button.setAttribute('aria-pressed',String(button.dataset.scene===mode));
   q('[data-buy]').textContent=pack?'ЗАБРАТЬ':'КУПИТЬ';q('[data-buy-detail]').textContent=own?'Товар магазина':pack?'Выбор из набора':'За $4';q('.pp-buy').dataset.off=String(own);
   q('.pp-sell').dataset.off=String(!own);q('[data-sell-detail]').textContent=own?'За $1':'Своя карта';
-  q('[data-use]').innerHTML=own||pack?'ПРИМЕНИТЬ':'КУПИТЬ<br>И ПРИМЕНИТЬ';q('[data-use-detail]').textContent=own?'Своя карта':pack?'Для расходников':'За $4';q('.pp-use').dataset.off=String(pack);
+  q('[data-use]').innerHTML=own||pack?'ПРИМЕНИТЬ':'КУПИТЬ И<br>ПРИМЕНИТЬ';q('[data-use-detail]').textContent=own?'Своя карта':pack?'Для расходников':'За $4';q('.pp-use').dataset.off=String(pack);
   q('[data-name]').textContent=pack?'Шут':'Колесо фортуны';q('[data-art]').innerHTML=pack?art.joker:art.tarot;q('[data-card]').style.background=pack?'#eee1bd':'#d79d6e';
   q('[data-origin]').textContent=own?'Свой расходник':pack?'Открытый набор':'Магазин';q('[data-price]').hidden=own||pack;q('[data-pack-footer]').hidden=!pack;
  }
