@@ -106,7 +106,7 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
    }
    function selectAndDescribe(){
      onCard(id);
-     // Selection redraws the hand, so position against its new, raised card.
+     // Keyboard activation describes the current, raised card.
      const anchor=[...hand.children].find(n=>n.dataset.cardId===id);
      if(anchor)showTip(anchor);
    }
@@ -129,7 +129,7 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
        }
      }
      function cleanup(removeTip=true){clearTimeout(holdTimer);b.removeEventListener('pointermove',move);b.removeEventListener('pointerup',end);b.removeEventListener('pointercancel',cancel);if(removeTip)dismissCardTooltip();b.classList.remove('dragging');}
-     async function end(ev){if(ev.pointerId!==e.pointerId)return;cleanup(false);if(dragged){dismissCardTooltip();await onReorder(id,to);}else if(!held){selectAndDescribe();}}
+     async function end(ev){if(ev.pointerId!==e.pointerId)return;cleanup(false);if(dragged){dismissCardTooltip();await onReorder(id,to);}else if(!held){onCard(id);}}
      function cancel(){cleanup();for(const n of hand.children){const slot=slots.find(s=>s.id===n.dataset.cardId);Object.assign(n.style,{left:slot.left,top:slot.top,transform:slot.transform});}}
      b.addEventListener('pointermove',move);b.addEventListener('pointerup',end);b.addEventListener('pointercancel',cancel);
    });
