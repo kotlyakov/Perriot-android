@@ -34,6 +34,10 @@ try {
    const before=await page.locator('#hand .playing-card').evaluateAll(ns=>ns.map(n=>n.dataset.cardId));
    const card=page.locator('#hand .playing-card').nth(i%Math.min(4,before.length));
    const rect=await card.boundingBox();
+   if(!rect){
+    const diagnostics=await page.evaluate(()=>({phase:document.getElementById('hand')?.hidden,handDisplay:getComputedStyle(document.getElementById('hand')).display,cards:[...document.querySelectorAll('#hand .playing-card')].map(n=>({id:n.dataset.cardId,connected:n.isConnected,display:getComputedStyle(n).display,rect:n.getBoundingClientRect().toJSON()}))}));
+    throw Error('Card has no bounding box '+JSON.stringify({touch,iteration:i,diagnostics}));
+   }
    const x=rect.x+rect.width/2,y=rect.y+rect.height/2;
    await input('down',x,y);await input('move',x+(i%2?260:2),y-12);
    await input(i%3===0?'cancel':'up',x+(i%2?260:2),y-12);
