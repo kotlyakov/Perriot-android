@@ -5,7 +5,7 @@ let height=0,canvas=null,running=false;
 if(typeof document!=='undefined')document.addEventListener('visibilitychange',()=>{
  if(!document.hidden && height && !running){running=true;requestAnimationFrame(draw);}
 });
-export function showFlame(score,target){height=flameHeight(score,target);if(!canvas){canvas=document.createElement('canvas');canvas.id='score_flame';canvas.width=274;canvas.height=68;document.getElementById('calculation_panel').prepend(canvas);}canvas.hidden=!height;canvas.dataset.height=String(height);if(height && !running){running=true;requestAnimationFrame(draw);}}
+export function showFlame(score,target){height=flameHeight(score,target);if(!canvas){canvas=document.createElement('canvas');canvas.id='score_flame';canvas.width=274;canvas.height=68;document.getElementById('calculation_panel').prepend(canvas);}canvas.hidden=!height;canvas.dataset.height=String(height);if(height && !running && !document.hidden){running=true;requestAnimationFrame(draw);}}
 
 // Separate, clipped fire beds keep the multiplication sign clear.
 const beds=[{left:3,right:114,seed:19,outer:'#039fea',middle:'#35c9ff',core:'#e5fcff'},
@@ -78,8 +78,8 @@ function drawBed(ctx,bed,time){
  ctx.fillStyle=root;ctx.fillRect(bed.left,45,bed.right-bed.left,22);ctx.restore();
 }
 function draw(time){
- const ctx=canvas.getContext('2d');ctx.clearRect(0,0,274,68);
  if(!height || document.hidden || !canvas.isConnected || canvas.hidden){running=false;return;}
+ const ctx=canvas.getContext('2d');ctx.clearRect(0,0,274,68);
  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches,t=reduced?1.3:time/1000;
  for(const bed of beds)drawBed(ctx,bed,t);
  if(!reduced)requestAnimationFrame(draw);else running=false;
