@@ -1,6 +1,6 @@
 export function logBigInt(value){if(value<=0n)return -Infinity;const s=value.toString(),n=Math.min(15,s.length);return Math.log10(Number(s.slice(0,n)))+s.length-n;}
 export function flameHeight(score,target){if(!(score>target) || target<=0n)return 0;const log=logBigInt(score)-logBigInt(target);return 10+52*log/(log+2);}
-let height=0,canvas=null,frame=null,listening=false;
+let height=0,canvas=null,frame=null,listening=false,boundsCanvas=null;
 function syncFlame(){
  if(!height||!canvas?.isConnected||document.hidden){if(frame!==null)cancelAnimationFrame(frame);frame=null;return;}
  if(frame===null)frame=requestAnimationFrame(draw);
@@ -9,7 +9,11 @@ export function showFlame(score,target){
  height=flameHeight(score,target);
  if(!canvas?.isConnected){canvas=document.createElement('canvas');canvas.id='score_flame';canvas.width=274;canvas.height=68;document.getElementById('calculation_panel').prepend(canvas);}
  if(!listening){document.addEventListener('visibilitychange',syncFlame);listening=true;}
- canvas.hidden=!height;canvas.dataset.height=String(height);syncFlame();
+ canvas.hidden=!height;canvas.dataset.height=String(height);
+ // Canvas sits inside the panel border; map each plaque to canvas pixels.
+ // Clipping follows the actual boxes instead of assuming their shared origin.
+ if(height&&boundsCanvas!==canvas){const bounds=canvas.getBoundingClientRect();for(const [i,id] of ['chips','mult'].entries()){const box=document.getElementById(id).getBoundingClientRect();beds[i].left=Math.ceil((box.left-bounds.left)*canvas.width/bounds.width);beds[i].right=Math.floor((box.right-bounds.left)*canvas.width/bounds.width);}boundsCanvas=canvas;}
+ syncFlame();
 }
 
 // Separate, clipped fire beds keep the multiplication sign clear.

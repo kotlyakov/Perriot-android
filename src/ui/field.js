@@ -44,7 +44,7 @@ export function displayBlindTarget(value){
 export function displayInteger(value){const s=exactText(value);return !s.includes('.')&&s.length>10?s.slice(0,3)+'e'+(s.length-3):s;}
 export function showNumbers(chips,mult,animate=false){
  for(const [id,value] of [['chips_value',chips],['mult_value',mult]]){
-   const n=document.getElementById(id),onFrame=()=>{n.style.fontSize=Math.min(43,(n.parentElement.clientWidth-12)/(.7*n.textContent.length))+'px';};
+   const n=document.getElementById(id),width=parseFloat(n.parentElement.style?.width)||n.parentElement.clientWidth,onFrame=()=>{n.style.fontSize=Math.min(43,(width-12)/(.7*n.textContent.length))+'px';};
    animateNumber(n,floorExact(value),{animate,format:displayInteger,onFrame});
  }
 }

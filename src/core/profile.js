@@ -48,7 +48,7 @@ export function profileRunContext(p,seed){if(isVerificationSeed(seed))return {un
 function conditionText(id){
  const c=PROFILE_UNLOCKS[id];if(!c)return '';const x=c.extra;
  if(c.hidden)return 'Получите этого легендарного джокера из карты «Душа».';
- const simple={c_losses:'Проиграйте партий',c_hands_played:'Сыграйте рук',c_face_cards_played:'Сыграйте фигурных карт',c_jokers_sold:'Продайте джокеров',c_cards_sold:'Продайте карт',c_shop_dollars_spent:'Потратьте в магазине долларов',c_shop_rerolls:'Обновите магазин раз',c_tarot_reading_used:'Используйте коробочек Таро',c_planetarium_used:'Используйте планетных коробочек',c_cards_played:'Сыграйте карт',c_cards_discarded:'Сбросьте карт',c_tarots_bought:'Купите карт Таро',c_planets_bought:'Купите планет',c_playing_cards_bought:'Купите игральных карт'};
+ const simple={c_losses:'Проиграйте партий',c_hands_played:'Сыграйте рук',c_face_cards_played:'Сыграйте карт с лицом',c_jokers_sold:'Продайте джокеров',c_cards_sold:'Продайте карт',c_shop_dollars_spent:'Потратьте в магазине долларов',c_shop_rerolls:'Обновите магазин раз',c_tarot_reading_used:'Используйте коробочек Таро',c_planetarium_used:'Используйте планетных коробочек',c_cards_played:'Сыграйте карт',c_cards_discarded:'Сбросьте карт',c_tarots_bought:'Купите карт Таро',c_planets_bought:'Купите планет',c_playing_cards_bought:'Купите игральных карт'};
  if(simple[c.type])return `${simple[c.type]}: ${x}.`;
  if(c.type==='discover_amount')return c.amount?`Обнаружьте ${c.amount} предметов коллекции.`:c.tarot_count?`Обнаружьте все ${c.tarot_count} карты Таро.`:`Обнаружьте все ${c.planet_count} планет.`;
  if(c.type==='win_deck')return `Победите с колодой «${DECKS[c.deck.slice(2)].name}».`;

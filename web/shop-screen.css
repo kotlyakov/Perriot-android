@@ -76,3 +76,6 @@
 .shop-ticket .ticket-main .shop-art{inset:4px auto 4px 5px;width:52px;background:none}
 .shop-ticket .ticket-main .shop-card-name{left:62px;right:5px;bottom:4px;top:4px;min-height:0;font-size:11px;line-height:13px;justify-content:center;text-align:center;overflow-wrap:anywhere}
 .shop-action-zones:not(.is-dragging) .shop-buy-zone,.shop-action-zones:not(.is-dragging) .shop-sell-zone,.shop-action-zones:not(.is-dragging) .shop-use-zone:not(.shop-use){visibility:hidden;pointer-events:none}
+/* Every pack tier has a separate three-line name strip above its bottom seal. */
+.shop-booster .shop-art{bottom:56px}
+.shop-booster .shop-card-name{height:33px;min-height:0;bottom:18px}

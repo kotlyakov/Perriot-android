@@ -45,7 +45,7 @@ export function jokerStickers(offer){
  const rows=[];
  if(offer.eternal)rows.push({id:'eternal',label:'Вечный',description:'Нельзя продать или уничтожить.'});
  if(offer.perishable){const rounds=offer.perishRounds??5;rows.push({id:'perishable',label:'Временный · '+rounds,description:rounds===0?'Срок действия истёк. Эффект джокера отключён.':`Действует ещё ${rounds} раундов. После этого эффект джокера отключится.`});}
- if(offer.rental)rows.push({id:'rental',label:'Аренда',description:'Снимает $3 в конце каждого раунда.'});
+ if(offer.rental)rows.push({id:'rental',label:'Аренда',description:'Снимает $3 в начале каждого раунда.'});
  return rows;
 }
 
@@ -136,14 +136,17 @@ function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
   const inventory=kind==='owned'||kind==='consumable',area=kind==='owned'?'jokers':'consumables';
   const purchasable=state.phase==='shop'&&!inventory,draggable=kind==='pack'||purchasable||inventory&&canManageInventory(state);
   clearSelection();
-  const startX=e.clientX,startY=e.clientY,stageOrigin=document.getElementById('stage').getBoundingClientRect(),scale=stageOrigin.width/document.getElementById('stage').offsetWidth;let dragged=false,zones,ghost;
+  const startX=e.clientX,startY=e.clientY,stageOrigin=document.getElementById('stage').getBoundingClientRect(),scale=stageOrigin.width/document.getElementById('stage').offsetWidth;let dragged=false,zones,ghost,reorderOrder;
+  const siblings=inventory?[...document.querySelectorAll(`#shop_owned [data-kind=${kind}]`)]:[],slots=siblings.map(n=>({id:n.dataset.offerId,left:n.style.left}));
+  const shift=(n,left)=>{if(n.style.left===left)return;const from=n.style.left;n.style.left=left;if(!reduced())n.animate([{left:from},{left}],{duration:gameDuration(180),easing:'ease-out'});};
   // A quick inventory drag reorders. Only a stationary hold arms sale/use.
   const holdTimer=inventory&&draggable?setTimeout(()=>{
    if(dragged||!card.isConnected)return;
    zones=actionZones(offer,kind,state,callbacks,busy);zones.group.classList.add('is-dragging');
   },350):null;
   card.setPointerCapture?.(e.pointerId);
-  function cleanup(animateHome=false){
+  function cleanup(animateHome=false,keepSlots=false){
+   if(!keepSlots)for(const [i,n] of siblings.entries())shift(n,slots[i].left);
    clearTimeout(holdTimer);
    zones?.group.remove();
    const returning=ghost;ghost=null;
@@ -169,6 +172,11 @@ function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
    }
    if(dragged){ev.preventDefault();ghost.style.translate=(ev.clientX-startX)/scale+'px '+(ev.clientY-startY)/scale+'px';
     const px=(ev.clientX-stageOrigin.left)/scale,py=(ev.clientY-stageOrigin.top)/scale;
+    if(inventory&&!zones&&!offer.pinned){
+     const step=slots.length>1?parseFloat(slots[1].left)-parseFloat(slots[0].left):1,to=Math.max(0,Math.min(slots.length-1,Math.round((parseFloat(wrap.style.left)+(ev.clientX-startX)/scale-parseFloat(slots[0].left))/Math.max(step,1))));
+     const order=slots.map(slot=>slot.id).filter(id=>id!==offer.id);order.splice(to,0,offer.id);
+     if(area!=='jokers'||!state.jokers.some((j,i)=>j.pinned&&order[i]!==j.id)){reorderOrder=order;for(const n of siblings)if(n!==wrap)shift(n,slots[order.indexOf(n.dataset.offerId)].left);}
+    }
     if(zones)for(const [key,[x,y,w,h]] of Object.entries(SHOP_DROP_REGIONS))zones.group.querySelector('#shop_'+key+'_zone').classList.toggle('is-over',px>=x&&px<=x+w&&py>=y&&py<=y+h);
    }
   }
@@ -176,18 +184,29 @@ function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
    if(ev.pointerId!==e.pointerId)return;
    const px=(ev.clientX-stageOrigin.left)/scale,py=(ev.clientY-stageOrigin.top)/scale;
    const key=dragged&&zones?Object.keys(SHOP_DROP_REGIONS).find(key=>{const [x,y,w,h]=SHOP_DROP_REGIONS[key];return px>=x&&px<=x+w&&py>=y&&py<=y+h;}):null;
-   const action=key?zones.actions[key]:null,drop=!!action&&!(inventory&&key==='buy'),available=action?.available;cleanup(dragged&&!(drop&&available));
+   const action=key?zones.actions[key]:null,drop=!!action&&!(inventory&&key==='buy'),available=action?.available;
+   const bounds=card.getBoundingClientRect(),inRow=ev.clientY>=bounds.top-25*scale&&ev.clientY<=bounds.bottom+25*scale;
+   const reordering=dragged&&inventory&&!zones&&inRow&&reorderOrder?.some((id,i)=>id!==slots[i].id);
+   const from=reordering?new Map(siblings.map(n=>[n.dataset.offerId,{left:n===wrap?parseFloat(wrap.style.left)+(ev.clientX-startX)/scale+'px':n.style.left,top:n===wrap?parseFloat(wrap.style.top)+(ev.clientY-startY)/scale+'px':n.style.top}])):null;
+   cleanup(dragged&&!(drop&&available)&&!reordering,reordering);
+   if(reordering)Object.assign(wrap.style,from.get(offer.id));
    if(!dragged){if(!busy){select();showTip(offer,card,state,busy);}return;}
    if(drop){if(available)callbacks.onAction?.(action.action,action.fields);else callbacks.onNotice?.(action.reason??'Для этой карты выберите другую область.');}
-   else if(dragged&&inventory){
-    const siblings=[...document.querySelectorAll(`#shop_owned [data-kind=${kind}]`)],cardBounds=card.getBoundingClientRect();
-    const inRow=ev.clientY>=cardBounds.top-25*scale&&ev.clientY<=cardBounds.bottom+25*scale;
-    if(inRow&&!offer.pinned){const ids=siblings.map(n=>n.dataset.offerId),others=siblings.filter(n=>n.dataset.offerId!==offer.id),to=others.filter(n=>{const b=n.getBoundingClientRect();return ev.clientX>(b.left+b.right)/2;}).length;const ordered=ids.filter(id=>id!==offer.id);ordered.splice(to,0,offer.id);if((area!=='jokers'||!state.jokers.some((j,i)=>j.pinned&&ordered[i]!==j.id))&&ordered.some((id,i)=>id!==ids[i]))callbacks.onAction?.(area==='jokers'?'REORDER_JOKERS':'REORDER_CONSUMABLES',{cardIds:ordered});}
+   else if(reordering){
+    Promise.resolve(callbacks.onAction?.(area==='jokers'?'REORDER_JOKERS':'REORDER_CONSUMABLES',{cardIds:reorderOrder})).then(()=>{
+     if(reduced())return;
+     for(const n of document.querySelectorAll(`#shop_owned [data-kind=${kind}]`))if(from.has(n.dataset.offerId))n.animate([from.get(n.dataset.offerId),{left:n.style.left,top:n.style.top}],{duration:gameDuration(300),easing:'cubic-bezier(.2,.85,.28,1.13)'});
+    },()=>{});
    }
   }
   cancelDrag=cancel;card.addEventListener('pointermove',move);card.addEventListener('pointerup',end);card.addEventListener('pointercancel',cancel);card.addEventListener('lostpointercapture',cancel);card.addEventListener('keydown',escape);
  };
  card.onkeydown=e=>{if(e.key==='Escape'){cancelDrag?.();clearSelection();}if(e.key==='F1'){e.preventDefault();showTip(offer,card,state,busy);}};
+ wrap.refresh=(nextState,nextBusy,nextCallbacks)=>{
+  state=nextState;busy=nextBusy;callbacks=nextCallbacks;card.disabled=busy;
+  const chosen=selected?.id===offer.id;wrap.classList.toggle('is-selected',chosen);card.setAttribute('aria-pressed',chosen);
+  if(chosen)select();
+ };
  if(selected?.id===offer.id)select();return wrap;
 }
 function ensureView(){
@@ -230,12 +249,21 @@ function renderPack(state,busy,callbacks){
  renderOwned(state,busy,callbacks);
 }
 function renderOwned(state,busy,callbacks){
- let owned=document.getElementById('shop_owned');if(!owned){owned=node('div','shop-owned');owned.id='shop_owned';document.getElementById('stage').append(owned);}owned.replaceChildren();
+ let owned=document.getElementById('shop_owned');if(!owned){owned=node('div','shop-owned');owned.id='shop_owned';document.getElementById('stage').append(owned);}
+ const existing=new Map([...owned.children].map(n=>[n.dataset.kind+':'+n.dataset.offerId,n])),next=[];
+ const reconcile=(offer,kind,index,x,y,w,h)=>{
+  const hidden=kind==='owned'&&!state.bossState?.disabled&&state.bossState?.hiddenJokerIds?.includes(offer.id),debuffed=kind==='owned'&&!hidden&&(offer.perishable===true&&offer.perishRounds===0||state.phase==='playing'&&offer.debuffed===true);
+  const signature=JSON.stringify({offer,hidden:!!hidden,debuffed:!!debuffed},(_,v)=>typeof v==='bigint'?v.toString():v),key=kind+':'+offer.id;let card=existing.get(key);existing.delete(key);
+  if(card?.ownedVisualKey!==signature){card?.remove();card=choice(offer,kind,index,state,busy,callbacks,x,y,w,h);card.ownedVisualKey=signature;}else {rect(card,x,y,w,h);card.refresh(state,busy,callbacks);}
+  next.push(card);
+ };
  const jokers=state.jokers,{step,start:jokerStart}=ownedJokerLayout(jokers.length);
- jokers.forEach((o,i)=>owned.append(choice(o,'owned',i,state,busy,callbacks,jokerStart+i*step,23,104,143)));
+ jokers.forEach((o,i)=>reconcile(o,'owned',i,jokerStart+i*step,23,104,143));
  // Match the approved action column's right edge, which stays visible in 16:9.
  const consumables=state.consumables??[],[consumableLeft,,regionWidth]=LAYOUT.consumable_region_inferred,consumableWidth=Math.min(regionWidth,SHOP_DROP_REGIONS.sell[2]),consumableStep=Math.min(103,(consumableWidth-96)/Math.max(1,consumables.length-1));
- consumables.forEach((o,i,a)=>owned.append(choice(o,'consumable',i,state,busy,callbacks,consumableLeft+(consumableWidth-96)/2+(i-(a.length-1)/2)*consumableStep,25,96,141)));
+ consumables.forEach((o,i,a)=>reconcile(o,'consumable',i,consumableLeft+(consumableWidth-96)/2+(i-(a.length-1)/2)*consumableStep,25,96,141));
+ for(const card of existing.values())card.remove();
+ next.forEach((card,i)=>{if(owned.children[i]!==card)owned.insertBefore(card,owned.children[i]??null);});
  document.getElementById('joker_count').textContent=jokers.length+'/'+((state.jokerSlots??5)+jokers.filter(j=>j.edition==='negative').length);
  document.getElementById('consumable_count').textContent=(state.consumables?.length??0)+'/'+((state.consumableSlots??2)+(state.consumables??[]).filter(c=>c.edition==='negative').length);
 }
@@ -257,8 +285,8 @@ export function renderShop(state,busy,{onAction,onNotice,targetCardIds=[]}={}){
  if(state.phase!=='shop'||!state.shop){
   dismissTip();entryMotion?.cancel();view?.controller?.abort();view?.remove();document.getElementById('shop_sign')?.remove();view=null;if(!acornRound)selected=null;lastMain=null;renderOwned(state,busy,{onAction,onNotice,targetCardIds});return;
  }
- const fresh=ensureView();view.querySelector('.shop-voucher-label').textContent='БИЛЕТЫ · АНТЕ '+(state.apkShop?.context.ante??state.round?.ante??'');const callbacks={onAction,onNotice,targetCardIds},offers=view.querySelector('.shop-offers'),owned=document.getElementById('shop_owned');
- const all=[...state.shop.main,...state.shop.vouchers,...state.shop.boosters,...state.jokers,...(state.consumables??[])];if(selected&&!all.some(o=>o.id===selected.id))clearSelection();dismissTip();offers.replaceChildren();owned.replaceChildren();
+ const fresh=ensureView();view.querySelector('.shop-voucher-label').textContent='БИЛЕТЫ · АНТЕ '+(state.apkShop?.context.ante??state.round?.ante??'');const callbacks={onAction,onNotice,targetCardIds},offers=view.querySelector('.shop-offers');
+ const all=[...state.shop.main,...state.shop.vouchers,...state.shop.boosters,...state.jokers,...(state.consumables??[])];if(selected&&!all.some(o=>o.id===selected.id))clearSelection();dismissTip();offers.replaceChildren();
  const main=state.shop.main,mainWidth=104,spacing=Math.min(118,main.length>1?330/(main.length-1):118),start=413-mainWidth/2-spacing*(main.length-1)/2;
  main.forEach((o,i)=>offers.append(choice(o,'main',i,state,busy,callbacks,start+i*spacing,38,104,142)));
  const tickets=rect(node('div','shop-ticket-list'),79,251,226,172);tickets.id='shop_ticket_list';tickets.setAttribute('aria-label','Билеты магазина');

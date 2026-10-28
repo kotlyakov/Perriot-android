@@ -33,7 +33,7 @@ dialog.menu-dialog{height:auto;min-height:0;padding:14px;gap:12px;width:940px;bo
 .menu-dialog[data-window=party]{width:1010px}.menu-dialog[data-window=party] #dialog-body{height:532px}
 .run-hands{display:flex;flex-direction:column;gap:5px}
 .run-hand{display:grid;grid-template-columns:92px minmax(0,1fr) minmax(90px,auto) 18px minmax(75px,auto) 18px 55px;gap:8px;min-height:29px;padding:3px 8px;background:#3b514b;font-size:18px}
-.run-hand strong{font-size:19px}.run-hand .hand-level{background:#e8ddc0;color:#173d37;border:1px solid #f0e5c8;border-radius:5px;padding:4px;text-align:center;font-size:17px}
+.run-hand strong{font-size:19px}.run-hand .hand-level{background:#e8ddc0;color:#173d37;border:1px solid #f0e5c8;border-radius:5px;padding:4px;text-align:center;font-size:17px;text-shadow:none}
 .run-hand .hand-chips,.run-hand .hand-mult{padding:4px 7px;border-radius:4px;text-align:right;background:#078abd;color:#f0e5c8;font-size:19px;overflow-wrap:anywhere}
 .run-hand .hand-mult{background:#b34038;text-align:left}.run-hand .hand-played{text-align:center;background:#173d37;padding:5px;color:#edba76;border-radius:4px}
 .run-blind{padding:8px;border-width:3px}.run-blind h2{font-size:23px;margin:5px 0 12px}.run-blind p{font-size:17px!important;margin:6px}.run-blind strong{margin:8px 0;font-size:20px}

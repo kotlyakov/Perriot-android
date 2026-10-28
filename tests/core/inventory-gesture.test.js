@@ -10,6 +10,7 @@ class Element {
  setAttribute(k,v){this[k]=String(v);}
  removeAttribute(k){delete this[k];}
  append(...nodes){for(const n of nodes){n.parentElement=this;this.children.push(n);}}
+ insertBefore(node,before){if(node.parentElement)node.parentElement.children=node.parentElement.children.filter(n=>n!==node);const i=before?this.children.indexOf(before):this.children.length;node.parentElement=this;this.children.splice(i,0,node);}
  replaceChildren(...nodes){this.children=[];this.append(...nodes);}
  remove(){if(this.parentElement)this.parentElement.children=this.parentElement.children.filter(n=>n!==this);this.isConnected=false;}
  matches(s){return s.startsWith('.')?this.classList.contains(s.slice(1)):s.startsWith('#')?this.id===s.slice(1):s.startsWith('[data-kind=')?this.dataset.kind===s.slice(11,-1):this.tagName===s;}
@@ -29,7 +30,7 @@ function fixture(t){
  for(const id of ['joker_count','consumable_count']){const n=new Element(doc);n.id=id;stage.append(n);}
  const old={document:globalThis.document,matchMedia:globalThis.matchMedia};globalThis.document=doc;globalThis.matchMedia=()=>({matches:true});t.after(()=>Object.assign(globalThis,old));t.mock.timers.enable({apis:['setTimeout']});
  const state=createRun('inventory-gesture',{runId:'inventory-gesture',money:4n});state.phase='playing';state.jokers=[0,1].map(i=>({id:'owned_'+i,entityId:'j_joker',originalKey:'j_joker',set:'Joker',edition:'base',sellCost:2n}));
- const actions=[];renderShop(state,false,{onAction:(...a)=>actions.push(a)});return {card:stage.querySelector('.shop-card'),stage,actions};
+ const actions=[];renderShop(state,false,{onAction:(...a)=>actions.push(a)});return {card:stage.querySelector('.shop-card'),stage,actions,state};
 }
 for(const pointerType of ['mouse','touch']){
  test(`${pointerType}: immediate drag remains reorder without sale areas even after hold time`,t=>{
@@ -42,3 +43,13 @@ for(const pointerType of ['mouse','touch']){
  });
  test(`${pointerType}: cancellation clears a pending hold`,t=>{const {card,stage}=fixture(t);card.emit('pointerdown',{pointerType});card.emit('pointercancel',{pointerType});t.mock.timers.tick(500);assert.equal(stage.querySelector('#shop_action_zones'),null);});
 }
+
+test('unchanged owned nodes survive refreshed busy/state/callback bindings',t=>{
+ const {card,stage,actions,state}=fixture(t),next=structuredClone(state),fresh=[];
+ next.revision++;renderShop(next,true,{onAction:(...a)=>fresh.push(a)});
+ assert.equal(stage.querySelector('.shop-card'),card);assert.equal(card.disabled,true);
+ renderShop(next,false,{onAction:(...a)=>fresh.push(a)});
+ assert.equal(stage.querySelector('.shop-card'),card);assert.equal(card.disabled,false);
+ card.emit('pointerdown');t.mock.timers.tick(350);card.emit('pointermove',{clientX:1300,clientY:100});card.emit('pointerup',{clientX:1300,clientY:100});
+ assert.equal(actions.length,0);assert.equal(fresh[0][0],'SELL_OWNED_CARD');
+});

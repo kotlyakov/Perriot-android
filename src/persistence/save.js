@@ -513,7 +513,7 @@ function decode(payload) {
   requireValue(state.lastScore===null||!hasEffectMechanisms(state));
   const sortMode=state.sortMode;
   if(Object.hasOwn(state,'sortMode'))requireValue(['rank','suit'].includes(sortMode));
-  optionalObject(state,['schemaVersion','runId','seed','revision','phase','deckId','cards','hand','drawPile','discardPile','jokers','handLevels','discoveredHands','rng','money','round','lastScore'],['blindHistory','stake','shop','bankruptAt','jokerSlots','apkShop','sortMode','roundNumber','apkBlinds','bossState','nextAnteBlinds','runStats','consumables','consumableSlots','mostPlayedHand','consumableUsage','consumableUsageTotal','lastTarotPlanet','packState','destroyedCardIds','hangedDestroyedCardIds','hangedShortfallCardIds','hangedShortfallEpoch','nextJokerCreationOrdinal','cashoutQuote','winAnte','won','winNotified','winPending','nextPlayingCardOrdinal','lastPlayedHand','handUsage','startingDeckSize','pendingDoubleTags','spectralDestroyedCardIds','spectralShortfallCardIds','spectralShortfallEpoch','spectralHandSizeDelta','ectoMinus','pendingTags','pendingTagPacks','activeTagHandSize','bossRerollUsed','challengeId','challengePlayedCardIds','challengeFlippedCardIds','challengeLuxuryTax','runSummary']);
+  optionalObject(state,['schemaVersion','runId','seed','revision','phase','deckId','cards','hand','drawPile','discardPile','jokers','handLevels','discoveredHands','rng','money','round','lastScore'],['blindHistory','stake','shop','bankruptAt','jokerSlots','apkShop','sortMode','roundNumber','apkBlinds','bossState','nextAnteBlinds','runStats','consumables','consumableSlots','mostPlayedHand','consumableUsage','consumableUsageTotal','lastTarotPlanet','packState','destroyedCardIds','hangedDestroyedCardIds','hangedShortfallCardIds','hangedShortfallEpoch','nextJokerCreationOrdinal','cashoutQuote','winAnte','won','winNotified','winPending','nextPlayingCardOrdinal','lastPlayedHand','handUsage','startingDeckSize','pendingDoubleTags','spectralDestroyedCardIds','spectralShortfallCardIds','spectralShortfallEpoch','spectralHandSizeDelta','ectoMinus','pendingTags','pendingTagPacks','activeTagHandSize','bossRerollUsed','challengeId','challengePlayedCardIds','challengeFlippedCardIds','challengeLuxuryTax','runSummary','rentalTiming']);
   if(Object.hasOwn(state,'challengeId'))requireValue(typeof state.challengeId==='string'&&Object.hasOwn(CHALLENGE_BY_ID,state.challengeId)&&state.deckId==='red'&&(state.stake??1)===1&&state.apkShop&&state.apkBlinds&&state.rng?.apk);
   const challenge=challengeFor(state);
   if(Object.hasOwn(state,'challengeLuxuryTax')){requireValue(challenge?.modifiers?.minusHandSizePerDollars);integer(state.challengeLuxuryTax,-Number.MAX_SAFE_INTEGER,Number.MAX_SAFE_INTEGER);}
@@ -563,6 +563,7 @@ function decode(payload) {
     requireValue(Array.isArray(state.blindHistory)&&state.blindHistory.length<=3);
     const keys=new Set();for(const entry of state.blindHistory){object(entry,['ante','blindId','outcome']);integer(entry.ante,0);requireValue(entry.ante<=state.round.ante&&['small','big','boss'].includes(entry.blindId)&&['skipped','defeated'].includes(entry.outcome)&&!(entry.blindId==='boss'&&entry.outcome==='skipped'));const key=entry.ante+':'+entry.blindId;requireValue(!keys.has(key));keys.add(key);}
   }
+  if(Object.hasOwn(state,'rentalTiming'))requireValue(state.rentalTiming==='round_start');
   if(Object.hasOwn(state,'runSummary')){object(state.runSummary,['bestHand','cardsPlayed','cardsDiscarded','cardsPurchased','rerolls']);state.runSummary.bestHand=decimal(state.runSummary.bestHand);for(const key of ['cardsPlayed','cardsDiscarded','cardsPurchased','rerolls'])integer(state.runSummary[key]);}
   if(Object.hasOwn(state,'runStats')){object(state.runStats,['handsPlayed','unusedDiscards','skips']);for(const count of Object.values(state.runStats))integer(count);}
   if(Object.hasOwn(state,'hangedShortfallEpoch')){
@@ -727,7 +728,8 @@ function decodeEffectReplay(payload){
   const legacyActions=['PLAY_HAND','DISCARD','REORDER_HAND','SET_SORT','CONTINUE_ENDLESS'];
   for(const action of journal.actions){
     requireValue(action&&typeof action==='object'&&!Array.isArray(action)&&Object.hasOwn(fields,action.type));
-    requireValue(Object.keys(action).every(k=>['type','expectedRevision','profileUnlockedCentreIds','profileLockedCentreIds',...fields[action.type]].includes(k)));
+    requireValue(Object.keys(action).every(k=>['type','expectedRevision','profileUnlockedCentreIds','profileLockedCentreIds','rentalTiming',...fields[action.type]].includes(k)));
+    if(Object.hasOwn(action,'rentalTiming'))requireValue(action.rentalTiming==='round_start');
     if(journal.version===1)requireValue(legacyActions.includes(action.type));
   }
   const replay=replayFromVerifiedPrefix(journal.before,before,journal.actions),expected=replay.state;
@@ -743,7 +745,18 @@ export function serializeState(state){
   deserializeState(text); // Validate the exact bytes that will be stored.
   return text;
 }
+// Exact bytes already authenticated in this runtime need no second schema walk.
+// Entries hold private clones and are bounded by both count and total text size.
+const verifiedSaves=new Map();let verifiedSaveSize=0;
+function rememberVerifiedSave(text,state){
+ if(text.length>LIMIT)return;
+ if(verifiedSaves.has(text)){verifiedSaveSize-=text.length;verifiedSaves.delete(text);}
+ verifiedSaves.set(text,structuredClone(state));verifiedSaveSize+=text.length;
+ while(verifiedSaves.size>8||verifiedSaveSize>LIMIT){const oldest=verifiedSaves.keys().next().value;verifiedSaveSize-=oldest.length;verifiedSaves.delete(oldest);}
+}
 export function deserializeState(text) {
+  requireValue(typeof text==='string');
+  const verified=verifiedSaves.get(text);if(verified)return structuredClone(verified);
   requireValue(typeof text==='string' && text.length<=PROFILE_LIMIT && new TextEncoder().encode(text).length<=PROFILE_LIMIT);
   const payload=JSON.parse(text);
   if(Object.hasOwn(payload,'account')){
@@ -753,7 +766,7 @@ export function deserializeState(text) {
     const {account,...run}=payload;return decode(run);
   }
   requireValue(text.length<=LIMIT&&new TextEncoder().encode(text).length<=LIMIT);
-  return decode(payload);
+  const state=decode(payload);rememberVerifiedSave(text,state);return state;
 }
 
 

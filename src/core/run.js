@@ -1,7 +1,7 @@
 import {createRunSummary,recordRunSummary} from './run-summary.js';
 import {isVerificationSeed,verificationCentreIds} from './verification-seed.js';
 import {applyRoundEndJokers,hasJokerStickers} from './round-end-jokers.js';
-import {setJokerBossDebuff} from './joker-stickers.js';
+import {setJokerBossDebuff,applyJokerRentalStartRound} from './joker-stickers.js';
 import {validStake,stakeShopModifiers,runDiscards} from './stakes.js';
 import {DECKS,deckHands,deckDiscards,deckHandSize,deckBlindScale} from '../content/decks.js';
 import {prepareStartingDeck,finishStartingDeck} from './deck-effects.js';
@@ -99,6 +99,7 @@ export function createRun(seed, {runId,deckId='red',stake=1,money,referenceRng=f
   }
   finishStartingDeck(state);
   if(state.apkShop&&!['red','blue'].includes(deckId))state.apkShop.context=currentApkShopContext(state);
+  state.rentalTiming='round_start';
   state.runSummary=createRunSummary();
   return state;
 }
@@ -143,6 +144,7 @@ function drawToLimit(state, events,action='START_BLIND') {
 // Keep one trusted checkpoint, never nested histories. PLAY_HAND refreshes the
 // scoring checkpoint; other effect transitions retain their mutable provenance.
 export function dispatch(state,action,shopOptions={}){
+  if(state?.rentalTiming!=='round_start'&&action&&typeof action==='object')action={...action,rentalTiming:'round_start'};
   let result;try{result=dispatchCore(state,action,shopOptions);}catch(error){return {state,events:[],error:{code:'INVALID_STATE',message:error.message}};}
   if(result.error||result.state===state)return result;
   let next=result.state;
@@ -212,6 +214,11 @@ export function replayEffectActions(before,actions){
   return state;
 }
 function dispatchCore(state, action, shopOptions={}) {
+  if(action?.rentalTiming!==undefined){
+    if(action.rentalTiming!=='round_start')return {state,events:[],error:{code:'INVALID_ACTION',message:'Invalid rental timing'}};
+    const input={...state,rentalTiming:'round_start'},clean={...action};delete clean.rentalTiming;
+    const result=dispatchCore(input,clean,shopOptions);return result.error||result.state===input?{...result,state}:result;
+  }
   const originalState=state;
   const reject=(code,message)=>({state:originalState,events:[],error:{code,message}});
   if (!action || typeof action.type!=='string' || !Number.isSafeInteger(action.expectedRevision)) return reject('INVALID_ACTION','Malformed action');
@@ -274,7 +281,7 @@ function dispatchCore(state, action, shopOptions={}) {
   if (action.type==='START_BLIND') {
     if (state.phase!=='blind_selection') return reject('INVALID_PHASE','Not selecting a blind');
     if(state.round.blindId==='boss'&&!canEnterBoss(state))return reject('BOSS_UNAVAILABLE','Boss lifecycle is unavailable');
-    const next=structuredClone(state);const events=[];applyTagRoundStart(next,events);
+    const next=structuredClone(state);const events=[];if(next.rentalTiming==='round_start')applyJokerRentalStartRound(next,events);applyTagRoundStart(next,events);
     if(next.round.blindId==='boss'){
       next.bossState={version:1,disabled:false,id:next.apkBlinds.bossId,playedBeforeBoss:[...next.apkBlinds.playedCardIds],baseHandSize:realHandSize(next)};
       if(next.bossState.id==='bl_manacle')changeHandSize(next,-1,{updateBoss:false});

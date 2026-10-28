@@ -1,6 +1,6 @@
 # Пьеро — Android
 
-Проверочная версия **0.4.58-preview**, versionCode71, пакет `ru.cardcascade.game.preview`. Ветка `fix/enhancement-visuals`; актуальные результаты и ограничения — [STATUS.md](STATUS.md), оставшиеся задачи — [BACKLOG.md](BACKLOG.md).
+Проверочная версия **0.4.59-preview**, versionCode72, пакет `ru.cardcascade.game.preview`. Ветка `fix/enhancement-visuals`; актуальные результаты и ограничения — [STATUS.md](STATUS.md), оставшиеся задачи — [BACKLOG.md](BACKLOG.md).
 
 Последний проверенный APK: [Pierrot-0.4.58-preview.apk](https://chatgpt.com/library?file_id=libfile_f1028277f59c8191ba25ea167a1354cd&account_id=personal). CI40703780413SUCCESS:1904core/42browser/freshAndroid. [Протокол](docs/qa/2026-10-28-feedback-058.md). Физический Android не проверен; CIdebug-подпись отличается от0.4.57, не удаляйте прежнюю игру с прогрессом.
 

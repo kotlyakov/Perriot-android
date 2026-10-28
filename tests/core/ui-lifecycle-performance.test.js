@@ -17,7 +17,7 @@ test('flame stops immediately at zero, pauses hidden, and replaces a detached ca
  let id=0,draws=0;const frames=new Map(),events={},canvases=[];
  const ctx=new Proxy({createLinearGradient:()=>({addColorStop(){}})},{get:(obj,key)=>obj[key]??(()=>{if(key==='clearRect')draws++;})});
  const panel={prepend(canvas){canvas.isConnected=true;canvases.push(canvas);}};
- const doc={hidden:false,addEventListener:(type,fn)=>events[type]=fn,getElementById:()=>panel,createElement:()=>({dataset:{},isConnected:false,ownerDocument:doc,getContext:()=>ctx})};
+ const doc={hidden:false,addEventListener:(type,fn)=>events[type]=fn,getElementById:id=>id==='calculation_panel'?panel:{getBoundingClientRect:()=>({left:id==='chips'?164:308,right:id==='chips'?275:419})},createElement:()=>({dataset:{},isConnected:false,ownerDocument:doc,getContext:()=>ctx,getBoundingClientRect:()=>({left:161,top:299,width:266,height:68})})};
  globals(t,{document:doc,requestAnimationFrame:fn=>{frames.set(++id,fn);return id;},cancelAnimationFrame:id=>frames.delete(id),matchMedia:()=>({matches:false})});
  const {showFlame}=await import('../../src/ui/flame.js?lifecycle-test');
  const tick=()=>{const pending=[...frames.values()];frames.clear();for(const fn of pending)fn(100);};
