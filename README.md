@@ -2,7 +2,7 @@
 
 Проверочная версия **0.4.58-preview**, versionCode71, пакет `ru.cardcascade.game.preview`. Ветка `fix/enhancement-visuals`; актуальные результаты и ограничения — [STATUS.md](STATUS.md), оставшиеся задачи — [BACKLOG.md](BACKLOG.md).
 
-Последний проверенный APK: [Pierrot-0.4.57-preview.apk](https://chatgpt.com/library?file_id=libfile_bc3a4786a3e08191a2e566f090191deb&account_id=personal). CI40545833984SUCCESS:1870core/38browser/freshAndroid. [Протокол](docs/qa/2026-10-27-feedback-057.md). Физический Android и обновление поверх0.4.56 не подтверждаются: CIdebug-подпись отличается; не удаляйте прежнюю игру с прогрессом.
+Последний проверенный APK: [Pierrot-0.4.58-preview.apk](https://chatgpt.com/library?file_id=libfile_f1028277f59c8191ba25ea167a1354cd&account_id=personal). CI40703780413SUCCESS:1904core/42browser/freshAndroid. [Протокол](docs/qa/2026-10-28-feedback-058.md). Физический Android не проверен; CIdebug-подпись отличается от0.4.57, не удаляйте прежнюю игру с прогрессом.
 
 25.10.2026 пользователь утвердил первый набор всех150джокеров: собственные рисунки с картами/фишками в стиле «Печатная мастерская», отдельное поле полного названия. Главное меню и настройки утверждены24.10 и восстановлены с точными паспортами в `docs/approved-ui/`. Поздние варианты рисунков сохранены в Git и не используются. Новая сборка включает утверждённыйUI и работающую скорость0.5/1/2/4. Прочие открытые визуальные задачи остаются в бэклоге.
 
