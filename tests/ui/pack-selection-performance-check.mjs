@@ -39,7 +39,8 @@ try{
   await page.reload();await enterRun(page,{startBlind:false});await page.locator('#pack_screen').waitFor();await page.evaluate(()=>document.fonts.ready);
   await page.locator(`[data-offer-id="${strength.id}"] .shop-card`).click();
   assert.ok(await page.locator('#shop_use_zone,.shop-choice .shop-use').isDisabled());
-  assert.equal(await page.locator('#hand .playing-card').count(),0,'No target hand in consumable pack');
+  assert.equal(await page.locator('#hand .playing-card').count(),initial.hand.length,'Arcana target hand is available alongside storage');
+  const packReport=await page.evaluate(async()=>{const roots=['hand','pack_screen','shop_owned'].map(id=>document.getElementById(id)),nodes=roots.map(r=>[...r.querySelectorAll('.playing-card,.shop-card,svg')]);for(let i=0;i<24;i++){document.querySelectorAll('#hand .playing-card')[i%2].click();await new Promise(requestAnimationFrame);}return roots.every((r,i)=>{const now=[...r.querySelectorAll('.playing-card,.shop-card,svg')];return now.length===nodes[i].length&&now.every((n,j)=>n===nodes[i][j]);});});assert.equal(packReport,true,'Target selections preserve live pack/hand/owned cards');
   const originalCards=structuredClone(initial.cards);
   const {dragShopAction}=await import('./shop-actions.mjs');
   await dragShopAction(page,strength.id,'buy',width<1000);
@@ -64,6 +65,10 @@ try{
   assert.equal(after.consumables.length,1);assert.equal(after.money,playing.money);
   await page.reload();await enterRun(page,{startBlind:false});await page.locator('#hand .playing-card').first().waitFor();
   assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),durable);assert.deepEqual(errors,[]);
-  console.log(JSON.stringify({width,strengthTarget:target,saveReload:true}));await page.close();
+  // The same choice can also be used immediately, with the visible target hand.
+  await page.evaluate(text=>localStorage.setItem('card-cascade.current',text),serializeState(initial));await page.reload();await enterRun(page,{startBlind:false});await page.locator('#pack_screen').waitFor();
+  const immediateTarget=initial.hand[1];await page.locator(`#hand [data-card-id="${immediateTarget}"]`).click();await page.locator(`[data-offer-id="${strength.id}"] .shop-card`).click();assert.equal(await page.locator('#shop_use_zone').isEnabled(),true);await page.locator('#shop_use_zone').click();await page.locator('#shop_screen').waitFor();
+  const immediate=deserializeState(await page.evaluate(()=>localStorage.getItem('card-cascade.current'))),rank=initial.cards[immediateTarget].rank;assert.equal(immediate.cards[immediateTarget].rank,rank===14?2:rank+1);assert.equal(immediate.consumables.length,initial.consumables.length);assert.equal(immediate.phase,'shop');
+  console.log(JSON.stringify({width,strengthTarget:target,saveReload:true,visiblePackTargets:true,optionalImmediateUse:true}));await page.close();
  }
 }finally{await browser.close();}

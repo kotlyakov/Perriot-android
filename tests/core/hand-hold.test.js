@@ -52,6 +52,6 @@ test('keyboard activation retains selection and accessible description',t=>{
  const {card,selected,tips}=fixture(t);card.emit('keydown',{key:'Enter',repeat:false});assert.equal(selected.length,1);assert.equal(tips().length,1);
 });
 
-for(const [source,count] of [['p_arcana_normal_1',0],['p_spectral_normal_1',0],['p_standard_normal_1',0]]){
+for(const [source,count] of [['p_arcana_normal_1',8],['p_spectral_normal_1',8],['p_standard_normal_1',0]]){
  test(source+' shows only the intended lower hand',t=>assert.equal(fixture(t,source).hand.children.length,count));
 }

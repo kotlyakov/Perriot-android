@@ -183,7 +183,7 @@ Object.assign(descriptions,{
 for(const pack of catalog.centres.filter(card=>card.set==='Booster')){
  const compact=['Buffoon','Spectral'].includes(pack.kind),size=pack.key.includes('_normal_')?(compact?2:3):(compact?4:5),choices=pack.key.includes('_mega_')?2:1;
  const contents={Arcana:'карты Таро',Celestial:'карты Планет',Standard:'обычные и усиленные игральные карты, возможны издания и печати',Spectral:'Спектральные карты',Buffoon:'карты джокеров'}[pack.kind];
- const action=pack.kind==='Standard'?'и добавьте в колоду':pack.kind==='Buffoon'?'и добавьте к своим джокерам':'и используйте сразу';
+ const action=pack.kind==='Standard'?'и добавьте в колоду':pack.kind==='Buffoon'?'и добавьте к своим джокерам':'и заберите в карман для применения позже';
  descriptions[pack.key]=`Содержит ${contents}. Предлагается карт: ${size}. Выберите ${choices} ${action}.`;
 }
 // Standard pack offers retain their native front identity in storage. Expand it

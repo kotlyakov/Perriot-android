@@ -14,8 +14,8 @@ export function shopDropActions(state,offer,kind,targets=[]){
   if(kind==='consumable'){const capability=canUseConsumable(state,offer,targets);actions.use={...actions.use,action:'USE_CONSUMABLE',fields:{cardId:offer.id,targetCardIds:targets},reason:capability.reason};}
  }else if(fromPack){
   const capability=canTakePackCard(state,offer);actions.buy={...actions.buy,action:'TAKE_PACK_CARD',fields:{cardId:offer.id},reason:capability.reason};
-  // Immediate use stays optional for effects that do not require a target hand.
-  if(!/^p_(standard|buffoon)_/.test(state.packState?.sourceEntityId??'')){const use=canUsePackCard(state,offer,[]);actions.use={...actions.use,action:'USE_PACK_CARD',fields:{cardId:offer.id,targetCardIds:[]},reason:use.reason};}
+  // Immediate use remains optional; a target hand is shown for Arcana/Spectral.
+  if(!/^p_(standard|buffoon)_/.test(state.packState?.sourceEntityId??'')){const use=canUsePackCard(state,offer,targets);actions.use={...actions.use,action:'USE_PACK_CARD',fields:{cardId:offer.id,targetCardIds:targets},reason:use.reason};}
  }else if(state.phase==='shop'){
   const pack=kind==='booster'&&supportsBooster(offer.entityId),voucher=kind==='voucher',consumable=supportsConsumableEffect(offer);
   let reason=!canAfford(state.money,offer.cost,state.bankruptAt??0n)?'Недостаточно денег.':null;
