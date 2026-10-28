@@ -8,7 +8,7 @@ import {scoreHand} from '../core/score.js';
 import {appendCardDescription} from './card-description.js';
 import {showCardTooltip,dismissCardTooltip} from './card-tooltip.js';
 import {describeCardModifiers} from '../content/card-modifier-display.js';
-import {exactText} from '../core/numbers.js';
+import {exactText,floorExact} from '../core/numbers.js';
 import {HAND_NAMES} from '../content/hand-names.js';
 export {HAND_NAMES};
 export const SUITS={spades:['♠','#283c53'],hearts:['♥','#bb3034'],clubs:['♣','#143d39'],diamonds:['♦','#ca502a']};
@@ -45,8 +45,7 @@ export function displayInteger(value){const s=exactText(value);return !s.include
 export function showNumbers(chips,mult,animate=false){
  for(const [id,value] of [['chips_value',chips],['mult_value',mult]]){
    const n=document.getElementById(id),onFrame=()=>{n.style.fontSize=Math.min(43,(n.parentElement.clientWidth-12)/(.7*n.textContent.length))+'px';};
-   if(typeof value!=='bigint'){delete n.dataset.number;n.textContent=displayInteger(value);n.title=exactText(value);onFrame();continue;}
-   animateNumber(n,value,{animate,format:displayInteger,onFrame});
+   animateNumber(n,floorExact(value),{animate,format:displayInteger,onFrame});
  }
 }
 
@@ -91,7 +90,8 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
  const fanWidth=669;
  const gap=state.hand.length>1?Math.min(82,(fanWidth-115)/(state.hand.length-1)):0;
  const start=478+(fanWidth-115-gap*(state.hand.length-1))/2;
- state.hand.forEach((id,i)=>{
+ const visibleHand=state.phase==='pack'?[]:state.hand;
+ visibleHand.forEach((id,i)=>{
    const card=state.cards[id],b=document.createElement('button'),middle=(state.hand.length-1)/2,tilt=state.hand.length>1?(i-middle)*1.35:0;
    const hidden=hiddenCardIds.has(id),debuffed=!hidden&&state.phase==='playing'&&isBossCardDebuffed(state,card);b.className='playing-card'+(hidden?' hidden-card deck-back':'')+(selected.has(id)?' selected':'')+(debuffed?' boss-debuffed':'')+(playing&&!state.bossState?.disabled&&state.bossState?.forcedCardId===id?' bell-forced':'');b.dataset.cardId=id;if(!hidden)applyCardModifiers(b,card);
    if(hidden)b.dataset.deck=state.deckId;

@@ -21,7 +21,7 @@ class Element {
  setPointerCapture(){}
  focus(){}
 }
-function fixture(t){
+function fixture(t,source){
  const nodes=new Map(),doc={listeners:{},getElementById(id){if(!nodes.has(id))nodes.set(id,new Element(this));return nodes.get(id);},querySelector(s){return this.getElementById(s);},createElement(){return new Element(this);},addEventListener(type,fn){(this.listeners[type]??=[]).push(fn);}};
  doc.getElementById('stage').offsetWidth=1536;
  doc.getElementById('stage').getBoundingClientRect=()=>({width:1536});
@@ -31,10 +31,11 @@ function fixture(t){
  globalThis.document=doc;globalThis.requestAnimationFrame=()=>0;globalThis.matchMedia=()=>({matches:true});
  t.after(()=>Object.assign(globalThis,old));
  const state=createRun('hold',{runId:'hold-regression',money:4n});state.phase='playing';state.hand=Object.keys(state.cards).slice(0,8);state.drawPile=Object.keys(state.cards).slice(8);state.round.target=1000000n;
+ if(source){state.phase='pack';state.packState={sourceEntityId:source};}
  const selected=[],reordered=[];
  renderField(state,new Set(),false,id=>selected.push(id),(...args)=>reordered.push(args));
  const card=doc.getElementById('hand').children[0],tips=()=>doc.getElementById('stage').children.filter(n=>n.classList.contains('card-tip'));
- return {card,selected,reordered,tips};
+ return {card,selected,reordered,tips,hand:doc.getElementById('hand')};
 }
 test('short pointer tap selects without creating a card tooltip',async t=>{
  const {card,selected,tips}=fixture(t);card.emit('pointerdown');t.mock.timers.tick(100);card.emit('pointerup');await Promise.resolve();
@@ -50,3 +51,7 @@ test('drag and pointer cancellation prevent delayed descriptions or selection',t
 test('keyboard activation retains selection and accessible description',t=>{
  const {card,selected,tips}=fixture(t);card.emit('keydown',{key:'Enter',repeat:false});assert.equal(selected.length,1);assert.equal(tips().length,1);
 });
+
+for(const [source,count] of [['p_arcana_normal_1',0],['p_spectral_normal_1',0],['p_standard_normal_1',0]]){
+ test(source+' shows only the intended lower hand',t=>assert.equal(fixture(t,source).hand.children.length,count));
+}

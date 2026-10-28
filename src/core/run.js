@@ -1,3 +1,4 @@
+import {createRunSummary,recordRunSummary} from './run-summary.js';
 import {isVerificationSeed,verificationCentreIds} from './verification-seed.js';
 import {applyRoundEndJokers,hasJokerStickers} from './round-end-jokers.js';
 import {setJokerBossDebuff} from './joker-stickers.js';
@@ -98,6 +99,7 @@ export function createRun(seed, {runId,deckId='red',stake=1,money,referenceRng=f
   }
   finishStartingDeck(state);
   if(state.apkShop&&!['red','blue'].includes(deckId))state.apkShop.context=currentApkShopContext(state);
+  state.runSummary=createRunSummary();
   return state;
 }
 
@@ -164,6 +166,7 @@ export function dispatch(state,action,shopOptions={}){
     const before=structuredClone(state);delete before.effectReplay;
     journal={version:2,before,actions:[structuredClone(action)]};
   }
+  recordRunSummary(state,next,result.events);
   if(journal)next.effectReplay=journal;else delete next.effectReplay;
   return result;
 }
@@ -205,7 +208,7 @@ function finishAction(before,next,action,events){
 }
 export function replayEffectActions(before,actions){
   let state=structuredClone(before);
-  for(const action of actions){const result=dispatchCore(state,action);if(result.error)throw new TypeError('Invalid effect action history');if(result.state!==state)finishAction(state,result.state,action,result.events);state=openPendingTagPack(result.state,result.events);}
+  for(const action of actions){const result=dispatchCore(state,action);if(result.error)throw new TypeError('Invalid effect action history');if(result.state!==state)finishAction(state,result.state,action,result.events);const next=openPendingTagPack(result.state,result.events);if(next!==state)recordRunSummary(state,next,result.events);state=next;}
   return state;
 }
 function dispatchCore(state, action, shopOptions={}) {
@@ -231,7 +234,7 @@ function dispatchCore(state, action, shopOptions={}) {
   }
   if(['REORDER_JOKERS','REORDER_CONSUMABLES','SELL_OWNED_CARD'].includes(action.type))return applyInventoryAction(state,action);
   if(action.type==='USE_CONSUMABLE')return applyConsumableAction(state,action);
-  if(['OPEN_BOOSTER','USE_PACK_CARD','SKIP_PACK'].includes(action.type))return applyCelestialPackAction(state,action);
+  if(['OPEN_BOOSTER','USE_PACK_CARD','TAKE_PACK_CARD','SKIP_PACK'].includes(action.type))return applyCelestialPackAction(state,action);
   if(action.type==='BUY_VOUCHER')return applyVoucherAction(state,action);
   if(action.type==='REROLL_BOSS')return applyBossRerollAction(state,action);
   if(action.type==='SKIP_BLIND')return applySkipBlind(state,action);

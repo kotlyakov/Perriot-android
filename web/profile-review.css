@@ -152,3 +152,13 @@
 .approved-tooltip{touch-action:pan-y}
 @keyframes approved-tooltip-appear{from{opacity:0}to{opacity:1}}
 @media(prefers-reduced-motion:reduce){.approved-tooltip{animation:none}}
+
+/* Suit artwork stays at text scale and uses the playing-card inks. */
+.tooltip-suit{display:inline-block;width:1.15em;height:1.15em;vertical-align:-.2em;line-height:1}
+.tooltip-suit svg{display:block;width:100%;height:100%}
+.tooltip-suit-hearts{color:#bb3034}.tooltip-suit-diamonds{color:#ca502a}.tooltip-suit-spades{color:#283c53}.tooltip-suit-clubs{color:#143d39}
+/* Tag names have a reserved caption beneath the token, never over its picture. */
+.collection-view .collection-grid[data-set=Tag] .collection-card{width:112px;height:98px;aspect-ratio:auto;border-radius:7px;background:transparent;border-color:transparent;box-shadow:none}
+.collection-view .collection-grid[data-set=Tag] .collection-card .shop-art{left:27px;right:auto;top:2px;bottom:auto;width:52px;height:52px;border-radius:50%;background:none}
+.collection-view .collection-grid[data-set=Tag] .collection-card .shop-card-name{left:2px;right:2px;top:57px;bottom:2px;min-height:0;display:flex;align-items:center;justify-content:center;font-size:10px;line-height:12px;overflow-wrap:anywhere;word-break:normal;color:#f0e5c8}
+.collection-view .collection-grid[data-set=Tag] .collection-card .collection-state-art{height:52px;width:52px;padding:4px;position:absolute;left:27px;top:2px}

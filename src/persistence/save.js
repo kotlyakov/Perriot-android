@@ -513,7 +513,7 @@ function decode(payload) {
   requireValue(state.lastScore===null||!hasEffectMechanisms(state));
   const sortMode=state.sortMode;
   if(Object.hasOwn(state,'sortMode'))requireValue(['rank','suit'].includes(sortMode));
-  optionalObject(state,['schemaVersion','runId','seed','revision','phase','deckId','cards','hand','drawPile','discardPile','jokers','handLevels','discoveredHands','rng','money','round','lastScore'],['blindHistory','stake','shop','bankruptAt','jokerSlots','apkShop','sortMode','roundNumber','apkBlinds','bossState','nextAnteBlinds','runStats','consumables','consumableSlots','mostPlayedHand','consumableUsage','consumableUsageTotal','lastTarotPlanet','packState','destroyedCardIds','hangedDestroyedCardIds','hangedShortfallCardIds','hangedShortfallEpoch','nextJokerCreationOrdinal','cashoutQuote','winAnte','won','winNotified','winPending','nextPlayingCardOrdinal','lastPlayedHand','handUsage','startingDeckSize','pendingDoubleTags','spectralDestroyedCardIds','spectralShortfallCardIds','spectralShortfallEpoch','spectralHandSizeDelta','ectoMinus','pendingTags','pendingTagPacks','activeTagHandSize','bossRerollUsed','challengeId','challengePlayedCardIds','challengeFlippedCardIds','challengeLuxuryTax']);
+  optionalObject(state,['schemaVersion','runId','seed','revision','phase','deckId','cards','hand','drawPile','discardPile','jokers','handLevels','discoveredHands','rng','money','round','lastScore'],['blindHistory','stake','shop','bankruptAt','jokerSlots','apkShop','sortMode','roundNumber','apkBlinds','bossState','nextAnteBlinds','runStats','consumables','consumableSlots','mostPlayedHand','consumableUsage','consumableUsageTotal','lastTarotPlanet','packState','destroyedCardIds','hangedDestroyedCardIds','hangedShortfallCardIds','hangedShortfallEpoch','nextJokerCreationOrdinal','cashoutQuote','winAnte','won','winNotified','winPending','nextPlayingCardOrdinal','lastPlayedHand','handUsage','startingDeckSize','pendingDoubleTags','spectralDestroyedCardIds','spectralShortfallCardIds','spectralShortfallEpoch','spectralHandSizeDelta','ectoMinus','pendingTags','pendingTagPacks','activeTagHandSize','bossRerollUsed','challengeId','challengePlayedCardIds','challengeFlippedCardIds','challengeLuxuryTax','runSummary']);
   if(Object.hasOwn(state,'challengeId'))requireValue(typeof state.challengeId==='string'&&Object.hasOwn(CHALLENGE_BY_ID,state.challengeId)&&state.deckId==='red'&&(state.stake??1)===1&&state.apkShop&&state.apkBlinds&&state.rng?.apk);
   const challenge=challengeFor(state);
   if(Object.hasOwn(state,'challengeLuxuryTax')){requireValue(challenge?.modifiers?.minusHandSizePerDollars);integer(state.challengeLuxuryTax,-Number.MAX_SAFE_INTEGER,Number.MAX_SAFE_INTEGER);}
@@ -563,6 +563,7 @@ function decode(payload) {
     requireValue(Array.isArray(state.blindHistory)&&state.blindHistory.length<=3);
     const keys=new Set();for(const entry of state.blindHistory){object(entry,['ante','blindId','outcome']);integer(entry.ante,0);requireValue(entry.ante<=state.round.ante&&['small','big','boss'].includes(entry.blindId)&&['skipped','defeated'].includes(entry.outcome)&&!(entry.blindId==='boss'&&entry.outcome==='skipped'));const key=entry.ante+':'+entry.blindId;requireValue(!keys.has(key));keys.add(key);}
   }
+  if(Object.hasOwn(state,'runSummary')){object(state.runSummary,['bestHand','cardsPlayed','cardsDiscarded','cardsPurchased','rerolls']);state.runSummary.bestHand=decimal(state.runSummary.bestHand);for(const key of ['cardsPlayed','cardsDiscarded','cardsPurchased','rerolls'])integer(state.runSummary[key]);}
   if(Object.hasOwn(state,'runStats')){object(state.runStats,['handsPlayed','unusedDiscards','skips']);for(const count of Object.values(state.runStats))integer(count);}
   if(Object.hasOwn(state,'hangedShortfallEpoch')){
     const epoch=state.hangedShortfallEpoch;optionalObject(epoch,['revision','ante','blindId','handsRemaining','consumed','cardIds'],['consumedBy']);
@@ -684,6 +685,7 @@ function encodeState(state) {
     payload.state.cashoutQuote={handsRemainingBefore:Object.hasOwn(snapshot,'handsRemainingBefore')?snapshot.handsRemainingBefore:Number(q.hands),...(Object.hasOwn(snapshot,'discardsRemainingBefore')?{discardsRemainingBefore:snapshot.discardsRemainingBefore}:{}),earnedRevision:snapshot.earnedRevision,bonusContext:structuredClone(snapshot.bonusContext),moneyBefore:snapshot.moneyBefore.toString(),quote:{...q,...Object.fromEntries(['reward','hands','interest','total',...['tagReward','handReward','discards'].filter(key=>Object.hasOwn(q,key))].map(key=>[key,q[key].toString()])),...(q.jokerBonuses?{jokerBonuses:q.jokerBonuses.map(row=>({...row,amount:row.amount.toString()}))}:{})}};
   }
   if(Object.hasOwn(state,'bankruptAt')) {requireValue(typeof state.bankruptAt==='bigint');payload.state.bankruptAt=state.bankruptAt.toString();}
+  if(state.runSummary)payload.state.runSummary={...state.runSummary,bestHand:state.runSummary.bestHand.toString()};
   if(state.consumables)payload.state.consumables=state.consumables.map(encodeOffer);
   payload.state.jokers=state.jokers.map(encodeOffer);
   if(Object.hasOwn(state,'shop') && state.shop!==null) {
@@ -695,6 +697,25 @@ function encodeState(state) {
   return payload;
 }
 function canonical(value){return JSON.stringify(value,(_,v)=>v&&typeof v==='object'&&!Array.isArray(v)?Object.fromEntries(Object.keys(v).sort().map(k=>[k,v[k]])):v);}
+// Reuse only replay results whose checkpoint bytes and action prefix were already
+// authenticated below. Keep a bounded LRU for active/current/backup profile runs;
+// returned states are cloned so callers cannot mutate a trusted replay result.
+const verifiedReplays=[];
+function replayFromVerifiedPrefix(beforeText,before,actions){
+  const keys=actions.map(action=>JSON.stringify(action));
+  let match;
+  for(const entry of verifiedReplays){
+    if(entry.before!==beforeText||entry.keys.length>keys.length||match&&entry.keys.length<=match.keys.length)continue;
+    if(entry.keys.every((key,index)=>key===keys[index]))match=entry;
+  }
+  return {keys,state:match?replayEffectActions(match.state,actions.slice(match.keys.length)):replayEffectActions(before,actions)};
+}
+function rememberVerifiedReplay(before,keys,state){
+  const index=verifiedReplays.findIndex(entry=>entry.before===before&&entry.keys.length===keys.length&&entry.keys.every((key,i)=>key===keys[i]));
+  if(index!==-1)verifiedReplays.splice(index,1);
+  verifiedReplays.push({before,keys,state:structuredClone(state)});
+  if(verifiedReplays.length>12)verifiedReplays.shift();
+}
 function decodeEffectReplay(payload){
   const raw=payload.state,journal=raw.effectReplay;object(journal,['version','before','actions']);
   requireValue([1,2].includes(journal.version)&&typeof journal.before==='string'&&Array.isArray(journal.actions)&&journal.actions.length>=1&&journal.actions.length<=10000);
@@ -702,18 +723,19 @@ function decodeEffectReplay(payload){
   if(journal.version===1)requireValue(beforePayload.state.lastScore===null&&beforePayload.state.phase==='playing');
   const before=deserializeState(journal.before);
   if(journal.version===1)requireValue(hasEffectMechanisms(before)&&journal.actions[0]?.type==='PLAY_HAND');
-  const fields={PLAY_HAND:['cardIds'],DISCARD:['cardIds'],REORDER_HAND:['cardIds'],SET_SORT:['mode'],CONTINUE_ENDLESS:[],START_BLIND:[],CASH_OUT:[],SKIP_BLIND:['blindId'],LEAVE_SHOP:[],REROLL_SHOP:[],REORDER_JOKERS:['cardIds'],REORDER_CONSUMABLES:['cardIds'],SELL_OWNED_CARD:['area','cardId'],SELL_JOKER:['jokerId'],BUY_SHOP_CARD:['offerId'],BUY_AND_USE_SHOP_CARD:['offerId','targetCardIds'],BUY_VOUCHER:['offerId'],REROLL_BOSS:[],OPEN_BOOSTER:['offerId'],USE_PACK_CARD:['cardId','targetCardIds'],SKIP_PACK:[],USE_CONSUMABLE:['cardId','targetCardIds']};
+  const fields={PLAY_HAND:['cardIds'],DISCARD:['cardIds'],REORDER_HAND:['cardIds'],SET_SORT:['mode'],CONTINUE_ENDLESS:[],START_BLIND:[],CASH_OUT:[],SKIP_BLIND:['blindId'],LEAVE_SHOP:[],REROLL_SHOP:[],REORDER_JOKERS:['cardIds'],REORDER_CONSUMABLES:['cardIds'],SELL_OWNED_CARD:['area','cardId'],SELL_JOKER:['jokerId'],BUY_SHOP_CARD:['offerId'],BUY_AND_USE_SHOP_CARD:['offerId','targetCardIds'],BUY_VOUCHER:['offerId'],REROLL_BOSS:[],OPEN_BOOSTER:['offerId'],USE_PACK_CARD:['cardId','targetCardIds'],TAKE_PACK_CARD:['cardId'],SKIP_PACK:[],USE_CONSUMABLE:['cardId','targetCardIds']};
   const legacyActions=['PLAY_HAND','DISCARD','REORDER_HAND','SET_SORT','CONTINUE_ENDLESS'];
   for(const action of journal.actions){
     requireValue(action&&typeof action==='object'&&!Array.isArray(action)&&Object.hasOwn(fields,action.type));
     requireValue(Object.keys(action).every(k=>['type','expectedRevision','profileUnlockedCentreIds','profileLockedCentreIds',...fields[action.type]].includes(k)));
     if(journal.version===1)requireValue(legacyActions.includes(action.type));
   }
-  const expected=replayEffectActions(before,journal.actions);
+  const replay=replayFromVerifiedPrefix(journal.before,before,journal.actions),expected=replay.state;
   if(journal.version===1)requireValue(expected.lastScore!==null);
-  else requireValue(before.challengeId||hasEffectMechanisms(before)||hasEffectMechanisms(expected)||hasJokerStickers(before)||journal.actions.some(a=>['USE_CONSUMABLE','USE_PACK_CARD','BUY_AND_USE_SHOP_CARD'].includes(a.type))||before.rng?.apk&&journal.actions.some(a=>a.type==='PLAY_HAND'));
+  else requireValue(before.challengeId||hasEffectMechanisms(before)||hasEffectMechanisms(expected)||hasJokerStickers(before)||journal.actions.some(a=>['USE_CONSUMABLE','USE_PACK_CARD','TAKE_PACK_CARD','BUY_AND_USE_SHOP_CARD'].includes(a.type))||before.rng?.apk&&journal.actions.some(a=>a.type==='PLAY_HAND'));
   const actual={...raw};delete actual.effectReplay;
   requireValue(canonical(actual)===canonical(encodeState(expected).state));
+  rememberVerifiedReplay(journal.before,replay.keys,expected);
   expected.effectReplay={version:journal.version,before,actions:structuredClone(journal.actions)};return expected;
 }
 export function serializeState(state){

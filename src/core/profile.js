@@ -38,7 +38,7 @@ export function validateProfile(p){
  assert(object(p.highScores)&&['hand','mostMoney'].every(k=>typeof p.highScores[k]==='string'&&/^\d{1,10000}$/.test(p.highScores[k]))&&['furthestAnte','furthestRound','winStreak','currentStreak','bossStreak'].every(k=>safe(p.highScores[k]))&&Object.keys(p.highScores).length===7);
  for(const [field,valid] of [['deckWins',id=>own(DECKS,id)],['jokerWins',id=>byId[id]?.set==='Joker'],['deckLosses',id=>own(DECKS,id)],['jokerLosses',id=>byId[id]?.set==='Joker']]){assert(object(p[field]));for(const [id,wins] of Object.entries(p[field]))assert(valid(id)&&Array.isArray(wins)&&wins.length===8&&wins.every(safe));}
  assert(object(p.usage)&&Object.keys(p.usage).length===5);for(const category of ['jokers','vouchers','consumables','decks','hands']){assert(object(p.usage[category]));for(const [id,count] of Object.entries(p.usage[category]))assert((category==='decks'?own(DECKS,id):category==='hands'?own(APK_HAND_NAMES,id):ids.has(id))&&safe(count));}
- assert(object(p.runs));for(const [id,run] of Object.entries(p.runs)){assert(id.length>0&&id.length<=120&&object(run)&&safe(run.revision)&&typeof run.seeded==='boolean'&&typeof run.challenge==='boolean'&&typeof run.won==='boolean'&&typeof run.lost==='boolean'&&safe(run.maxJokers)&&safe(run.bossStreak)&&safe(run.rounds)&&object(run.handUsage)&&Object.entries(run.handUsage).every(([k,n])=>own(APK_HAND_NAMES,k)&&safe(n))&&Object.keys(run).every(k=>['revision','seeded','challenge','won','lost','maxJokers','bossStreak','rounds','handUsage'].includes(k)));}
+ assert(object(p.runs));for(const [id,run] of Object.entries(p.runs)){assert(id.length>0&&id.length<=120&&object(run)&&safe(run.revision)&&typeof run.seeded==='boolean'&&typeof run.challenge==='boolean'&&typeof run.won==='boolean'&&typeof run.lost==='boolean'&&(!own(run,'discoveries')||safe(run.discoveries))&&safe(run.maxJokers)&&safe(run.bossStreak)&&safe(run.rounds)&&object(run.handUsage)&&Object.entries(run.handUsage).every(([k,n])=>own(APK_HAND_NAMES,k)&&safe(n))&&Object.keys(run).every(k=>['revision','seeded','challenge','won','lost','maxJokers','bossStreak','rounds','handUsage','discoveries'].includes(k)));}
  return p;
 }
 export function deckUnlocked(p,id,seed){return own(DECKS,id)&&(isVerificationSeed(seed)||p.unlocked.includes('b_'+id));}
@@ -85,10 +85,10 @@ function recordExcludedUsage(p,prev,n,events,started){
 }
 export function updateProfile(profile,previousState,nextState,events=[],context={}){
  validateProfile(profile);if(!nextState)return profile;
- const p=structuredClone(profile),id=nextState.runId;assert(typeof id==='string'&&id.length>0&&id.length<=120&&safe(nextState.revision));
+ const p=structuredClone(profile),discoveredBefore=profile.discovered.length,id=nextState.runId;assert(typeof id==='string'&&id.length>0&&id.length<=120&&safe(nextState.revision));
  let run=own(p.runs,id)?p.runs[id]:null;
  if(run&&nextState.revision<=run.revision){if(nextState.revision===run.revision&&context.continued&&!run.seeded&&!run.challenge&&!p.unlocked.includes('j_throwback')){p.unlocked.push('j_throwback');return p;}return profile;}
- const started=!run;run??={revision:-1,seeded:context.seeded===true,challenge:!!nextState.challengeId||!!context.challenge,won:false,lost:false,maxJokers:0,bossStreak:0,rounds:0,handUsage:{}};
+ const started=!run;run??={revision:-1,seeded:context.seeded===true,challenge:!!nextState.challengeId||!!context.challenge,won:false,lost:false,maxJokers:0,bossStreak:0,rounds:0,handUsage:{},discoveries:0};
  run.revision=nextState.revision;run.maxJokers=Math.max(run.maxJokers,previousState?.jokers?.length??0,nextState.jokers?.length??0);Object.defineProperty(p.runs,id,{value:run,writable:true,enumerable:true,configurable:true});
  if(started&&context.abandonedRunId&&own(p.runs,context.abandonedRunId)){const old=p.runs[context.abandonedRunId];if(!old.seeded&&!old.challenge&&!old.won)p.highScores.currentStreak=0;}
  for(const event of events)if(event.type==='round_started')increment(run,'rounds');
@@ -124,9 +124,9 @@ export function updateProfile(profile,previousState,nextState,events=[],context=
   if(e.type==='joker_sold'){inc('c_jokers_sold');inc('c_cards_sold');}
   if(e.type==='owned_card_sold'){inc('c_cards_sold');if(e.area==='jokers')inc('c_jokers_sold');}
   if(e.type==='cash_out'&&typeof e.total==='bigint'&&e.total>0n)inc('c_dollars_earned',Number(e.total>BigInt(Number.MAX_SAFE_INTEGER)?BigInt(Number.MAX_SAFE_INTEGER):e.total));
-  if(e.type==='pack_card_used'&&events.some(e=>e.type==='booster_closed')){if(prev.packState?.sourceEntityId?.startsWith('p_arcana'))inc('c_tarot_reading_used');if(prev.packState?.sourceEntityId?.startsWith('p_celestial'))inc('c_planetarium_used');}
   if(e.type==='consumable_used'){discover(p,e.entityId);increment(p.usage.consumables,e.entityId);}
  }
+ if(events.some(e=>e.type==='booster_closed')&&events.some(e=>['pack_card_taken','pack_card_used'].includes(e.type))){if(prev.packState?.sourceEntityId?.startsWith('p_arcana'))inc('c_tarot_reading_used');if(prev.packState?.sourceEntityId?.startsWith('p_celestial'))inc('c_planetarium_used');}
  const win=!!n.winPending&&!run.won;
  if(win){run.won=true;inc('c_wins');p.highScores.currentStreak++;p.highScores.winStreak=Math.max(p.highScores.winStreak,p.highScores.currentStreak);addWin(p.deckWins,n.deckId,n.stake??1,true);for(const j of n.jokers??[])addWin(p.jokerWins,nativeId(j),n.stake??1);}
  if(n.phase==='game_over'&&!run.won&&!run.lost){run.lost=true;inc('c_losses');p.highScores.currentStreak=0;addWin(p.deckLosses,n.deckId,n.stake??1);for(const j of n.jokers??[])addWin(p.jokerLosses,nativeId(j),n.stake??1);}
@@ -163,5 +163,6 @@ export function updateProfile(profile,previousState,nextState,events=[],context=
   else if(c.type==='play_all_hearts')unlocked=!!played&&[...(n.hand??[]),...(n.drawPile??[])].every(id=>n.cards[id]?.suit!=='hearts'||n.cards[id]?.enhancement==='stone');
   if(unlocked){p.unlocked.push(key);if(key.startsWith('b_'))discover(p,key);}
  }
+ if(own(run,'discoveries'))increment(run,'discoveries',p.discovered.length-discoveredBefore);
  return validateProfile(p);
 }

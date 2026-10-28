@@ -34,3 +34,23 @@ test('deck and Joker losses record actual stake without a victory or lower stake
 test('Hook forced discards contribute to native career card-discard total',()=>{
  const p=updateProfile(createProfile(),state(),state({revision:1}),[{type:'cards_forced_discarded',cardIds:['a','b']}]);assert.equal(p.career.c_cards_discarded,2);
 });
+
+for(const [source,key,unlock] of [['p_arcana_mega_1','c_tarot_reading_used','v_omen_globe'],['p_celestial_mega_1','c_planetarium_used','v_observatory']]){
+ for(const firstType of ['pack_card_taken','pack_card_used'])for(const finalType of ['pack_card_taken','pack_card_used'])test(`${source} completion ${firstType}/${finalType} counts once and unlocks`,()=>{
+  let p=createProfile();p.career[key]=24;
+  const before=state({phase:'pack',packState:{sourceEntityId:source}}),middle=state({revision:1,phase:'pack',packState:before.packState}),after=state({revision:2});
+  p=updateProfile(p,before,middle,[{type:firstType,entityId:'c_fool'}]);assert.equal(p.career[key],24);
+  const events=[{type:finalType,entityId:'c_fool'},{type:'booster_closed'}];p=updateProfile(p,middle,after,events);
+  assert.equal(p.career[key],25);assert.ok(p.unlocked.includes(unlock));
+  assert.equal(updateProfile(p,middle,after,events).career[key],25);
+ });
+}
+
+test('skipped and excluded pack completions do not advance career unlocks',()=>{
+ for(const context of [{},{seeded:true},{challenge:true}]){
+  const before=state({phase:'pack',packState:{sourceEntityId:'p_arcana_mega_1'}}),after=state({revision:1});
+  const initial=updateProfile(createProfile(),null,before,[],context);
+  const events=context.seeded||context.challenge?[{type:'pack_card_taken',entityId:'c_fool'},{type:'booster_closed'}]:[{type:'booster_closed'}];
+  const p=updateProfile(initial,before,after,events);assert.equal(p.career.c_tarot_reading_used,0);
+ }
+});

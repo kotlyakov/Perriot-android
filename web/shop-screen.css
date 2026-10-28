@@ -73,6 +73,6 @@
 .shop-action-zones .shop-use-zone{background:#327da3;border-color:#b2e2ee}
 .shop-action-zones .shop-drop-zone:disabled{background:#3d5550!important;border-color:#779087;color:#d3d9ce;opacity:.85;filter:none}
 .shop-action-zones .shop-drop-zone.is-over{outline:4px solid #fff4ce;outline-offset:2px;filter:brightness(1.13)}
-.shop-ticket .ticket-main .shop-art{inset:4px 66px 4px 5px;background:none}
-.shop-ticket .ticket-main .shop-card-name{left:92px;right:4px;bottom:4px;top:4px;min-height:0;font-size:12px;line-height:14px}
+.shop-ticket .ticket-main .shop-art{inset:4px auto 4px 5px;width:52px;background:none}
+.shop-ticket .ticket-main .shop-card-name{left:62px;right:5px;bottom:4px;top:4px;min-height:0;font-size:11px;line-height:13px;justify-content:center;text-align:center;overflow-wrap:anywhere}
 .shop-action-zones:not(.is-dragging) .shop-buy-zone,.shop-action-zones:not(.is-dragging) .shop-sell-zone,.shop-action-zones:not(.is-dragging) .shop-use-zone:not(.shop-use){visibility:hidden;pointer-events:none}

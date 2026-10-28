@@ -42,7 +42,7 @@ try{
  const use=page.locator('[data-offer-id=performance-tarot] .shop-use');
  const targets=await page.locator('#hand .selected').evaluateAll(ns=>ns.map(n=>n.dataset.cardId));
  const beforeRanks=await page.evaluate(async ids=>{const {deserializeState}=await import('/src/persistence/save.js');const s=deserializeState(localStorage.getItem('card-cascade.current'));return ids.map(id=>s.cards[id].rank);},targets);
- await use.evaluate(n=>n.click());await page.waitForFunction(()=>!document.getElementById('sort_rank').disabled&&!document.querySelector('.motion-copy'));
+ await use.evaluate(n=>n.click());await consumable.waitFor({state:'detached'});await page.waitForFunction(()=>!document.getElementById('sort_rank').disabled&&!document.querySelector('.motion-copy'));
  const ranks=await page.evaluate(async ids=>{const {deserializeState}=await import('/src/persistence/save.js');const s=deserializeState(localStorage.getItem('card-cascade.current'));return ids.map(id=>s.cards[id].rank);},targets);
  assert.deepEqual(ranks,beforeRanks.map(n=>n===14?2:n+1),'Use action receives current targets and changes exactly those ranks');
  console.log('Live consumable availability, target changes and application PASS');

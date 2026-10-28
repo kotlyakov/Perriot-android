@@ -39,37 +39,30 @@ try{
   await page.reload();await enterRun(page,{startBlind:false});await page.locator('#pack_screen').waitFor();await page.evaluate(()=>document.fonts.ready);
   await page.locator(`[data-offer-id="${strength.id}"] .shop-card`).click();
   assert.ok(await page.locator('#shop_use_zone,.shop-choice .shop-use').isDisabled());
-  const report=await page.evaluate(async offerId=>{
-   const {deserializeState}=await import('/src/persistence/save.js'),{canUsePackCard}=await import('/src/core/celestial-pack.js');
-   const saved=localStorage.getItem('card-cascade.current'),state=deserializeState(saved),offer=state.packState.cards.find(c=>c.id===offerId);
-   const roots=['hand','pack_screen','shop_owned'].map(id=>document.getElementById(id));
-   const capture=root=>[...root.querySelectorAll('.playing-card,.shop-card,svg,.shop-art,.card-material-layer')];
-   const snapshots=roots.map(capture),removed={hand:0,pack:0,owned:0},names=Object.keys(removed),observers=roots.map((root,i)=>{
-    const observer=new MutationObserver(records=>{for(const record of records)for(const n of record.removedNodes)if(n.nodeType===1)removed[names[i]]+=(n.matches('.playing-card,.shop-card')?1:0)+n.querySelectorAll('.playing-card,.shop-card').length;});
-    observer.observe(root,{subtree:true,childList:true});return observer;
-   });
-   const times=[],capabilityErrors=[];
-   for(let i=0;i<24;i++){
-    const start=performance.now();document.querySelectorAll('#hand .playing-card')[i%2].click();times.push(performance.now()-start);
-    await new Promise(requestAnimationFrame);
-    const targets=[...document.querySelectorAll('#hand .selected')].map(n=>n.dataset.cardId),choice=document.querySelector(`[data-offer-id="${offerId}"] .shop-card`),use=document.getElementById('shop_use_zone')??document.querySelector(`[data-offer-id="${offerId}"] .shop-use`);
-    if(choice?.getAttribute('aria-pressed')!=='true'||!use)capabilityErrors.push('Pack selection lost at '+i);
-    else if(use.id==='shop_use_zone'&&document.getElementById('shop_action_zones')?.dataset.offerId!==offerId)capabilityErrors.push('Action belongs to another offer at '+i);
-    else if(use.disabled===canUsePackCard(state,offer,targets).available)capabilityErrors.push('Wrong target availability at '+i);
-   }
-   observers.forEach(o=>o.disconnect());times.sort((a,b)=>a-b);
-   return {removed,capabilityErrors,preserved:snapshots.map((nodes,i)=>nodes.length===capture(roots[i]).length&&nodes.every((n,j)=>n===capture(roots[i])[j]&&n.isConnected)),ownedCards:roots[2].querySelectorAll('.shop-card').length,selectedCleared:!document.querySelector('#hand .selected'),saveUnchanged:saved===localStorage.getItem('card-cascade.current'),p50:times[12],p95:times[22]};
-  },strength.id);
-  console.log(JSON.stringify({width,baselineRef:baselineRef??null,arcanaSelection:report}));
-  assert.deepEqual(report.capabilityErrors,[]);assert.deepEqual(report.removed,{hand:0,pack:0,owned:0});assert.deepEqual(report.preserved,[true,true,true]);assert.equal(report.ownedCards,2);assert.ok(report.selectedCleared&&report.saveUnchanged);
-  // Switch away from the repeatedly toggled cards: the retained action must use the new ID.
-  const target=initial.hand[2];await page.locator(`#hand [data-card-id="${target}"]`).click();assert.ok(await page.locator('#shop_use_zone').isEnabled());
-  await page.locator('#shop_use_zone').click();await page.locator('#shop_screen').waitFor();
-  const durable=await page.evaluate(()=>localStorage.getItem('card-cascade.current')),after=deserializeState(durable);
-  assert.equal(after.phase,'shop');assert.equal(after.packState,undefined);assert.equal(after.money,initial.money);
-  for(const [id,card] of Object.entries(initial.cards))assert.equal(after.cards[id].rank,id===target?(card.rank===14?2:card.rank+1):card.rank,`Unexpected Strength target: ${id}`);
-  assert.deepEqual(after.jokers,initial.jokers);assert.deepEqual(after.consumables,initial.consumables);
-  await page.reload();await enterRun(page,{startBlind:false});await page.locator('#shop_screen').waitFor();
+  assert.equal(await page.locator('#hand .playing-card').count(),0,'No target hand in consumable pack');
+  const originalCards=structuredClone(initial.cards);
+  const {dragShopAction}=await import('./shop-actions.mjs');
+  await dragShopAction(page,strength.id,'buy',width<1000);
+  await page.locator('#shop_screen').waitFor();
+  let after=deserializeState(await page.evaluate(()=>localStorage.getItem('card-cascade.current')));
+  assert.deepEqual(after.cards,originalCards,'Taking Strength never mutates playing cards');
+  assert.equal(after.consumables.length,2);assert.ok(after.consumables.some(c=>c.id===strength.id));
+  // Stored target cards become usable during a later blind, with normal hand selection.
+  await page.locator('#shop_next_round').click();await page.locator('#select_big').click();await page.locator('#hand .playing-card').first().waitFor();
+  const playing=deserializeState(await page.evaluate(()=>localStorage.getItem('card-cascade.current'))),target=playing.hand[2];
+  const report=await page.evaluate(async()=>{
+   const roots=['hand','shop_owned'].map(id=>document.getElementById(id)),snapshots=roots.map(r=>[...r.querySelectorAll('.playing-card,.shop-card,svg')]);
+   const text=localStorage.getItem('card-cascade.current'),times=[];
+   for(let i=0;i<24;i++){const start=performance.now();document.querySelectorAll('#hand .playing-card')[i%2].click();times.push(performance.now()-start);await new Promise(requestAnimationFrame);}
+   return {preserved:roots.every((r,i)=>{const nodes=[...r.querySelectorAll('.playing-card,.shop-card,svg')];return nodes.length===snapshots[i].length&&nodes.every((n,j)=>n===snapshots[i][j]);}),saveUnchanged:text===localStorage.getItem('card-cascade.current'),maxHandler:Math.max(...times)};
+  });assert.equal(report.preserved,true);assert.equal(report.saveUnchanged,true);
+  await page.locator(`#hand [data-card-id="${target}"]`).click();
+  await dragShopAction(page,strength.id,'use',width<1000);
+  await page.locator(`[data-offer-id="${strength.id}"]`).waitFor({state:'detached'});await page.waitForFunction(()=>!document.getElementById('sort_rank').disabled);
+  const durable=await page.evaluate(()=>localStorage.getItem('card-cascade.current'));after=deserializeState(durable);
+  for(const [id,card] of Object.entries(playing.cards))assert.equal(after.cards[id].rank,id===target?(card.rank===14?2:card.rank+1):card.rank);
+  assert.equal(after.consumables.length,1);assert.equal(after.money,playing.money);
+  await page.reload();await enterRun(page,{startBlind:false});await page.locator('#hand .playing-card').first().waitFor();
   assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),durable);assert.deepEqual(errors,[]);
   console.log(JSON.stringify({width,strengthTarget:target,saveReload:true}));await page.close();
  }

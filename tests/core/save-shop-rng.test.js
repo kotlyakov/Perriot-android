@@ -5,7 +5,7 @@ import {createRng} from '../../src/core/rng.js';
 import {createApkRng,nextApkRandom} from '../../src/core/apk-rng.js';
 import {createShop,applyShopAction} from '../../src/core/shop.js';
 import {serializeState,deserializeState} from '../../src/persistence/save.js';
-const legacy=()=>createRun('save-shop',{runId:'strict-save-shop',money:4n});
+const legacy=()=>{const state=createRun('save-shop',{runId:'strict-save-shop',money:4n});delete state.runSummary;return state;};
 const extended=()=>{
  const state=legacy();state.phase='shop';state.round.score=state.round.target;
  state.bankruptAt=-20n;state.jokerSlots=5;state.money=-4n;
