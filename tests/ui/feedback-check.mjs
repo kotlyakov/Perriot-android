@@ -11,13 +11,15 @@ function fixture(){const s=createRun('FEEDBACK',{runId:'feedback',money:40n,refe
 async function install(page,s){await page.goto(process.env.PREVIEW_URL);await page.evaluate(text=>localStorage.setItem('card-cascade.current',text),serializeState(s));await page.reload();await enterRun(page,{startBlind:false});await page.locator('#shop_owned .shop-card').first().waitFor();}
 const saved=async page=>deserializeState(await page.evaluate(()=>localStorage.getItem('card-cascade.current')));
 async function drag(page,id,x,y,{cancel=false,touch=false}={}){
- const before=await page.evaluate(()=>localStorage.getItem('card-cascade.current'));
+ const before=await page.evaluate(()=>localStorage.getItem('card-cascade.current')),sale=x===1300;
  const card=page.locator(`#shop_owned [data-offer-id=${id}] .shop-card`),b=await card.boundingBox(),stage=await page.locator('#stage').boundingBox(),scale=stage.width/1536;
  const from={x:b.x+b.width/2,y:b.y+b.height/2},to={x:stage.x+x*scale,y:stage.y+y*scale};
- if(touch){const session=await page.context().newCDPSession(page);await session.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[from]});await page.locator('#shop_sell_zone:visible').waitFor();await session.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[to]});await page.locator('#shop_sell_zone').waitFor();await session.send('Input.dispatchTouchEvent',{type:cancel?'touchCancel':'touchEnd',touchPoints:[]});await session.detach();}
- else{await page.mouse.move(from.x,from.y);await page.mouse.down();await page.locator('#shop_sell_zone:visible').waitFor();await page.mouse.move(to.x,to.y,{steps:6});await page.locator('#shop_sell_zone').waitFor();if(x===1300&&!cancel&&page.viewportSize().width===1536)await page.screenshot({path:'artifacts/owned-drag-sale.png'});if(cancel)await card.press('Escape');await page.mouse.up();}
+ if(touch){const session=await page.context().newCDPSession(page);await session.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[from]});if(sale)await page.locator('#shop_sell_zone:visible').waitFor();await session.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[to]});if(sale)await page.locator('#shop_sell_zone').waitFor();else assert.equal(await page.locator('#shop_sell_zone').count(),0,'Quick reorder does not arm sale zones');await session.send('Input.dispatchTouchEvent',{type:cancel?'touchCancel':'touchEnd',touchPoints:[]});await session.detach();}
+ else{await page.mouse.move(from.x,from.y);await page.mouse.down();if(sale)await page.locator('#shop_sell_zone:visible').waitFor();await page.mouse.move(to.x,to.y,{steps:6});if(sale)await page.locator('#shop_sell_zone').waitFor();else assert.equal(await page.locator('#shop_sell_zone').count(),0,'Quick reorder does not arm sale zones');if(x===1300&&!cancel&&page.viewportSize().width===1536)await page.screenshot({path:'artifacts/owned-drag-sale.png'});if(cancel)await card.press('Escape');await page.mouse.up();}
  await page.waitForFunction(()=>!document.querySelector('.is-dragging,#shop_sell_zone'));
  if(!cancel)await page.waitForFunction(before=>localStorage.getItem('card-cascade.current')!==before||document.querySelector('dialog[open]'),before);
+ await page.waitForFunction(()=>document.querySelector('dialog[open]')||[...document.querySelectorAll('#shop_owned .shop-card')].every(n=>!n.disabled));
+ await page.locator('#shop_owned').evaluate(n=>Promise.allSettled([...n.children].flatMap(c=>c.getAnimations()).map(a=>a.finished)));
  const balance=(await saved(page)).money.toString();await page.waitForFunction(value=>document.getElementById('money_value').textContent==='$'+value,balance);await page.waitForFunction(()=>!document.querySelector('.money-pop'));
 }
 try{
