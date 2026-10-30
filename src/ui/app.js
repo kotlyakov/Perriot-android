@@ -72,7 +72,7 @@ function openDialog(title,body,actions=[['Закрыть',closeDialog]]) {
  slideWindow(dialog);
 }
 const targetPackOpen=()=>state?.phase==='pack'&&/^p_(arcana|spectral)_/.test(state.packState?.sourceEntityId??'');
-function render(hand=state?.hand,scoringPreview=null){if(state){if(!busy){for(const id of selected)if(!state.hand.includes(id))selected.delete(id);const forced=!state.bossState?.disabled&&state.phase==='playing'?state.bossState?.forcedCardId:null;if(forced&&state.hand.includes(forced)&&!selected.has(forced)){if(selected.size>=5)selected.delete([...selected].at(-1));selected.add(forced);}}renderField(!busy?roundDeckView({...state,hand}):{...state,hand},selected,busy||!!state.winPending,toggle,reorder,scoringPreview);renderPostRound(state,busy&&!state.shop,()=>perform('CASH_OUT'));renderShop(busy&&scoringJokers?{...state,jokers:scoringJokers}:state,busy||!!state.winPending,{onAction:(type,fields)=>perform(type,undefined,undefined,fields),onNotice:notice,targetCardIds:[...selected]});renderBlindSelect(state,busy||!!state.winPending,()=>perform('START_BLIND'),blindId=>perform('SKIP_BLIND',undefined,undefined,{blindId}),()=>perform('REROLL_BOSS')); document.getElementById('stage').classList.toggle('arcana-open',targetPackOpen());for(const id of ['blind_panel','blind_title','blind_token','blind_target','hand','hand_count','play_hand','discard','sort_panel','sort_label','sort_rank','sort_suit'])document.getElementById(id).hidden=targetPackOpen()? !['hand','sort_panel','sort_label','sort_rank','sort_suit'].includes(id):state.phase==='blind_selection'||(['shop','pack'].includes(state.phase)&&!!state.shop)||(!busy&&['round_won','shop','pack'].includes(state.phase));for(const id of ['hands','discards','round_score','calculation_panel','chips','mult','times'])document.getElementById(id).hidden=targetPackOpen();if(!busy&&state.winPending&&!dialog.open&&!document.getElementById('start_screen'))showVictory();}}
+function render(hand=state?.hand,scoringPreview=null,preserveHand=false){if(state){if(!busy){for(const id of selected)if(!state.hand.includes(id))selected.delete(id);const forced=!state.bossState?.disabled&&state.phase==='playing'?state.bossState?.forcedCardId:null;if(forced&&state.hand.includes(forced)&&!selected.has(forced)){if(selected.size>=5)selected.delete([...selected].at(-1));selected.add(forced);}}if(preserveHand)renderHandSelection(state,selected,busy||!!state.winPending,scoringPreview);else renderField(!busy?roundDeckView({...state,hand}):{...state,hand},selected,busy||!!state.winPending,toggle,reorder,scoringPreview);renderPostRound(state,busy&&!state.shop,()=>perform('CASH_OUT'));renderShop(busy&&scoringJokers?{...state,jokers:scoringJokers}:state,busy||!!state.winPending,{onAction:(type,fields)=>perform(type,undefined,undefined,fields),onNotice:notice,targetCardIds:[...selected]});renderBlindSelect(state,busy||!!state.winPending,()=>perform('START_BLIND'),blindId=>perform('SKIP_BLIND',undefined,undefined,{blindId}),()=>perform('REROLL_BOSS')); document.getElementById('stage').classList.toggle('arcana-open',targetPackOpen());for(const id of ['blind_panel','blind_title','blind_token','blind_target','hand','hand_count','play_hand','discard','sort_panel','sort_label','sort_rank','sort_suit'])document.getElementById(id).hidden=targetPackOpen()? !['hand','sort_panel','sort_label','sort_rank','sort_suit'].includes(id):state.phase==='blind_selection'||(['shop','pack'].includes(state.phase)&&!!state.shop)||(!busy&&['round_won','shop','pack'].includes(state.phase));for(const id of ['hands','discards','round_score','calculation_panel','chips','mult','times'])document.getElementById(id).hidden=targetPackOpen();if(!busy&&state.winPending&&!dialog.open&&!document.getElementById('start_screen'))showVictory();}}
 function toggle(id){if(busy || (state?.phase!=='playing'&&!targetPackOpen())||state.phase==='playing'&&!state.bossState?.disabled&&state.bossState?.forcedCardId===id)return;dismissCardTip();if(selected.has(id))selected.delete(id);else if(selected.size<5)selected.add(id);else {notice('Можно выбрать до 5 карт');return;}audio.play('select');if(state.phase==='playing'||targetPackOpen()){renderHandSelection(state,selected,!!state.winPending);updateShopTargets([...selected]);}else render();}
 async function reorder(id,to){const movement=prepareHandMovement();const ids=[...state.hand],from=ids.indexOf(id);ids.splice(from,1);ids.splice(to,0,id);if(to===from){render();await movement();return;}await perform('REORDER_HAND',ids);await movement();}
 function newState({deckId='red',seed,stake=1,challengeId}={}){
@@ -134,9 +134,13 @@ async function perform(type,ids,mode,fields={}) {
  const compact=outgoing?prepareHandMovement():null;
  state=result.state;if(!['REORDER_HAND','SET_SORT'].includes(type))selected.clear();
  render(outgoing?remaining:state.hand,type==='PLAY_HAND'?state.lastScore:null);
- await Promise.all([transform?.(),dissolve?.(),pack?.(),useMotion?.()]);
+ // The opening already rendered its target hand. Deal it alongside the reveal,
+ // and retain those nodes when controls unlock instead of rebuilding them twice.
+ const openingDraw=opened&&draw?.cardIds.length?prepareDrawnCards(draw.cardIds):null;
+ const openingMoney=opened?animateMoney(previousMoney,state.money):null;
+ await Promise.all([transform?.(),dissolve?.(),pack?.(),useMotion?.(),openingDraw?.(),openingMoney]);
  animateCounters(previousRound,state.round);
- const moneyMotion=animateMoney(previousMoney,state.money);
+ const moneyMotion=opened?openingMoney:animateMoney(previousMoney,state.money);
  const closing=compact?.();
  if(type==='PLAY_HAND'){animateNumber(document.getElementById('round_score_value'),previousScore,{format:displayInteger});document.getElementById('hand_name').textContent=HAND_NAMES[state.lastScore.handId];}
  if(outgoing){
@@ -154,12 +158,12 @@ async function perform(type,ids,mode,fields={}) {
    await finish();
  }
  await closing;
- if(draw?.cardIds.length){
+ if(!opened&&draw?.cardIds.length){
    const expand=prepareHandMovement();render();
    const arrive=prepareDrawnCards(draw.cardIds);
    await Promise.all([expand(),arrive()]);
  }
- await moneyMotion;scoringJokers=null;busy=false;render();
+ await moneyMotion;scoringJokers=null;busy=false;render(undefined,null,!!opened);
  if(type==='PLAY_HAND'&&['round_won','game_over'].includes(state.phase))audio.play(state.phase==='round_won'?'win':'lose');
  if(state.phase==='game_over')showLoss();
 }

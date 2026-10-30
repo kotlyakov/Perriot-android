@@ -242,10 +242,14 @@ function renderPack(state,busy,callbacks){
  if(!packView?.isConnected){packView=node('section','pack-screen');packView.id='pack_screen';document.getElementById('stage').append(packView);}
  packView.classList.toggle('arcana-pack',targetHand);packView.setAttribute('aria-label',titleText);
  packView.dataset.cardSet=source.startsWith('p_arcana_')?'Tarot':source.startsWith('p_celestial_')?'Planet':source.startsWith('p_spectral_')?'Spectral':'';
- packView.replaceChildren();const title=node('h1','pack-title',titleText);title.id='pack_title';const choices=node('p','pack-choices','Выберите '+state.packState.choicesRemaining);choices.id='pack_choices';packView.append(title,choices);
- const cards=state.packState.cards,spacing=cards.length>1?Math.min(116,520/(cards.length-1)):116,start=327-52-spacing*(cards.length-1)/2;
- cards.forEach((card,index)=>packView.append(choice(card,'pack',index,state,busy,callbacks,start+index*spacing,targetHand?65:135,targetHand?90:104,targetHand?123:143)));
- const skip=rect(node('button','pack-skip','Пропустить набор'),235,targetHand?192:375,180,targetHand?38:58);skip.id='pack_skip';skip.disabled=busy;bindActionButton(skip,()=>{skip.disabled=true;clearSelection();callbacks.onAction?.('SKIP_PACK',{});});packView.append(skip);
+ // Busy -> ready changes only input bindings; keep the cards just revealed.
+ if(packView.packState!==state.packState){
+  packView.replaceChildren();const title=node('h1','pack-title',titleText);title.id='pack_title';const choices=node('p','pack-choices','Выберите '+state.packState.choicesRemaining);choices.id='pack_choices';packView.append(title,choices);
+  const cards=state.packState.cards,spacing=cards.length>1?Math.min(116,520/(cards.length-1)):116,start=327-52-spacing*(cards.length-1)/2;
+  cards.forEach((card,index)=>packView.append(choice(card,'pack',index,state,busy,callbacks,start+index*spacing,targetHand?65:135,targetHand?90:104,targetHand?123:143)));
+  const skip=rect(node('button','pack-skip','Пропустить набор'),235,targetHand?192:375,180,targetHand?38:58);skip.id='pack_skip';packView.append(skip);packView.packState=state.packState;
+ }else for(const card of packView.querySelectorAll('.shop-choice'))card.refresh(state,busy,callbacks);
+ const skip=packView.querySelector('#pack_skip');skip.disabled=busy;bindActionButton(skip,()=>{skip.disabled=true;clearSelection();callbacks.onAction?.('SKIP_PACK',{});});
  renderOwned(state,busy,callbacks);
 }
 function renderOwned(state,busy,callbacks){

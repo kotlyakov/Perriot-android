@@ -68,6 +68,7 @@ export function renderHandSelection(state,selected,busy,scoringPreview=null){
  const middle=(state.hand.length-1)/2;
  for(const [i,card] of [...document.getElementById('hand').children].entries()){
   if(card.dataset.cardId!==state.hand[i])continue;
+  card.disabled=busy||!selectable;
   const chosen=selected.has(card.dataset.cardId);
   card.classList.toggle('selected',chosen);card.setAttribute('aria-pressed',chosen);
   card.style.top=(arcana?430:388)+Math.abs(i-middle)*2.5-(chosen?arcana?14:28:0)+'px';
