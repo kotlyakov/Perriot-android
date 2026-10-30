@@ -1,8 +1,8 @@
 # Пьеро — Android
 
-Проверочная версия **0.4.59-preview**, versionCode72, пакет `ru.cardcascade.game.preview`. Ветка `fix/enhancement-visuals`; актуальные результаты и ограничения — [STATUS.md](STATUS.md), оставшиеся задачи — [BACKLOG.md](BACKLOG.md).
+Проверочная версия **0.4.60-preview**, versionCode73, пакет `ru.cardcascade.game.preview`. Ветка `fix/enhancement-visuals`; актуальные результаты и ограничения — [STATUS.md](STATUS.md), оставшиеся задачи — [BACKLOG.md](BACKLOG.md).
 
-Последний проверенный APK: [Pierrot-0.4.59-preview.apk](https://chatgpt.com/library?file_id=libfile_04e9fc5e61a081918c39c6a4dcb9bc35&account_id=personal). CI40751951129 SUCCESS: 1918 core / 47 browser / fresh Android. [Протокол](docs/qa/2026-10-28-feedback-059.md). Физическая Android-проверка открыта. Подпись отличается от 0.4.58; старую игру с сохранениями не удаляйте.
+Последний проверенный APK: [Pierrot-0.4.60-preview.apk](https://chatgpt.com/library?file_id=libfile_8b6b8bf3ac5c81918f16882c16f5a2c9&account_id=personal). CI41086569329 SUCCESS: 1918 core /48 browser /fresh Android. [Открытие Таро](docs/qa/2026-10-30-pack-opening-060.md). Физическая Android-проверка открыта. Подпись отличается от0.4.59; старую игру с сохранениями не удаляйте.
 
 25.10.2026 пользователь утвердил первый набор всех150джокеров: собственные рисунки с картами/фишками в стиле «Печатная мастерская», отдельное поле полного названия. Главное меню и настройки утверждены24.10 и восстановлены с точными паспортами в `docs/approved-ui/`. Поздние варианты рисунков сохранены в Git и не используются. Новая сборка включает утверждённыйUI и работающую скорость0.5/1/2/4. Прочие открытые визуальные задачи остаются в бэклоге.
 
