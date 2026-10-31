@@ -1,3 +1,4 @@
+import {compactSortActions,replaySortSpan} from './replay-sort.js';
 import {applyBossDrawVisibility} from './boss-draw.js';
 import {usesCurrentMechanics} from './mechanics-version.js';
 import {createRunSummary,recordRunSummary} from './run-summary.js';
@@ -157,14 +158,12 @@ export function dispatch(state,action,shopOptions={}){
   const spectralUse=action.type==='USE_CONSUMABLE'&&state.consumables?.some(card=>card.id===action.cardId&&card.set==='Spectral')||action.type==='USE_PACK_CARD'&&state.packState?.cards.some(card=>card.id===action.cardId&&card.set==='Spectral')||action.type==='BUY_AND_USE_SHOP_CARD'&&state.shop?.main.some(card=>card.id===action.offerId&&card.set==='Spectral');
   let journal;
   if(state.challengeId){
-    if(state.effectReplay?.actions.length>=10000)return {state,events:[],error:{code:'INVALID_STATE',message:'Effect history limit reached'}};
     const before=state.effectReplay?state.effectReplay.before:structuredClone(state);delete before.effectReplay;
     journal={version:2,before,actions:[...(state.effectReplay?.actions??[]),structuredClone(action)]};
   }else if(action.type==='PLAY_HAND'&&(!state.effectReplay||state.effectReplay.version===1)&&(hasEffectMechanisms(state)||hasJokerStickers(state)||state.apkShop?.context.usedVoucherIds.includes('v_observatory')||state.rng?.apk&&next.phase==='round_won')){
     const before=structuredClone(state);delete before.effectReplay;before.lastScore=null;
     journal={version:hasEffectMechanisms(state)?1:2,before,actions:[structuredClone(action)]};
   }else if(state.effectReplay){
-    if(state.effectReplay.actions.length>=10000)return {state,events:[],error:{code:'INVALID_STATE',message:'Effect history limit reached'}};
     const legacyAction=['DISCARD','REORDER_HAND','SET_SORT','CONTINUE_ENDLESS'].includes(action.type);
     const version=state.effectReplay.version===1&&next.lastScore!==null&&legacyAction?1:2;
     journal={...structuredClone(state.effectReplay),version,actions:[...structuredClone(state.effectReplay.actions),structuredClone(action)]};
@@ -173,7 +172,7 @@ export function dispatch(state,action,shopOptions={}){
     journal={version:2,before,actions:[structuredClone(action)]};
   }
   recordRunSummary(state,next,result.events);
-  if(journal)next.effectReplay=journal;else delete next.effectReplay;
+  if(journal){journal.actions=compactSortActions(journal.actions);next.effectReplay=journal;}else delete next.effectReplay;
   return result;
 }
 function loseRound(next,events){applyTagRoundEnd(next,events);const end=applyRoundEndJokers(next,events,{gameOver:true});if(end.saved)settleRoundSuccess(next,events,{saved:true,endRoundApplied:true});else next.phase='game_over';
@@ -214,10 +213,11 @@ function finishAction(before,next,action,events){
 }
 export function replayEffectActions(before,actions){
   let state=structuredClone(before);
-  for(const action of actions){const result=dispatchCore(state,action);if(result.error)throw new TypeError('Invalid effect action history');if(result.state!==state)finishAction(state,result.state,action,result.events);const next=openPendingTagPack(result.state,result.events);if(next!==state)recordRunSummary(state,next,result.events);state=next;}
+  for(const action of actions){const span=replaySortSpan(action),clean=span>1?{...action}:action;if(span>1)delete clean.repeat;const result=dispatchCore(state,clean);if(result.error)throw new TypeError('Invalid effect action history');if(span>1)result.state.revision+=span-1;if(result.state!==state)finishAction(state,result.state,clean,result.events);const next=openPendingTagPack(result.state,result.events);if(next!==state)recordRunSummary(state,next,result.events);state=next;}
   return state;
 }
 function dispatchCore(state, action, shopOptions={}) {
+  if(action&&Object.hasOwn(action,'repeat'))return {state,events:[],error:{code:'INVALID_ACTION',message:'Sort spans are replay metadata only'}};
   if(action?.mechanicsVersion!==undefined){
     if(action.mechanicsVersion!==1)return {state,events:[],error:{code:'INVALID_ACTION',message:'Invalid mechanics version'}};
     const input={...state,mechanicsVersion:1},clean={...action};delete clean.mechanicsVersion;

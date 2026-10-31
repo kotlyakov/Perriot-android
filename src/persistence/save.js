@@ -1,3 +1,4 @@
+import {replaySortSpan} from '../core/replay-sort.js';
 import {CHALLENGE_BY_ID} from '../content/challenges.js';
 import {challengeFor,challengeHandSize,challengeShopContext} from '../core/challenge-rules.js';
 import {PROFILE_LIMIT,validateAccount} from './profile-envelope.js';
@@ -720,18 +721,19 @@ function rememberVerifiedReplay(before,keys,state){
 }
 function decodeEffectReplay(payload){
   const raw=payload.state,journal=raw.effectReplay;object(journal,['version','before','actions']);
-  requireValue([1,2].includes(journal.version)&&typeof journal.before==='string'&&Array.isArray(journal.actions)&&journal.actions.length>=1&&journal.actions.length<=10000);
+  requireValue([1,2].includes(journal.version)&&typeof journal.before==='string'&&Array.isArray(journal.actions)&&journal.actions.length>=1);
   const beforePayload=JSON.parse(journal.before);requireValue(beforePayload.state&&!Object.hasOwn(beforePayload.state,'effectReplay'));
   if(journal.version===1)requireValue(beforePayload.state.lastScore===null&&beforePayload.state.phase==='playing');
   const before=deserializeState(journal.before);
   if(journal.version===1)requireValue(hasEffectMechanisms(before)&&journal.actions[0]?.type==='PLAY_HAND');
-  const fields={PLAY_HAND:['cardIds'],DISCARD:['cardIds'],REORDER_HAND:['cardIds'],SET_SORT:['mode'],CONTINUE_ENDLESS:[],START_BLIND:[],CASH_OUT:[],SKIP_BLIND:['blindId'],LEAVE_SHOP:[],REROLL_SHOP:[],REORDER_JOKERS:['cardIds'],REORDER_CONSUMABLES:['cardIds'],SELL_OWNED_CARD:['area','cardId'],SELL_JOKER:['jokerId'],BUY_SHOP_CARD:['offerId'],BUY_AND_USE_SHOP_CARD:['offerId','targetCardIds'],BUY_VOUCHER:['offerId'],REROLL_BOSS:[],OPEN_BOOSTER:['offerId'],USE_PACK_CARD:['cardId','targetCardIds'],TAKE_PACK_CARD:['cardId'],SKIP_PACK:[],USE_CONSUMABLE:['cardId','targetCardIds']};
+  const fields={PLAY_HAND:['cardIds'],DISCARD:['cardIds'],REORDER_HAND:['cardIds'],SET_SORT:['mode','repeat'],CONTINUE_ENDLESS:[],START_BLIND:[],CASH_OUT:[],SKIP_BLIND:['blindId'],LEAVE_SHOP:[],REROLL_SHOP:[],REORDER_JOKERS:['cardIds'],REORDER_CONSUMABLES:['cardIds'],SELL_OWNED_CARD:['area','cardId'],SELL_JOKER:['jokerId'],BUY_SHOP_CARD:['offerId'],BUY_AND_USE_SHOP_CARD:['offerId','targetCardIds'],BUY_VOUCHER:['offerId'],REROLL_BOSS:[],OPEN_BOOSTER:['offerId'],USE_PACK_CARD:['cardId','targetCardIds'],TAKE_PACK_CARD:['cardId'],SKIP_PACK:[],USE_CONSUMABLE:['cardId','targetCardIds']};
   const legacyActions=['PLAY_HAND','DISCARD','REORDER_HAND','SET_SORT','CONTINUE_ENDLESS'];
   for(const action of journal.actions){
     requireValue(action&&typeof action==='object'&&!Array.isArray(action)&&Object.hasOwn(fields,action.type));
     requireValue(Object.keys(action).every(k=>['type','expectedRevision','profileUnlockedCentreIds','profileLockedCentreIds','rentalTiming','mechanicsVersion',...fields[action.type]].includes(k)));
     if(Object.hasOwn(action,'rentalTiming'))requireValue(action.rentalTiming==='round_start');
     if(Object.hasOwn(action,'mechanicsVersion'))requireValue(action.mechanicsVersion===1);
+    replaySortSpan(action);
     if(journal.version===1)requireValue(legacyActions.includes(action.type));
   }
   const replay=replayFromVerifiedPrefix(journal.before,before,journal.actions),expected=replay.state;

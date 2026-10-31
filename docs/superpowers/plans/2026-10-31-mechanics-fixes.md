@@ -224,21 +224,21 @@ Task0 (версия правил/сохранения) → Task1 (Буйвол) 
 
 **Interfaces:** Использует Task0 `usesCurrentMechanics(state)` для replay-зависимых эффектов. Выход — исправленный обычный dispatch, неизменённые public action имена/формы; profile-задачи не меняют правила старого replay.
 
-- [ ] Разобрать исходное воспроизведение `scripts/audit060-profile/replay-cap.mjs` и контракт APK `functions/button_callbacks.lua:36–47 (сортировка без бюджета действий)`; не принимать audit-assert wrong result за правильный regression.
-- [ ] RED: создать тест с правильным ожидаемым результатом: Длинная допустимая партия должна оставаться играбельной; внутренний лимит журнала не является игровой механикой. Числовой пример: Omelette: START_BLIND +9999 чередующихся сортировок; сохранение597442байта валидно, после загрузки следующий ход → INVALID_STATE: Effect history limit reached.
-- [ ] Run `node --test tests/core/mechanics-061-replay.test.js`. Ожидается FAIL именно на найденном несоответствии.
-- [ ] Реализовать минимально: Сжать соседние SET_SORT в проверяемую replay macro с repeat и первым expectedRevision/последнимmode; в replay один сорт+проверенный скачок revision. Repeat допустим только для чистой сортировки, без пропуска economy/RNG. Снять искусственный10000cap, сохранить строгий2MiBstate/16MiBaccount лимит и whitelist; не принимать произвольный checkpoint.
-- [ ] GREEN и границы: 10001/50000 alternating sorts→действиеуспешно+smalljournal; save/reload; malformedrepeat/overflow/неSET_SORT/tamperedmoney/RNGreject; промежуточныеplay/discardнеудаляются; old10000journal читается и продолжается.
-- [ ] Run `node --test tests/core/mechanics-061-replay.test.js`, затем затронутые соседние tests/core и `npm test` после интеграции группы. Ожидается0FAIL; legacy fixture/replay unchanged.
-- [ ] Commit и progress: указать ID, source commit, regression names/команду, статус `исправлено в коде` отдельно от `проверено в APK`.
+- [x] Разобрать исходное воспроизведение `scripts/audit060-profile/replay-cap.mjs` и контракт APK `functions/button_callbacks.lua:36–47 (сортировка без бюджета действий)`; не принимать audit-assert wrong result за правильный regression.
+- [x] RED: создать тест с правильным ожидаемым результатом: Длинная допустимая партия должна оставаться играбельной; внутренний лимит журнала не является игровой механикой. Числовой пример: Omelette: START_BLIND +9999 чередующихся сортировок; сохранение597442байта валидно, после загрузки следующий ход → INVALID_STATE: Effect history limit reached.
+- [x] Run `node --test tests/core/mechanics-061-replay.test.js`. Ожидается FAIL именно на найденном несоответствии.
+- [x] Реализовать минимально: Сжать соседние SET_SORT в проверяемую replay macro с repeat и первым expectedRevision/последнимmode; в replay один сорт+проверенный скачок revision. Repeat допустим только для чистой сортировки, без пропуска economy/RNG. Снять искусственный10000cap, сохранить строгий2MiBstate/16MiBaccount лимит и whitelist; не принимать произвольный checkpoint.
+- [x] GREEN и границы: 10001/50000 alternating sorts→действиеуспешно+smalljournal; save/reload; malformedrepeat/overflow/неSET_SORT/tamperedmoney/RNGreject; промежуточныеplay/discardнеудаляются; old10000journal читается и продолжается.
+- [x] Run `node --test tests/core/mechanics-061-replay.test.js`, затем затронутые соседние tests/core и `npm test` после интеграции группы. Ожидается0FAIL; legacy fixture/replay unchanged.
+- [x] Commit и progress: указать ID, source commit, regression names/команду, статус `исправлено в коде` отдельно от `проверено в APK`.
 
 ## Финальная интеграция и выпуск
 
-- [ ] Перечитать все13 критериев BACKLOG: нет открытых шагов, маскируемых общим green suite.
-- [ ] Исполнить full core, нативные oracle при наличии LuaJIT+APK; отдельно фиксировать private skips.
-- [ ] Перезапустить матрицы150×28 и модификаторов с новыми правильными ожиданиями; старые audit wrong-result probes не использовать как release gate.
-- [ ] Browser: Ox tie skip/play/reload, Death/Wheel inventory, Purple+Trading, Ankh/Immolate boss hiding, отказ сохранения, repeated input, pack/reorder и существующая CI-матрица.
-- [ ] Независимое ревью с полным diff и review-focus; подтверждённые Critical/Important исправить с RED→GREEN.
+- [x] Перечитать все13 критериев BACKLOG: нет открытых шагов, маскируемых общим green suite.
+- [x] Исполнить full core, нативные oracle при наличии LuaJIT+APK; отдельно фиксировать private skips.
+- [x] Перезапустить матрицы150×28 и модификаторов с новыми правильными ожиданиями; старые audit wrong-result probes не использовать как release gate.
+- [x] Browser: Ox tie skip/play/reload, Death/Wheel inventory, Purple+Trading, Ankh/Immolate boss hiding, отказ сохранения, repeated input, pack/reorder и существующая CI-матрица.
+- [x] Независимое ревью с полным diff и review-focus; подтверждённые Critical/Important исправить с RED→GREEN.
 - [ ] Обновить package/versionCode только для фактического кандидата0.4.61/code74; fresh Gradle, signature/alignment, manifest, CRC, всеofflineassetsbyteequal и источник CI.
 - [ ] В progress/STATUS указать точный source/tested commit, CI, APK hash/link, signature-ограничение и непройденную физическую приёмку. Прежний APK остаётся последним выпущенным до этого момента.
 - [ ] Publish разрешённой feature-ветки, без merge; выдать короткий результат и APK. Ни один статус `проверено в APK` не ставить до этого шага.

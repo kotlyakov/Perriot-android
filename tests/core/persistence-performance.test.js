@@ -19,7 +19,7 @@ test('saving the next action does not replay the already authenticated history',
 
 test('cached replay still rejects state, prefix-action and checkpoint tampering',()=>{
  const state=longRun(),text=serializeState(state);
- for(const mutate of [raw=>raw.state.money='999',raw=>raw.state.effectReplay.actions[50].mode='invalid',raw=>{const before=JSON.parse(raw.state.effectReplay.before);before.state.money='99';raw.state.effectReplay.before=JSON.stringify(before);}]){
+ for(const mutate of [raw=>raw.state.money='999',raw=>raw.state.effectReplay.actions.find(a=>a.type==='SET_SORT').mode='invalid',raw=>{const before=JSON.parse(raw.state.effectReplay.before);before.state.money='99';raw.state.effectReplay.before=JSON.stringify(before);}]){
   const raw=JSON.parse(text);mutate(raw);assert.throws(()=>deserializeState(JSON.stringify(raw)));
  }
  const loaded=deserializeState(text);loaded.jokers[0].extraValue=999n;loaded.effectReplay.actions[0].type='INVALID';
