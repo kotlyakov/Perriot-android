@@ -513,7 +513,7 @@ function decode(payload) {
   requireValue(state.lastScore===null||!hasEffectMechanisms(state));
   const sortMode=state.sortMode;
   if(Object.hasOwn(state,'sortMode'))requireValue(['rank','suit'].includes(sortMode));
-  optionalObject(state,['schemaVersion','runId','seed','revision','phase','deckId','cards','hand','drawPile','discardPile','jokers','handLevels','discoveredHands','rng','money','round','lastScore'],['blindHistory','stake','shop','bankruptAt','jokerSlots','apkShop','sortMode','roundNumber','apkBlinds','bossState','nextAnteBlinds','runStats','consumables','consumableSlots','mostPlayedHand','consumableUsage','consumableUsageTotal','lastTarotPlanet','packState','destroyedCardIds','hangedDestroyedCardIds','hangedShortfallCardIds','hangedShortfallEpoch','nextJokerCreationOrdinal','cashoutQuote','winAnte','won','winNotified','winPending','nextPlayingCardOrdinal','lastPlayedHand','handUsage','startingDeckSize','pendingDoubleTags','spectralDestroyedCardIds','spectralShortfallCardIds','spectralShortfallEpoch','spectralHandSizeDelta','ectoMinus','pendingTags','pendingTagPacks','activeTagHandSize','bossRerollUsed','challengeId','challengePlayedCardIds','challengeFlippedCardIds','challengeLuxuryTax','runSummary','rentalTiming']);
+  optionalObject(state,['schemaVersion','runId','seed','revision','phase','deckId','cards','hand','drawPile','discardPile','jokers','handLevels','discoveredHands','rng','money','round','lastScore'],['blindHistory','stake','shop','bankruptAt','jokerSlots','apkShop','sortMode','roundNumber','apkBlinds','bossState','nextAnteBlinds','runStats','consumables','consumableSlots','mostPlayedHand','consumableUsage','consumableUsageTotal','lastTarotPlanet','packState','destroyedCardIds','hangedDestroyedCardIds','hangedShortfallCardIds','hangedShortfallEpoch','nextJokerCreationOrdinal','cashoutQuote','winAnte','won','winNotified','winPending','nextPlayingCardOrdinal','lastPlayedHand','handUsage','startingDeckSize','pendingDoubleTags','spectralDestroyedCardIds','spectralShortfallCardIds','spectralShortfallEpoch','spectralHandSizeDelta','ectoMinus','pendingTags','pendingTagPacks','activeTagHandSize','bossRerollUsed','challengeId','challengePlayedCardIds','challengeFlippedCardIds','challengeLuxuryTax','runSummary','rentalTiming','mechanicsVersion']);
   if(Object.hasOwn(state,'challengeId'))requireValue(typeof state.challengeId==='string'&&Object.hasOwn(CHALLENGE_BY_ID,state.challengeId)&&state.deckId==='red'&&(state.stake??1)===1&&state.apkShop&&state.apkBlinds&&state.rng?.apk);
   const challenge=challengeFor(state);
   if(Object.hasOwn(state,'challengeLuxuryTax')){requireValue(challenge?.modifiers?.minusHandSizePerDollars);integer(state.challengeLuxuryTax,-Number.MAX_SAFE_INTEGER,Number.MAX_SAFE_INTEGER);}
@@ -528,6 +528,7 @@ function decode(payload) {
   if(state.winPending)requireValue(state.won===true&&state.winNotified===true&&state.phase==='round_won'&&state.round.blindId==='boss'&&state.round.ante===(state.winAnte??8)&&state.cashoutQuote?.earnedRevision===state.revision);
   requireValue(validConsumableUsage(state));
   if(Object.hasOwn(state,'lastPlayedHand'))requireValue(Object.hasOwn(HANDS,state.lastPlayedHand));
+  if(Object.hasOwn(state,'mechanicsVersion'))requireValue(state.mechanicsVersion===1);
   if(Object.hasOwn(state,'mostPlayedHand'))requireValue(state.mostPlayedHand===null||Object.hasOwn(HANDS,state.mostPlayedHand));
   if(Object.hasOwn(state,'stake'))requireValue(validStake(state.stake));
   requireValue(state.schemaVersion===1 && PHASES.includes(state.phase) && Object.hasOwn(DECKS,state.deckId));
@@ -728,8 +729,9 @@ function decodeEffectReplay(payload){
   const legacyActions=['PLAY_HAND','DISCARD','REORDER_HAND','SET_SORT','CONTINUE_ENDLESS'];
   for(const action of journal.actions){
     requireValue(action&&typeof action==='object'&&!Array.isArray(action)&&Object.hasOwn(fields,action.type));
-    requireValue(Object.keys(action).every(k=>['type','expectedRevision','profileUnlockedCentreIds','profileLockedCentreIds','rentalTiming',...fields[action.type]].includes(k)));
+    requireValue(Object.keys(action).every(k=>['type','expectedRevision','profileUnlockedCentreIds','profileLockedCentreIds','rentalTiming','mechanicsVersion',...fields[action.type]].includes(k)));
     if(Object.hasOwn(action,'rentalTiming'))requireValue(action.rentalTiming==='round_start');
+    if(Object.hasOwn(action,'mechanicsVersion'))requireValue(action.mechanicsVersion===1);
     if(journal.version===1)requireValue(legacyActions.includes(action.type));
   }
   const replay=replayFromVerifiedPrefix(journal.before,before,journal.actions),expected=replay.state;

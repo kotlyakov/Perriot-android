@@ -1,3 +1,6 @@
+import {runDiscards} from './stakes.js';
+import {voucherModifiers} from './vouchers.js';
+import {item7CapacityDeltas} from './joker-item7-lifecycle.js';
 import {isVerificationSeed,verificationCentreIds} from './verification-seed.js';
 import catalog from '../content/apk-shop-catalog.js';
 import {PROFILE_UNLOCKS} from '../content/profile-unlocks.js';
@@ -65,7 +68,7 @@ export function collectionEntries(p,seed){return rows.map(row=>({...row,unlocked
 function addWin(map,id,stake,fill=false){const wins=map[id]??Array(8).fill(0);increment(wins,stake-1);if(fill)for(let i=0;i<stake;i++)if(!wins[i])wins[i]=1;map[id]=wins;}
 function discover(profile,id){if(ids.has(id)&&!profile.discovered.includes(id))profile.discovered.push(id);if(LEGENDARY.includes(id)&&!profile.unlocked.includes(id))profile.unlocked.push(id);}
 function totalDiscovered(profile){return rows.filter(r=>!['Enhanced','Seal'].includes(r.set)&&profile.discovered.includes(r.id)).length;}
-function isRoyal(cards,state){if(cards.length<4)return false;const evaluated=evaluateHand(cards.map((card,i)=>({...card,id:card.id??String(i)})),{...handRecognitionOptions(state.jokers??[]),isCardDebuffed:card=>isBossCardDebuffed(state,card)});return evaluated.handId==='straight_flush'&&Math.min(...cards.map(c=>c.rank))===10;}
+function isRoyal(cards,state){if(cards.length<4)return false;const evaluated=evaluateHand(cards.map((card,i)=>({...card,id:card.id??String(i)})),{...handRecognitionOptions(state.jokers??[]),isCardDebuffed:card=>isBossCardDebuffed(state,card)});return evaluated.handId==='straight_flush'&&Math.min(...cards.map(c=>c.rank))>=10;}
 function moneyPeak(n,events=[]){return events.filter(e=>e.type==='money_changed').flatMap(e=>[e.before,e.after]).filter(v=>typeof v==='bigint').reduce((max,v)=>v>max?v:max,n.money);}
 function recordHighScores(p,n,run,events=[]){
  p.highScores.hand=String(BigInt(p.highScores.hand)>BigInt(n.lastScore?.score??0)?p.highScores.hand:BigInt(n.lastScore?.score??0));
@@ -91,7 +94,7 @@ export function updateProfile(profile,previousState,nextState,events=[],context=
  const started=!run;run??={revision:-1,seeded:context.seeded===true,challenge:!!nextState.challengeId||!!context.challenge,won:false,lost:false,maxJokers:0,bossStreak:0,rounds:0,handUsage:{},discoveries:0};
  run.revision=nextState.revision;run.maxJokers=Math.max(run.maxJokers,previousState?.jokers?.length??0,nextState.jokers?.length??0);Object.defineProperty(p.runs,id,{value:run,writable:true,enumerable:true,configurable:true});
  if(started&&context.abandonedRunId&&own(p.runs,context.abandonedRunId)){const old=p.runs[context.abandonedRunId];if(!old.seeded&&!old.challenge&&!old.won)p.highScores.currentStreak=0;}
- for(const event of events)if(event.type==='round_started')increment(run,'rounds');
+ for(const event of events)if(event.type==='round_started'){increment(run,'rounds');if(['small','big'].includes(nextState.round?.blindId))run.bossStreak=0;}
  if(run.seeded||run.challenge){
   if(run.challenge&&!isVerificationSeed(nextState.seed)&&own(CHALLENGE_BY_ID,nextState.challengeId)&&!run.won&&nextState.winPending===true&&nextState.phase==='round_won'&&nextState.round?.ante===8&&nextState.round.blindId==='boss'&&events.some(e=>e.type==='round_won')){
    run.won=true;p.completedChallenges??=[];if(!p.completedChallenges.includes(nextState.challengeId))p.completedChallenges.push(nextState.challengeId);
@@ -157,7 +160,7 @@ export function updateProfile(profile,previousState,nextState,events=[],context=
   else if(c.type==='blind_discoveries')unlocked=APK_BLINDS.filter(b=>p.discovered.includes(b.id)).length>=x;
   else if(c.type==='min_hand_size')unlocked=n.round?.handSize<=x;
   else if(c.type==='interest_streak')unlocked=p.career.c_round_interest_cap_streak>=x;
-  else if(c.type==='round_win')unlocked=roundWin&&(key==='j_troubadour'?p.career.c_single_hand_round_streak>=x:key==='j_hanging_chad'?n.round.blindId==='boss'&&n.lastScore?.handId==='high_card':n.round.blindId==='boss'&&n.round.handsPlayed===1&&(n.round.discardsUsed??0)===0);
+  else if(c.type==='round_win')unlocked=roundWin&&(key==='j_troubadour'?p.career.c_single_hand_round_streak>=x:key==='j_hanging_chad'?n.round.blindId==='boss'&&n.lastScore?.handId==='high_card':n.round.blindId==='boss'&&n.round.handsPlayed===1&&n.round.discardsRemaining===Math.max(0,runDiscards(n)+voucherModifiers(n).discards+item7CapacityDeltas(n.jokers).discards));
   else if(c.type==='hand_contents')unlocked=!!played&&(key==='j_ticket'?playedCards.filter(card=>card.enhancement==='gold').length>=5:playedCards.filter(card=>card.rank===7&&card.enhancement!=='stone'&&isCardSuit(card,'clubs',{jokers:prev.jokers??[],debuffed:isBossCardDebuffed(prev,card)})).length>=4);
   else if(c.type==='discard_custom')unlocked=!!discarded&&(key==='j_hit_the_road'?discardedCards.filter(card=>card.rank===11&&card.enhancement!=='stone').length>=5:key==='j_brainstorm'&&isRoyal(discardedCards,prev));
   else if(c.type==='play_all_hearts')unlocked=!!played&&[...(n.hand??[]),...(n.drawPile??[])].every(id=>n.cards[id]?.suit!=='hearts'||n.cards[id]?.enhancement==='stone');

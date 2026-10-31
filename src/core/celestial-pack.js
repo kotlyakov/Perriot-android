@@ -1,3 +1,4 @@
+import {usesCurrentMechanics} from './mechanics-version.js';
 import {applyChallengeDraw} from './challenge-draw.js';
 import {takeTagPack} from './tag-effects.js';
 import catalogue from '../content/apk-shop-catalog.js';
@@ -58,7 +59,7 @@ export function applyCelestialPackAction(state,action){
   applyItem7EconomyContext(next,{type:'open_booster'},events);
   applyChallengePurchaseInflation(next);
   const options={instancePrefix:'pack_'+(state.revision+1)};
-  const generated=supportsRemainingBooster(offer.entityId)?generateApkRemainingPack(next.rng.apk,currentApkShopContext(next),{...options,boosterId:offer.entityId}):arcana?generateApkArcanaPack(next.rng.apk,currentApkShopContext(next),{...options,boosterId:offer.entityId}):generateApkCelestialPack(next.rng.apk,currentApkShopContext(next),{...options,...config(offer.entityId)});
+  const generated=supportsRemainingBooster(offer.entityId)?generateApkRemainingPack(next.rng.apk,currentApkShopContext(next),{...options,boosterId:offer.entityId}):arcana?generateApkArcanaPack(next.rng.apk,currentApkShopContext(next),{...options,boosterId:offer.entityId,legacyShowman:!usesCurrentMechanics(next)}):generateApkCelestialPack(next.rng.apk,currentApkShopContext(next),{...options,...config(offer.entityId)});
   next.shop.boosters=next.shop.boosters.filter(card=>card.id!==offer.id);next.money-=offer.cost;next.rng.apk=generated.rng;next.phase='pack';next.revision++;
   next.packState={version:1,sourceEntityId:offer.entityId,cards:generated.cards,choicesRemaining:config(offer.entityId).choices};
   if(config(offer.entityId).kind==='Buffoon')stampJokerCreationOrdinals(next,next.packState.cards);

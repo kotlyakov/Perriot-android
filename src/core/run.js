@@ -1,3 +1,5 @@
+import {applyBossDrawVisibility} from './boss-draw.js';
+import {usesCurrentMechanics} from './mechanics-version.js';
 import {createRunSummary,recordRunSummary} from './run-summary.js';
 import {isVerificationSeed,verificationCentreIds} from './verification-seed.js';
 import {applyRoundEndJokers,hasJokerStickers} from './round-end-jokers.js';
@@ -61,7 +63,7 @@ export function createRun(seed, {runId,deckId='red',stake=1,money,referenceRng=f
     }
   }
   const state={
-    schemaVersion:1,runId,seed,revision:0,phase:'blind_selection',deckId,cards,
+    schemaVersion:1,mechanicsVersion:1,runId,seed,revision:0,phase:'blind_selection',deckId,cards,
     blindHistory:[],winAnte:8,won:false,winNotified:false,winPending:false,
     hand:[],drawPile:Object.keys(cards),discardPile:[],jokers:[],
     handLevels:Object.fromEntries(Object.keys(HANDS).map(id=>[id,1])),
@@ -122,7 +124,8 @@ function drawToLimit(state, events,action='START_BLIND') {
   const serpent=!state.bossState?.disabled&&state.bossState?.id==='bl_serpent'&&(action==='USE_CONSUMABLE'?((state.round.handsPlayed??0)>0||(state.round.discardsUsed??0)>0):action!=='START_BLIND');
   const count=Math.min(serpent?3:Math.max(0,state.round.handSize-state.hand.length),state.drawPile.length);
   const ids=state.rng.apk?Array.from({length:count},()=>state.drawPile.pop()):state.drawPile.splice(0,count);
-  if(boss && !boss.disabled && ['bl_house','bl_wheel','bl_fish','bl_mark'].includes(boss.id)){
+  if(usesCurrentMechanics(state))applyBossDrawVisibility(state,ids,action);
+  else if(boss && !boss.disabled && ['bl_house','bl_wheel','bl_fish','bl_mark'].includes(boss.id)){
     boss.hiddenCardIds??=[];
     if(boss.id==='bl_mark'&&!boss.hiddenFaceRanks)boss.hiddenFaceRanks=Object.fromEntries(boss.hiddenCardIds.map(id=>{
       const rank=state.cards[id].rank;return [id,rank>=11&&rank<=13?rank:Number(id.match(/_(\d+)$/)?.[1])];
@@ -144,6 +147,7 @@ function drawToLimit(state, events,action='START_BLIND') {
 // Keep one trusted checkpoint, never nested histories. PLAY_HAND refreshes the
 // scoring checkpoint; other effect transitions retain their mutable provenance.
 export function dispatch(state,action,shopOptions={}){
+  if(state?.mechanicsVersion!==1&&action&&typeof action==='object'&&!Object.hasOwn(action,'mechanicsVersion'))action={...action,mechanicsVersion:1};
   if(state?.rentalTiming!=='round_start'&&action&&typeof action==='object')action={...action,rentalTiming:'round_start'};
   let result;try{result=dispatchCore(state,action,shopOptions);}catch(error){return {state,events:[],error:{code:'INVALID_STATE',message:error.message}};}
   if(result.error||result.state===state)return result;
@@ -214,6 +218,12 @@ export function replayEffectActions(before,actions){
   return state;
 }
 function dispatchCore(state, action, shopOptions={}) {
+  if(action?.mechanicsVersion!==undefined){
+    if(action.mechanicsVersion!==1)return {state,events:[],error:{code:'INVALID_ACTION',message:'Invalid mechanics version'}};
+    const input={...state,mechanicsVersion:1},clean={...action};delete clean.mechanicsVersion;
+    if(input.mostPlayedHand==null&&input.apkShop)input.mostPlayedHand=resolveMostPlayedHand(input.apkShop.context.playedHands,{allowTies:true});
+    const result=dispatchCore(input,clean,shopOptions);return result.error||result.state===input?{...result,state}:result;
+  }
   if(action?.rentalTiming!==undefined){
     if(action.rentalTiming!=='round_start')return {state,events:[],error:{code:'INVALID_ACTION',message:'Invalid rental timing'}};
     const input={...state,rentalTiming:'round_start'},clean={...action};delete clean.rentalTiming;
@@ -252,7 +262,7 @@ function dispatchCore(state, action, shopOptions={}) {
     const next=structuredClone(state);
     // Preserve the earned target's native disable provenance after active boss cleanup.
     if(next.bossState?.disabled&&['bl_wall','bl_final_vessel'].includes(next.bossState.id))next.round.bossDisabled=true;
-    if(next.bossState){restoreBossHandSize(next);if(next.bossState.id==='bl_final_heart')for(const joker of next.jokers)setJokerBossDebuff(joker,false);delete next.bossState;next.apkBlinds.playedCardIds=[];next.mostPlayedHand=resolveMostPlayedHand(next.apkShop.context.playedHands);}next.money+=quote.total;delete next.cashoutQuote;next.phase='shop';next.revision++;
+    if(next.bossState){restoreBossHandSize(next);if(next.bossState.id==='bl_final_heart')for(const joker of next.jokers)setJokerBossDebuff(joker,false);delete next.bossState;next.apkBlinds.playedCardIds=[];next.mostPlayedHand=resolveMostPlayedHand(next.apkShop.context.playedHands,{allowTies:usesCurrentMechanics(next)});}next.money+=quote.total;delete next.cashoutQuote;next.phase='shop';next.revision++;
     if(next.apkShop){const nextCounters=voucherModifiers(next);next.round.handsRemaining=Math.max(1,(next.challengeId?challengeHands(next):deckHands(next.deckId))+nextCounters.hands);next.round.discardsRemaining=Math.max(0,runDiscards(next)+nextCounters.discards);}
     next.drawPile=Object.keys(next.cards);next.hand=[];next.discardPile=[];next.lastScore=null;if(state.hangedShortfallCardIds)next.hangedShortfallEpoch={...(state.hangedShortfallEpoch??{cardIds:[...state.hangedShortfallCardIds],revision:state.revision,ante:state.round.ante,blindId:state.round.blindId,handsRemaining:state.round.handsRemaining}),consumed:true,consumedBy:action.type};delete next.hangedShortfallCardIds;consumeSpectralShortfall(state,next,action.type);
     if(next.apkShop){
@@ -450,9 +460,9 @@ function dispatchCore(state, action, shopOptions={}) {
   } else {
     const discardCost=challengeFor(next)?.modifiers?.discardCost;
     if(discardCost){const beforeMoney=next.money;next.money-=BigInt(discardCost);events.push({type:'money_changed',reason:'discard',before:beforeMoney,after:next.money,delta:-BigInt(discardCost)});}
-    const removed=applyItem7Discard(next,playedIds,events);applyItem7CardsDestroyed(next,removed,events);
+    const removed=applyItem7Discard(next,playedIds,events,usesCurrentMechanics(next)?{beforeCard:id=>applyDiscardSeals(next,[id],events)}:{});applyItem7CardsDestroyed(next,removed,events);
     for(const card of removed){delete next.cards[card.id];next.discardPile=next.discardPile.filter(id=>id!==card.id);next.destroyedCardIds=[...(next.destroyedCardIds??[]),card.id];}
-    applyDiscardSeals(next,playedIds.filter(id=>next.cards[id]),events);
+    if(!usesCurrentMechanics(next))applyDiscardSeals(next,playedIds.filter(id=>next.cards[id]),events);
     next.round.discardsUsed=(next.round.discardsUsed??0)+1;next.round.discardsRemaining--;events.push({type:'cards_discarded',cardIds:[...playedIds]});
   }
   if(next.phase==='round_won'&&next.bossState?.id==='bl_final_acorn')next.bossState.hiddenJokerIds=[];
