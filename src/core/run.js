@@ -1,6 +1,10 @@
+import {compactSortActions,replaySortSpan} from './replay-sort.js';
+import {applyBossDrawVisibility} from './boss-draw.js';
+import {usesCurrentMechanics} from './mechanics-version.js';
+import {createRunSummary,recordRunSummary} from './run-summary.js';
 import {isVerificationSeed,verificationCentreIds} from './verification-seed.js';
 import {applyRoundEndJokers,hasJokerStickers} from './round-end-jokers.js';
-import {setJokerBossDebuff} from './joker-stickers.js';
+import {setJokerBossDebuff,applyJokerRentalStartRound} from './joker-stickers.js';
 import {validStake,stakeShopModifiers,runDiscards} from './stakes.js';
 import {DECKS,deckHands,deckDiscards,deckHandSize,deckBlindScale} from '../content/decks.js';
 import {prepareStartingDeck,finishStartingDeck} from './deck-effects.js';
@@ -60,7 +64,7 @@ export function createRun(seed, {runId,deckId='red',stake=1,money,referenceRng=f
     }
   }
   const state={
-    schemaVersion:1,runId,seed,revision:0,phase:'blind_selection',deckId,cards,
+    schemaVersion:1,mechanicsVersion:1,runId,seed,revision:0,phase:'blind_selection',deckId,cards,
     blindHistory:[],winAnte:8,won:false,winNotified:false,winPending:false,
     hand:[],drawPile:Object.keys(cards),discardPile:[],jokers:[],
     handLevels:Object.fromEntries(Object.keys(HANDS).map(id=>[id,1])),
@@ -98,6 +102,8 @@ export function createRun(seed, {runId,deckId='red',stake=1,money,referenceRng=f
   }
   finishStartingDeck(state);
   if(state.apkShop&&!['red','blue'].includes(deckId))state.apkShop.context=currentApkShopContext(state);
+  state.rentalTiming='round_start';
+  state.runSummary=createRunSummary();
   return state;
 }
 
@@ -119,7 +125,8 @@ function drawToLimit(state, events,action='START_BLIND') {
   const serpent=!state.bossState?.disabled&&state.bossState?.id==='bl_serpent'&&(action==='USE_CONSUMABLE'?((state.round.handsPlayed??0)>0||(state.round.discardsUsed??0)>0):action!=='START_BLIND');
   const count=Math.min(serpent?3:Math.max(0,state.round.handSize-state.hand.length),state.drawPile.length);
   const ids=state.rng.apk?Array.from({length:count},()=>state.drawPile.pop()):state.drawPile.splice(0,count);
-  if(boss && !boss.disabled && ['bl_house','bl_wheel','bl_fish','bl_mark'].includes(boss.id)){
+  if(usesCurrentMechanics(state))applyBossDrawVisibility(state,ids,action);
+  else if(boss && !boss.disabled && ['bl_house','bl_wheel','bl_fish','bl_mark'].includes(boss.id)){
     boss.hiddenCardIds??=[];
     if(boss.id==='bl_mark'&&!boss.hiddenFaceRanks)boss.hiddenFaceRanks=Object.fromEntries(boss.hiddenCardIds.map(id=>{
       const rank=state.cards[id].rank;return [id,rank>=11&&rank<=13?rank:Number(id.match(/_(\d+)$/)?.[1])];
@@ -141,22 +148,22 @@ function drawToLimit(state, events,action='START_BLIND') {
 // Keep one trusted checkpoint, never nested histories. PLAY_HAND refreshes the
 // scoring checkpoint; other effect transitions retain their mutable provenance.
 export function dispatch(state,action,shopOptions={}){
+  if(state?.mechanicsVersion!==1&&action&&typeof action==='object'&&!Object.hasOwn(action,'mechanicsVersion'))action={...action,mechanicsVersion:1};
+  if(state?.rentalTiming!=='round_start'&&action&&typeof action==='object')action={...action,rentalTiming:'round_start'};
   let result;try{result=dispatchCore(state,action,shopOptions);}catch(error){return {state,events:[],error:{code:'INVALID_STATE',message:error.message}};}
   if(result.error||result.state===state)return result;
   let next=result.state;
   try{next=openPendingTagPack(next,result.events);result.state=next;}catch(error){return {state,events:[],error:{code:'INVALID_STATE',message:error.message}};}
   try{finishAction(state,next,action,result.events);}catch(error){return {state,events:[],error:{code:'INVALID_STATE',message:error.message}};}
-  const spectralUse=action.type==='USE_CONSUMABLE'&&state.consumables?.some(card=>card.id===action.cardId&&card.set==='Spectral')||action.type==='USE_PACK_CARD'&&state.packState?.cards.some(card=>card.id===action.cardId&&card.set==='Spectral');
+  const spectralUse=action.type==='USE_CONSUMABLE'&&state.consumables?.some(card=>card.id===action.cardId&&card.set==='Spectral')||action.type==='USE_PACK_CARD'&&state.packState?.cards.some(card=>card.id===action.cardId&&card.set==='Spectral')||action.type==='BUY_AND_USE_SHOP_CARD'&&state.shop?.main.some(card=>card.id===action.offerId&&card.set==='Spectral');
   let journal;
   if(state.challengeId){
-    if(state.effectReplay?.actions.length>=10000)return {state,events:[],error:{code:'INVALID_STATE',message:'Effect history limit reached'}};
     const before=state.effectReplay?state.effectReplay.before:structuredClone(state);delete before.effectReplay;
     journal={version:2,before,actions:[...(state.effectReplay?.actions??[]),structuredClone(action)]};
   }else if(action.type==='PLAY_HAND'&&(!state.effectReplay||state.effectReplay.version===1)&&(hasEffectMechanisms(state)||hasJokerStickers(state)||state.apkShop?.context.usedVoucherIds.includes('v_observatory')||state.rng?.apk&&next.phase==='round_won')){
     const before=structuredClone(state);delete before.effectReplay;before.lastScore=null;
     journal={version:hasEffectMechanisms(state)?1:2,before,actions:[structuredClone(action)]};
   }else if(state.effectReplay){
-    if(state.effectReplay.actions.length>=10000)return {state,events:[],error:{code:'INVALID_STATE',message:'Effect history limit reached'}};
     const legacyAction=['DISCARD','REORDER_HAND','SET_SORT','CONTINUE_ENDLESS'].includes(action.type);
     const version=state.effectReplay.version===1&&next.lastScore!==null&&legacyAction?1:2;
     journal={...structuredClone(state.effectReplay),version,actions:[...structuredClone(state.effectReplay.actions),structuredClone(action)]};
@@ -164,7 +171,8 @@ export function dispatch(state,action,shopOptions={}){
     const before=structuredClone(state);delete before.effectReplay;
     journal={version:2,before,actions:[structuredClone(action)]};
   }
-  if(journal)next.effectReplay=journal;else delete next.effectReplay;
+  recordRunSummary(state,next,result.events);
+  if(journal){journal.actions=compactSortActions(journal.actions);next.effectReplay=journal;}else delete next.effectReplay;
   return result;
 }
 function loseRound(next,events){applyTagRoundEnd(next,events);const end=applyRoundEndJokers(next,events,{gameOver:true});if(end.saved)settleRoundSuccess(next,events,{saved:true,endRoundApplied:true});else next.phase='game_over';
@@ -205,10 +213,22 @@ function finishAction(before,next,action,events){
 }
 export function replayEffectActions(before,actions){
   let state=structuredClone(before);
-  for(const action of actions){const result=dispatchCore(state,action);if(result.error)throw new TypeError('Invalid effect action history');if(result.state!==state)finishAction(state,result.state,action,result.events);state=openPendingTagPack(result.state,result.events);}
+  for(const action of actions){const span=replaySortSpan(action),clean=span>1?{...action}:action;if(span>1)delete clean.repeat;const result=dispatchCore(state,clean);if(result.error)throw new TypeError('Invalid effect action history');if(span>1)result.state.revision+=span-1;if(result.state!==state)finishAction(state,result.state,clean,result.events);const next=openPendingTagPack(result.state,result.events);if(next!==state)recordRunSummary(state,next,result.events);state=next;}
   return state;
 }
 function dispatchCore(state, action, shopOptions={}) {
+  if(action&&Object.hasOwn(action,'repeat'))return {state,events:[],error:{code:'INVALID_ACTION',message:'Sort spans are replay metadata only'}};
+  if(action?.mechanicsVersion!==undefined){
+    if(action.mechanicsVersion!==1)return {state,events:[],error:{code:'INVALID_ACTION',message:'Invalid mechanics version'}};
+    const input={...state,mechanicsVersion:1},clean={...action};delete clean.mechanicsVersion;
+    if(input.mostPlayedHand==null&&input.apkShop)input.mostPlayedHand=resolveMostPlayedHand(input.apkShop.context.playedHands,{allowTies:true});
+    const result=dispatchCore(input,clean,shopOptions);return result.error||result.state===input?{...result,state}:result;
+  }
+  if(action?.rentalTiming!==undefined){
+    if(action.rentalTiming!=='round_start')return {state,events:[],error:{code:'INVALID_ACTION',message:'Invalid rental timing'}};
+    const input={...state,rentalTiming:'round_start'},clean={...action};delete clean.rentalTiming;
+    const result=dispatchCore(input,clean,shopOptions);return result.error||result.state===input?{...result,state}:result;
+  }
   const originalState=state;
   const reject=(code,message)=>({state:originalState,events:[],error:{code,message}});
   if (!action || typeof action.type!=='string' || !Number.isSafeInteger(action.expectedRevision)) return reject('INVALID_ACTION','Malformed action');
@@ -231,18 +251,18 @@ function dispatchCore(state, action, shopOptions={}) {
   }
   if(['REORDER_JOKERS','REORDER_CONSUMABLES','SELL_OWNED_CARD'].includes(action.type))return applyInventoryAction(state,action);
   if(action.type==='USE_CONSUMABLE')return applyConsumableAction(state,action);
-  if(['OPEN_BOOSTER','USE_PACK_CARD','SKIP_PACK'].includes(action.type))return applyCelestialPackAction(state,action);
+  if(['OPEN_BOOSTER','USE_PACK_CARD','TAKE_PACK_CARD','SKIP_PACK'].includes(action.type))return applyCelestialPackAction(state,action);
   if(action.type==='BUY_VOUCHER')return applyVoucherAction(state,action);
   if(action.type==='REROLL_BOSS')return applyBossRerollAction(state,action);
   if(action.type==='SKIP_BLIND')return applySkipBlind(state,action);
-  if(['BUY_SHOP_CARD','SELL_JOKER','REROLL_SHOP','LEAVE_SHOP'].includes(action.type))return applyShopAction(state,action,shopOptions);
+  if(['BUY_SHOP_CARD','BUY_AND_USE_SHOP_CARD','SELL_JOKER','REROLL_SHOP','LEAVE_SHOP'].includes(action.type))return applyShopAction(state,action,shopOptions);
   if(action.type==='CASH_OUT') {
     if(state.phase!=='round_won')return reject('INVALID_PHASE','Round has not been won');
     let quote;try{quote=getCashout(state);}catch{return reject('INVALID_STATE','Invalid cashout state');}
     const next=structuredClone(state);
     // Preserve the earned target's native disable provenance after active boss cleanup.
     if(next.bossState?.disabled&&['bl_wall','bl_final_vessel'].includes(next.bossState.id))next.round.bossDisabled=true;
-    if(next.bossState){restoreBossHandSize(next);if(next.bossState.id==='bl_final_heart')for(const joker of next.jokers)setJokerBossDebuff(joker,false);delete next.bossState;next.apkBlinds.playedCardIds=[];next.mostPlayedHand=resolveMostPlayedHand(next.apkShop.context.playedHands);}next.money+=quote.total;delete next.cashoutQuote;next.phase='shop';next.revision++;
+    if(next.bossState){restoreBossHandSize(next);if(next.bossState.id==='bl_final_heart')for(const joker of next.jokers)setJokerBossDebuff(joker,false);delete next.bossState;next.apkBlinds.playedCardIds=[];next.mostPlayedHand=resolveMostPlayedHand(next.apkShop.context.playedHands,{allowTies:usesCurrentMechanics(next)});}next.money+=quote.total;delete next.cashoutQuote;next.phase='shop';next.revision++;
     if(next.apkShop){const nextCounters=voucherModifiers(next);next.round.handsRemaining=Math.max(1,(next.challengeId?challengeHands(next):deckHands(next.deckId))+nextCounters.hands);next.round.discardsRemaining=Math.max(0,runDiscards(next)+nextCounters.discards);}
     next.drawPile=Object.keys(next.cards);next.hand=[];next.discardPile=[];next.lastScore=null;if(state.hangedShortfallCardIds)next.hangedShortfallEpoch={...(state.hangedShortfallEpoch??{cardIds:[...state.hangedShortfallCardIds],revision:state.revision,ante:state.round.ante,blindId:state.round.blindId,handsRemaining:state.round.handsRemaining}),consumed:true,consumedBy:action.type};delete next.hangedShortfallCardIds;consumeSpectralShortfall(state,next,action.type);
     if(next.apkShop){
@@ -271,7 +291,7 @@ function dispatchCore(state, action, shopOptions={}) {
   if (action.type==='START_BLIND') {
     if (state.phase!=='blind_selection') return reject('INVALID_PHASE','Not selecting a blind');
     if(state.round.blindId==='boss'&&!canEnterBoss(state))return reject('BOSS_UNAVAILABLE','Boss lifecycle is unavailable');
-    const next=structuredClone(state);const events=[];applyTagRoundStart(next,events);
+    const next=structuredClone(state);const events=[];if(next.rentalTiming==='round_start')applyJokerRentalStartRound(next,events);applyTagRoundStart(next,events);
     if(next.round.blindId==='boss'){
       next.bossState={version:1,disabled:false,id:next.apkBlinds.bossId,playedBeforeBoss:[...next.apkBlinds.playedCardIds],baseHandSize:realHandSize(next)};
       if(next.bossState.id==='bl_manacle')changeHandSize(next,-1,{updateBoss:false});
@@ -440,9 +460,9 @@ function dispatchCore(state, action, shopOptions={}) {
   } else {
     const discardCost=challengeFor(next)?.modifiers?.discardCost;
     if(discardCost){const beforeMoney=next.money;next.money-=BigInt(discardCost);events.push({type:'money_changed',reason:'discard',before:beforeMoney,after:next.money,delta:-BigInt(discardCost)});}
-    const removed=applyItem7Discard(next,playedIds,events);applyItem7CardsDestroyed(next,removed,events);
+    const removed=applyItem7Discard(next,playedIds,events,usesCurrentMechanics(next)?{beforeCard:id=>applyDiscardSeals(next,[id],events)}:{});applyItem7CardsDestroyed(next,removed,events);
     for(const card of removed){delete next.cards[card.id];next.discardPile=next.discardPile.filter(id=>id!==card.id);next.destroyedCardIds=[...(next.destroyedCardIds??[]),card.id];}
-    applyDiscardSeals(next,playedIds.filter(id=>next.cards[id]),events);
+    if(!usesCurrentMechanics(next))applyDiscardSeals(next,playedIds.filter(id=>next.cards[id]),events);
     next.round.discardsUsed=(next.round.discardsUsed??0)+1;next.round.discardsRemaining--;events.push({type:'cards_discarded',cardIds:[...playedIds]});
   }
   if(next.phase==='round_won'&&next.bossState?.id==='bl_final_acorn')next.bossState.hiddenJokerIds=[];

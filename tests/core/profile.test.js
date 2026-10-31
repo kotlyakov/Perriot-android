@@ -57,3 +57,11 @@ test('profile tracks most played hands and boss streak across successive boss wi
  const n=state({revision:1,lastScore:{handId:'pair',score:20n},round:{ante:2,blindId:'boss',handsPlayed:1},apkBlinds:{bossId:'bl_hook'}});let p=api.updateProfile(api.createProfile(),state(),n,[{type:'hand_played',cardIds:[]},{type:'round_won'}]);assert.equal(p.usage.hands.pair,1);assert.equal(p.highScores.bossStreak,1);
  p=api.updateProfile(p,n,state({revision:2,round:{ante:3,blindId:'boss',handsPlayed:1}}),[{type:'round_won'}]);assert.equal(p.highScores.bossStreak,2);
 });
+
+test('per-run discovery count survives profile reload and does not repeat',()=>{
+ let p=api.createProfile();const n=state({revision:1,jokers:[{entityId:'j_joker'}]});
+ const before=p.discovered.length;p=api.updateProfile(p,null,n);
+ assert.equal(p.runs[n.runId].discoveries,p.discovered.length-before);
+ const restored=JSON.parse(JSON.stringify(p));assert.deepEqual(api.validateProfile(restored),p);
+ assert.equal(api.updateProfile(restored,n,n).runs[n.runId].discoveries,p.runs[n.runId].discoveries);
+});

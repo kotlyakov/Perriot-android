@@ -1,7 +1,20 @@
 export function logBigInt(value){if(value<=0n)return -Infinity;const s=value.toString(),n=Math.min(15,s.length);return Math.log10(Number(s.slice(0,n)))+s.length-n;}
 export function flameHeight(score,target){if(!(score>target) || target<=0n)return 0;const log=logBigInt(score)-logBigInt(target);return 10+52*log/(log+2);}
-let height=0,canvas=null,running=false;
-export function showFlame(score,target){height=flameHeight(score,target);if(!canvas){canvas=document.createElement('canvas');canvas.id='score_flame';canvas.width=274;canvas.height=68;document.getElementById('calculation_panel').prepend(canvas);}canvas.hidden=!height;canvas.dataset.height=String(height);if(height && !running){running=true;requestAnimationFrame(draw);}}
+let height=0,canvas=null,frame=null,listening=false,boundsCanvas=null;
+function syncFlame(){
+ if(!height||!canvas?.isConnected||document.hidden){if(frame!==null)cancelAnimationFrame(frame);frame=null;return;}
+ if(frame===null)frame=requestAnimationFrame(draw);
+}
+export function showFlame(score,target){
+ height=flameHeight(score,target);
+ if(!canvas?.isConnected){canvas=document.createElement('canvas');canvas.id='score_flame';canvas.width=274;canvas.height=68;document.getElementById('calculation_panel').prepend(canvas);}
+ if(!listening){document.addEventListener('visibilitychange',syncFlame);listening=true;}
+ canvas.hidden=!height;canvas.dataset.height=String(height);
+ // Canvas sits inside the panel border; map each plaque to canvas pixels.
+ // Clipping follows the actual boxes instead of assuming their shared origin.
+ if(height&&boundsCanvas!==canvas){const bounds=canvas.getBoundingClientRect();for(const [i,id] of ['chips','mult'].entries()){const box=document.getElementById(id).getBoundingClientRect();beds[i].left=Math.ceil((box.left-bounds.left)*canvas.width/bounds.width);beds[i].right=Math.floor((box.right-bounds.left)*canvas.width/bounds.width);}boundsCanvas=canvas;}
+ syncFlame();
+}
 
 // Separate, clipped fire beds keep the multiplication sign clear.
 const beds=[{left:3,right:114,seed:19,outer:'#039fea',middle:'#35c9ff',core:'#e5fcff'},
@@ -74,9 +87,10 @@ function drawBed(ctx,bed,time){
  ctx.fillStyle=root;ctx.fillRect(bed.left,45,bed.right-bed.left,22);ctx.restore();
 }
 function draw(time){
+ frame=null;
+ if(!height||!canvas?.isConnected||document.hidden)return;
  const ctx=canvas.getContext('2d');ctx.clearRect(0,0,274,68);
- if(!height){running=false;return;}
  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches,t=reduced?1.3:time/1000;
  for(const bed of beds)drawBed(ctx,bed,t);
- if(!reduced)requestAnimationFrame(draw);else running=false;
+ if(!reduced)syncFlame();
 }

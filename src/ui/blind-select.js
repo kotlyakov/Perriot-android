@@ -7,7 +7,8 @@ import {nativeBlindTarget} from '../core/blind-progression.js';
 import {APK_TAGS_BY_ID} from '../content/apk-tags.js';
 import {APK_HAND_NAMES} from '../core/apk-shop-state.js';
 import {HAND_NAMES,displayBlindTarget} from './field.js';
-import {appendTooltipContents} from './tooltip-text.js';
+import {appendTooltipContents,appendTooltipText} from './tooltip-text.js';
+import {collectionArtworkSvg} from '../content/collection-illustrations.js';
 let overlay,controller;
 const russianHands=Object.fromEntries(Object.entries(APK_HAND_NAMES).map(([id,name])=>[name,HAND_NAMES[id]]));
 function node(tag,className,text){const el=document.createElement(tag);if(className)el.className=className;if(text!==undefined)el.textContent=text;return el;}
@@ -31,11 +32,11 @@ export function renderBlindSelect(state,busy,onSelect,onSkip,onRerollBoss){
    const boss=id==='boss'?APK_BLINDS_BY_ID[state.apkBlinds.bossId]:null;
    const token=node('div','blind-choice-token',boss?boss.name:id==='big'?'БОЛЬШОЙ\nБЛАЙНД':'МАЛЫЙ\nБЛАЙНД');token.setAttribute('aria-hidden','true');card.append(token);
    const target=node('div','blind-choice-target');target.append(node('span','','Минимум очков'));const score=node('strong','scarlet',displayBlindTarget(blindChoiceTarget(state,id)));score.id='select_'+id+'_target';target.append(score);const reward=node('span');reward.append(node('span','','Награда: '),node('strong','gold',blindReward(state,id)?'$'.repeat(Number(blindReward(state,id))):'$0'));target.append(reward);card.append(target);
-   if(boss)card.append(node('p','blind-boss-description',boss.description));
+   if(boss)card.append(appendTooltipText(node('p','blind-boss-description'),boss.description));
    else{
     const lower=node('div','blind-choice-skip');lower.append(node('span','','ИЛИ'));
     const row=node('div','blind-skip-row'),tag=APK_TAGS_BY_ID[state.apkBlinds?.tags[id]];
-    if(tag){const stamp=node('button','blind-tag',String(tag.order).padStart(2,'0'));stamp.type='button';stamp.id='tag_'+id;stamp.setAttribute('aria-label',tag.name+' — описание награды');stamp.setAttribute('aria-expanded','false');
+    if(tag){const stamp=node('button','blind-tag');stamp.innerHTML=collectionArtworkSvg(tag.id);stamp.type='button';stamp.id='tag_'+id;stamp.setAttribute('aria-label',tag.name+' — описание награды');stamp.setAttribute('aria-expanded','false');
      stamp.onclick=()=>{const open=stamp.getAttribute('aria-expanded')==='true';closeTip();if(open)return;stamp.setAttribute('aria-expanded','true');
       const tip=node('aside','blind-tag-tooltip');tip.id='blind_tag_tooltip';tip.setAttribute('role','status');
       const availability=getSkipAvailability(state,id);appendTooltipContents(tip,tag.name,[tag.description+(tag.id==='tag_orbital'?' Комбинация: '+russianHands[state.apkBlinds.orbitalHands[id]]+'.':''),...(current&&!availability.available?['Пропуск недоступен: '+availability.reason]:[])]);overlay.append(tip);};row.append(stamp);}

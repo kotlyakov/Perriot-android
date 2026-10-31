@@ -3,6 +3,7 @@
 [data-card-set=Tarot]{--card-type-color:var(--tarot-color)}[data-card-set=Planet]{--card-type-color:var(--planet-color)}[data-card-set=Spectral]{--card-type-color:var(--spectral-color)}
 *{box-sizing:border-box}html,body{width:100%;height:100%;overflow:hidden}body{margin:0;overflow:hidden;touch-action:none;overscroll-behavior:none;user-select:none}
 button{font:inherit;font-weight:800;color:inherit;border:0;cursor:pointer;touch-action:none;-webkit-tap-highlight-color:transparent;box-shadow:0 5px 0 #112522,0 7px 0 #071c18;border-radius:9px;text-shadow:1px 2px #0005}
+button.action-pending{transform:translateY(3px) scale(.98)!important;filter:brightness(.84)!important}
 button:active:not(:disabled){filter:brightness(1.16)}button:focus-visible{outline:3px solid #fff;outline-offset:2px}button:disabled{background:#484c49!important;color:#b2b4aa;cursor:default;filter:saturate(.35);opacity:.8}
 #stage{position:absolute;width:1536px;height:688px;transform-origin:top left;overflow:hidden;background-color:#225449;background-image:repeating-radial-gradient(ellipse at 72% 36%,transparent 0 28px,#afc1a40a 30px 31px,transparent 32px 58px),radial-gradient(ellipse at 22% 72%,#46664b55,transparent 65%),repeating-linear-gradient(0deg,#ffffff02 0 1px,transparent 1px 4px)}
 #stage:after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 100px #001e1844;z-index:0}
@@ -156,8 +157,9 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .collection-view .collection-card:has(.consumable-illustration) .shop-art{inset:2px 2px 27px;background:none}
 
 /* Slow procedural table movement; approved home artwork stays untouched. */
-#stage:not(:has(#start_screen)){animation:table-breathe 18s ease-in-out infinite alternate;background-size:115% 115%,130% 130%,100% 100%}
+#stage{isolation:isolate}
+#stage:not(:has(#start_screen))::before{content:"";position:absolute;inset:-5%;z-index:-1;pointer-events:none;background:inherit;background-size:115% 115%,130% 130%,100% 100%;will-change:transform;animation:table-breathe 18s ease-in-out infinite alternate}
 #stage:not(:has(#start_screen))::after{background:repeating-linear-gradient(0deg,#08241d05 0 1px,transparent 1px 4px),radial-gradient(ellipse at center,transparent 52%,#001e1829 100%)}
-@keyframes table-breathe{from{background-position:0% 0%,0% 20%,0 0}to{background-position:100% 70%,75% 100%,0 0}}
-@media(prefers-reduced-motion:reduce){#stage:not(:has(#start_screen)){animation:none}}
+@keyframes table-breathe{from{transform:translate(-1%,-1%) scale(1.015)}to{transform:translate(1%,1%) scale(1.04)}}
+@media(prefers-reduced-motion:reduce){#stage:not(:has(#start_screen))::before{animation:none;will-change:auto}}
 .collection-view .collection-card:has(.collection-illustration):not([data-card-set=Back]) .shop-art{inset:2px 2px 27px;background:none}

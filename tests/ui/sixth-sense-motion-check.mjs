@@ -27,7 +27,7 @@ try{
    };
   });
   await page.locator(`#hand [data-card-id="${cardId}"]`).click();await page.locator('#play_hand').evaluate(button=>{button.click();button.click();});
-  await page.waitForFunction(()=>!document.querySelector('#sort_rank').disabled&&!document.querySelector('.played-card,.motion-copy'));
+  await page.waitForFunction(previous=>JSON.parse(localStorage.getItem('card-cascade.current')).state.revision>previous,fixture.revision);await page.waitForFunction(()=>!document.querySelector('#sort_rank').disabled&&!document.querySelector('.played-card,.motion-copy'));
   const log=await page.evaluate(()=>window.sixthMotion),dust=log.findIndex(row=>row.dust),flight=log.findIndex(row=>!row.dust);
   if(reducedMotion==='no-preference'){
    assert.ok(flight>=0&&dust>flight,'The Six flies and scores before dissolving');

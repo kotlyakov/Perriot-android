@@ -65,3 +65,17 @@
 /* Individual plates are opaque paper: keep the existing edition ink ABOVE it. */
 .shop-card:is([data-edition=foil],[data-edition=holographic],[data-edition=polychrome]) .joker-illustration::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:inherit;background-size:inherit;background-position:inherit;border-radius:3px}
 .shop-card[data-edition=negative] .joker-illustration svg{filter:invert(1)}
+.shop-action-zones{position:absolute;inset:0;z-index:89;pointer-events:none}
+.shop-action-zones .shop-drop-zone{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:10px;border:5px solid #d6e2c9;border-radius:12px;background:#287553;color:#f6f2df;box-shadow:0 5px #12392b;pointer-events:auto;text-shadow:1px 2px #12392b;font-size:30px;translate:none}
+.shop-action-zones .shop-drop-caption{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:27px;line-height:1.2}
+.shop-action-zones .shop-drop-caption span{white-space:nowrap;overflow-wrap:normal;word-break:normal}
+.shop-action-zones .shop-sell-zone{background:#b55f25;border-color:#f6c35d}
+.shop-action-zones .shop-use-zone{background:#327da3;border-color:#b2e2ee}
+.shop-action-zones .shop-drop-zone:disabled{background:#3d5550!important;border-color:#779087;color:#d3d9ce;opacity:.85;filter:none}
+.shop-action-zones .shop-drop-zone.is-over{outline:4px solid #fff4ce;outline-offset:2px;filter:brightness(1.13)}
+.shop-ticket .ticket-main .shop-art{inset:4px auto 4px 5px;width:52px;background:none}
+.shop-ticket .ticket-main .shop-card-name{left:62px;right:5px;bottom:4px;top:4px;min-height:0;font-size:11px;line-height:13px;justify-content:center;text-align:center;overflow-wrap:anywhere}
+.shop-action-zones:not(.is-dragging) .shop-buy-zone,.shop-action-zones:not(.is-dragging) .shop-sell-zone,.shop-action-zones:not(.is-dragging) .shop-use-zone:not(.shop-use){visibility:hidden;pointer-events:none}
+/* Every pack tier has a separate three-line name strip above its bottom seal. */
+.shop-booster .shop-art{bottom:56px}
+.shop-booster .shop-card-name{height:33px;min-height:0;bottom:18px}

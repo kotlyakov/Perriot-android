@@ -72,7 +72,7 @@ export function shuffleAcornJokers(rng,jokers){
 }
 // Native pairs order depends on the runtime's string hash seed; tied maxima
 // cannot be inferred from hand strength, JS insertion order, or the run seed.
-export function resolveMostPlayedHand(playedHands){
+export function resolveMostPlayedHand(playedHands,{allowTies=false}={}){
  if(!playedHands||typeof playedHands!=='object'||Array.isArray(playedHands)||Object.keys(playedHands).some(name=>!Object.values(APK_HAND_NAMES).includes(name)))throw new TypeError('Invalid played-hand counts');
  let maximum=-1,selected=null,tied=false;
  for(const [id,name] of Object.entries(APK_HAND_NAMES)){
@@ -80,7 +80,7 @@ export function resolveMostPlayedHand(playedHands){
   if(!Number.isSafeInteger(count)||count<0)throw new TypeError('Invalid played-hand count');
   if(count>maximum){maximum=count;selected=id;tied=false;}else if(count===maximum)tied=true;
  }
- return tied?null:selected;
+ return tied&&!allowTies?null:selected;
 }
 export function canEnterFirstAnteBoss(state){
  if(!(state.round?.ante===1 && FIRST_ANTE_BOSSES.includes(state.apkBlinds?.bossId) && Array.isArray(state.apkBlinds.playedCardIds) && state.rng?.apk))return false;

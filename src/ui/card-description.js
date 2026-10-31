@@ -23,7 +23,7 @@ export function cardDescription(card={},options={}){
  if(EDITION_DESCRIPTIONS[card.edition])result.modifiers.push(modifier(card.edition,EDITION_DESCRIPTIONS[card.edition]));
  if(card.edition==='negative')result.modifiers.push({id:'negative',title:'Негативный',description:card.set==='Joker'||originalJokerKey(card.entityId)?.startsWith('j_')?'+1 место джокера.':'+1 место расходной карты.'});
  if(SEAL_DESCRIPTIONS[card.seal])result.seal={id:card.seal,title:SEAL_DESCRIPTIONS[card.seal].split(':')[0],description:withoutName(SEAL_DESCRIPTIONS[card.seal])};
- if(card.rental)result.statuses.push({id:'rental',title:'Аренда',detail:'−$3 за раунд'});
+ if(card.rental)result.statuses.push({id:'rental',title:'Аренда',detail:'−$3 в начале раунда'});
  if(card.eternal)result.statuses.push({id:'eternal',title:'Вечная',detail:'Нельзя продать или уничтожить'});
  else if(card.perishable)result.statuses.push({id:'perishable',title:'Временная',detail:card.perishRounds===0?'Срок истёк':`Ещё ${card.perishRounds??5} раундов`});
  const debuffed=options.debuffed??(card.debuffed||card.perishable&&card.perishRounds===0);

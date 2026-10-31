@@ -1,3 +1,4 @@
+import {usesCurrentMechanics} from './mechanics-version.js';
 import {supportsSpectralEffect,spectralCapability,applySpectralEffect} from './spectral-consumables.js';
 import {applyItem7CardsDestroyed} from './joker-item7-lifecycle.js';
 import {createItem7Cards,item7EconomyModifiers,applyItem7EconomyContext} from './joker-item7-economy.js';
@@ -188,7 +189,7 @@ export function applyConsumableAction(state,action,{fromPack=false}={}){
   const selected=new Set(action.targetCardIds),ordered=state.hand.filter(id=>selected.has(id)),[left,right]=ordered;
   const source=next.cards[right],target=next.cards[left];target.rank=source.rank;target.suit=source.suit;
   if(next.challengePlayedCardIds){const debuffed=next.challengePlayedCardIds.includes(right);next.challengePlayedCardIds=next.challengePlayedCardIds.filter(id=>id!==left);if(debuffed)next.challengePlayedCardIds.push(left);}
-  for(const property of ['enhancement','edition','seal'])if(Object.hasOwn(source,property))target[property]=source[property];else delete target[property];
+  for(const property of ['enhancement','edition','seal',...(usesCurrentMechanics(next)?['permaBonus']:[])])if(Object.hasOwn(source,property))target[property]=source[property];else delete target[property];
   events.push({type:'playing_card_copied',cardId:left,sourceCardId:right,sourceId:card.id});
  }
  if(!card.debuffed&&(sealSpectrals.has(centre.key)||centre.key==='c_aura')){
@@ -214,7 +215,7 @@ export function applyConsumableAction(state,action,{fromPack=false}={}){
    roll=nextApkRandom(next.rng.apk,'wheel_of_fortune');next.rng.apk=roll.rng;
    const joker=eligible[selected.value-1],edition=wheelEdition(roll.value),context=currentApkShopContext(next),definition=centres.get(joker.originalKey??originalJokerKey(joker.entityId));
    joker.edition=edition;
-   Object.assign(joker,quoteShopCard({baseCost:BigInt(definition.cost),inflation:BigInt(context.inflation),discountPercent:BigInt(context.discountPercent),set:'Joker',name:definition.name,edition:edition==='base'?{}:{[edition==='holographic'?'holo':edition]:true},rental:!!joker.rental}));
+   Object.assign(joker,quoteShopCard({baseCost:BigInt(definition.cost),inflation:BigInt(context.inflation),discountPercent:BigInt(context.discountPercent),set:'Joker',name:definition.name,edition:edition==='base'?{}:{[edition==='holographic'?'holo':edition]:true},rental:!!joker.rental,extraValue:usesCurrentMechanics(next)?joker.extraValue??0n:0n}));
    events.push({type:'joker_edition_changed',sourceId:card.id,jokerId:joker.id,edition});
    let juice=nextApkMathRandom(next.rng.apk.mathState);next.rng.apk={...next.rng.apk,mathState:juice.state};
    if(edition!=='base'){juice=nextApkMathRandom(next.rng.apk.mathState);next.rng.apk={...next.rng.apk,mathState:juice.state};}

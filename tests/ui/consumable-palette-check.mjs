@@ -12,7 +12,7 @@ try{
   const state=createRun('PALETTE',{runId:'palette',money:100n,referenceRng:true,referenceShop:true});
   state.consumables=cards;state.consumableSlots=3;
   function colors(selector){return [...document.querySelectorAll(selector)].map(card=>{
-   const style=getComputedStyle(card);return {set:card.dataset.cardSet,ink:getComputedStyle(card.querySelector('.shop-art')).color,border:style.borderColor,paper:style.backgroundColor,filter:style.filter,opacity:style.opacity};
+   const style=getComputedStyle(card);return {set:card.dataset.cardSet,ink:getComputedStyle(card.querySelector('.shop-art')).color,border:style.borderColor,borderWidth:style.borderWidth,paper:style.backgroundColor,filter:style.filter,opacity:style.opacity};
   });}
   const snapshots=[];
   for(const phase of ['playing','shop','pack'])for(const edition of ['base','foil','holographic','polychrome','negative'])for(const busy of [false,true]){
@@ -33,7 +33,7 @@ try{
    assert.deepEqual(group.map(card=>card.set),['Tarot','Planet','Spectral']);
    assert.equal(new Set(group.map(card=>card.ink)).size,3,`${snapshot.phase}: art inks must distinguish all types`);
    assert.equal(new Set(group.map(card=>card.paper)).size,3,`${snapshot.phase}: card paper must distinguish all types`);
-   for(const card of group){assert.equal(card.ink,card.border);assert.equal(card.filter,'none');assert.equal(card.opacity,'1');}
+   for(const card of group){if(card.borderWidth!=='0px')assert.equal(card.ink,card.border);assert.equal(card.filter,'none');assert.equal(card.opacity,'1');}
   }
   assert.deepEqual(snapshot.offered.length?snapshot.offered:snapshot.owned,snapshot.owned,'Owned and offered cards share the same type colors');
  }

@@ -19,7 +19,7 @@ try {
  await load(fixture());
  for(const mode of ['suit','rank']){
    await click('#hand .playing-card');const selectedId=await page.locator('#hand .selected').getAttribute('data-card-id');
-   await click('#sort_'+mode);await page.waitForFunction(()=>!document.querySelector('#sort_rank').disabled);
+   const sortRevision=(await saved()).revision;await click('#sort_'+mode);await page.waitForFunction(previous=>JSON.parse(localStorage.getItem('card-cascade.current')).state.revision>previous,sortRevision);await page.waitForFunction(()=>!document.querySelector('#sort_rank').disabled);
    const before=await saved();assert.equal(before.sortMode,mode);assert.deepEqual(before.hand,sorted(before,mode));assert.equal(await page.locator('#hand .selected').getAttribute('data-card-id'),selectedId);
    // Freeze a real flight at a deterministic time: command transport can
    // otherwise sample only its nearly transparent final frame on mobile.

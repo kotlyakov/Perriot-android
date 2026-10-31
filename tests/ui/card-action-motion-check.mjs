@@ -11,7 +11,7 @@ function packFixture(){
  for(let n=0;n<200;n++){
   let s=createRun('ARCANA_UI_'+n,{runId:'pack-action-motion',money:30n,referenceRng:true,referenceShop:true});s=dispatch(s,{type:'START_BLIND',expectedRevision:s.revision}).state;s.phase='round_won';s.round.score=s.round.target;s=dispatch(s,{type:'CASH_OUT',expectedRevision:s.revision}).state;s.shop.boosters=[item('p_arcana_normal_1','motion-pack')];
   const opened=dispatch(s,{type:'OPEN_BOOSTER',expectedRevision:s.revision,offerId:'motion-pack'});assert.ok(!opened.error);
-  if(opened.state.packState.cards.some(c=>c.entityId==='c_strength'))return s;
+  if(opened.state.packState.cards.some(c=>c.entityId==='c_hermit'))return s;
  }
  throw Error('Strength fixture unavailable');
 }
@@ -41,6 +41,7 @@ async function performUse(page,id,targetIds,normal,before,expectedKind='flip'){
   if(expectedKind==='flip')assert.ok(log.some(row=>row.frames.some(frame=>frame.transform?.includes('rotateY'))));else assert.ok(log.some(row=>row.className.includes('card-dust')));
   const revision=(await saved(page)).revision;await page.evaluate(()=>{document.getElementById('sort_rank').click();document.getElementById('discard').click();});assert.equal((await saved(page)).revision,revision);await release(page);
  }
+ await page.waitForFunction(revision=>JSON.parse(localStorage.getItem('card-cascade.current')).state.revision>revision,before.revision);
  await page.waitForFunction(()=>!document.querySelector('.motion-copy')&&!document.querySelector('#sort_rank').disabled);
  const after=await saved(page);assert.equal(after.revision,before.revision+1);assert.equal(after.consumableUsage[before.consumables.find(c=>c.id===id)?.entityId??'c_strength'].count,1);if(!normal)assert.equal((await page.evaluate(()=>window.motionLog)).length,0);return after;
 }
@@ -56,11 +57,11 @@ try{
   await page.mouse.move(box.x+box.width/2,box.y+box.height/2);await page.mouse.down();await page.mouse.move(stage.x+850*scale,stage.y+100*scale,{steps:6});await page.locator('#shop_buy_zone[data-available=true]').waitFor();await page.mouse.up();await page.locator('#pack_screen').waitFor();
   if(normal){await page.waitForFunction(()=>window.motionLog.some(row=>row.className.includes('box-lid')));const log=await page.evaluate(()=>window.motionLog);assert.ok(log.every(row=>row.revision===before.revision+1&&row.phase==='pack'));assert.ok(log.every(row=>row.packLocked),'Pack controls locked while opening');assert.ok(await page.locator('#pack_skip').isDisabled());const revision=(await saved(page)).revision;await page.locator('#pack_skip').evaluate(button=>button.click());assert.equal((await saved(page)).revision,revision);await release(page);}
   await page.waitForFunction(()=>!document.querySelector('#pack_skip').disabled&&!document.querySelector('.motion-copy'));const opened=await saved(page),expectedOpen=dispatch(fixture,{type:'OPEN_BOOSTER',expectedRevision:fixture.revision,offerId:'motion-pack'}).state;assert.equal(opened.revision,before.revision+1);assert.equal(opened.money,expectedOpen.money);assert.deepEqual(opened.rng,expectedOpen.rng);assert.deepEqual(opened.packState,expectedOpen.packState);
-  await observe(page);const strength=opened.packState.cards.find(c=>c.entityId==='c_strength'),targets=opened.hand.slice(0,2),expectedUse=dispatch(opened,{type:'USE_PACK_CARD',expectedRevision:opened.revision,cardId:strength.id,targetCardIds:targets});assert.ok(!expectedUse.error);
+  await observe(page);const strength=opened.packState.cards.find(c=>c.entityId==='c_hermit'),targets=[],expectedUse=dispatch(opened,{type:'USE_PACK_CARD',expectedRevision:opened.revision,cardId:strength.id,targetCardIds:targets});assert.ok(!expectedUse.error);
   // Last normal-pack choice returns to the shop; sort is disabled there even after motion.
   await page.locator(`[data-offer-id="${strength.id}"] .shop-card`).click();for(const target of targets)await page.locator(`#hand [data-card-id="${target}"]`).click();await page.locator(`[data-offer-id="${strength.id}"] .shop-use`).evaluate(b=>{b.click();b.click();});
   if(normal){await page.waitForFunction(()=>window.motionLog.length>0);assert.ok((await page.evaluate(()=>window.motionLog)).every(row=>row.revision===opened.revision+1));await release(page);}
-  await page.locator('#shop_screen').waitFor();await page.waitForFunction(()=>!document.querySelector('.motion-copy')&&!document.querySelector('#shop_reroll').disabled);const after=await saved(page);assert.equal(after.revision,opened.revision+1);assert.deepEqual(after.cards,expectedUse.state.cards);assert.deepEqual(after.rng,expectedUse.state.rng);assert.equal(after.money,opened.money);
+  await page.locator('#shop_screen').waitFor();await page.waitForFunction(()=>!document.querySelector('.motion-copy')&&!document.querySelector('#shop_reroll').disabled);const after=await saved(page);assert.equal(after.revision,opened.revision+1);assert.deepEqual(after.cards,expectedUse.state.cards);assert.deepEqual(after.rng,expectedUse.state.rng);assert.equal(after.money,expectedUse.state.money);
   if(!normal)assert.equal((await page.evaluate(()=>window.motionLog)).length,0);assert.deepEqual(errors,[]);await page.close();console.log('Actual Tarot/enhancement/copy/destroy/seal/edition and Arcana open/use: save first, locks, single action, RNG '+reducedMotion+' PASS');
  }
 }finally{await browser.close();}

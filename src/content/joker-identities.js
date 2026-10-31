@@ -489,7 +489,7 @@ export const JOKER_IDENTITIES={
   "j_reserved_parking": {
     "number": 82,
     "name": "Знатные гости",
-    "scene": "Фигурные карты сидят в зарезервированных креслах над монетами",
+    "scene": "Карты с лицом сидят в зарезервированных креслах над монетами",
     "originalName": "Reserved Parking"
   },
   "j_mail": {
