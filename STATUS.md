@@ -1,13 +1,15 @@
-# Пьеро — исправление механик после аудита 0.4.60
+# Пьеро — исправления механик 0.4.61
 
-Текущий план: docs/superpowers/plans/2026-10-31-mechanics-fixes.md. Постоянный журнал: docs/qa/2026-10-31-mechanics-fix-progress.md. Сначала читать эти три файла, затем только активную задачу.
+Выпущена **0.4.61-preview/code74**, пакет `ru.cardcascade.game.preview`, правила `mechanicsVersion:1`. Ветка `fix/enhancement-visuals`, PR50 открыт и не слит.
 
-Выпущена **0.4.60/code73**; рабочий кандидат **0.4.61/code74 пока не собран**. Игровой source1f1cf3a9, audit remote c1f7b948388bd30c19d1d41dc375720c0d54cea2 (local0e95f6d). Ветка fix/enhancement-visuals, PR50 не слит.
+План с анализом, подзадачами и проверками: [mechanics-fixes.md](docs/superpowers/plans/2026-10-31-mechanics-fixes.md). Постоянный журнал: [mechanics-fix-progress.md](docs/qa/2026-10-31-mechanics-fix-progress.md). Пользовательский бэклог: [BACKLOG.md](BACKLOG.md). При продолжении сначала читать эти файлы; исторический аудит0.4.60 не задаёт текущий статус.
 
-Все13пунктов исправлены в коде. Task0 marker/совместимость —534e3de; АУ-01–12 —2fef8a8; АУ-13 —ce8cb144f8ef9554120470b752dcfe3de90a2ba1. Общий core1977total/1975PASS/0FAIL/2expectedprivate skips. Независимое ревью без подтверждённых Critical/Important; новый UI-набор6сценариев и механические матрицы PASS. Stress50000actualsorts→2journalentries/18760bytes,reload/RNGPASS.
+**Все13 пунктов АУ-01–АУ-13 выполнены технически.** Task0 совместимость —534e3de; АУ-01–12 —2fef8a8; АУ-13 —ce8cb14 (локальные коммиты). Опубликованный игровой source `7fd1e5c7617a68d6adc7b4998ed71b1d5c166053`; tested merge `4e805829b792102daca4b5752fa5ac851d51bb0d`; одинаковое дерево `16a412c51a59ec85fa840c4549b59ae68f09aac8`. Последующий markdown-only commit фиксирует выпуск и не меняет APK.
 
-**Сейчас: финальная CI и fresh Android0.4.61/code74.** Кандидат подготовлен (package/versionCode изменены), локальныеofflineassets/check-configPASS; новая APK ещё не выпущена. Не считать прежнюю0.4.60 исправленной. Опубликованный checkpoint9af42e2 содержал первые12исправлений; финальный source будет указан после публикации/сертификации. Точные задачи, проверки, решения и коммиты — в progress.
+[CI41171424495](https://github.com/kotlyakov/Perriot-android/actions/runs/41171424495) SUCCESS: 1975 core PASS /0 FAIL /2 optional private-source skips;49 browser suites PASS; fresh Gradle, подпись v2 и zipalign16KB PASS. Матрицы150×28/8550расчётов,11436boss/modifierchecks,6233semanticchecks и41arithmeticcases PASS. Независимое ревью: подтверждённых Critical/Important нет.50000реальных сортировок дают2записи/18760байт; reload/RNG PASS.
 
-Аудит/примеры: docs/qa/2026-10-31-mechanics-audit-060.md. АУ-01–13 открыты в BACKLOG.md. Исторические изменения аренды/хранения расходников сохраняются; старые replay читаются без изменения семантики, новые действия явно включают mechanicsVersion1.
+APK: [Pierrot-0.4.61-preview.apk](https://chatgpt.com/library?file_id=libfile_e9f5c0853ff48191b57b163a2bf44db9&account_id=personal),1440034байта. SHA256 `8ecfdbc16c1d76dc02acbd1acc713be983fe270353af25b7b110f72a58e46316`. Все124offlineassets побайтно совпадают с подготовленными исходниками; manifest/code74, CRC и источник сборки проверены. Полный протокол: [mechanics-fixes-061.md](docs/qa/2026-10-31-mechanics-fixes-061.md).
 
-Последняя APK: [0.4.60](https://chatgpt.com/library?file_id=libfile_8b6b8bf3ac5c81918f16882c16f5a2c9&account_id=personal). Её CI41086569329 SUCCESS,121assetсовпадает; физическая Android-приёмка открыта. Подпись отличается от0.4.59, старую игру с прогрессом не удалять. Проверки текущих исправлений фиксировать отдельно от этой прежней сертификации.
+**Следующий шаг: физическая/пользовательская приёмка на Android.** FPS, задержки диска и полная native n→o/frame-eventRNGparity здесь не проверены. Для ничьей Ox принят детерминированный канонический fallback; для истории сохранены2MiBstate/16MiBaccount бюджеты. Другие открытые задачи, включаяТ-01, остаются в BACKLOG.
+
+Подпись CIdebug: `8a974a736e4d64b5af8254f0582529520479693977bde1363f0fbfd4a73ee8cd`; она отличается от0.4.60, обновление поверх прежней установки не поддерживается. **Старую игру с прогрессом не удалять.** Историческая0.4.60: [APK](https://chatgpt.com/library?file_id=libfile_8b6b8bf3ac5c81918f16882c16f5a2c9&account_id=personal).

@@ -1,25 +1,24 @@
 # Прогресс — план docs/superpowers/plans/2026-10-31-mechanics-fixes.md
 
-Выпущено: **0.4.60/code73**, игровой source1f1cf3a9; последний audit commit remote c1f7b948 / local0e95f6d.
-Рабочий кандидат: **0.4.61/code74**, ещё не собран. Версия исправленных правил: mechanicsVersion1. Task0 и все АУ-01–13 исправлены в коде; общий core1975PASS/0FAIL/2expectedprivate skips. Ни один пункт ещё не проверен в новой APK.
-Активно: **Финальная CI/сборка0.4.61**, владелец — ведущий. Независимое ревью и локальный browser/matrix завершены; общая CI и APK ещё ожидаются.
+Выпущено: **0.4.61-preview/code74**, mechanicsVersion1. Все АУ-01–АУ-13 исправлены и включены в проверенный APK. Source `7fd1e5c7617a68d6adc7b4998ed71b1d5c166053`; tested merge `4e805829b792102daca4b5752fa5ac851d51bb0d`; tree `16a412c51a59ec85fa840c4549b59ae68f09aac8`. CI41171424495 SUCCESS:1975corePASS/0FAIL/2optionalprivate skips,49browser suites,freshAndroid.
+Активно: **физическая/пользовательская приёмка на Android**. Технический план завершён; новый код без отдельной задачи не менять. Другие открытые задачи находятся в BACKLOG.md. Полный сертификат: docs/qa/2026-10-31-mechanics-fixes-061.md.
 
 | Задача | ID | Код | Регрессии | Коммит | APK |
 |---|---|---|---|---|---|
-| Task0 | совместимость | Выполнено в коде | 5 новых тестов; full1923PASS/0FAIL/2skip | 534e3de | Нет |
-| Task1 | АУ-01 | Код исправлен; интеграция ядра PASS | tests/core/mechanics-061-ox.test.js; full1969PASS/0FAIL/2skip | 2fef8a8 | Нет |
-| Task2 | АУ-02 | Код исправлен; интеграция ядра PASS | tests/core/mechanics-061-consumables.test.js; full1969PASS/0FAIL/2skip | 2fef8a8 | Нет |
-| Task3 | АУ-03 | Код исправлен; интеграция ядра PASS | tests/core/mechanics-061-consumables.test.js; full1969PASS/0FAIL/2skip | 2fef8a8 | Нет |
-| Task4 | АУ-04 | Код исправлен; интеграция ядра PASS | tests/core/mechanics-061-consumables.test.js; full1969PASS/0FAIL/2skip | 2fef8a8 | Нет |
-| Task5 | АУ-05 | Код исправлен; интеграция ядра PASS | tests/core/mechanics-061-jokers.test.js; full1969PASS/0FAIL/2skip | 2fef8a8 | Нет |
-| Task6 | АУ-06 | Код исправлен; интеграция ядра PASS | tests/core/mechanics-061-discard.test.js; full1969PASS/0FAIL/2skip | 2fef8a8 | Нет |
-| Task7 | АУ-07 | Код исправлен; интеграция ядра PASS | tests/core/mechanics-061-boss-draw.test.js; full1969PASS/0FAIL/2skip | 2fef8a8 | Нет |
-| Task8 | АУ-08 | Код исправлен; интеграция ядра PASS | tests/core/mechanics-061-boss-draw.test.js; full1969PASS/0FAIL/2skip | 2fef8a8 | Нет |
-| Task9 | АУ-09 | Код исправлен; интеграция ядра PASS | tests/core/mechanics-061-jokers.test.js; full1969PASS/0FAIL/2skip | 2fef8a8 | Нет |
-| Task10 | АУ-10 | Код исправлен; интеграция ядра PASS | tests/core/mechanics-061-profile.test.js; full1969PASS/0FAIL/2skip | 2fef8a8 | Нет |
-| Task11 | АУ-11 | Код исправлен; интеграция ядра PASS | tests/core/mechanics-061-profile.test.js; full1969PASS/0FAIL/2skip | 2fef8a8 | Нет |
-| Task12 | АУ-12 | Код исправлен; интеграция ядра PASS | tests/core/mechanics-061-profile.test.js; full1969PASS/0FAIL/2skip | 2fef8a8 | Нет |
-| Task13 | АУ-13 | Код исправлен; интеграция ядра PASS | 6 регрессий,22neighbors,50000actualsorts/save/reload | ce8cb14 | Нет |
+| Task0 | совместимость | Выполнено в коде | 5 новых тестов; full1923PASS/0FAIL/2skip | 534e3de | Включено в APK061; физическая приёмка открыта |
+| Task1 | АУ-01 | Код исправлен; интеграция ядра PASS | tests/core/mechanics-061-ox.test.js; full1969PASS/0FAIL/2skip | 2fef8a8 | Включено в APK061; физическая приёмка открыта |
+| Task2 | АУ-02 | Код исправлен; интеграция ядра PASS | tests/core/mechanics-061-consumables.test.js; full1969PASS/0FAIL/2skip | 2fef8a8 | Включено в APK061; физическая приёмка открыта |
+| Task3 | АУ-03 | Код исправлен; интеграция ядра PASS | tests/core/mechanics-061-consumables.test.js; full1969PASS/0FAIL/2skip | 2fef8a8 | Включено в APK061; физическая приёмка открыта |
+| Task4 | АУ-04 | Код исправлен; интеграция ядра PASS | tests/core/mechanics-061-consumables.test.js; full1969PASS/0FAIL/2skip | 2fef8a8 | Включено в APK061; физическая приёмка открыта |
+| Task5 | АУ-05 | Код исправлен; интеграция ядра PASS | tests/core/mechanics-061-jokers.test.js; full1969PASS/0FAIL/2skip | 2fef8a8 | Включено в APK061; физическая приёмка открыта |
+| Task6 | АУ-06 | Код исправлен; интеграция ядра PASS | tests/core/mechanics-061-discard.test.js; full1969PASS/0FAIL/2skip | 2fef8a8 | Включено в APK061; физическая приёмка открыта |
+| Task7 | АУ-07 | Код исправлен; интеграция ядра PASS | tests/core/mechanics-061-boss-draw.test.js; full1969PASS/0FAIL/2skip | 2fef8a8 | Включено в APK061; физическая приёмка открыта |
+| Task8 | АУ-08 | Код исправлен; интеграция ядра PASS | tests/core/mechanics-061-boss-draw.test.js; full1969PASS/0FAIL/2skip | 2fef8a8 | Включено в APK061; физическая приёмка открыта |
+| Task9 | АУ-09 | Код исправлен; интеграция ядра PASS | tests/core/mechanics-061-jokers.test.js; full1969PASS/0FAIL/2skip | 2fef8a8 | Включено в APK061; физическая приёмка открыта |
+| Task10 | АУ-10 | Код исправлен; интеграция ядра PASS | tests/core/mechanics-061-profile.test.js; full1969PASS/0FAIL/2skip | 2fef8a8 | Включено в APK061; физическая приёмка открыта |
+| Task11 | АУ-11 | Код исправлен; интеграция ядра PASS | tests/core/mechanics-061-profile.test.js; full1969PASS/0FAIL/2skip | 2fef8a8 | Включено в APK061; физическая приёмка открыта |
+| Task12 | АУ-12 | Код исправлен; интеграция ядра PASS | tests/core/mechanics-061-profile.test.js; full1969PASS/0FAIL/2skip | 2fef8a8 | Включено в APK061; физическая приёмка открыта |
+| Task13 | АУ-13 | Код исправлен; интеграция ядра PASS | 6 регрессий,22neighbors,50000actualsorts/save/reload | ce8cb14 | Включено в APK061; физическая приёмка открыта |
 
 ## Решения и доказательства
 
@@ -38,4 +37,7 @@
 - Final local core:1977total/1975PASS/0FAIL/2expectedoptional private-source skips. Переход теста persistence-performance с actions[50] на поиск реальной SET_SORT записи сохраняет проверку tampering после сжатия.
 - Local browser: mechanics-fixes-061 PASS,6сценариев — Death/ошибкаsave/retry, Wheel23$, PurpleTrading, AnkhMark, HouseImmolate, Ox skip/start/reload. Тест ждёт принятой revision, а не только enabled DOM; расходники используются утверждённым drag, tooltip не обходится программным click.
 - Matrices:150×28/8550scoresPASS;11436boss/modifiers/deck/stake/tagchecksPASS;6233semanticchecksPASS;41fixedarithmeticPASS. Эталонные приватные регенерации в этой среде недоступны (2skip), физический Android ещё не проверен.
-- Release preparation: package0.4.61/code74,49CIbrowser suites (добавлен новый набор); offlineassets/check-configPASS. APK ещё не выпущен.
+- Release complete:0.4.61/code74,CI41171424495SUCCESS,49browser suites,1975corePASS/2skip;124offlineassetsbyteequal,manifest/CRC/v2/alignmentPASS. [APK](https://chatgpt.com/library?file_id=libfile_e9f5c0853ff48191b57b163a2bf44db9&account_id=personal),SHA256 `8ecfdbc16c1d76dc02acbd1acc713be983fe270353af25b7b110f72a58e46316`,1440034байта. Физическая приёмка открыта; CIdebug подпись отличается от0.4.60, старую установку с прогрессом не удалять.
+- Version mapping: local candidate7ae72afe ↔ remote source7fd1e5c7617a68d6adc7b4998ed71b1d5c166053, tree16a412c51a59ec85fa840c4549b59ae68f09aac8; tested merge4e805829b792102daca4b5752fa5ac851d51bb0d имеет то же дерево. Предыдущий remote checkpoint9af42e2/local1ad7429 соответствует только первым12исправлениям; это история, не последний выпуск.
+
+03.11.2026: после возобновления повторно получен итог CI41171424495 SUCCESS от31.10; браузерный job124450006974 завершён SUCCESS, лог содержит49 UI suites. Сверены сохранённый APK и release-документы; завершена фиксация технического выпуска. Вложенные проектные STATUS/BACKLOG от09.10 являются старым снимком, текущую ветку не подменяют.
