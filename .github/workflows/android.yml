@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - apk-reference
+      - fix/arcana-layout-062
   pull_request:
   workflow_dispatch:
 
@@ -50,7 +51,8 @@ jobs:
         env:
           PLAYWRIGHT_MODULE: ${{ runner.temp }}/pierrot-browser/node_modules/playwright
           QA_SCREENSHOT: artifacts/cashout-review045.png
-          UI_AUTONOMOUS_REVIEW: ${{ (github.head_ref == 'feat/autonomous-polish' || github.head_ref == 'fix/collection-restore' || github.head_ref == 'fix/enhancement-visuals') && '1' || '' }}
+          UI_ARCANA_RELEASE: ${{ (github.head_ref == 'fix/arcana-layout-062' || github.ref == 'refs/heads/fix/arcana-layout-062') && '1' || '' }}
+          UI_AUTONOMOUS_REVIEW: ${{ (github.head_ref == 'feat/autonomous-polish' || github.head_ref == 'fix/collection-restore' || github.head_ref == 'fix/enhancement-visuals' || github.head_ref == 'fix/arcana-layout-062' || github.ref == 'refs/heads/fix/arcana-layout-062') && '1' || '' }}
           UI_TOOLTIP_REVIEW: ${{ (github.head_ref == 'feat/approved-tooltips' || github.head_ref == 'feat/blind-hud') && '1' || '' }}
           UI_REVIEW_ONLY: ${{ github.head_ref == 'feat/ui-windows-review' && '1' || '' }}
         run: node scripts/ci-browser.mjs

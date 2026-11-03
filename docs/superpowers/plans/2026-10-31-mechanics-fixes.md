@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Выпущенная версия остаётся **0.4.60/code73**, пока не проверен и не выдан новый APK. Рабочий кандидат — **0.4.61/code74**, `mechanicsVersion=1`; номер сборки повышается при релизной подготовке.
+- Итог: **0.4.61/code74** выпущена, `mechanicsVersion=1`, CI41171424495SUCCESS. Прежняя0.4.60/code73 сохранена как история. Физическая/пользовательская приёмка открыта.
 - Порядок/статус задач хранится в `docs/qa/2026-10-31-mechanics-fix-progress.md`; краткое активное состояние — STATUS.md; пользовательские задачи — BACKLOG.md. После каждого законченного шага фиксировать тест, результат и commit. Нельзя отмечать APK-проверку по одному core-тесту.
 - Старые сохранения и исторические действия читаются по старым правилам. Первый принятый новый ход включает актуальные правила и записывает переход; отклонённый ход не мигрирует исходный объект.
 - Аренда по$3 в начале раунда с отрицательным балансом и optional pack storage — утверждённые правила, не менять.
@@ -239,6 +239,8 @@ Task0 (версия правил/сохранения) → Task1 (Буйвол) 
 - [x] Перезапустить матрицы150×28 и модификаторов с новыми правильными ожиданиями; старые audit wrong-result probes не использовать как release gate.
 - [x] Browser: Ox tie skip/play/reload, Death/Wheel inventory, Purple+Trading, Ankh/Immolate boss hiding, отказ сохранения, repeated input, pack/reorder и существующая CI-матрица.
 - [x] Независимое ревью с полным diff и review-focus; подтверждённые Critical/Important исправить с RED→GREEN.
-- [ ] Обновить package/versionCode только для фактического кандидата0.4.61/code74; fresh Gradle, signature/alignment, manifest, CRC, всеofflineassetsbyteequal и источник CI.
-- [ ] В progress/STATUS указать точный source/tested commit, CI, APK hash/link, signature-ограничение и непройденную физическую приёмку. Прежний APK остаётся последним выпущенным до этого момента.
-- [ ] Publish разрешённой feature-ветки, без merge; выдать короткий результат и APK. Ни один статус `проверено в APK` не ставить до этого шага.
+- [x] Обновить package/versionCode только для фактического кандидата0.4.61/code74; fresh Gradle, signature/alignment, manifest, CRC, всеofflineassetsbyteequal и источник CI.
+- [x] В progress/STATUS указать точный source/tested commit, CI, APK hash/link, signature-ограничение и непройденную физическую приёмку. Прежний APK остаётся последним выпущенным до этого момента.
+- [x] Publish разрешённой feature-ветки, без merge; выдать короткий результат и APK. Ни один статус `проверено в APK` не ставить до этого шага.
+
+Итог31.10.2026: все Task0–13 и технические release gates завершены. Точные source/testedSHA, APK/hash и ограничения — в STATUS.md и progress. Это не отметка прохождения физической Android-приёмки.

@@ -71,7 +71,7 @@ export function renderHandSelection(state,selected,busy,scoringPreview=null){
   card.disabled=busy||!selectable;
   const chosen=selected.has(card.dataset.cardId);
   card.classList.toggle('selected',chosen);card.setAttribute('aria-pressed',chosen);
-  card.style.top=(arcana?430:388)+Math.abs(i-middle)*2.5-(chosen?arcana?14:28:0)+'px';
+  card.style.top=(arcana?490:388)+(arcana?0:Math.abs(i-middle)*2.5)-(chosen?arcana?14:28:0)+'px';
  }
 }
 
@@ -93,11 +93,11 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
  const start=478+(fanWidth-115-gap*(state.hand.length-1))/2;
  const visibleHand=state.phase==='pack'&&!arcana?[]:state.hand;
  visibleHand.forEach((id,i)=>{
-   const card=state.cards[id],b=document.createElement('button'),middle=(state.hand.length-1)/2,tilt=state.hand.length>1?(i-middle)*1.35:0;
+   const card=state.cards[id],b=document.createElement('button'),middle=(state.hand.length-1)/2,tilt=!arcana&&state.hand.length>1?(i-middle)*1.35:0;
    const hidden=hiddenCardIds.has(id),debuffed=!hidden&&state.phase==='playing'&&isBossCardDebuffed(state,card);b.className='playing-card'+(hidden?' hidden-card deck-back':'')+(selected.has(id)?' selected':'')+(debuffed?' boss-debuffed':'')+(playing&&!state.bossState?.disabled&&state.bossState?.forcedCardId===id?' bell-forced':'');b.dataset.cardId=id;if(!hidden)applyCardModifiers(b,card);
    if(hidden)b.dataset.deck=state.deckId;
    b.setAttribute('aria-label',hidden?'Скрытая карта':`${card.enhancement==='stone'?'Каменная карта':`${rankLabel(card.rank)} ${({clubs:'трефы',diamonds:'бубны',hearts:'червы',spades:'пики'})[card.suit]}`}${debuffed?' — ослаблена':''}`);b.setAttribute('aria-pressed',selected.has(id));
-   const left=start+i*gap,top=(arcana?430:388)+Math.abs(i-middle)*2.5-(selected.has(id)?arcana?14:28:0);
+   const left=start+i*gap,top=(arcana?490:388)+(arcana?0:Math.abs(i-middle)*2.5)-(selected.has(id)?arcana?14:28:0);
    Object.assign(b.style,{left:left+'px',top:top+'px',transform:`rotate(${tilt}deg)`,zIndex:String(3+i),color:hidden?'#f0e5c8':SUITS[card.suit][1]});
    b.innerHTML=hidden?'<span class="deck-seal" aria-hidden="true"><svg viewBox="0 0 32 32"><path fill="currentColor" d="M16 0Q19 13 32 16Q19 19 16 32Q13 19 0 16Q13 13 16 0Z"/></svg></span>':cardMarkup(card)+(debuffed?'<span class=debuff-stamp>Ослаблена</span>':'');b.disabled=busy || !selectable;
    function showTip(anchor=b){
