@@ -1,0 +1,37 @@
+name: Pin verified production release
+on:
+  push:
+    branches: [release/rustore-0.4.62]
+    paths: [rustore/release.json]
+permissions:
+  contents: write
+jobs:
+  tag:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Verify certificate and successful source build, then pin immutable tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: kotlyakov/Perriot-android
+        run: |
+          set -euo pipefail
+          jq -e '.release_ready == true and .version_name == "0.4.62" and .version_code == 76 and .signature_verified == true and .ci_success == true and (.source_commit | test("^[a-f0-9]{40}$")) and (.apk_sha256 | test("^[a-f0-9]{64}$")) and (.ci_run | type == "number")' rustore/release.json >/dev/null
+          source_sha=$(jq -r .source_commit rustore/release.json)
+          run_id=$(jq -r .ci_run rustore/release.json)
+          expected_cert=$(openssl x509 -in rustore/signing/release-certificate.pem -noout -fingerprint -sha256 | cut -d= -f2 | tr -d ':' | tr '[:upper:]' '[:lower:]')
+          test "$expected_cert" = "$(jq -r .certificate_sha256 rustore/release.json)"
+          gh api "repos/$GH_REPO/actions/runs/$run_id" > /tmp/release-build.json
+          test "$(jq -r .status /tmp/release-build.json)" = completed
+          test "$(jq -r '(.path | split("@")[0])' /tmp/release-build.json)" = .github/workflows/rustore-release.yml
+          test "$(jq -r .repository.full_name /tmp/release-build.json)" = "$GH_REPO"
+          test "$(jq -r .head_branch /tmp/release-build.json)" = release/rustore-0.4.62
+          test "$(jq -r .conclusion /tmp/release-build.json)" = success
+          test "$(jq -r .head_sha /tmp/release-build.json)" = "$source_sha"
+          if gh api "repos/$GH_REPO/git/refs/tags/v0.4.62" > /tmp/release-tag.json 2>/dev/null; then
+            test "$(jq -r .object.sha /tmp/release-tag.json)" = "$source_sha"
+          else
+            gh api --method POST "repos/$GH_REPO/git/refs" -f ref=refs/tags/v0.4.62 -f sha="$source_sha"
+          fi

@@ -1,0 +1,23 @@
+{
+  "scope": "Application itself; store/platform processing is separate",
+  "network_permission": false,
+  "android_requested_permissions": [],
+  "personal_data_collected": false,
+  "data_transferred_to_developer_or_third_parties": false,
+  "advertising": false,
+  "analytics": false,
+  "account_required": false,
+  "real_money_purchases": false,
+  "real_money_bets_or_prizes": false,
+  "local_data": [
+    "progress",
+    "achievements",
+    "sound settings",
+    "game speed"
+  ],
+  "deletion": "Android application settings: clear data or uninstall; local progress is removed",
+  "optional_user_action": [
+    "Copy run seed to clipboard",
+    "On explicit Paste action, attempt to read clipboard text for seed entry; local processing only"
+  ]
+}
