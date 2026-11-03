@@ -11,3 +11,14 @@ android/.kotlin/
 
 __pycache__/
 *.pyc
+
+# Never publish signing secrets or private backups.
+*.p12
+*.jks
+*.keystore
+*.pass
+*PRIVATE*.zip
+
+# Generated store captures and signed distribution files.
+rustore/screenshots/
+rustore/build/

@@ -21,6 +21,7 @@ class MainActivity : Activity() {
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WebView.setWebContentsDebuggingEnabled(false)
         web = WebView(this)
         web.settings.apply {
             javaScriptEnabled = true

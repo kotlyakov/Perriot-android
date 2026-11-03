@@ -1,0 +1,104 @@
+name: RuStore release verification and native build
+on:
+  push:
+    branches: [release/rustore-0.4.62]
+    paths:
+      - 'android/**'
+      - 'src/**'
+      - 'web/**'
+      - 'scripts/**'
+      - 'package.json'
+      - 'rustore/signing/**'
+      - 'rustore/media/**'
+      - '.github/workflows/rustore-release.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: rustore-release-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  core:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - run: npm test
+      - run: python3 scripts/check-rustore-release.py
+  browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Install browser
+        run: |
+          npm install --prefix "$RUNNER_TEMP/browser" --no-audit --no-fund playwright@1.62.1
+          "$RUNNER_TEMP/browser/node_modules/.bin/playwright" install chromium
+      - name: Game and Arcana regression
+        env:
+          PLAYWRIGHT_MODULE: ${{ runner.temp }}/browser/node_modules/playwright
+          UI_ARCANA_RELEASE: '1'
+        run: node scripts/ci-browser.mjs
+      - name: Capture store screenshots
+        env:
+          PLAYWRIGHT_MODULE: ${{ runner.temp }}/browser/node_modules/playwright
+          UI_CHECK_SCRIPT: scripts/capture-rustore.mjs
+        run: node scripts/check-ui.mjs
+      - uses: actions/upload-artifact@v7
+        with:
+          name: rustore-media-${{ github.run_id }}
+          path: rustore/screenshots/
+          if-no-files-found: error
+  android:
+    needs: [core, browser]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools platforms;android-36 build-tools;35.0.0'
+      - run: npm run android:assets
+      - run: python3 android/tools/check-config.py
+      - name: Fresh non-debug native build
+        working-directory: android
+        run: bash ./gradlew :app:clean :app:assembleRelease --no-daemon --no-build-cache --rerun-tasks --stacktrace
+      - name: Validate release manifest and align unsigned APK
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/rustore/tools/lib64 artifacts/rustore/tools/lib
+          tools="$ANDROID_HOME/build-tools/35.0.0"
+          apk=android/app/build/outputs/apk/release/app-release-unsigned.apk
+          "$tools/aapt" dump badging "$apk" > artifacts/rustore/badging.txt
+          "$tools/aapt" dump permissions "$apk" > artifacts/rustore/permissions.txt
+          ! grep -q 'application-debuggable' artifacts/rustore/badging.txt
+          ! grep -q 'uses-permission' artifacts/rustore/permissions.txt
+          grep -q "versionCode='76' versionName='0.4.62'" artifacts/rustore/badging.txt
+          "$tools/zipalign" -P 16 -f 4 "$apk" artifacts/rustore/Pierrot-0.4.62-unsigned.apk
+          "$tools/zipalign" -c -P 16 -v 4 artifacts/rustore/Pierrot-0.4.62-unsigned.apk > artifacts/rustore/alignment.txt
+          cp "$tools/lib/apksigner.jar" artifacts/rustore/tools/lib/
+          cp "$tools/zipalign" artifacts/rustore/tools/
+          cp "$tools/lib64/libc++.so" artifacts/rustore/tools/lib64/
+          cp "$tools/source.properties" artifacts/rustore/tools/
+          if [ -f "$tools/NOTICE.txt" ]; then cp "$tools/NOTICE.txt" artifacts/rustore/tools/; fi
+          printf 'commit=%s\nrun=%s\nvariant=release\nsigning=permanent-key-local\n' "$GITHUB_SHA" "$GITHUB_RUN_ID" > artifacts/rustore/build.txt
+          sha256sum artifacts/rustore/Pierrot-0.4.62-unsigned.apk artifacts/rustore/tools/lib/apksigner.jar > artifacts/rustore/SHA256SUMS
+      - uses: actions/upload-artifact@v7
+        with:
+          name: pierrot-rustore-unsigned-${{ github.run_id }}
+          path: artifacts/rustore/
+          if-no-files-found: error
+          retention-days: 30
