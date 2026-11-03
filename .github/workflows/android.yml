@@ -65,6 +65,7 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
   android:
+    needs: [core, browser]
     if: github.head_ref != 'feat/ui-windows-review'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
