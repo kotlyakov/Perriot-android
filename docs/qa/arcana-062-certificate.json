@@ -1,0 +1,25 @@
+{
+  "size": 1440082,
+  "sha256": "77769af1d4c9f1e6163fae0fc989ad27ffa40a71fb05d341cf0641cf585cde78",
+  "manifest": {
+    "versionCode": 75,
+    "versionName": "0.4.62-preview",
+    "compileSdkVersion": 36,
+    "compileSdkVersionCodename": "16",
+    "package": "ru.cardcascade.game.preview",
+    "platformBuildVersionCode": 36,
+    "platformBuildVersionName": 16
+  },
+  "assets_equal": 124,
+  "zip_crc": "PASS",
+  "ci_v2": "PASS",
+  "ci_zipalign16KB": "PASS",
+  "certificate_sha256": "d9b1549be6c2f82e64315e60c5883669a98e65aaf0b4c43cf1942ac0cc6c183a",
+  "update_from_061": false,
+  "build": "commit=d9106e42840c532c09c22cd20dcff213c1395c48\nrun=41621530112\nsignature=ci-debug-no-update-guarantee\n",
+  "source": "d9106e42840c532c09c22cd20dcff213c1395c48",
+  "tree": "54d0370894bda3ae8db971fc8ef79f7ee6f50eb8",
+  "ci_run": 41621530112,
+  "artifact_id": 13224345696,
+  "library_file_id": "libfile_742ec5f1e3208191bdb0b6ab744a456b"
+}

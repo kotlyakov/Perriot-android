@@ -1,0 +1,162 @@
+[
+  {
+    "width": 1536,
+    "height": 688,
+    "key": "p_arcana_mega_1",
+    "layout": {
+      "tops": [
+        490,
+        490,
+        490,
+        490,
+        490,
+        490,
+        490,
+        490
+      ],
+      "angles": [
+        "rotate(0deg)",
+        "rotate(0deg)",
+        "rotate(0deg)",
+        "rotate(0deg)",
+        "rotate(0deg)",
+        "rotate(0deg)",
+        "rotate(0deg)",
+        "rotate(0deg)"
+      ],
+      "gap": 23,
+      "bottom": 640,
+      "height": 688,
+      "inside": true,
+      "skipInset": 13,
+      "labelGap": 8
+    },
+    "selectionCPU4": {
+      "max": 36,
+      "p95": 16.5,
+      "preserved": true,
+      "removed": 0,
+      "saved": true
+    }
+  },
+  {
+    "width": 915,
+    "height": 412,
+    "key": "p_arcana_mega_1",
+    "layout": {
+      "tops": [
+        490,
+        490,
+        490,
+        490,
+        490,
+        490,
+        490,
+        490
+      ],
+      "angles": [
+        "rotate(0deg)",
+        "rotate(0deg)",
+        "rotate(0deg)",
+        "rotate(0deg)",
+        "rotate(0deg)",
+        "rotate(0deg)",
+        "rotate(0deg)",
+        "rotate(0deg)"
+      ],
+      "gap": 13.77325439453125,
+      "bottom": 383.25580406188965,
+      "height": 412,
+      "inside": true,
+      "skipInset": 13.000022295608986,
+      "labelGap": 7.999995753217336
+    },
+    "selectionCPU4": {
+      "max": 27.79999999993015,
+      "p95": 17,
+      "preserved": true,
+      "removed": 0,
+      "saved": true
+    }
+  },
+  {
+    "width": 1280,
+    "height": 720,
+    "key": "p_arcana_normal_1",
+    "layout": {
+      "tops": [
+        490,
+        490,
+        490,
+        490,
+        490,
+        490,
+        490,
+        490
+      ],
+      "angles": [
+        "rotate(0deg)",
+        "rotate(0deg)",
+        "rotate(0deg)",
+        "rotate(0deg)",
+        "rotate(0deg)",
+        "rotate(0deg)",
+        "rotate(0deg)",
+        "rotate(0deg)"
+      ],
+      "gap": 23.47802734375,
+      "bottom": 673.4749975204468,
+      "height": 720,
+      "inside": true,
+      "skipInset": 13.000025224879018,
+      "labelGap": 8.000001245673038
+    },
+    "selectionCPU4": {
+      "max": 34.199999999953434,
+      "p95": 17.899999999906868,
+      "preserved": true,
+      "removed": 0,
+      "saved": true
+    }
+  },
+  {
+    "width": 740,
+    "height": 360,
+    "key": "p_spectral_mega_1",
+    "layout": {
+      "tops": [
+        490,
+        490,
+        490,
+        490,
+        490,
+        490,
+        490,
+        490
+      ],
+      "angles": [
+        "rotate(0deg)",
+        "rotate(0deg)",
+        "rotate(0deg)",
+        "rotate(0deg)",
+        "rotate(0deg)",
+        "rotate(0deg)",
+        "rotate(0deg)",
+        "rotate(0deg)"
+      ],
+      "gap": 12.034881591796875,
+      "bottom": 334.8837366104126,
+      "height": 360,
+      "inside": true,
+      "skipInset": 13.00000911288772,
+      "labelGap": 8.000007290310176
+    },
+    "selectionCPU4": {
+      "max": 443.30000000004657,
+      "p95": 28.800000000046566,
+      "preserved": true,
+      "removed": 0,
+      "saved": true
+    }
+  }
+]

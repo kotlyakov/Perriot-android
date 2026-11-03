@@ -1,0 +1,50 @@
+[
+  {
+    "width": 1536,
+    "height": 688,
+    "key": "p_arcana_mega_1",
+    "selectionCPU4": {
+      "max": 12.200000000004366,
+      "p95": 5.600000000005821,
+      "preserved": true,
+      "removed": 0,
+      "saved": true
+    }
+  },
+  {
+    "width": 915,
+    "height": 412,
+    "key": "p_arcana_mega_1",
+    "selectionCPU4": {
+      "max": 13,
+      "p95": 6.200000000004366,
+      "preserved": true,
+      "removed": 0,
+      "saved": true
+    }
+  },
+  {
+    "width": 1280,
+    "height": 720,
+    "key": "p_arcana_normal_1",
+    "selectionCPU4": {
+      "max": 22.29999999998836,
+      "p95": 6.5,
+      "preserved": true,
+      "removed": 0,
+      "saved": true
+    }
+  },
+  {
+    "width": 740,
+    "height": 360,
+    "key": "p_spectral_mega_1",
+    "selectionCPU4": {
+      "max": 11.5,
+      "p95": 5.600000000005821,
+      "preserved": true,
+      "removed": 0,
+      "saved": true
+    }
+  }
+]
