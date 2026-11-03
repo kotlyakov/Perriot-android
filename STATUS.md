@@ -17,3 +17,5 @@
 ВRuStoreне загружено инамодерациюнеотправлено. Следующее: проверкапользователемнаустройстве, подтверждениеполейизREADME иотдельноепоручениенаотправку. Остальнойбэклогсохраняется.
 
 [APKрелиза](https://chatgpt.com/library?file_id=libfile_c2c9d457ff348191a88514c9e8746163&account_id=personal) · [КомплектRuStore](https://chatgpt.com/library?file_id=libfile_6def33cc1bac8191bbb4d97e8ad00ee9&account_id=personal).
+
+Финальнаяфиксация: тег v0.4.62 →36fce8ac492ec8b34112ed4173cfb2741901d0ed подтверждёнGitHubAPI; tag-gateCI41634662089SUCCESS. Метаданные/комплектопубликованывrelease/rustore-0.4.62 на4bc822edea5775f766bb653f5e2fc0c18e08c41d; последующаястрокастатусанеменяетрелиз.
