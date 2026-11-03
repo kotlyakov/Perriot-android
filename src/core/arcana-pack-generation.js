@@ -12,13 +12,13 @@ export function getArcanaBoosterConfig(id){
  return {size:id.includes('_normal_')?3:5,choices:id.includes('_mega_')?2:1};
 }
 
-export function generateApkArcanaPack(rng,context,{boosterId,instancePrefix='arcana'}={}){
+export function generateApkArcanaPack(rng,context,{boosterId,instancePrefix='arcana',legacyShowman=false}={}){
  validateApkRng(rng);context=createApkShopContext(context);
  const config=getArcanaBoosterConfig(boosterId);
  if(typeof instancePrefix!=='string'||!instancePrefix)throw new TypeError('Invalid Arcana instance prefix');
  let current=rng;
  const used=new Set([...context.ownedCentreIds,...context.usedCentreIds]);
- const showman=context.ownedCentreIds.includes('j_ring_master');
+ const showman=(legacyShowman?context.ownedCentreIds:context.activeCentreIds??context.ownedCentreIds).includes('j_ring_master');
  const random=key=>{const next=nextApkRandom(current,key);current=next.rng;return next.value;};
  const element=(values,key)=>{
   const seed=nextApkSeed(current,key),next=nextApkMathRandom(createApkMathState(seed.value),values.length);

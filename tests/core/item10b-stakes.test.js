@@ -40,22 +40,22 @@ test('10b actual five rounds charge rent once, expire after scoring, and resume 
  let s=run(8);s.money=100n;for(const key of Object.keys(s.handLevels))s.handLevels[key]=1000;
  s.jokers=[{id:'lease',entityId:'j_joker',perishable:true,perishRounds:5,rental:true,sellCost:1n}];
  for(let round=1;round<=5;round++){
-  s=reload(act(s,'START_BLIND'));const money=s.money,revision=s.revision;
-  s=reload(act(s,'PLAY_HAND',{cardIds:s.hand.slice(0,5)}));assert.equal(s.phase,'round_won');assert.equal(s.money,money-3n);assert.equal(s.jokers[0].perishRounds,5-round);assert.equal(s.jokers[0].debuffed===true,round===5);
+  const entryMoney=s.money;s=reload(act(s,'START_BLIND'));assert.equal(s.money,entryMoney-3n);const money=s.money,revision=s.revision;
+  s=reload(act(s,'PLAY_HAND',{cardIds:s.hand.slice(0,5)}));assert.equal(s.phase,'round_won');assert.equal(s.money,money);assert.equal(s.jokers[0].perishRounds,5-round);assert.equal(s.jokers[0].debuffed===true,round===5);
   assert.equal(dispatch(s,{type:'PLAY_HAND',expectedRevision:revision,cardIds:[]}).error.code,'STALE_ACTION');
-  const quote=getCashout(s);s=reload(act(s,'CASH_OUT'));assert.equal(s.jokers[0].perishRounds,5-round);assert.equal(s.money,money-3n+quote.total);s=reload(act(s,'LEAVE_SHOP'));
+  const quote=getCashout(s);s=reload(act(s,'CASH_OUT'));assert.equal(s.jokers[0].perishRounds,5-round);assert.equal(s.money,money+quote.total);s=reload(act(s,'LEAVE_SHOP'));
  }
 });
-test('10b losing last hand still pays rented expired Joker and saves completed state',()=>{
+test('10b losing last hand does not charge expired rental again and saves completed state',()=>{
  let s=run(8);s.jokers=[{id:'expired',entityId:'j_joker',perishable:true,perishRounds:0,rental:true,debuffed:true,sellCost:1n}];s=act(s,'START_BLIND');s.round.handsRemaining=1;s.money=1n;
- s=reload(act(s,'PLAY_HAND',{cardIds:s.hand.slice(0,1)}));assert.equal(s.phase,'game_over');assert.equal(s.money,-2n);assert.equal(s.jokers[0].perishRounds,0);
+ s=reload(act(s,'PLAY_HAND',{cardIds:s.hand.slice(0,1)}));assert.equal(s.phase,'game_over');assert.equal(s.money,1n);assert.equal(s.jokers[0].perishRounds,0);
 });
 test('10b fifth-round Golden and ToMoon are disabled before earned bonus and interest',()=>{
  let s=run(8);s.money=30n;s.handLevels.high_card=1000;s.jokers=[{id:'gold',entityId:'j_golden',perishable:true,perishRounds:1},{id:'moon',entityId:'j_to_the_moon',perishable:true,perishRounds:1}];s=act(s,'START_BLIND');s=reload(act(s,'PLAY_HAND',{cardIds:s.hand.slice(0,1)}));const q=getCashout(s);assert.equal(q.jokerBonuses,undefined);assert.equal(q.interest,5n);assert.equal(s.jokers.every(j=>j.debuffed),true);
 });
-test('10b rental is owed by MrBones even after its end-round removal',()=>{
- let s=run(8);s.jokers=[{id:'bones',entityId:'j_mr_bones',rental:true,sellCost:1n}];s=act(s,'START_BLIND');s.round.handsRemaining=1;s.round.score=s.round.target/4n;s.money=0n;
- s=act(s,'PLAY_HAND',{cardIds:s.hand.slice(0,1)});assert.equal(s.phase,'round_won');assert.equal(s.money,-3n);assert.equal(s.jokers.length,0);reload(s);
+test('10b MrBones rental is paid on entry and not charged again on removal',()=>{
+ let s=run(8);s.jokers=[{id:'bones',entityId:'j_mr_bones',rental:true,sellCost:1n}];s=act(s,'START_BLIND');assert.equal(s.money,1n);s.round.handsRemaining=1;s.round.score=s.round.target/4n;s.money=0n;
+ s=act(s,'PLAY_HAND',{cardIds:s.hand.slice(0,1)});assert.equal(s.phase,'round_won');assert.equal(s.money,0n);assert.equal(s.jokers.length,0);reload(s);
 });
 test('10b expiring perishable Oops before a later extinction roll changes its native probability',async()=>{
  const {applyRoundEndJokers}=await import('../../src/core/round-end-jokers.js');const {nextApkRandom}=await import('../../src/core/apk-rng.js');

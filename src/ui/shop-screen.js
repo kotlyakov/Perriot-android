@@ -1,3 +1,4 @@
+import {SHOP_DROP_REGIONS,shopDropActions} from './shop-actions.js';
 import {jokerArtworkSvg} from './joker-art.js';
 import {consumableArtworkSvg} from '../content/consumable-illustrations.js';
 import {collectionArtworkSvg} from '../content/collection-illustrations.js';
@@ -8,13 +9,11 @@ import {canLeaveApkShop} from '../core/blind-progression.js';
 import {describeShopItem as describeCatalogueItem,displayPlayingCard} from '../content/shop-display.js';
 import {appendCardDescription} from './card-description.js';
 import {showCardTooltip,dismissCardTooltip} from './card-tooltip.js';
-import {getRerollCost,canBuyShopCard,hasJokerSpace,hasConsumableSpace,isPlayingShopCard} from '../core/shop.js';
-import {canUseConsumable,supportsConsumableEffect} from '../core/consumables.js';
+import {getRerollCost} from '../core/shop.js';
 import {canAfford} from '../core/shop-pricing.js';
 import {canManageInventory,canSellOwned} from '../core/inventory.js';
-import {supportsBooster,canUsePackCard} from '../core/celestial-pack.js';
+import {LAYOUT} from './layout.js';
 
-import {canBuyVoucher} from '../core/vouchers.js';
 
 import {cardMarkup,applyCardModifiers} from './field.js';
 
@@ -46,14 +45,19 @@ export function jokerStickers(offer){
  const rows=[];
  if(offer.eternal)rows.push({id:'eternal',label:'Вечный',description:'Нельзя продать или уничтожить.'});
  if(offer.perishable){const rounds=offer.perishRounds??5;rows.push({id:'perishable',label:'Временный · '+rounds,description:rounds===0?'Срок действия истёк. Эффект джокера отключён.':`Действует ещё ${rounds} раундов. После этого эффект джокера отключится.`});}
- if(offer.rental)rows.push({id:'rental',label:'Аренда',description:'Снимает $3 в конце каждого раунда.'});
+ if(offer.rental)rows.push({id:'rental',label:'Аренда',description:'Снимает $3 в начале каждого раунда.'});
  return rows;
 }
 
+let currentTargets=[],refreshSelectedActions=null;
 let view=null,packView=null,selected=null,tip=null,lastMain=null,entryMotion,cancelDrag,cancelReturn,lastAcornRound=null;
 const reduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
 const node=(tag,className,text)=>{const n=document.createElement(tag);if(className)n.className=className;if(text!==undefined)n.textContent=text;return n;};
-export function shopMoneyFontSize(value,width,max=27){return Math.min(max,width/(String(value).length+1)/.66);}
+export function shopMoneyFontSize(value,width,max=27){return Math.min(max,width/(String(value).length+1)/.8);}
+export function ownedJokerLayout(count){
+ const [left,,width]=LAYOUT.joker_region_inferred,step=count>1?Math.min(count<=3?220:130,(width-104)/(count-1)):0;
+ return {start:Math.max(left,Math.min(744-52-step*(count-1)/2,left+width-104-step*(count-1))),step};
+}
 // Damped spring along the actual flight vector; visual only, no game RNG.
 export function shopReturnFrames(dx,dy){
  return Array.from({length:61},(_,i)=>{
@@ -63,8 +67,9 @@ export function shopReturnFrames(dx,dy){
 }
 function money(value,width=56,max=27){const n=node('span','shop-money','$'+value);n.style.fontSize=shopMoneyFontSize(value,width,max)+'px';return n;}
 function rect(n,x,y,w,h){Object.assign(n.style,{left:x+'px',top:y+'px',width:w+'px',height:h+'px'});return n;}
+function bindActionButton(button,action){button.onclick=()=>{if(!button.disabled)action();};}
 function dismissTip(){if(tip?.isConnected)dismissCardTooltip();tip=null;}
-function clearSelection(){selected=null;dismissTip();for(const root of [view,packView,document.getElementById('shop_owned')]){root?.querySelectorAll('.shop-choice').forEach(n=>{n.classList.remove('is-selected');n.querySelector('.shop-card')?.setAttribute('aria-pressed','false');});root?.querySelectorAll('.shop-buy,.shop-use').forEach(n=>n.remove());}}
+function clearSelection(){refreshSelectedActions=null;document.getElementById('shop_action_zones')?.remove();selected=null;dismissTip();for(const root of [view,packView,document.getElementById('shop_owned')]){root?.querySelectorAll('.shop-choice').forEach(n=>{n.classList.remove('is-selected');n.querySelector('.shop-card')?.setAttribute('aria-pressed','false');});root?.querySelectorAll('.shop-buy,.shop-use').forEach(n=>n.remove());}}
 function showTip(offer,card,state,busy){
  dismissTip();if(card.classList.contains('acorn-hidden'))return;const details=describeShopItem({...offer,edition:'base'},{owned:card.classList.contains('shop-owned-card')});tip=node('aside','shop-tooltip');tip.setAttribute('role','tooltip');tip.id='shop_tooltip';
  const owned=card.classList.contains('shop-owned-card')||card.closest('[data-kind]')?.dataset.kind==='consumable',area=card.classList.contains('shop-owned-card')?'jokers':'consumables';
@@ -86,11 +91,23 @@ export function artwork(offer,kind){
 }
 function ticketArtwork(offer,details){
  const main=node('span','ticket-main'),stub=node('span','ticket-stub');
- main.append(node('span','ticket-heading','ПЬЕРО · БИЛЕТ'),node('span','shop-card-name',details.name));
- const serial=node('span','ticket-number','БИЛЕТ УЛУЧШЕНИЯ');main.append(serial);
+ main.append(artwork(offer,'voucher'),node('span','shop-card-name',details.name));
  stub.append(node('span','ticket-price-label','ЦЕНА'),money(offer.cost,52,23));
  const seam=node('span','ticket-perforation');seam.setAttribute('aria-hidden','true');
  return [main,stub,seam];
+}
+function actionZones(offer,kind,state,callbacks,busy){
+ document.getElementById('shop_action_zones')?.remove();
+ const group=node('div','shop-action-zones');group.id='shop_action_zones';group.dataset.offerId=offer.id;
+ const actions=shopDropActions(state,offer,kind,callbacks.targetCardIds??[]);
+ for(const [key,action] of Object.entries(actions)){
+  const zone=rect(node('button','shop-drop-zone shop-'+key+'-zone'+((key==='use'&&action.action||action.action==='USE_PACK_CARD')?' shop-use':'')),...SHOP_DROP_REGIONS[key]);
+  zone.type='button';zone.id='shop_'+key+'_zone';zone.dataset.available=String(action.available&&!busy);zone.disabled=busy||!action.available;zone.title=action.reason??action.label;
+  const caption=node('strong','shop-drop-caption');for(const line of action.label.split('\n'))caption.append(node('span','',line));zone.append(caption);
+  if(action.price!==undefined)zone.append(money(action.price,key==='buy'?680:150,key==='buy'?40:30));
+  bindActionButton(zone,()=>{zone.disabled=true;clearSelection();callbacks.onAction?.(action.action,action.fields);});group.append(zone);
+ }
+ document.getElementById('stage').append(group);return {group,actions};
 }
 function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
  const wrap=rect(node('div','shop-choice'),x,y,w,h);wrap.dataset.offerId=offer.id;wrap.dataset.kind=kind;
@@ -110,24 +127,28 @@ function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
  wrap.append(card);
  function select(){
   clearSelection();selected={id:offer.id,kind};wrap.classList.add('is-selected');card.setAttribute('aria-pressed','true');
-  if(kind==='consumable'){
-   const targets=callbacks.targetCardIds??[],capability=canUseConsumable(state,offer,targets),use=node('button','shop-use','Использовать');use.type='button';use.disabled=busy||!capability.available;use.title=capability.reason??'Использовать расходную карту';
-   use.onclick=()=>{if(use.disabled||!canUseConsumable(state,offer,targets).available)return;use.disabled=true;clearSelection();callbacks.onAction?.('USE_CONSUMABLE',{cardId:offer.id,targetCardIds:targets});};wrap.append(use);
-  }else if(kind==='pack'){
-   const targets=callbacks.targetCardIds??[],capability=canUsePackCard(state,offer,targets),take=/^p_(standard|buffoon)_/.test(state.packState.sourceEntityId),use=node('button','shop-use',take?'Взять':'Использовать');use.type='button';use.disabled=busy||!capability.available;use.title=capability.reason??(take?'Взять карту набора':'Использовать карту набора');
-   use.onclick=()=>{if(use.disabled||!canUsePackCard(state,offer,targets).available)return;use.disabled=true;clearSelection();callbacks.onAction?.('USE_PACK_CARD',{cardId:offer.id,targetCardIds:targets});};wrap.append(use);
-  }
+  refreshSelectedActions=()=>actionZones(offer,kind,state,callbacks,busy);refreshSelectedActions();
  }
  // Pointer selection is committed on release; captured touch need not emit a click.
- card.onclick=e=>{if(e.detail===0&&!e.pointerType&&!e.sourceCapabilities?.firesTouchEvents&&!busy){if(['owned','consumable','pack'].includes(kind))select();showTip(offer,card,state,busy);}};
+ card.onclick=e=>{if(e.detail===0&&!e.pointerType&&!e.sourceCapabilities?.firesTouchEvents&&!busy){select();showTip(offer,card,state,busy);}};
  card.onpointerdown=e=>{
   if(busy||card.disabled||e.button!==0)return;cancelDrag?.();cancelReturn?.();
   const inventory=kind==='owned'||kind==='consumable',area=kind==='owned'?'jokers':'consumables';
-  const purchasable=state.phase==='shop'&&!inventory,draggable=purchasable||inventory&&canManageInventory(state);
-  const startX=e.clientX,startY=e.clientY,scale=document.getElementById('stage').getBoundingClientRect().width/document.getElementById('stage').offsetWidth;let dragged=false,zone,ghost;
+  const purchasable=state.phase==='shop'&&!inventory,draggable=kind==='pack'||purchasable||inventory&&canManageInventory(state);
+  clearSelection();
+  const startX=e.clientX,startY=e.clientY,stageOrigin=document.getElementById('stage').getBoundingClientRect(),scale=stageOrigin.width/document.getElementById('stage').offsetWidth;let dragged=false,zones,ghost,reorderOrder;
+  const siblings=inventory?[...document.querySelectorAll(`#shop_owned [data-kind=${kind}]`)]:[],slots=siblings.map(n=>({id:n.dataset.offerId,left:n.style.left}));
+  const shift=(n,left)=>{if(n.style.left===left)return;const from=n.style.left;n.style.left=left;if(!reduced())n.animate([{left:from},{left}],{duration:gameDuration(180),easing:'ease-out'});};
+  // A quick inventory drag reorders. Only a stationary hold arms sale/use.
+  const holdTimer=inventory&&draggable?setTimeout(()=>{
+   if(dragged||!card.isConnected)return;
+   zones=actionZones(offer,kind,state,callbacks,busy);zones.group.classList.add('is-dragging');
+  },350):null;
   card.setPointerCapture?.(e.pointerId);
-  function cleanup(animateHome=false){
-   zone?.remove();
+  function cleanup(animateHome=false,keepSlots=false){
+   if(!keepSlots)for(const [i,n] of siblings.entries())shift(n,slots[i].left);
+   clearTimeout(holdTimer);
+   zones?.group.remove();
    const returning=ghost;ghost=null;
    if(animateHome&&returning&&!reduced()){
     let finished=false,motion;
@@ -144,30 +165,48 @@ function choice(offer,kind,index,state,busy,callbacks,x,y,w,h){
   function move(ev){
    if(ev.pointerId!==e.pointerId||!draggable)return;
    if(!dragged&&Math.hypot(ev.clientX-startX,ev.clientY-startY)>8){
-    dragged=true;clearSelection();
+    dragged=true;clearTimeout(holdTimer);dismissTip();
     const stage=document.getElementById('stage'),bounds=wrap.getBoundingClientRect(),stageBounds=stage.getBoundingClientRect();
     ghost=wrap.cloneNode(true);ghost.querySelector('.shop-use')?.remove();rect(ghost,(bounds.left-stageBounds.left)/scale,(bounds.top-stageBounds.top)/scale,w,h);ghost.classList.add('is-dragging');ghost.setAttribute('aria-hidden','true');ghost.style.pointerEvents='none';stage.append(ghost);wrap.style.opacity='0';ghost.querySelector('button').tabIndex=-1;
-    zone=inventory?rect(node('div','shop-buy-zone shop-sell-zone'),1375,210,150,225):rect(node('div','shop-buy-zone'),454,15,895,182);zone.id=inventory?'shop_sell_zone':'shop_buy_zone';zone.setAttribute('aria-live','polite');
-    const pack=kind==='booster'&&supportsBooster(offer.entityId)&&offer.originalKey===offer.entityId&&offer.set==='Booster',voucher=kind==='voucher',supported=pack||voucher||kind==='main'&&details.canBuy&&(state.inflation??0n)===0n;
-    const reason=inventory?(canSellOwned(state,offer,area)?null:offer.eternal?'Вечная карта':'Продажа недоступна'):!supported?'Доступен только просмотр':!canAfford(state.money,offer.cost,state.bankruptAt??0n)?'Недостаточно денег':voucher&&!canBuyVoucher(state,offer)?'Ваучер уже получен или недоступен':!pack&&!voucher&&!isPlayingShopCard(offer)&&!(supportsConsumableEffect(offer)?hasConsumableSpace(state,offer):hasJokerSpace(state,offer))?(supportsConsumableEffect(offer)?'Нет места для расходной карты':'Нет места для джокера'):!pack&&!voucher&&!canBuyShopCard(state,offer)?'Покупка недоступна: проверьте свободные места':null;
-    zone.dataset.available=String(!reason);zone.append(node('strong','',reason??(inventory?'Продать':'Купить')),hidden?node('span','shop-money','?'):money(inventory?offer.sellCost??0n:offer.cost,inventory?125:800,43));document.getElementById('stage').append(zone);
+    if(!inventory){zones=actionZones(offer,kind,state,callbacks,busy);zones.group.classList.add('is-dragging');}
    }
-   if(dragged){ev.preventDefault();ghost.style.translate=(ev.clientX-startX)/scale+'px '+(ev.clientY-startY)/scale+'px';const b=zone.getBoundingClientRect();zone.classList.toggle('is-over',ev.clientX>=b.left&&ev.clientX<=b.right&&ev.clientY>=b.top&&ev.clientY<=b.bottom);}
+   if(dragged){ev.preventDefault();ghost.style.translate=(ev.clientX-startX)/scale+'px '+(ev.clientY-startY)/scale+'px';
+    const px=(ev.clientX-stageOrigin.left)/scale,py=(ev.clientY-stageOrigin.top)/scale;
+    if(inventory&&!zones&&!offer.pinned){
+     const step=slots.length>1?parseFloat(slots[1].left)-parseFloat(slots[0].left):1,to=Math.max(0,Math.min(slots.length-1,Math.round((parseFloat(wrap.style.left)+(ev.clientX-startX)/scale-parseFloat(slots[0].left))/Math.max(step,1))));
+     const order=slots.map(slot=>slot.id).filter(id=>id!==offer.id);order.splice(to,0,offer.id);
+     if(area!=='jokers'||!state.jokers.some((j,i)=>j.pinned&&order[i]!==j.id)){reorderOrder=order;for(const n of siblings)if(n!==wrap)shift(n,slots[order.indexOf(n.dataset.offerId)].left);}
+    }
+    if(zones)for(const [key,[x,y,w,h]] of Object.entries(SHOP_DROP_REGIONS))zones.group.querySelector('#shop_'+key+'_zone').classList.toggle('is-over',px>=x&&px<=x+w&&py>=y&&py<=y+h);
+   }
   }
   function end(ev){
    if(ev.pointerId!==e.pointerId)return;
-   const bounds=zone?.getBoundingClientRect(),drop=dragged&&bounds&&ev.clientX>=bounds.left&&ev.clientX<=bounds.right&&ev.clientY>=bounds.top&&ev.clientY<=bounds.bottom,available=zone?.dataset.available==='true';cleanup(dragged&&!(drop&&available));
-   if(!dragged){if(!busy){if(['owned','consumable','pack'].includes(kind))select();showTip(offer,card,state,busy);}return;}
-   if(drop){if(available)callbacks.onAction?.(inventory?'SELL_OWNED_CARD':kind==='booster'?'OPEN_BOOSTER':kind==='voucher'?'BUY_VOUCHER':'BUY_SHOP_CARD',inventory?{area,cardId:offer.id}:{offerId:offer.id});else callbacks.onNotice?.(inventory?'Эту карту нельзя продать.':'Покупка недоступна: проверьте эффект карты, деньги и свободные места.');}
-   else if(dragged&&inventory){
-    const siblings=[...document.querySelectorAll(`#shop_owned [data-kind=${kind}]`)],cardBounds=card.getBoundingClientRect();
-    const inRow=ev.clientY>=cardBounds.top-25*scale&&ev.clientY<=cardBounds.bottom+25*scale;
-    if(inRow&&!offer.pinned){const ids=siblings.map(n=>n.dataset.offerId),others=siblings.filter(n=>n.dataset.offerId!==offer.id),to=others.filter(n=>{const b=n.getBoundingClientRect();return ev.clientX>(b.left+b.right)/2;}).length;const ordered=ids.filter(id=>id!==offer.id);ordered.splice(to,0,offer.id);if((area!=='jokers'||!state.jokers.some((j,i)=>j.pinned&&ordered[i]!==j.id))&&ordered.some((id,i)=>id!==ids[i]))callbacks.onAction?.(area==='jokers'?'REORDER_JOKERS':'REORDER_CONSUMABLES',{cardIds:ordered});}
+   const px=(ev.clientX-stageOrigin.left)/scale,py=(ev.clientY-stageOrigin.top)/scale;
+   const key=dragged&&zones?Object.keys(SHOP_DROP_REGIONS).find(key=>{const [x,y,w,h]=SHOP_DROP_REGIONS[key];return px>=x&&px<=x+w&&py>=y&&py<=y+h;}):null;
+   const action=key?zones.actions[key]:null,drop=!!action&&!(inventory&&key==='buy'),available=action?.available;
+   const bounds=card.getBoundingClientRect(),inRow=ev.clientY>=bounds.top-25*scale&&ev.clientY<=bounds.bottom+25*scale;
+   const reordering=dragged&&inventory&&!zones&&inRow&&reorderOrder?.some((id,i)=>id!==slots[i].id);
+   const from=reordering?new Map(siblings.map(n=>[n.dataset.offerId,{left:n===wrap?parseFloat(wrap.style.left)+(ev.clientX-startX)/scale+'px':n.style.left,top:n===wrap?parseFloat(wrap.style.top)+(ev.clientY-startY)/scale+'px':n.style.top}])):null;
+   cleanup(dragged&&!(drop&&available)&&!reordering,reordering);
+   if(reordering)Object.assign(wrap.style,from.get(offer.id));
+   if(!dragged){if(!busy){select();showTip(offer,card,state,busy);}return;}
+   if(drop){if(available)callbacks.onAction?.(action.action,action.fields);else callbacks.onNotice?.(action.reason??'Для этой карты выберите другую область.');}
+   else if(reordering){
+    Promise.resolve(callbacks.onAction?.(area==='jokers'?'REORDER_JOKERS':'REORDER_CONSUMABLES',{cardIds:reorderOrder})).then(()=>{
+     if(reduced())return;
+     for(const n of document.querySelectorAll(`#shop_owned [data-kind=${kind}]`))if(from.has(n.dataset.offerId))n.animate([from.get(n.dataset.offerId),{left:n.style.left,top:n.style.top}],{duration:gameDuration(300),easing:'cubic-bezier(.2,.85,.28,1.13)'});
+    },()=>{});
    }
   }
   cancelDrag=cancel;card.addEventListener('pointermove',move);card.addEventListener('pointerup',end);card.addEventListener('pointercancel',cancel);card.addEventListener('lostpointercapture',cancel);card.addEventListener('keydown',escape);
  };
  card.onkeydown=e=>{if(e.key==='Escape'){cancelDrag?.();clearSelection();}if(e.key==='F1'){e.preventDefault();showTip(offer,card,state,busy);}};
+ wrap.refresh=(nextState,nextBusy,nextCallbacks)=>{
+  state=nextState;busy=nextBusy;callbacks=nextCallbacks;card.disabled=busy;
+  const chosen=selected?.id===offer.id;wrap.classList.toggle('is-selected',chosen);card.setAttribute('aria-pressed',chosen);
+  if(chosen)select();
+ };
  if(selected?.id===offer.id)select();return wrap;
 }
 function ensureView(){
@@ -202,23 +241,45 @@ function renderPack(state,busy,callbacks){
  const source=state.packState.sourceEntityId,targetHand=/^p_(arcana|spectral)_/.test(source),titleText=source.startsWith('p_arcana_')?'НАБОР ТАРО':source.startsWith('p_spectral_')?'ПРИЗРАЧНЫЙ НАБОР':source.startsWith('p_standard_')?'СТАНДАРТНЫЙ НАБОР':source.startsWith('p_buffoon_')?'ШУТОВСКОЙ НАБОР':'НЕБЕСНЫЙ НАБОР';
  if(!packView?.isConnected){packView=node('section','pack-screen');packView.id='pack_screen';document.getElementById('stage').append(packView);}
  packView.classList.toggle('arcana-pack',targetHand);packView.setAttribute('aria-label',titleText);
- packView.replaceChildren();const title=node('h1','pack-title',titleText);title.id='pack_title';const choices=node('p','pack-choices','Выберите '+state.packState.choicesRemaining);choices.id='pack_choices';packView.append(title,choices);
- const cards=state.packState.cards,spacing=cards.length>1?Math.min(116,520/(cards.length-1)):116,start=327-52-spacing*(cards.length-1)/2;
- cards.forEach((card,index)=>packView.append(choice(card,'pack',index,state,busy,callbacks,start+index*spacing,targetHand?65:135,targetHand?90:104,targetHand?123:143)));
- const skip=rect(node('button','pack-skip','Пропустить'),targetHand?705:255,targetHand?120:375,145,58);skip.id='pack_skip';skip.disabled=busy;skip.onclick=()=>{clearSelection();callbacks.onAction?.('SKIP_PACK',{});};packView.append(skip);
+ packView.dataset.cardSet=source.startsWith('p_arcana_')?'Tarot':source.startsWith('p_celestial_')?'Planet':source.startsWith('p_spectral_')?'Spectral':'';
+ // Busy -> ready changes only input bindings; keep the cards just revealed.
+ if(packView.packState!==state.packState){
+  packView.replaceChildren();const title=node('h1','pack-title',titleText);title.id='pack_title';const choices=node('p','pack-choices','Выберите '+state.packState.choicesRemaining);choices.id='pack_choices';packView.append(title,choices);
+  const cards=state.packState.cards,spacing=cards.length>1?Math.min(116,520/(cards.length-1)):116,start=327-52-spacing*(cards.length-1)/2;
+  cards.forEach((card,index)=>packView.append(choice(card,'pack',index,state,busy,callbacks,start+index*spacing,targetHand?65:135,targetHand?90:104,targetHand?123:143)));
+  const skip=rect(node('button','pack-skip','Пропустить набор'),235,targetHand?192:375,180,targetHand?38:58);skip.id='pack_skip';packView.append(skip);packView.packState=state.packState;
+ }else for(const card of packView.querySelectorAll('.shop-choice'))card.refresh(state,busy,callbacks);
+ const skip=packView.querySelector('#pack_skip');skip.disabled=busy;bindActionButton(skip,()=>{skip.disabled=true;clearSelection();callbacks.onAction?.('SKIP_PACK',{});});
  renderOwned(state,busy,callbacks);
 }
 function renderOwned(state,busy,callbacks){
- let owned=document.getElementById('shop_owned');if(!owned){owned=node('div','shop-owned');owned.id='shop_owned';document.getElementById('stage').append(owned);}owned.replaceChildren();
- const jokers=state.jokers,step=jokers.length<=3?220:Math.min(130,560/Math.max(1,jokers.length-1)),jokerStart=744-52-step*(jokers.length-1)/2;
- jokers.forEach((o,i)=>owned.append(choice(o,'owned',i,state,busy,callbacks,jokerStart+i*step,23,104,143)));
- const consumables=state.consumables??[],consumableStep=Math.min(103,164/Math.max(1,consumables.length-1));
- consumables.forEach((o,i,a)=>owned.append(choice(o,'consumable',i,state,busy,callbacks,1145+(i-(a.length-1)/2)*consumableStep,25,96,141)));
+ let owned=document.getElementById('shop_owned');if(!owned){owned=node('div','shop-owned');owned.id='shop_owned';document.getElementById('stage').append(owned);}
+ const existing=new Map([...owned.children].map(n=>[n.dataset.kind+':'+n.dataset.offerId,n])),next=[];
+ const reconcile=(offer,kind,index,x,y,w,h)=>{
+  const hidden=kind==='owned'&&!state.bossState?.disabled&&state.bossState?.hiddenJokerIds?.includes(offer.id),debuffed=kind==='owned'&&!hidden&&(offer.perishable===true&&offer.perishRounds===0||state.phase==='playing'&&offer.debuffed===true);
+  const signature=JSON.stringify({offer,hidden:!!hidden,debuffed:!!debuffed},(_,v)=>typeof v==='bigint'?v.toString():v),key=kind+':'+offer.id;let card=existing.get(key);existing.delete(key);
+  if(card?.ownedVisualKey!==signature){card?.remove();card=choice(offer,kind,index,state,busy,callbacks,x,y,w,h);card.ownedVisualKey=signature;}else {rect(card,x,y,w,h);card.refresh(state,busy,callbacks);}
+  next.push(card);
+ };
+ const jokers=state.jokers,{step,start:jokerStart}=ownedJokerLayout(jokers.length);
+ jokers.forEach((o,i)=>reconcile(o,'owned',i,jokerStart+i*step,23,104,143));
+ // Match the approved action column's right edge, which stays visible in 16:9.
+ const consumables=state.consumables??[],[consumableLeft,,regionWidth]=LAYOUT.consumable_region_inferred,consumableWidth=Math.min(regionWidth,SHOP_DROP_REGIONS.sell[2]),consumableStep=Math.min(103,(consumableWidth-96)/Math.max(1,consumables.length-1));
+ consumables.forEach((o,i,a)=>reconcile(o,'consumable',i,consumableLeft+(consumableWidth-96)/2+(i-(a.length-1)/2)*consumableStep,25,96,141));
+ for(const card of existing.values())card.remove();
+ next.forEach((card,i)=>{if(owned.children[i]!==card)owned.insertBefore(card,owned.children[i]??null);});
  document.getElementById('joker_count').textContent=jokers.length+'/'+((state.jokerSlots??5)+jokers.filter(j=>j.edition==='negative').length);
  document.getElementById('consumable_count').textContent=(state.consumables?.length??0)+'/'+((state.consumableSlots??2)+(state.consumables??[]).filter(c=>c.edition==='negative').length);
 }
+// Keep selection-only updates visible to existing consumable action handlers.
+export function updateShopTargets(ids){
+ currentTargets.splice(0,currentTargets.length,...ids);
+ // Pack actions stay selected while their targets change; owned actions keep the established reset.
+ if(selected?.kind==='pack')refreshSelectedActions?.();else clearSelection();
+}
 export function renderShop(state,busy,{onAction,onNotice,targetCardIds=[]}={}){
- cancelDrag?.();cancelReturn?.();
+ targetCardIds=[...targetCardIds];currentTargets=targetCardIds;
+ cancelDrag?.();cancelReturn?.();document.getElementById('shop_action_zones')?.remove();
  const acornRound=state.phase==='playing'&&!state.bossState?.disabled&&state.bossState?.id==='bl_final_acorn'?`${state.runId}:${state.roundNumber}`:null;
  // Native setup unhighlights before shuffling; an old highlight must not track
  // a known identity through the shuffle. Later renders are not fresh setup.
@@ -228,8 +289,8 @@ export function renderShop(state,busy,{onAction,onNotice,targetCardIds=[]}={}){
  if(state.phase!=='shop'||!state.shop){
   dismissTip();entryMotion?.cancel();view?.controller?.abort();view?.remove();document.getElementById('shop_sign')?.remove();view=null;if(!acornRound)selected=null;lastMain=null;renderOwned(state,busy,{onAction,onNotice,targetCardIds});return;
  }
- const fresh=ensureView();view.querySelector('.shop-voucher-label').textContent='БИЛЕТЫ · АНТЕ '+(state.apkShop?.context.ante??state.round?.ante??'');const callbacks={onAction,onNotice,targetCardIds},offers=view.querySelector('.shop-offers'),owned=document.getElementById('shop_owned');
- const all=[...state.shop.main,...state.shop.vouchers,...state.shop.boosters,...state.jokers,...(state.consumables??[])];if(selected&&!all.some(o=>o.id===selected.id))clearSelection();dismissTip();offers.replaceChildren();owned.replaceChildren();
+ const fresh=ensureView();view.querySelector('.shop-voucher-label').textContent='БИЛЕТЫ · АНТЕ '+(state.apkShop?.context.ante??state.round?.ante??'');const callbacks={onAction,onNotice,targetCardIds},offers=view.querySelector('.shop-offers');
+ const all=[...state.shop.main,...state.shop.vouchers,...state.shop.boosters,...state.jokers,...(state.consumables??[])];if(selected&&!all.some(o=>o.id===selected.id))clearSelection();dismissTip();offers.replaceChildren();
  const main=state.shop.main,mainWidth=104,spacing=Math.min(118,main.length>1?330/(main.length-1):118),start=413-mainWidth/2-spacing*(main.length-1)/2;
  main.forEach((o,i)=>offers.append(choice(o,'main',i,state,busy,callbacks,start+i*spacing,38,104,142)));
  const tickets=rect(node('div','shop-ticket-list'),79,251,226,172);tickets.id='shop_ticket_list';tickets.setAttribute('aria-label','Билеты магазина');
@@ -238,7 +299,7 @@ export function renderShop(state,busy,{onAction,onNotice,targetCardIds=[]}={}){
  if(state.shop.vouchers.length>2){
   for(const [direction,y,label] of [[-1,255,'Предыдущие билеты'],[1,383,'Следующие билеты']]){
    const scroll=rect(node('button','shop-ticket-scroll',direction<0?'▲':'▼'),306,y,21,35);scroll.type='button';scroll.setAttribute('aria-label',label);scroll.disabled=busy;
-   scroll.onclick=()=>tickets.scrollBy({top:direction*84,behavior:reduced()?'instant':'smooth'});offers.append(scroll);
+   bindActionButton(scroll,()=>tickets.scrollBy({top:direction*84,behavior:reduced()?'instant':'smooth'}));offers.append(scroll);
   }
  }
  state.shop.boosters.forEach((o,i)=>offers.append(choice(o,'booster',i,state,busy,callbacks,364+i*127,246,111,181)));

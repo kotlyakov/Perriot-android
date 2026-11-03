@@ -14,7 +14,7 @@ import {canAfford} from './shop-pricing.js';
 import {validateApkRng} from './apk-rng.js';
 import {rerollApkShop} from './apk-shop.js';
 import {currentApkShopContext} from './apk-shop-state.js';
-import {supportsConsumableEffect} from './consumables.js';
+import {supportsConsumableEffect,canUseConsumable,applyConsumableAction} from './consumables.js';
 
 const amount=x=>typeof x==='bigint' && x>=0n;
 const count=x=>Number.isSafeInteger(x) && x>=0;
@@ -49,6 +49,13 @@ export function hasConsumableSpace(state,offer){
  const cards=state.consumables??[],slots=state.consumableSlots??2;
  return Array.isArray(cards)&&count(slots)&&cards.length<slots+cards.filter(c=>c.edition==='negative').length+(offer?.edition==='negative'?1:0);
 }
+// Read-only immediate-use quote. The transient card never needs an inventory slot.
+export function canBuyAndUseShopCard(state,offer,targetCardIds=[]){
+ if(state.phase!=='shop'||!state.shop?.main.some(card=>card.id===offer?.id)||!supportsConsumableEffect(offer))return {available:false,reason:'Эту карту нельзя применить при покупке.'};
+ if(!canAfford(state.money,offer.cost,state.bankruptAt??0n))return {available:false,reason:'Недостаточно денег.'};
+ const staged={...state,money:state.money-offer.cost,consumables:[...(state.consumables??[]),offer]};
+ return canUseConsumable(staged,offer,targetCardIds,{fromPack:true});
+}
 export function stampJokerCreationOrdinals(state,cards){
  if(!Number.isSafeInteger(state.nextJokerCreationOrdinal)||state.nextJokerCreationOrdinal<1){
   const known=[...(state.jokers??[]),...(state.consumables??[]),...(state.shop?['main','vouchers','boosters'].flatMap(area=>state.shop[area]??[]):[])].map(card=>card?.creationOrdinal).filter(value=>Number.isSafeInteger(value)&&value>=1);
@@ -81,16 +88,17 @@ export function applyShopAction(state,action,{refill,nextRound}={}) {
     new Set(state.jokers.map(j=>j.id)).size!==state.jokers.length)return reject('INVALID_STATE','Invalid shop state');
   const floor=state.bankruptAt??0n;
   const finish=(next,events)=>{next.revision++;next.lastScore=null;return {state:next,events,error:null};};
-  if(action.type==='BUY_SHOP_CARD') {
+  if(action.type==='BUY_SHOP_CARD'||action.type==='BUY_AND_USE_SHOP_CARD') {
     const offer=state.shop.main.find(o=>o.id===action.offerId);
     if(!offer)return reject('OFFER_NOT_FOUND','Shop offer is no longer available');
-    const consumable=supportsConsumableEffect(offer),playing=isPlayingShopCard(offer);
+    const consumable=supportsConsumableEffect(offer),playing=isPlayingShopCard(offer),immediate=action.type==='BUY_AND_USE_SHOP_CARD';
+    if(immediate&&!consumable)return reject('USE_UNAVAILABLE','Эту карту нельзя применить при покупке.');
     if(!playing&&!consumable&&!supportsJoker(offer) || (state.inflation??0n)!==0n)
       return reject('UNSUPPORTED_CONTENT','Purchase effect is not implemented');
     if(state.apkShop&&(offer.originalKey!==offer.entityId||!(playing?['Base','Enhanced'].includes(offer.set):consumable?['Tarot','Planet','Spectral'].includes(offer.set):offer.set==='Joker')))return reject('INVALID_STATE','Invalid native offer identity');
     if(state.cards&&Object.hasOwn(state.cards,offer.id))return reject('INVALID_STATE','Instance ID collides with a playing card');
     if([...state.jokers,...(state.consumables??[])].some(j=>j.id===offer.id))return reject('INVALID_STATE','Instance ID already owned');
-    if(!(playing?Object.keys(state.cards??{}).length<10000:consumable?hasConsumableSpace(state,offer):hasJokerSpace(state,offer)))return reject('NO_SPACE','Inventory area is full');
+    if(!immediate&&!(playing?Object.keys(state.cards??{}).length<10000:consumable?hasConsumableSpace(state,offer):hasJokerSpace(state,offer)))return reject('NO_SPACE',consumable?'Нет места для расходной карты.':'Нет места для Джокера.');
     if(!canAfford(state.money,offer.cost,floor))return reject('INSUFFICIENT_FUNDS','Insufficient available money');
     const next=structuredClone(state);
     next.shop.main=next.shop.main.filter(o=>o.id!==offer.id);
@@ -100,8 +108,14 @@ export function applyShopAction(state,action,{refill,nextRound}={}) {
       applyChallengePurchaseInflation(next);
       next.apkShop.context=currentApkShopContext(next);
     }
-    return finish(next,[{type:'shop_card_bought',offerId:offer.id,...(consumable?{consumableId:offer.id}:{jokerId:offer.id}),cost:offer.cost},
-      {type:'money_changed',before:state.money,after:next.money,delta:-offer.cost}]);
+    const purchaseEvents=[{type:'shop_card_bought',offerId:offer.id,...(consumable?{consumableId:offer.id}:{jokerId:offer.id}),cost:offer.cost},
+      {type:'money_changed',before:state.money,after:next.money,delta:-offer.cost}];
+    if(immediate){
+      const used=applyConsumableAction(next,{type:'USE_CONSUMABLE',expectedRevision:next.revision,cardId:offer.id,targetCardIds:action.targetCardIds??[]},{fromPack:true});
+      if(used.error)return reject(used.error.code,used.error.message);
+      return {...used,events:[...purchaseEvents,...used.events]};
+    }
+    return finish(next,purchaseEvents);
   }
   if(action.type==='SELL_JOKER') {
     const joker=state.jokers.find(j=>j.id===action.jokerId);

@@ -16,7 +16,8 @@ try {
      for(let x=left;x<right;x++){const i=(62*274+x)*4,value=[...pixels.slice(i,i+4)];if(value[3]<250)continue;opaque++;const difference=Math.max(...rgb.map((n,i)=>Math.abs(n-value[i])));if(!difference)exact++;if(difference>2)mixed.push({x,value,difference});}
      beds.push({id,css:getComputedStyle(document.getElementById(id)).backgroundColor,opaque,exact,mixed});
     }
-    let gap=0;for(let y=0;y<68;y++)for(let x=115;x<147;x++)gap+=pixels[(y*274+x)*4+3];
+    const bounds=canvas.getBoundingClientRect(),chips=document.getElementById('chips').getBoundingClientRect(),mult=document.getElementById('mult').getBoundingClientRect(),gapLeft=Math.ceil((chips.right-bounds.left)*canvas.width/bounds.width),gapRight=Math.floor((mult.left-bounds.left)*canvas.width/bounds.width);
+    let gap=0;for(let y=0;y<68;y++)for(let x=gapLeft;x<gapRight;x++)gap+=pixels[(y*274+x)*4+3];
     return {beds,gap,height:Number(canvas.dataset.height)};
    },score);
    assert.equal(result.beds[0].css,'rgb(3, 159, 234)');assert.equal(result.beds[1].css,'rgb(242, 75, 61)');

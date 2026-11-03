@@ -67,13 +67,13 @@ test('Tooth charges each selected card including non-scoring cards and permits n
  const s=active('bl_tooth',3);s.money=1n;const r=act(s,'PLAY_HAND',s.hand.slice(0,5));assert.equal(r.error,null);
  assert.equal(r.state.money,-4n);assert.ok(r.events.some(e=>e.type==='money_changed'&&e.delta===-5n));assert.deepEqual(reload(r.state),r.state);
 });
-test('Ox uses frozen prior-boss hand snapshot, charges once and unresolved ties gate only Ox',()=>{
+test('Ox uses frozen prior-boss hand snapshot, charges once and current ties resolve canonically',()=>{
  const p=pending('bl_ox',6);p.mostPlayedHand='pair';p.apkShop.context.playedHands={'High Card':8,Pair:1};
  const s=held(act(p,'START_BLIND').state,['card_clubs_2','card_spades_2',...['3','5','7','9','11','13'].map(r=>'card_hearts_'+r)]);
  const before=structuredClone(s),r=act(s,'PLAY_HAND',s.hand.slice(0,2));assert.equal(r.error,null);assert.equal(r.state.money,0n);assert.equal(r.state.bossState.oxHand,'pair');assert.deepEqual(s,before);assert.deepEqual(reload(r.state),r.state);
  const stale=dispatch(r.state,{type:'PLAY_HAND',cardIds:s.hand.slice(0,2),expectedRevision:s.revision});assert.equal(stale.error.code,'STALE_ACTION');
  const tied=pending('bl_wall');tied.apkShop.context.playedHands={'High Card':2,Pair:2};let won=act(tied,'START_BLIND').state;won.phase='round_won';won.round.score=won.round.target;
- const cash=act(won,'CASH_OUT');assert.equal(cash.error,null);assert.equal(cash.state.mostPlayedHand,null);assert.deepEqual(reload(cash.state),cash.state);
+ const cash=act(won,'CASH_OUT');assert.equal(cash.error,null);assert.equal(cash.state.mostPlayedHand,'high_card');assert.deepEqual(reload(cash.state),cash.state);
  const unknown=pending('bl_ox',6);unknown.mostPlayedHand=null;assert.equal(act(unknown,'START_BLIND').error.code,'BOSS_UNAVAILABLE');unknown.apkBlinds.bossId='bl_wall';unknown.round.target=80000n;assert.equal(act(unknown,'START_BLIND').error,null);
 });
 test('invalid boss snapshots and hidden/history corruption reject save',()=>{

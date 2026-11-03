@@ -10,9 +10,9 @@ try{
   const s=createRun('identity-fixture',{runId:'identity-fixture',money:4n});s.phase='playing';s.consumableSlots=3;s.consumables=['c_fool','c_mercury','c_soul'].map((entityId,i)=>({id:'identity-'+i,entityId,set:['Tarot','Planet','Spectral'][i],edition:'base',sellCost:1n}));renderShop(s,false,{});
  });
  await page.waitForFunction(()=>document.querySelector('#shop_owned [data-card-set=Spectral] .spectral-shimmer'));
- const colors=await page.locator('#shop_owned .shop-card').evaluateAll(nodes=>nodes.map(n=>getComputedStyle(n).borderColor.match(/[\d.]+/g).map(Number)));
- assert.ok(colors[0][0]>colors[0][1]&&colors[0][1]>colors[0][2],'Tarot orange ink');
- assert.ok(colors[1][2]>colors[1][0]&&colors[1][1]>colors[1][0],'Planet sky-blue ink');
+ const colors=await page.locator('#shop_owned .shop-card').evaluateAll(nodes=>nodes.map(n=>getComputedStyle(n).backgroundColor.match(/[\d.]+/g).map(Number)));
+ assert.ok(colors[0][0]>colors[0][1]&&colors[0][1]>colors[0][2],'Tarot orange paper');
+ assert.ok(colors[1][2]>colors[1][0]&&colors[1][1]>colors[1][0],'Planet sky-blue paper');
  const spectral=page.locator('#shop_owned [data-card-set=Spectral]');const before=await spectral.screenshot();await page.waitForTimeout(240);assert.notDeepEqual(before,await spectral.screenshot(),'Base Spectral card constantly shimmers without needing an edition');
  const shimmer=spectral.locator('.spectral-shimmer');
  assert.equal(await shimmer.getAttribute('aria-hidden'),'true');assert.equal(await shimmer.evaluate(n=>getComputedStyle(n).pointerEvents),'none');

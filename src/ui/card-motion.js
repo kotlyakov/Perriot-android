@@ -68,6 +68,20 @@ export function prepareCardDissolve(ids){
  const copies=ids.map(id=>snapshot(handCard(id))).filter(Boolean);
  return ()=>Promise.all(copies.map(copy=>particles(copy,false)));
 }
+export function consumableUseColors(set){return set==='Tarot'?['#ff9b38','#ff642c']:set==='Planet'?['#75d9ff','#287de4']:['#ff79ab','#ffcf63','#78e1d0','#9b87ff'];}
+export function prepareConsumableUse(id,set){
+ const source=[...document.querySelectorAll('.shop-choice')].find(n=>n.dataset.offerId===id)?.querySelector('.shop-card'),copy=snapshot(source);
+ return async()=>{
+  if(!copy||reducedMotion())return;
+  const colors=consumableUseColors(set),stage=document.getElementById('stage'),halo=document.createElement('div');halo.className='consumable-use-burst';halo.dataset.effectSet=set;halo.setAttribute('aria-hidden','true');
+  Object.assign(halo.style,{position:'absolute',left:parseFloat(copy.style.left)-35+'px',top:parseFloat(copy.style.top)-25+'px',width:parseFloat(copy.style.width)+70+'px',height:parseFloat(copy.style.height)+50+'px',borderRadius:'50%',pointerEvents:'none',zIndex:'89',background:set==='Spectral'?`conic-gradient(${colors.join(',')},${colors[0]})`:`radial-gradient(ellipse,${colors[0]},${colors[1]} 45%,transparent 72%)`});
+  stage.append(halo,copy);
+  try{await Promise.all([
+   cardMotion(halo,[{opacity:0,scale:'.55'},{opacity:.85,scale:'1.2',offset:.35},{opacity:0,scale:'1.8'}],{duration:gameDuration(500)}),
+   cardMotion(copy,[{opacity:1,scale:'1',rotate:'0deg'},{opacity:1,scale:'1.13',rotate:'-7deg',boxShadow:`0 0 35px 12px ${colors[0]}`,offset:.4},{opacity:0,scale:'.2',rotate:'8deg',boxShadow:`0 0 50px 18px ${colors.at(-1)}`}],{duration:gameDuration(480)})
+  ]);}finally{halo.remove();copy.remove();}
+ };
+}
 export async function dissolveCard(node){
  if(!node)return;
  const copy=snapshot(node);node.style.visibility='hidden';
@@ -78,14 +92,14 @@ export function preparePackOpening(offerId){
  const copy=snapshot(wrap?.querySelector('.shop-card'));
  return async()=>{
   if(reducedMotion())return;
-  const choices=[...document.querySelectorAll('#pack_screen .shop-card')],visibility=choices.map(n=>n.style.visibility);
+  const choices=[...document.querySelectorAll('#pack_screen .shop-card')],visibility=choices.map(n=>n.style.visibility),set=document.getElementById('pack_screen')?.dataset.cardSet,colors=['Tarot','Planet','Spectral'].includes(set)?consumableUseColors(set):null;
   choices.forEach(n=>n.style.visibility='hidden');
   try{
    if(copy){
     const lid=copy.cloneNode(true);lid.classList.add('box-lid');lid.style.clipPath='inset(0 0 64% 0)';copy.style.clipPath='inset(36% 0 0 0)';document.getElementById('stage').append(copy,lid);
     try{await Promise.all([cardMotion(lid,[{translate:'0 0',rotate:'0deg',opacity:1},{translate:'-55px -115px',rotate:'-24deg',opacity:0}],{duration:gameDuration(350)}),cardMotion(copy,[{scale:'1',opacity:1},{scale:'1.08',opacity:1,offset:.25},{scale:'.85',opacity:0}],{duration:gameDuration(350)})]);}finally{copy.remove();lid.remove();}
    }
-   await Promise.all(choices.map((node,i)=>{node.style.visibility=visibility[i];return cardMotion(node,[{opacity:0,translate:'0 45px',rotate:'-7deg',scale:'.8'},{opacity:1,translate:'0 -5px',rotate:'2deg',scale:'1.03',offset:.75},{opacity:1,translate:'0 0',rotate:'0deg',scale:'1'}],{duration:gameDuration(350),delay:gameDuration(i*75),fill:'backwards'});}));
+   await Promise.all(choices.map((node,i)=>{node.style.visibility=visibility[i];return cardMotion(node,[{opacity:0,translate:'0 45px',rotate:'-7deg',scale:'.8',...(colors?{boxShadow:`0 0 28px 12px ${colors[0]}`}:{})},{opacity:1,translate:'0 -5px',rotate:'2deg',scale:'1.03',offset:.75,...(colors?{boxShadow:`0 0 18px 6px ${colors.at(-1)}`}:{})},{opacity:1,translate:'0 0',rotate:'0deg',scale:'1',boxShadow:node.style.boxShadow||getComputedStyle(node).boxShadow}],{duration:gameDuration(350),delay:gameDuration(i*75),fill:'backwards'});}));
   }finally{choices.forEach((n,i)=>n.style.visibility=visibility[i]);}
  };
 }

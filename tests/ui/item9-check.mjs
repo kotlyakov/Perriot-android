@@ -25,7 +25,7 @@ function shopFixture(){
 }
 async function assertTicketGeometry(page){
  const ticket=page.locator('[data-kind=voucher] .shop-ticket').first();
- assert.ok(await ticket.isVisible());assert.equal(await ticket.locator('.ticket-main').count(),1);assert.equal(await ticket.locator('.ticket-stub .shop-money').count(),1);assert.equal(await ticket.locator('.ticket-perforation').count(),1);assert.equal(await ticket.locator('.shop-art').count(),0,'Ticket must have its own horizontal layout');
+ assert.ok(await ticket.isVisible());assert.equal(await ticket.locator('.ticket-main').count(),1);assert.equal(await ticket.locator('.ticket-stub .shop-money').count(),1);assert.equal(await ticket.locator('.ticket-perforation').count(),1);assert.equal(await ticket.locator('.ticket-main .shop-art').count(),1,'Ticket main section shows the shared voucher artwork');
  const size=await ticket.boundingBox();assert.ok(size.width/size.height>2.5,'Ticket is horizontal');
  assert.ok(await ticket.locator('.ticket-stub .shop-money').evaluate(el=>{const price=el.getBoundingClientRect(),stub=el.closest('.ticket-stub').getBoundingClientRect();return price.left>=stub.left&&price.right<=stub.right+1&&price.top>=stub.top&&price.bottom<=stub.bottom;}),'Price fits detachable stub');
  assert.match(await page.locator('.shop-voucher-label').innerText(),/БИЛЕТЫ/);
@@ -33,7 +33,7 @@ async function assertTicketGeometry(page){
 async function buyVoucher(page,touch){
  const card=page.locator('[data-offer-id="paint-offer"] .shop-card'),b=await card.boundingBox(),stage=await page.locator('#stage').boundingBox(),scale=stage.width/1536;
  const from={x:b.x+b.width/2,y:b.y+b.height/2},to={x:stage.x+850*scale,y:stage.y+90*scale};
- if(touch){const cdp=await page.context().newCDPSession(page);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[from]});await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[to]});await page.locator('#shop_buy_zone[data-available=true]').waitFor();await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await cdp.detach();}
+ if(touch){const cdp=await page.context().newCDPSession(page);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[from]});await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[to]});await page.locator('#shop_buy_zone[data-available=true]').waitFor();/* Chromium CDP: a real drag needs time to settle before release (instant flick suppresses the next tap). */await page.waitForTimeout(100);await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await cdp.detach();}
  else {await page.mouse.move(from.x,from.y);await page.mouse.down();await page.mouse.move(to.x,to.y,{steps:6});await page.locator('#shop_buy_zone[data-available=true]').waitFor();await page.mouse.up();}
  await card.waitFor({state:'detached'});
 }
@@ -48,7 +48,7 @@ try{
   const durable=await page.evaluate(()=>localStorage.getItem('card-cascade.current'));await page.reload();await enterRun(page,{startBlind:false});await page.locator('#shop_screen').waitFor();assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),durable);
   const many=shopFixture();for(const [index,key] of ['v_blank','v_hone','v_crystal_ball'].entries())many.shop.vouchers.push({id:'extra-ticket-'+index,entityId:key,originalKey:key,set:'Voucher',edition:'base',cost:10n,sellCost:5n});
   await install(page,many,'#shop_screen');await assertTicketGeometry(page);assert.equal(await page.locator('[data-kind=voucher]').count(),4);
-  const down=page.getByRole('button',{name:'Следующие билеты',exact:true});await (touch?down.tap():down.click());assert.ok(await page.locator('#shop_ticket_list').evaluate(el=>el.scrollTop>0));
+  const down=page.getByRole('button',{name:'Следующие билеты',exact:true});await (touch?down.tap():down.click());await page.waitForFunction(()=>document.getElementById('shop_ticket_list').scrollTop>0);
   const positions=await page.locator('.shop-ticket .ticket-stub .shop-money').evaluateAll(nodes=>nodes.map(el=>{const b=el.getBoundingClientRect();return {top:b.top,bottom:b.bottom};}));for(let i=1;i<positions.length;i++)assert.ok(positions[i].top>=positions[i-1].bottom,'Ticket prices never overlap');
   await page.screenshot({path:`artifacts/item9-extra-tickets-${width}.png`});
   state=createRun('ITEM9_BOSS_UI',{runId:'item9-boss-ui',money:50n,referenceRng:true,referenceShop:true,reducedMotion:true});

@@ -1,3 +1,4 @@
+import {usesCurrentMechanics} from './mechanics-version.js';
 import {compact} from './numbers.js';
 import {APK_HAND_NAMES} from './apk-shop-state.js';
 import {item7ConsumableSpace} from './joker-item7-economy.js';
@@ -32,7 +33,12 @@ export function item7BeforeScore(state,opts,contexts=state.jokers.map((_,i)=>jok
   if(key==='j_trousers'&&(pairs>=2||handId==='full_house'||handId==='flush_house'))grow(j,'mult',2);
   if(key==='j_square'&&playedCards.length===4)grow(j,'chips',4);
   if(key==='j_runner'&&['straight','straight_flush'].includes(handId))grow(j,'chips',15);
-  if(key==='j_ride_the_bus')j.mult=scoringCards.some(c=>face(state,c,opts))?0:(j.mult??0)+1;
+  if(key==='j_ride_the_bus'){
+   let faces=false;
+   if(usesCurrentMechanics(state)){for(const card of scoringCards)if(face(state,card,opts))faces=true;}
+   else faces=scoringCards.some(c=>face(state,c,opts));
+   j.mult=faces?0:(j.mult??0)+1;
+  }
   if(key==='j_green_joker')grow(j,'mult',1);
   if(key==='j_obelisk'){
    const usage=state.handUsage??{},current=(usage[handId]??0)+1;

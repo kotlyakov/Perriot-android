@@ -105,17 +105,28 @@ function backArt(id){const key=id.slice(2),color=deckColors[key];if(!color)retur
 
 const playingBase=(fill=C.light)=>rect(11,5,96,128,fill,C.ink,5)+text(24,25,'7',19)+g(heart,17,27,.16)+text(94,124,'7',19)+g(heart,88,99,.16);
 const pips=(fill=C.red)=>[[42,31],[76,31],[42,63],[76,63],[42,95],[76,95],[59,47]].map(([x,y])=>`<g transform="translate(${x-8} ${y-8}) scale(.2)">${heart.replaceAll(C.red,fill)}</g>`).join('');
-const enhancements={
- bonus:()=>playingBase('#d6e0d4')+pips(C.teal)+rect(29,104,58,18,C.teal,C.teal,2)+text(58,118,'+30',15,C.paper)+path('M34 17H84','none',C.teal,3),
- mult:()=>playingBase('#ead0bf')+pips()+rect(29,104,58,18,C.red,C.red,2)+text(58,118,'+4',15,C.paper)+path('M34 17H84','none',C.red,3),
- wild:()=>playingBase()+g(spade,24,22,.43)+g(heart,56,22,.43)+g(club,24,64,.43)+g(diamond,56,64,.43)+path('M28 18H88M28 115H88','none',C.gold,3),
- glass:()=>playingBase('#dce8dc')+pips(C.teal)+path('M15 8L102 125M43 8L104 68M13 68L54 130','none',C.light,5)+path('M58 9L61 44L46 62L69 80L62 130M61 44L86 49M69 80L93 90','none',C.blue,1.5),
- steel:()=>playingBase('#a5b3ad')+pips(C.ink)+path('M16 51L68 9M16 70L87 9M38 130L103 74M59 130L103 94','none',C.paper,5)+[[20,15],[97,15],[20,123],[97,123]].map(([x,y])=>circle(x,y,3,C.ink,C.light,1)).join(''),
+const enhancements={bonus:true,mult:true,wild:true,glass:true,steel:true,gold:true,lucky:true,
  stone:()=>rect(11,5,96,128,'#c6bd9f',C.ink,5)+path('M22 17L89 14L100 45L91 119L26 125L16 80Z','#928e7d')+path('M23 43L43 30L59 46L87 34M20 82L43 65L62 89L94 71M31 112L49 96L74 115','none','#d4cbb3',4)+circle(38,58,4,'#666f64')+circle(78,102,5,'#666f64'),
- gold:()=>playingBase('#c5a45d')+pips('#7e6130')+path('M18 9L96 130M43 9L104 99','none','#ead9a1',5)+g(coin(40,40,20),38,46,.52),
- lucky:()=>playingBase('#e5e0bc')+pips(C.teal)+g(club,35,45,.6)+path('M34 112L40 118L48 108M69 22L76 29L84 18','none',C.gold,3),
 };
-function enhancedArt(id){const draw=enhancements[id.slice(2)];return draw?svg(id,'Enhanced',draw()):null;}
+function enhancedArt(id){
+ const key=id.slice(2);if(!enhancements[key])return null;
+ if(key==='stone')return svg(id,'Enhanced',enhancements.stone());
+ const paper={bonus:'#e4edf0',mult:'#f1dfd3',wild:'#f4eddb',glass:'#e4fbff',steel:'#4c5d70',gold:'#ddbb59',lucky:'#e5f0d7'}[key];
+ const ink=key==='steel'?'#f1ead4':key==='glass'?'#276d83':C.ink;
+ const orb=(x,y,r)=>`<g data-wild-symbol="true" transform="translate(${x} ${y}) scale(${r/11})"><circle r="11" fill="#d3d3c1"/><defs><clipPath id="wild-orb-circle"><circle r="11"/></clipPath></defs><g clip-path="url(#wild-orb-circle)"><g style="filter:blur(2.1px)"><circle cx="-4" cy="-4" r="6.5" fill="#283c53"/><circle cx="4" cy="-4" r="6.5" fill="#bb3034"/><circle cx="-4" cy="4" r="6.5" fill="#33835c"/><circle cx="4" cy="4" r="6.5" fill="#3b86b8"/></g></g></g>`;
+ const ranks=`<g data-rank="top">${text(24,25,'7',19,C.ink)}${key==='wild'?orb(24,34,4.5):g(heart,17,27,.16)}</g><g data-rank="bottom">${text(94,124,'7',19,C.ink)}${key==='wild'?orb(94,101,4):g(heart,88,99,.16)}</g>`;
+ let finish='',marks=pips(ink);
+ if(key==='wild')marks=[[42,31],[76,31],[42,63],[76,63],[42,95],[76,95],[59,47]].map(([x,y])=>orb(x,y,9)).join('');
+ if(key==='glass')finish=path('M32 13L84 122L102 86L69 13Z','#ffffff70','#82ccdd',1)+path('M31 84L60 18L83 106L57 123Z','#b3edf355','none')+path('M35 22L80 116M89 46L98 67','none','#fff',3);
+ if(key==='steel')finish=Array.from({length:13},(_,i)=>path(`M34 ${15+i*8}L85 ${8+i*8}`,'none','#dbe4ed',.6)).join('')+[[36,19],[83,19],[36,119],[83,119]].map(([x,y])=>circle(x,y,2.3,'#d7e2e7','#293b4d',1)).join('');
+ if(key==='gold')finish=path('M34 13L83 121L100 94L62 13Z','#f5df8c99','none');
+ if(key==='lucky'){
+  marks='';finish=`<g data-four-leaf-clover="true" transform="translate(59 65)"><path d="M0 2Q-30-3-25-24Q-8-34 0-10Q8-34 25-24Q30-3 0 2Q30 7 24 28Q7 35 0 12Q-7 35-24 28Q-30 7 0 2Z" fill="#3f824e" stroke="#234d38" stroke-width="2"/><path d="M0 5Q4 31 14 43M0 1L-17-18M0 1L17-18M0 5L-16 22M0 5L16 22" fill="none" stroke="#b7d38a" stroke-width="2.2"/></g>`+star(84,29,5,C.gold)+star(34,100,4,C.gold);
+ }
+ // All decoration stays in the body. Rank/suit corners are printed last on clear paper.
+ const clip='enhancement-body-'+key;
+ return svg(id,'Enhanced',`<g data-enhancement-art="${key}">${rect(11,5,96,128,paper,C.ink,5)}<defs><clipPath id="${clip}"><rect x="32" y="12" width="55" height="114" rx="4"/></clipPath></defs><g data-enhancement-body="true" clip-path="url(#${clip})">${finish}${marks}</g>${rect(15,10,17,34,C.light,'none')}${rect(86,96,17,34,C.light,'none')}${ranks}</g>`);
+}
 const editionColors={foil:['#78918c','#e5e2ba','#739797'],holo:['#b993a2','#7c9c9f','#d2ba80'],polychrome:['#b65442','#c6ad58','#397f81'],negative:['#273e46','#647a7b','#192b37']};
 function editionArt(id){let key=id.slice(2);if(key==='base')return svg(id,'Edition',playingBase()+pips());if(key==='holographic')key='holo';const colors=editionColors[key];if(!colors)return null;const gid='collection-material-'+key;
  const gradient=`<defs><linearGradient id="${gid}" x1="0" y1="0" x2="1" y2="1">${colors.map((c,i)=>`<stop offset="${i/2}" stop-color="${c}"/>`).join('')}</linearGradient></defs>`;

@@ -96,14 +96,16 @@ export function applyItem7EndRound(state,events,{gameOver=false,jokerId}={}){
 }
 // Cards remain in state.cards until the reducer applies the returned removals.
 // `forced` is Hook's discard context: it suppresses Burnt, but not card effects.
-export function applyItem7Discard(state,cardIds,events,{forced=false}={}){
+export function applyItem7Discard(state,cardIds,events,{forced=false,beforeCard}={}){
  const cards=cardIds.map(id=>state.cards[id]),removed=[];
  const first=(state.round.discardsUsed??0)===0;
  if(first&&!forced)for(const c of contexts(state))if(c.target.entityId==='j_burnt'){
   const handId=evaluateHand(cards,{...handRecognitionOptions(state.jokers),isCardDebuffed:card=>isBossCardDebuffed(state,card)}).handId;
   state.handLevels[handId]++;events.push({type:'hand_level_changed',handId,levels:1,level:state.handLevels[handId],sourceId:c.source.id});
  }
- for(const card of cards)for(const c of contexts(state)){
+ for(const card of cards){
+  beforeCard?.(card.id);
+  for(const c of contexts(state)){
   const {source,target:j,copied}=c;initializeItem7Joker(state,j);const id=j.entityId,debuffed=isBossCardDebuffed(state,card);
   if(id==='j_mail'&&!debuffed&&rank(state,card)===(state.round.mailRank))money(state,5n,events,source.id);
   if(copied)continue;
@@ -112,6 +114,7 @@ export function applyItem7Discard(state,cardIds,events,{forced=false}={}){
   if(id==='j_trading'&&first&&cards.length===1){money(state,3n,events,j.id);if(!removed.includes(card))removed.push(card);}
   if(id==='j_castle'&&!debuffed&&isCardSuit(card,state.round.castleSuit??'spades',{debuffed,jokers:state.jokers}))change(j,'chips',j.chips+3,events);
   if(id==='j_hit_the_road'&&!debuffed&&rank(state,card)===11)change(j,'xMult',j.xMult+.5,events);
+  }
  }
  for(const c of contexts(state)){
   if(c.target.entityId==='j_green_joker'&&!c.copied)change(c.target,'mult',Math.max(0,(c.target.mult??0)-1),events);

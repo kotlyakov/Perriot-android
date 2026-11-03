@@ -8,7 +8,7 @@ import {scoreHand} from '../core/score.js';
 import {appendCardDescription} from './card-description.js';
 import {showCardTooltip,dismissCardTooltip} from './card-tooltip.js';
 import {describeCardModifiers} from '../content/card-modifier-display.js';
-import {exactText} from '../core/numbers.js';
+import {exactText,floorExact} from '../core/numbers.js';
 import {HAND_NAMES} from '../content/hand-names.js';
 export {HAND_NAMES};
 export const SUITS={spades:['♠','#283c53'],hearts:['♥','#bb3034'],clubs:['♣','#143d39'],diamonds:['♦','#ca502a']};
@@ -24,7 +24,7 @@ function cardFaceMarkup(card) {
  else {
    inside=pipArtwork(card);
  }
- return `<span class="corner" style="color:${color}">${rank}<span>${suitSvg(card.suit)}</span></span>${inside}<span class="corner bottom" style="color:${color}">${rank}<span>${suitSvg(card.suit)}</span></span>`;
+ return `<span class="corner" style="color:${color}">${rank}<span>${suitSvg(card.suit,card.enhancement==='wild')}</span></span>${inside}<span class="corner bottom" style="color:${color}">${rank}<span>${suitSvg(card.suit,card.enhancement==='wild')}</span></span>`;
 }
 export function cardMarkup(card){
  const seal={red:'↻',gold:'$',blue:'✦',purple:'◇'}[card.seal];
@@ -44,13 +44,37 @@ export function displayBlindTarget(value){
 export function displayInteger(value){const s=exactText(value);return !s.includes('.')&&s.length>10?s.slice(0,3)+'e'+(s.length-3):s;}
 export function showNumbers(chips,mult,animate=false){
  for(const [id,value] of [['chips_value',chips],['mult_value',mult]]){
-   const n=document.getElementById(id),onFrame=()=>{n.style.fontSize=Math.min(43,(n.parentElement.clientWidth-12)/(.7*n.textContent.length))+'px';};
-   if(typeof value!=='bigint'){delete n.dataset.number;n.textContent=displayInteger(value);n.title=exactText(value);onFrame();continue;}
-   animateNumber(n,value,{animate,format:displayInteger,onFrame});
+   const n=document.getElementById(id),width=parseFloat(n.parentElement.style?.width)||n.parentElement.clientWidth,onFrame=()=>{n.style.fontSize=Math.min(43,(width-12)/(.7*n.textContent.length))+'px';};
+   animateNumber(n,floorExact(value),{animate,format:displayInteger,onFrame});
  }
 }
 
 export function dismissCardTip(){dismissCardTooltip();}
+// A highlight is presentation-only: retain live card nodes, pointer handlers and material animations.
+export function renderHandSelection(state,selected,busy,scoringPreview=null){
+ const arcana=state.phase==='pack'&&/^p_(arcana|spectral)_/.test(state.packState?.sourceEntityId??'');
+ const hiddenCardIds=new Set(state.phase==='playing'?[...(state.bossState?.hiddenCardIds??[]),...(state.challengeFlippedCardIds??[])]:[]);
+ const hiddenSelection=state.hand.some(id=>selected.has(id)&&hiddenCardIds.has(id));
+ const played=state.phase==='playing'?state.hand.filter(id=>selected.has(id)).map(id=>state.cards[id]):[];
+ let preview=hiddenSelection?null:scoringPreview;try{if(!hiddenSelection && !preview && played.length)preview=scoreHand(state,played);}catch{}
+ text('hand_name',preview?HAND_NAMES[preview.handId]:'');text('hand_level',preview?'Ур. '+state.handLevels[preview.handId]:'');
+ const base=preview?.trace[0]?.after;
+ showNumbers(base?.chips??0n,base?.mult??0n);
+ showFlame(preview?.score??0n,state.round.target);
+ const playing=state.phase==='playing',selectable=playing||arcana;
+ document.getElementById('play_hand').disabled=busy || !playing || !selected.size || !state.round.handsRemaining;
+ document.getElementById('discard').disabled=busy || !playing || !selected.size || !state.round.discardsRemaining;
+ for(const id of ['sort_rank','sort_suit'])document.getElementById(id).disabled=busy || !selectable;
+ const middle=(state.hand.length-1)/2;
+ for(const [i,card] of [...document.getElementById('hand').children].entries()){
+  if(card.dataset.cardId!==state.hand[i])continue;
+  card.disabled=busy||!selectable;
+  const chosen=selected.has(card.dataset.cardId);
+  card.classList.toggle('selected',chosen);card.setAttribute('aria-pressed',chosen);
+  card.style.top=(arcana?430:388)+Math.abs(i-middle)*2.5-(chosen?arcana?14:28:0)+'px';
+ }
+}
+
 export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=null) {
  document.getElementById('deck').dataset.deck=state.deckId;
  text('target_value',displayBlindTarget(state.round.target));renderBlindHud(state);document.querySelector('#blind_target b').textContent='$'+blindReward(state);document.querySelector('#round strong').textContent=state.roundNumber??1;animateNumber(document.getElementById('round_score_value'),state.round.score,{format:displayInteger});animateNumber(document.getElementById('hands_value'),state.round.handsRemaining);animateNumber(document.getElementById('discards_value'),state.round.discardsRemaining);text('money_value','$'+state.money);
@@ -58,18 +82,8 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
  text('hand_count',state.hand.length+'/'+state.round.handSize);text('deck_count',state.drawPile.length+'/'+Object.keys(state.cards).length);text('joker_count',state.jokers.length+'/'+(state.jokerSlots??5));
  const arcana=state.phase==='pack'&&/^p_(arcana|spectral)_/.test(state.packState?.sourceEntityId??'');
  const hiddenCardIds=new Set(state.phase==='playing'?[...(state.bossState?.hiddenCardIds??[]),...(state.challengeFlippedCardIds??[])]:[]);
- const hiddenSelection=state.hand.some(id=>selected.has(id)&&hiddenCardIds.has(id));
- const played=state.hand.filter(id=>selected.has(id)).map(id=>state.cards[id]);
- let preview=hiddenSelection?null:scoringPreview;try{if(!hiddenSelection && !preview && played.length)preview=scoreHand(state,played);}catch{}
- text('hand_name',preview?HAND_NAMES[preview.handId]:'');text('hand_level',preview?'Ур. '+state.handLevels[preview.handId]:'');
- const base=preview?.trace[0]?.after;
- showNumbers(base?.chips??0n,base?.mult??0n);
- showFlame(preview?.score??0n,state.round.target);
  for(const mode of ['rank','suit'])document.getElementById('sort_'+mode).classList.toggle('sort-active',state.sortMode===mode);
  const playing=state.phase==='playing',selectable=playing||arcana;
- document.getElementById('play_hand').disabled=busy || !playing || !selected.size || !state.round.handsRemaining;
- document.getElementById('discard').disabled=busy || !playing || !selected.size || !state.round.discardsRemaining;
- for(const id of ['sort_rank','sort_suit'])document.getElementById(id).disabled=busy || !selectable;
  const focusedCard=document.activeElement?.dataset.cardId;
  const hand=document.getElementById('hand');hand.replaceChildren();
  // geometry.json describes visible rotated bounds. Reserve 10px at each
@@ -77,7 +91,8 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
  const fanWidth=669;
  const gap=state.hand.length>1?Math.min(82,(fanWidth-115)/(state.hand.length-1)):0;
  const start=478+(fanWidth-115-gap*(state.hand.length-1))/2;
- state.hand.forEach((id,i)=>{
+ const visibleHand=state.phase==='pack'&&!arcana?[]:state.hand;
+ visibleHand.forEach((id,i)=>{
    const card=state.cards[id],b=document.createElement('button'),middle=(state.hand.length-1)/2,tilt=state.hand.length>1?(i-middle)*1.35:0;
    const hidden=hiddenCardIds.has(id),debuffed=!hidden&&state.phase==='playing'&&isBossCardDebuffed(state,card);b.className='playing-card'+(hidden?' hidden-card deck-back':'')+(selected.has(id)?' selected':'')+(debuffed?' boss-debuffed':'')+(playing&&!state.bossState?.disabled&&state.bossState?.forcedCardId===id?' bell-forced':'');b.dataset.cardId=id;if(!hidden)applyCardModifiers(b,card);
    if(hidden)b.dataset.deck=state.deckId;
@@ -92,7 +107,7 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
    }
    function selectAndDescribe(){
      onCard(id);
-     // Selection redraws the hand, so position against its new, raised card.
+     // Keyboard activation describes the current, raised card.
      const anchor=[...hand.children].find(n=>n.dataset.cardId===id);
      if(anchor)showTip(anchor);
    }
@@ -101,12 +116,13 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
    b.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();if(!e.repeat&&!b.disabled)selectAndDescribe();}});
    b.addEventListener('pointerdown',e=>{
      if(b.disabled || e.button!==0)return;e.preventDefault();b.setPointerCapture(e.pointerId);
+     const dragLeft=parseFloat(b.style.left),dragTop=parseFloat(b.style.top);
      const x=e.clientX,y=e.clientY,scale=document.getElementById('stage').getBoundingClientRect().width/document.getElementById('stage').offsetWidth;let dragged=false,to=i,held=false;
      const holdTimer=setTimeout(()=>{if(!b.isConnected||dragged)return;held=true;showTip();},350);
      const slots=[...hand.children].map(n=>({id:n.dataset.cardId,left:n.style.left,top:n.style.top,transform:n.style.transform}));
      function move(ev){if(ev.pointerId!==e.pointerId)return;
        if(Math.hypot(ev.clientX-x,ev.clientY-y)>8)dragged=true;
-       if(dragged){b.classList.add('dragging');b.style.left=left+(ev.clientX-x)/scale+'px';b.style.top=top+(ev.clientY-y)/scale+'px';
+       if(dragged){b.classList.add('dragging');b.style.left=dragLeft+(ev.clientX-x)/scale+'px';b.style.top=dragTop+(ev.clientY-y)/scale+'px';
          to=Math.max(0,Math.min(state.hand.length-1,Math.round((parseFloat(b.style.left)-start)/Math.max(gap,1))));
          const order=state.hand.filter(other=>other!==id);order.splice(to,0,id);
          for(const n of hand.children){if(n===b)continue;const slot=slots[order.indexOf(n.dataset.cardId)];Object.assign(n.style,{left:slot.left,top:parseFloat(slot.top)+(selected.has(slot.id)?arcana?14:28:0)-(selected.has(n.dataset.cardId)?arcana?14:28:0)+'px',transform:slot.transform});}
@@ -114,13 +130,14 @@ export function renderField(state,selected,busy,onCard,onReorder,scoringPreview=
        }
      }
      function cleanup(removeTip=true){clearTimeout(holdTimer);b.removeEventListener('pointermove',move);b.removeEventListener('pointerup',end);b.removeEventListener('pointercancel',cancel);if(removeTip)dismissCardTooltip();b.classList.remove('dragging');}
-     async function end(ev){if(ev.pointerId!==e.pointerId)return;cleanup(false);if(dragged){dismissCardTooltip();await onReorder(id,to);}else if(!held){selectAndDescribe();}}
+     async function end(ev){if(ev.pointerId!==e.pointerId)return;cleanup(false);if(dragged){dismissCardTooltip();await onReorder(id,to);}else if(!held){onCard(id);}}
      function cancel(){cleanup();for(const n of hand.children){const slot=slots.find(s=>s.id===n.dataset.cardId);Object.assign(n.style,{left:slot.left,top:slot.top,transform:slot.transform});}}
      b.addEventListener('pointermove',move);b.addEventListener('pointerup',end);b.addEventListener('pointercancel',cancel);
    });
    hand.append(b);
    if(id===focusedCard)b.focus({preventScroll:true});
  });
+ renderHandSelection(state,selected,busy,scoringPreview);
 }
 
 

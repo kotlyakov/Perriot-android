@@ -22,7 +22,7 @@ for(const [width,height,touch,reduced] of [[1536,688,false,false],[915,412,true,
  await input('move',dragTargetX,y-30);await page.waitForFunction(()=>!!document.querySelector('.dragging'));
  assert.notEqual(await neighbor.evaluate(n=>n.style.left),oldLeft,'Neighbors reserve insertion slot while holding');assert.equal((await saved()).revision,s.revision,'Drag preview must not commit');
  if(!touch)await page.screenshot({path:'artifacts/card-drag-preview.png'});
- await input('up',dragTargetX,y-30);await page.waitForFunction(()=>!document.querySelector('.dragging')&&!document.querySelector('.card-tip'));const moved=await saved();assert.equal(moved.hand.at(-1),id);assert.equal(moved.revision,s.revision+1);
+ await input('up',dragTargetX,y-30);await page.waitForFunction(previous=>JSON.parse(localStorage.getItem('card-cascade.current')).state.revision>previous,s.revision);await page.waitForFunction(()=>!document.querySelector('.dragging')&&!document.querySelector('.card-tip'));const moved=await saved();assert.equal(moved.hand.at(-1),id);assert.equal(moved.revision,s.revision+1);
  await page.reload();await enterRun(page);await page.locator('#hand .playing-card').first().waitFor();assert.deepEqual(await page.locator('#hand .playing-card').evaluateAll(ns=>ns.map(n=>n.dataset.cardId)),moved.hand);
  if(touch){
    const c=page.locator('#hand .playing-card').first(),r=await c.boundingBox(),cx=r.x+8,cy=r.y+r.height*.5,prior=await saved();

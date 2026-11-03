@@ -1,12 +1,13 @@
+import {paintActionFeedback} from './action-feedback.js';
 import {installCardMaterials} from './card-materials.js';
-import {prepareCardTransformation,prepareCardDissolve,preparePackOpening,juiceCard,dissolveCard} from './card-motion.js';
+import {prepareCardTransformation,prepareCardDissolve,preparePackOpening,prepareConsumableUse,juiceCard,dissolveCard} from './card-motion.js';
 import {slideWindow,cancelWindowMotion} from './window-motion.js';
 import {gameDuration} from './game-speed.js';
 import {createOptionsView,createSettingsView,createRunInfoView,createEndView} from './menu-windows.js';
 import {isVerificationSeed} from '../core/verification-seed.js';
 import catalogue from '../content/apk-shop-catalog.js';
 import {createGameAudio,createAudioSettings,soundForAction} from './audio.js';
-import {renderShop,prepareShopChange} from './shop-screen.js';
+import {renderShop,updateShopTargets,prepareShopChange} from './shop-screen.js';
 import {renderStartScreen,removeStartScreen} from './start-screen.js';
 import {blindReward} from '../core/stakes.js';
 import {APK_BLINDS_BY_ID} from '../content/apk-blinds.js';
@@ -27,7 +28,7 @@ import {chooseProfileSeed} from '../core/profile-seed.js';
 import {renderProfileView,renderCollectionView} from './profile-screen.js';
 import {createBackend} from '../persistence/backend.js';
 import {installLayout} from './layout.js';
-import {displayBlindTarget,renderField,dismissCardTip,showNumbers,HAND_NAMES,SUITS,rankLabel,displayInteger} from './field.js';
+import {displayBlindTarget,renderField,renderHandSelection,dismissCardTip,showNumbers,HAND_NAMES,SUITS,rankLabel,displayInteger} from './field.js';
 
 installLayout();
 const native=globalThis.CardStorage;
@@ -44,8 +45,10 @@ addEventListener('pagehide',()=>audio.setActive(false));
 addEventListener('pageshow',()=>audio.setActive(!document.hidden));
 const backend=createBackend({native,storage:native?null:globalThis.localStorage});
 const repository=createProfileStore(backend),selected=new Set(),dialog=document.getElementById('dialog');
-let state=null,busy=false,noticeTimer,scoringJokers=null;
-function notice(message){document.getElementById('notice').textContent=message;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>document.getElementById('notice').textContent='',3500);}
+let state=null,busy=false,noticeTimer,scoringJokers=null,lastActionControl=null;
+document.addEventListener('keydown',()=>{lastActionControl=null;},{capture:true});
+document.addEventListener('pointerup',event=>{lastActionControl=event.target.closest?.('button,.card');},{capture:true});
+function notice(message){document.getElementById('notice').textContent=message;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>document.getElementById('notice').textContent='',/нет места/i.test(message)?1400:2500);}
 const victoryProtected=()=>state?.winPending&&!document.getElementById('start_screen');
 function closeDialog(){if(busy||victoryProtected()){if(!busy&&dialog.dataset.view==='victory-confirm')showVictory();return true;}return dismissDialog();}
 function dismissDialog(){if(dialog.open){dialog.inert=true;slideWindow(dialog,true,()=>{dialog.close();dialog.inert=false;dialog.classList.remove('deck-dialog');});return true;}return false;}
@@ -69,8 +72,8 @@ function openDialog(title,body,actions=[['Закрыть',closeDialog]]) {
  slideWindow(dialog);
 }
 const targetPackOpen=()=>state?.phase==='pack'&&/^p_(arcana|spectral)_/.test(state.packState?.sourceEntityId??'');
-function render(hand=state?.hand,scoringPreview=null){if(state){if(!busy){for(const id of selected)if(!state.hand.includes(id))selected.delete(id);const forced=!state.bossState?.disabled&&state.phase==='playing'?state.bossState?.forcedCardId:null;if(forced&&state.hand.includes(forced)&&!selected.has(forced)){if(selected.size>=5)selected.delete([...selected].at(-1));selected.add(forced);}}renderField(!busy?roundDeckView({...state,hand}):{...state,hand},selected,busy||!!state.winPending,toggle,reorder,scoringPreview);renderPostRound(state,busy&&!state.shop,()=>perform('CASH_OUT'));renderShop(busy&&scoringJokers?{...state,jokers:scoringJokers}:state,busy||!!state.winPending,{onAction:(type,fields)=>perform(type,undefined,undefined,fields),onNotice:notice,targetCardIds:[...selected]});renderBlindSelect(state,busy||!!state.winPending,()=>perform('START_BLIND'),blindId=>perform('SKIP_BLIND',undefined,undefined,{blindId}),()=>perform('REROLL_BOSS')); document.getElementById('stage').classList.toggle('arcana-open',targetPackOpen());for(const id of ['blind_panel','blind_title','blind_token','blind_target','hand','hand_count','play_hand','discard','sort_panel','sort_label','sort_rank','sort_suit'])document.getElementById(id).hidden=targetPackOpen()? !['hand','sort_panel','sort_label','sort_rank','sort_suit'].includes(id):state.phase==='blind_selection'||(['shop','pack'].includes(state.phase)&&!!state.shop)||(!busy&&['round_won','shop','pack'].includes(state.phase));for(const id of ['hands','discards','round_score','calculation_panel','chips','mult','times'])document.getElementById(id).hidden=targetPackOpen();if(!busy&&state.winPending&&!dialog.open&&!document.getElementById('start_screen'))showVictory();}}
-function toggle(id){if(busy || (state?.phase!=='playing'&&!targetPackOpen())||state.phase==='playing'&&!state.bossState?.disabled&&state.bossState?.forcedCardId===id)return;dismissCardTip();if(selected.has(id))selected.delete(id);else if(selected.size<5)selected.add(id);else {notice('Можно выбрать до 5 карт');return;}audio.play('select');render();}
+function render(hand=state?.hand,scoringPreview=null,preserveHand=false){if(state){if(!busy){for(const id of selected)if(!state.hand.includes(id))selected.delete(id);const forced=!state.bossState?.disabled&&state.phase==='playing'?state.bossState?.forcedCardId:null;if(forced&&state.hand.includes(forced)&&!selected.has(forced)){if(selected.size>=5)selected.delete([...selected].at(-1));selected.add(forced);}}if(preserveHand)renderHandSelection(state,selected,busy||!!state.winPending,scoringPreview);else renderField(!busy?roundDeckView({...state,hand}):{...state,hand},selected,busy||!!state.winPending,toggle,reorder,scoringPreview);renderPostRound(state,busy&&!state.shop,()=>perform('CASH_OUT'));renderShop(busy&&scoringJokers?{...state,jokers:scoringJokers}:state,busy||!!state.winPending,{onAction:(type,fields)=>perform(type,undefined,undefined,fields),onNotice:notice,targetCardIds:[...selected]});renderBlindSelect(state,busy||!!state.winPending,()=>perform('START_BLIND'),blindId=>perform('SKIP_BLIND',undefined,undefined,{blindId}),()=>perform('REROLL_BOSS')); document.getElementById('stage').classList.toggle('arcana-open',targetPackOpen());for(const id of ['blind_panel','blind_title','blind_token','blind_target','hand','hand_count','play_hand','discard','sort_panel','sort_label','sort_rank','sort_suit'])document.getElementById(id).hidden=targetPackOpen()? !['hand','sort_panel','sort_label','sort_rank','sort_suit'].includes(id):state.phase==='blind_selection'||(['shop','pack'].includes(state.phase)&&!!state.shop)||(!busy&&['round_won','shop','pack'].includes(state.phase));for(const id of ['hands','discards','round_score','calculation_panel','chips','mult','times'])document.getElementById(id).hidden=targetPackOpen();if(!busy&&state.winPending&&!dialog.open&&!document.getElementById('start_screen'))showVictory();}}
+function toggle(id){if(busy || (state?.phase!=='playing'&&!targetPackOpen())||state.phase==='playing'&&!state.bossState?.disabled&&state.bossState?.forcedCardId===id)return;dismissCardTip();if(selected.has(id))selected.delete(id);else if(selected.size<5)selected.add(id);else {notice('Можно выбрать до 5 карт');return;}audio.play('select');if(state.phase==='playing'||targetPackOpen()){renderHandSelection(state,selected,!!state.winPending);updateShopTargets([...selected]);}else render();}
 async function reorder(id,to){const movement=prepareHandMovement();const ids=[...state.hand],from=ids.indexOf(id);ids.splice(from,1);ids.splice(to,0,id);if(to===from){render();await movement();return;}await perform('REORDER_HAND',ids);await movement();}
 function newState({deckId='red',seed,stake=1,challengeId}={}){
  const profile=repository.getProfile();
@@ -88,28 +91,33 @@ function showProfile(){
  }}),[['Назад',showMenu]]);
 }
 function storageError(){openDialog('Не удалось сохранить','<p>Действие не применено. Проверьте свободное место и доступ к сохранению.</p>',state?.winPending?[['Вернуться к победе',showVictory,'victory_retry']]:undefined);}
-function showLoss(){openDialog('Партия окончена',createEndView(state,{restart:showRunSetup,menu:showMenu,copySeed}),[]);}
+function showLoss(){openDialog('Партия окончена',createEndView(state,{newCollection:repository.getProfile()?.runs?.[state.runId]?.discoveries,restart:showRunSetup,menu:showMenu,copySeed}),[]);}
 function showVictory(){
  if(busy||!state?.winPending)return;
- openDialog('Победа!',createEndView(state,{restart:()=>showRunSetup(),menu:showMenu,endless:()=>perform('CONTINUE_ENDLESS'),copySeed},true),[]);
+ openDialog('Победа!',createEndView(state,{newCollection:repository.getProfile()?.runs?.[state.runId]?.discoveries,restart:()=>showRunSetup(),menu:showMenu,endless:()=>perform('CONTINUE_ENDLESS'),copySeed},true),[]);
  dialog.dataset.view='victory';
 }
 async function perform(type,ids,mode,fields={}) {
  if(busy || !state)return;if(type!=='REORDER_HAND')dismissCardTip();busy=true;
+ const releaseFeedback=await paintActionFeedback(lastActionControl?.isConnected?lastActionControl:document.activeElement);lastActionControl=null;
  const context=profileRunContext(repository.getProfile()),nativeLocked=new Set(catalogue.centres.filter(c=>c.unlocked===false||c.start_locked).map(c=>c.key));
  const newlyUnlocked=state.apkShop?context.unlockedCentreIds.filter(id=>nativeLocked.has(id)&&!state.apkShop.context.unlockedCentreIds.includes(id)):[];
  const action={type,expectedRevision:state.revision,...(newlyUnlocked.length?{profileUnlockedCentreIds:[...new Set([...state.apkShop.context.unlockedCentreIds,...newlyUnlocked])],profileLockedCentreIds:state.apkShop.context.lockedCentreIds.filter(id=>!newlyUnlocked.includes(id))}:{}),...fields};if(ids!==undefined)action.cardIds=ids;if(mode!==undefined)action.mode=mode;
  const result=dispatch(state,action);
- if(result.error){busy=false;audio.play('error');notice('Действие недоступно');render();return;}
+ if(result.error){releaseFeedback();busy=false;audio.play('error');const messages={INSUFFICIENT_FUNDS:'Недостаточно денег.',NO_SPACE:'Нет места для карты.',INVALID_TARGETS:'Выберите подходящие карты в руке.',STALE_ACTION:'Предыдущее действие уже выполнено.',SALE_UNAVAILABLE:'Эту карту нельзя продать.'};notice(/[а-яё]/i.test(result.error.message)?result.error.message:messages[result.error.code]??'Не удалось выполнить действие. Попробуйте ещё раз.');render();return;}
  if(type==='CONTINUE_ENDLESS')for(const button of document.getElementById('dialog-actions').children)button.disabled=true;
- try{repository.save(result.state,result.events);}catch{busy=false;render();storageError();return;}
+ try{repository.save(result.state,result.events);}catch{releaseFeedback();busy=false;render();storageError();return;}
+ releaseFeedback();
  const changed=[...new Set(result.events.filter(e=>['playing_card_changed','card_enhanced','playing_card_copied','playing_card_seal_changed','playing_card_edition_changed'].includes(e.type)).map(e=>e.cardId))];
  const removed=result.events.filter(e=>e.type==='playing_card_destroyed').map(e=>e.cardId);
  const transform=changed.length?prepareCardTransformation(changed,result.state.cards):null;
  // Played cards must reach the scoring area before their destruction is shown.
  const removedFromHand=type==='PLAY_HAND'?removed.filter(id=>!(ids??[]).includes(id)):removed;
  const dissolve=removedFromHand.length?prepareCardDissolve(removedFromHand):null;
- const pack=type==='OPEN_BOOSTER'?preparePackOpening(fields.offerId):null;
+ const opened=result.events.find(event=>event.type==='booster_opened');
+ const pack=opened?preparePackOpening(opened.offerId):null;
+ const consumed=type==='USE_CONSUMABLE'?state.consumables?.find(card=>card.id===fields.cardId):type==='USE_PACK_CARD'?state.packState?.cards.find(card=>card.id===fields.cardId):type==='BUY_AND_USE_SHOP_CARD'?state.shop?.main.find(card=>card.id===fields.offerId):null;
+ const useMotion=consumed&&['Tarot','Planet','Spectral'].includes(consumed.set)?prepareConsumableUse(consumed.id,consumed.set):null;
  const cue=soundForAction(type);
  if(cue)audio.play(cue);audio.setScene(result.state.phase==='shop'?'shop':'table');
  if(type==='CONTINUE_ENDLESS'){state=result.state;dismissDialog();busy=false;render();return;}
@@ -126,9 +134,13 @@ async function perform(type,ids,mode,fields={}) {
  const compact=outgoing?prepareHandMovement():null;
  state=result.state;if(!['REORDER_HAND','SET_SORT'].includes(type))selected.clear();
  render(outgoing?remaining:state.hand,type==='PLAY_HAND'?state.lastScore:null);
- await Promise.all([transform?.(),dissolve?.(),pack?.()]);
+ // The opening already rendered its target hand. Deal it alongside the reveal,
+ // and retain those nodes when controls unlock instead of rebuilding them twice.
+ const openingDraw=opened&&draw?.cardIds.length?prepareDrawnCards(draw.cardIds):null;
+ const openingMoney=opened?animateMoney(previousMoney,state.money):null;
+ await Promise.all([transform?.(),dissolve?.(),pack?.(),useMotion?.(),openingDraw?.(),openingMoney]);
  animateCounters(previousRound,state.round);
- const moneyMotion=animateMoney(previousMoney,state.money);
+ const moneyMotion=opened?openingMoney:animateMoney(previousMoney,state.money);
  const closing=compact?.();
  if(type==='PLAY_HAND'){animateNumber(document.getElementById('round_score_value'),previousScore,{format:displayInteger});document.getElementById('hand_name').textContent=HAND_NAMES[state.lastScore.handId];}
  if(outgoing){
@@ -146,12 +158,12 @@ async function perform(type,ids,mode,fields={}) {
    await finish();
  }
  await closing;
- if(draw?.cardIds.length){
+ if(!opened&&draw?.cardIds.length){
    const expand=prepareHandMovement();render();
    const arrive=prepareDrawnCards(draw.cardIds);
    await Promise.all([expand(),arrive()]);
  }
- await moneyMotion;scoringJokers=null;busy=false;render();
+ await moneyMotion;scoringJokers=null;busy=false;render(undefined,null,!!opened);
  if(type==='PLAY_HAND'&&['round_won','game_over'].includes(state.phase))audio.play(state.phase==='round_won'?'win':'lose');
  if(state.phase==='game_over')showLoss();
 }
@@ -182,6 +194,7 @@ document.getElementById('deck').onclick=()=>{
 };
 globalThis.cardGamePause=()=>audio.setActive(false); // Actions are persisted before animation; no pending I/O on pause.
 installCardMaterials(document);
+document.addEventListener('keydown',()=>{lastActionControl=null;},{capture:true});
 document.addEventListener('pointerup',event=>{const card=event.target.closest?.('.playing-card,.shop-card');if(card&&!busy)juiceCard(card);},{passive:true});
 const loaded=repository.load();
 if(loaded.status==='current'){state=loaded.state;render();showMenu();}

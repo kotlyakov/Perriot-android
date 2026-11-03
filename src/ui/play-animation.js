@@ -41,7 +41,9 @@ export function prepareDrawnCards(ids){
  cards.forEach(card=>card.classList.add('dealing'));
  return async()=>{const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
    await Promise.all(cards.map((card,i)=>{card.classList.remove('dealing');if(reduced)return Promise.resolve();
-     return cardMotion(card,[{left:'1208px',top:'491px',transform:'rotate(-18deg) scale(.78)',opacity:0},{left:(1208+parseFloat(card.style.left))/2+'px',top:Math.min(430,parseFloat(card.style.top)-55)+'px',transform:'rotate(7deg) scale(1.03)',opacity:1,offset:.64},{left:card.style.left,top:card.style.top,transform:card.style.transform,opacity:1}],{duration:gameDuration(cardFlightDuration(Math.abs(1208-parseFloat(card.style.left)))),delay:gameDuration(i*50),fill:'backwards',easing:'cubic-bezier(.2,.7,.25,1)'});
+     // Keep layout at the destination; the compositor carries the same curved flight.
+     const left=parseFloat(card.style.left),top=parseFloat(card.style.top);
+     return cardMotion(card,[{transform:`translate(${1208-left}px,${491-top}px) rotate(-18deg) scale(.78)`,opacity:0},{transform:`translate(${(1208-left)/2}px,${Math.min(430,top-55)-top}px) rotate(7deg) scale(1.03)`,opacity:1,offset:.64},{transform:card.style.transform,opacity:1}],{duration:gameDuration(cardFlightDuration(Math.abs(1208-left))),delay:gameDuration(i*50),fill:'backwards',easing:'cubic-bezier(.2,.7,.25,1)'});
    }));
  };
 }

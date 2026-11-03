@@ -16,7 +16,7 @@ try{
  await page.goto(process.env.PREVIEW_URL);await page.evaluate(text=>localStorage.setItem('card-cascade.current',text),serializeState(fixture));await page.reload();await enterRun(page,{startBlind:false});
  await page.locator('[data-offer-id=chariot] .shop-card').click();assert.ok(await page.locator('.shop-use').isDisabled());assert.match(await page.locator('.shop-use').getAttribute('title'),/одну карту/);assert.match(await page.locator('#shop_tooltip').innerText(),/остаётся в руке/);
  await page.locator(`#hand [data-card-id=${target}]`).click();await page.locator('[data-offer-id=chariot] .shop-card').click();assert.ok(await page.locator('.shop-use').isEnabled());await page.locator('.shop-use').click();await page.waitForFunction(()=>!document.querySelector('[data-offer-id=chariot]'));
- let steel=page.locator(`#hand [data-card-id=${target}]`);assert.equal(await steel.getAttribute('data-enhancement'),'steel');assert.equal(await steel.evaluate(node=>getComputedStyle(node,'::after').content),'"×1.5 В РУКЕ"');
+ let steel=page.locator(`#hand [data-card-id=${target}]`);assert.equal(await steel.getAttribute('data-enhancement'),'steel');assert.equal(await steel.evaluate(node=>getComputedStyle(node,'::after').content),'none');
  const converted=await page.evaluate(()=>localStorage.getItem('card-cascade.current'));await page.reload();await enterRun(page,{startBlind:false});assert.equal(await page.evaluate(()=>localStorage.getItem('card-cascade.current')),converted);
  await page.evaluate(target=>{
   window.steelPopText=null;

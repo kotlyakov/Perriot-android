@@ -1,3 +1,4 @@
+import {appendTooltipText} from './tooltip-text.js';
 import {createHandHelp} from './hand-help.js';
 import {APK_HAND_NAMES} from '../core/apk-shop-state.js';
 import {APK_TAGS_BY_ID} from '../content/apk-tags.js';
@@ -73,8 +74,8 @@ export function createRunInfoView(state,{blindChoices=[],voucherFamilies=[],blin
     p.append(el('h2','',label),el('strong','run-blind-status',({current:'Текущий блайнд',upcoming:'Предстоящий',defeated:'Побеждён',skipped:'Пропущен',completed:'Пройден'})[status]));
     const boss=APK_BLINDS_BY_ID[state.apkBlinds?.bossId];p.append(el('div','run-blind-token',id==='boss'?'♠':id==='big'?'●●':'●'));
     if(id==='boss')p.append(el('p','',boss?.nameRu??boss?.name??'Босс'));
-    const meta=blindChoices.find(b=>b.id===id);if(meta)p.append(el('small','','Набрать минимум'),el('strong','run-blind-target',meta.target),el('p','run-blind-description',meta.description??''),el('span','gold','Награда: $'+meta.reward));
-    const tag=APK_TAGS_BY_ID[state.apkBlinds?.tags?.[id]];if(tag){const reward=el('aside','run-blind-tag');reward.append(el('strong','',status==='skipped'?'Тег получен: '+tag.name:'За пропуск: '+tag.name),el('p','',tag.description));if(tag.id==='tag_orbital'){const orbital=state.apkBlinds?.orbitalHands?.[id];reward.append(el('p','','Комбинация: '+(HAND_NAMES[Object.keys(HAND_NAMES).find(k=>k===orbital||APK_HAND_NAMES[k]===orbital)]??orbital??'—')));}p.append(reward);}grid.append(p);
+    const meta=blindChoices.find(b=>b.id===id);if(meta)p.append(el('small','','Набрать минимум'),el('strong','run-blind-target',meta.target),appendTooltipText(el('p','run-blind-description'),meta.description??''),el('span','gold','Награда: $'+meta.reward));
+    const tag=APK_TAGS_BY_ID[state.apkBlinds?.tags?.[id]];if(tag){const reward=el('aside','run-blind-tag');reward.append(el('strong','',status==='skipped'?'Тег получен: '+tag.name:'За пропуск: '+tag.name),appendTooltipText(el('p',''),tag.description));if(tag.id==='tag_orbital'){const orbital=state.apkBlinds?.orbitalHands?.[id];reward.append(el('p','','Комбинация: '+(HAND_NAMES[Object.keys(HAND_NAMES).find(k=>k===orbital||APK_HAND_NAMES[k]===orbital)]??orbital??'—')));}p.append(reward);}grid.append(p);
    }body.append(grid);
   }else if(tab==='vouchers'){
    const ids=state.apkShop?.context.usedVoucherIds??[];if(!ids.length){body.append(el('p','menu-empty','В этой партии билетов пока нет.'));return;}
@@ -96,9 +97,9 @@ export function createEndView(state,actions={},won=false){
  const top=el('div','end-best');
  const score=(label,value)=>{const row=el('div','end-score');row.append(el('span','',label),el('strong','',value??'—'));return row;};
  // Missing historical counters are explicit, never replaced with invented totals.
- top.append(score('Лучшая рука',state.runSummary?.bestHand),score('Любимая комбинация',Object.entries(state.handUsage??{}).sort((a,b)=>b[1]-a[1])[0]?.[0]?HAND_NAMES[Object.entries(state.handUsage).sort((a,b)=>b[1]-a[1])[0][0]]:'—'));panel.append(top);
+ top.append(score('Лучшая рука',state.runSummary?.bestHand??state.lastScore?.score),score('Любимая комбинация',Object.entries(state.handUsage??{}).sort((a,b)=>b[1]-a[1])[0]?.[0]?HAND_NAMES[Object.entries(state.handUsage).sort((a,b)=>b[1]-a[1])[0][0]]:'—'));panel.append(top);
  const columns=el('div','end-columns'),left=el('div','end-counters'),right=el('div','end-progress');
- for(const [label,key]of [['Сыграно карт','cardsPlayed'],['Сброшено карт','cardsDiscarded'],['Куплено карт','cardsPurchased'],['Перебросов','rerolls'],['Новых открытий','newCollection']])left.append(score(label,state.runSummary?.[key]));
+ for(const [label,key]of [['Сыграно карт','cardsPlayed'],['Сброшено карт','cardsDiscarded'],['Куплено карт','cardsPurchased'],['Перебросов','rerolls'],['Новых открытий','newCollection']])left.append(score(label,key==='newCollection'?actions.newCollection:state.runSummary?.[key]));
  left.append(score('Сид',state.seed),button('end_copy_seed','Копировать',()=>actions.copySeed?.(state.seed)));
  right.append(score('Анте',state.round.ante),score('Раунд',state.roundNumber??1));
  const controls=el('div','end-controls');controls.append(button(won?'victory_new':'loss_new','Новая партия',actions.restart),button(won?'victory_menu':'loss_menu','Главное меню',actions.menu));

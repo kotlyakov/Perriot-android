@@ -18,13 +18,13 @@
 .card-material[data-edition=negative]>.material-grain{opacity:.16;background:repeating-linear-gradient(55deg,transparent 0 9px,#a1fff055 10px 11px)}
 .card-material[data-edition=negative]>.material-light{opacity:.52;background-image:radial-gradient(ellipse at var(--material-x) var(--material-y),#cbffed55,transparent 50%),linear-gradient(115deg,transparent 20%,#b9fff344 38%,#e9c9ff77 48%,transparent 62%);mix-blend-mode:screen}
 /* Improvement materials remain independent of edition layers. */
-.card-material.playing-card[data-enhancement=steel]{background:repeating-linear-gradient(4deg,#ffffff16 0 1px,transparent 1px 4px),linear-gradient(115deg,#6f8492,#dae4e7 28%,#8297a1 43%,#c1d0d6 60%,#5c727e);border-color:#596c76}
-.card-material.playing-card[data-enhancement=glass]{background:linear-gradient(126deg,#f4ffffee 0 25%,#9ccfddaa 26% 28%,#e2f8f6dd 29% 60%,#ffffffee 61% 63%,#b9dde3dd 64%);border-color:#8eb6be;box-shadow:inset 0 0 0 3px #fff9,inset 0 0 12px #4d9ca988,0 5px 0 #183a3855}
-.card-material.playing-card[data-enhancement=gold]{background:repeating-linear-gradient(35deg,#fff8 0 1px,transparent 1px 7px),linear-gradient(115deg,#b58322,#f6df83 25%,#bf8b21 49%,#f4d579 63%,#aa761b);border-color:#795514}
-.card-material.playing-card[data-enhancement=bonus]{background:radial-gradient(circle,#729bb644 1px,transparent 1.6px) 0 0/6px 6px,#e1e8dc;border-color:#5483a1}
-.card-material.playing-card[data-enhancement=mult]{background:repeating-linear-gradient(45deg,#bb535318 0 2px,transparent 2px 9px),#f4e4d1;border-color:#ad5754}
-.card-material.playing-card[data-enhancement=wild]{background:linear-gradient(135deg,#f3c7c344,#ead29444,#add7bb44,#bec7e344),#f0e5c8;border-color:#af8f67}
-.card-material.playing-card[data-enhancement=lucky]{background:radial-gradient(circle at 20% 25%,#cfaf5e55 0 2px,transparent 2.5px) 0 0/15px 19px,#efe3bc;border-color:#b69549}
+.card-material.playing-card[data-enhancement=steel]{background:repeating-linear-gradient(4deg,#ffffff16 0 1px,transparent 1px 4px),linear-gradient(115deg,#6f8492,#dae4e7 28%,#8297a1 43%,#c1d0d6 60%,#5c727e)!important;border-color:#596c76}
+.card-material.playing-card[data-enhancement=glass]{background:linear-gradient(126deg,#f4ffffee 0 25%,#9ccfddaa 26% 28%,#e2f8f6dd 29% 60%,#ffffffee 61% 63%,#b9dde3dd 64%)!important;border-color:#8eb6be;box-shadow:inset 0 0 0 3px #fff9,inset 0 0 12px #4d9ca988,0 5px 0 #183a3855}
+.card-material.playing-card[data-enhancement=gold]{background:repeating-linear-gradient(35deg,#fff8 0 1px,transparent 1px 7px),linear-gradient(115deg,#b58322,#f6df83 25%,#bf8b21 49%,#f4d579 63%,#aa761b)!important;border-color:#795514}
+.card-material.playing-card[data-enhancement=bonus]{background:radial-gradient(circle,#729bb644 1px,transparent 1.6px) 0 0/6px 6px,#e1e8dc!important;border-color:#5483a1}
+.card-material.playing-card[data-enhancement=mult]{background:repeating-linear-gradient(45deg,#bb535318 0 2px,transparent 2px 9px),#f4e4d1!important;border-color:#ad5754}
+.card-material.playing-card[data-enhancement=wild]{background:linear-gradient(135deg,#f3c7c344,#ead29444,#add7bb44,#bec7e344),#f0e5c8!important;border-color:#af8f67}
+.card-material.playing-card[data-enhancement=lucky]{background:radial-gradient(circle at 20% 25%,#cfaf5e55 0 2px,transparent 2.5px) 0 0/15px 19px,#efe3bc!important;border-color:#b69549}
 /* Wax seal silhouette and embossed centre match the approved tooltip motif. */
 .playing-card .playing-seal{--wax:#b93637;--shine:#ec7770;--shade:#732021;width:30px;height:30px;border:0;border-radius:0;background:linear-gradient(140deg,var(--shine),var(--wax) 40%,var(--shade));clip-path:polygon(50% 0,60% 7%,72% 3%,78% 14%,90% 14%,90% 27%,100% 34%,94% 46%,100% 58%,89% 65%,89% 78%,76% 81%,70% 94%,57% 91%,48% 100%,37% 92%,25% 96%,20% 82%,7% 79%,10% 65%,0 56%,6% 44%,1% 31%,14% 25%,16% 12%,30% 14%,37% 3%);color:#ffe8c3;font-size:20px;text-shadow:0 1px #ffffff44,0 -1px #0008;box-shadow:none;filter:drop-shadow(1px 2px 1px #4c231a55)}
 .playing-card .playing-seal::before{content:'';position:absolute;inset:4px;border:1.5px solid #ffdba766;border-radius:50%;box-shadow:inset 1px 2px 2px var(--shade),0 1px 1px var(--shine)}
@@ -42,3 +42,11 @@
 .joker-sticker:is([data-sticker=rental],[data-sticker=eternal]){position:relative;overflow:hidden;box-shadow:inset 0 1px #fff8,inset 0 -1px #4b301b44,0 1px 2px #0004}
 .joker-sticker:is([data-sticker=rental],[data-sticker=eternal])::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 30%,#fff5c477 48%,transparent 66%);background-size:250% 100%;animation:material-drift 6s ease-in-out infinite alternate}
 @media(prefers-reduced-motion:reduce){.joker-sticker:is([data-sticker=rental],[data-sticker=eternal])::after{animation:none}}
+/* Enhancement art never covers rank/suit corners or adds a text stripe to the face. */
+.playing-card[data-enhancement]::after{content:none}
+.playing-card[data-enhancement]>.corner{z-index:4;background:#f5edd8;border-radius:3px;padding:1px;box-shadow:0 0 3px #f5edd8}
+.card-material.playing-card[data-enhancement=steel]{background:repeating-linear-gradient(168deg,#ffffff12 0 1px,transparent 1px 5px),linear-gradient(115deg,#34465a,#8596a9 30%,#43576b 52%,#77889b 68%,#2e4054)!important;border-color:#314254}
+.card-material.playing-card[data-enhancement=glass]{background:linear-gradient(115deg,#f2ffff 0 32%,#a7e2ef 33% 35%,#e0faff 36% 68%,#fff 69% 71%,#b8edf5 72%)!important;border-color:#79c3d3;box-shadow:inset 0 0 0 3px #fff,inset 0 0 14px #76c8d788,0 5px #163f4455}
+.card-material.playing-card[data-enhancement=lucky]{background:radial-gradient(ellipse at 50% 44%,#d5e8b0,transparent 65%),#e9efd7!important;border-color:#65915a}
+.card-material.playing-card[data-enhancement=lucky]::before{content:'';position:absolute;left:28px;right:23px;top:22px;bottom:18px;background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-34 -38 68 85'%3E%3Cpath d='M0 2Q-30-3-25-24Q-8-34 0-10Q8-34 25-24Q30-3 0 2Q30 7 24 28Q7 35 0 12Q-7 35-24 28Q-30 7 0 2Z' fill='%233f824e'/%3E%3Cpath d='M0 5Q4 31 14 43' fill='none' stroke='%233f824e' stroke-width='4'/%3E%3C/svg%3E");opacity:.17;pointer-events:none}
+.card-material.playing-card[data-enhancement=steel]:not([data-edition=negative])>.pip-art{color:#f5ecd1}

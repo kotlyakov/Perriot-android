@@ -36,14 +36,20 @@ export function installCardMaterials(root=document) {
   for(const card of cards)applyCardMaterials(card);
  });
  observer.observe(root,{subtree:true,childList:true,attributes:true,attributeFilter:['data-edition','data-enhancement','data-card-set','data-card-state']});
- let active=null;
- function reset(){if(active){active.style.removeProperty('--material-x');active.style.removeProperty('--material-y');active=null;}}
+ let active=null,frame=null,pointerX=0,pointerY=0;
+ function reset(){if(frame!==null){cancelAnimationFrame(frame);frame=null;}if(active){active.style.removeProperty('--material-x');active.style.removeProperty('--material-y');active=null;}}
+ function paint(){
+  frame=null;
+  if(!active?.isConnected||!root.contains(active)){reset();return;}
+  const box=active.getBoundingClientRect();
+  active.style.setProperty('--material-x',`${Math.max(0,Math.min(100,(pointerX-box.left)/Math.max(1,box.width)*100))}%`);
+  active.style.setProperty('--material-y',`${Math.max(0,Math.min(100,(pointerY-box.top)/Math.max(1,box.height)*100))}%`);
+ }
  function move(event){
-  const card=event.target.closest?.(CARD);if(!card||!root.contains(card)||card.matches('.hidden-card,.acorn-hidden')){reset();return;}
+  const card=event.target.closest?.(CARD);if(!card||!root.contains(card)||!card.classList.contains('card-material')||card.matches('.hidden-card,.acorn-hidden')){reset();return;}
   if(active!==card){reset();active=card;}
-  const box=card.getBoundingClientRect();
-  card.style.setProperty('--material-x',`${Math.max(0,Math.min(100,(event.clientX-box.left)/Math.max(1,box.width)*100))}%`);
-  card.style.setProperty('--material-y',`${Math.max(0,Math.min(100,(event.clientY-box.top)/Math.max(1,box.height)*100))}%`);
+  pointerX=event.clientX;pointerY=event.clientY;
+  if(frame===null)frame=requestAnimationFrame(paint);
  }
  root.addEventListener('pointermove',move,{passive:true});
  root.addEventListener('pointerleave',reset,{passive:true});

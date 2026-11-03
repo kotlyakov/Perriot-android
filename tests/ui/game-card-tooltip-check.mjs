@@ -29,11 +29,42 @@ try{
   const playing=page.locator('#hand .playing-card').first();await playing.waitFor();
   const id=await playing.getAttribute('data-card-id');
   await tap(playing);const fresh=page.locator(`#hand [data-card-id="${id}"]`);
-  assert.equal(await fresh.getAttribute('aria-pressed'),'true','Short tap still selects playing card');await adjacent(fresh,'.card-tip');
-  if(!touch){await fresh.hover();assert.equal(await page.locator('.card-tip').count(),1,'Hover preserves the tapped description');}
-  await tap(fresh);assert.equal(await page.locator('.card-tip').count(),0,'Second tap on same physical card dismisses after redraw');assert.equal(await fresh.getAttribute('aria-pressed'),'false');
-  await tap(fresh);await adjacent(fresh,'.card-tip');{const t=await page.locator('.card-tip').boundingBox();if(touch)await page.touchscreen.tap(t.x+t.width/2,t.y+t.height/2);else await page.mouse.click(t.x+t.width/2,t.y+t.height/2);}assert.equal(await page.locator('[role=tooltip]').count(),0,'Tapping description dismisses it');
-  await tap(fresh);await outside();
+  assert.equal(await fresh.getAttribute('aria-pressed'),'true','Short tap selects playing card');
+  assert.equal(await page.locator('.card-tip').count(),0,'Short tap does not describe ordinary hand');
+  if(!touch){await fresh.hover();assert.equal(await page.locator('.card-tip').count(),0,'Hover does not describe ordinary hand');}
+  await tap(fresh);assert.equal(await fresh.getAttribute('aria-pressed'),'false');assert.equal(await page.locator('.card-tip').count(),0);
+  async function pressPlaying({drag=false,cancel=false}={}){
+   const b=await fresh.boundingBox(),from={x:b.x+b.width/2,y:b.y+b.height/2},to={x:from.x+30,y:from.y};
+   const selected=await fresh.getAttribute('aria-pressed');
+   let cdp;
+   if(touch){cdp=await context.newCDPSession(page);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[from]});}
+   else{await page.mouse.move(from.x,from.y);await page.mouse.down();}
+   if(drag){
+    if(touch)await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[to]});else await page.mouse.move(to.x,to.y,{steps:3});
+   }
+   if(cancel&&!drag){
+    if(touch)await cdp.send('Input.dispatchTouchEvent',{type:'touchCancel',touchPoints:[]});
+    else{await fresh.dispatchEvent('pointercancel',{pointerId:1,pointerType:'mouse',button:0});await page.mouse.up();}
+   }
+   await page.waitForTimeout(200);
+   assert.equal(await page.locator('.card-tip').count(),0,'Press shorter than the 350ms threshold does not describe');
+   await page.waitForTimeout(200);
+   if(drag||cancel)assert.equal(await page.locator('.card-tip').count(),0,'Dragging/cancelled press cannot show a delayed tooltip');
+   else await adjacent(fresh,'.card-tip');
+   if(!cancel||drag){
+    if(touch)await cdp.send('Input.dispatchTouchEvent',{type:cancel?'touchCancel':'touchEnd',touchPoints:[]});
+    else{if(cancel)await fresh.dispatchEvent('pointercancel',{pointerId:1,pointerType:'mouse',button:0});await page.mouse.up();}
+   }
+   await cdp?.detach();
+   assert.equal(await fresh.getAttribute('aria-pressed'),selected,'Holding, dragging and cancelling do not change selection');
+   if(drag||cancel)assert.equal(await page.locator('.card-tip').count(),0);
+  }
+  await pressPlaying();await adjacent(fresh,'.card-tip');
+  {const t=await page.locator('.card-tip').boundingBox();if(touch)await page.touchscreen.tap(t.x+t.width/2,t.y+t.height/2);else await page.mouse.click(t.x+t.width/2,t.y+t.height/2);}
+  assert.equal(await page.locator('[role=tooltip]').count(),0,'Tapping description dismisses it');
+  await pressPlaying();await outside();
+  await pressPlaying({drag:true});await pressPlaying({cancel:true});await pressPlaying({drag:true,cancel:true});
+  console.log(JSON.stringify({width,height,touch,ordinaryHandShortTap:true,hold350ms:true,dragAndCancelSuppress:true}));
   await page.evaluate(async()=>{
    const {createRun}=await import('/src/core/run.js'),{renderShop}=await import('/src/ui/shop-screen.js');
    const s=createRun('tooltip-shop',{runId:'tooltip-shop',money:100n});s.phase='shop';
@@ -52,6 +83,6 @@ try{
   await page.evaluate(async()=>{const {renderShop}=await import('/src/ui/shop-screen.js');const s=window.tooltipFixture;s.phase='pack';s.packState={sourceEntityId:'p_arcana_normal_1',cards:[{id:'tooltip-pack',entityId:'c_fool',originalKey:'c_fool',set:'Tarot',edition:'base',cost:3n,sellCost:1n}],choicesRemaining:1};renderShop(s,false);});
   const pack=page.locator('#pack_screen .shop-card');await tap(pack);await adjacent(pack,'.shop-tooltip');await outside();
   await tap(pack);await page.screenshot({path:`artifacts/game-card-tooltip-${width}.png`});
-  assert.deepEqual(errors,[]);console.log(JSON.stringify({width,height,touch,playingShortTap:true,shopAndPackAdjacent:true,anyNextTapDismisses:true}));await context.close();
+  assert.deepEqual(errors,[]);console.log(JSON.stringify({width,height,touch,playingShortTapSelectsOnly:true,playingHoldDescribes:true,dragAndCancelSuppress:true,shopAndPackAdjacent:true,anyNextTapDismisses:true}));await context.close();
  }
 }finally{await browser.close();}

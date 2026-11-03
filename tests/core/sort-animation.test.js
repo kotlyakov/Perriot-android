@@ -34,9 +34,9 @@ test('score labels distinguish chip/mult addition and multiplication',()=>{
  assert.equal(scoreMoneyText({type:'score_money',amount:20n}),'+$20');
 });
 
-test('fractional HUD value clears integer animation origin before a later integral Mult',()=>{
+test('fractional HUD value displays a whole number before a later integral Mult',()=>{
  const original=globalThis.document,nodes=Object.fromEntries(['chips_value','mult_value'].map(id=>[id,{dataset:{number:'9'},style:{},parentElement:{clientWidth:200},textContent:'9',title:'9'}]));globalThis.document={getElementById:id=>nodes[id]};
- try{showNumbers(7n,{n:3n,d:2n});assert.equal(nodes.mult_value.textContent,'1.5');assert.equal(Object.hasOwn(nodes.mult_value.dataset,'number'),false);showNumbers(7n,3n);assert.equal(nodes.mult_value.textContent,'3');}
+ try{showNumbers(7n,{n:3n,d:2n});assert.equal(nodes.mult_value.textContent,'1');assert.equal(nodes.mult_value.title,'1');assert.equal(nodes.mult_value.dataset.number,'1');showNumbers(7n,3n);assert.equal(nodes.mult_value.textContent,'3');}
  finally{globalThis.document=original;}
 });
 

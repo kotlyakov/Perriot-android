@@ -70,3 +70,13 @@ test('Planet and Black Hole level increments are bold neutral effects',async()=>
  assert.deepEqual(format('Ранг +1. 12 комбинаций; +3 места; награда на +1.').filter(t=>t.kind),[]);
 });
 
+
+test('shared descriptions replace complete suit words with artwork tokens',async()=>{
+ const format=await formatter(),text='Червы, бубен, пиками и трефовой масти; червоточина и пикник.';
+ assert.deepEqual(format(text).filter(t=>t.suit).map(t=>[t.text,t.suit]),[['Червы','hearts'],['бубен','diamonds'],['пиками','spades'],['трефовой','clubs']]);
+ assert.equal(format(text).map(t=>t.text).join(''),text);
+});
+test('unsigned score targets and effect ranges have semantic colours without ranks and counts',async()=>{
+ const format=await formatter();
+ assert.deepEqual(format('Набрать 300 очков; от +0 до +23 к множителю; 5 карт ранга 10.').filter(t=>t.kind),[{text:'300',kind:'chips'},{text:'+0',kind:'mult'},{text:'+23',kind:'mult'}]);
+});

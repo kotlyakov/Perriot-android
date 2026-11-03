@@ -42,7 +42,7 @@ add('c_planet_x','Planet','Неизвестная планета на пункт
 add('c_ceres','Planet','Кратерная Церера в поясе малых камней',space()+c(59,72,26,S)+c(51,62,8,G)+c(69,81,6,P)+c(48,88,4,I)+[[24,45],[93,47],[24,89],[91,100],[43,115],[77,25]].map(([x,y])=>p(`M${x-4} ${y-3}L${x+3} ${y-5}L${x+5} ${y+2}L${x-2} ${y+4}Z`,G)).join('')+e(59,72,47,44,'none',I,1));
 add('c_eris','Planet','Ледяная Эрида и отдалённая Дисномия',space()+c(55,77,29,P)+p('M31 63L41 60L46 68L61 62L75 68M30 86L44 82L55 92L71 86L78 91','none',S,4)+p('M53 50L58 58M38 96L47 100','none',B,2)+e(59,72,45,48,'none',I,1)+c(91,35,7,S)+spark(28,34,.35,B));
 
-add('c_familiar','Spectral','Три фигурные карты возникают из маски фамильяра',mask(59,91,.8,S)+cards(30,46,['J','Q','K'],'s',.75,29)+p('M30 68Q39 87 45 88M60 68V76M88 68L73 88','none',B,2)+spark(95,100,.3,G));
+add('c_familiar','Spectral','Три карты с лицом возникают из маски фамильяра',mask(59,91,.8,S)+cards(30,46,['J','Q','K'],'s',.75,29)+p('M30 68Q39 87 45 88M60 68V76M88 68L73 88','none',B,2)+spark(95,100,.3,G));
 add('c_grim','Spectral','Костяная рука держит два новых туза',p('M40 117L41 97L29 82L34 78L47 89L48 73L54 71L56 89L62 71L68 73L66 91L78 81L82 85L70 103L69 117Z',P)+card(39,49,'A','s',1,-12)+card(78,49,'A','h',1,12)+rays(59,65,36,8,S)+ground(123));
 add('c_incantation','Spectral','Книга заклинаний выпускает четыре числовые карты',p('M20 83Q39 76 59 85Q79 76 99 83L96 116Q79 109 59 119Q39 109 23 116Z',S)+p('M59 85V118M28 90L48 93M70 94L92 89','none',I,1)+cards(25,53,['2','4','7','9'],'d',.63,23)+spark(58,27,.4,G));
 add('c_talisman','Spectral','Золотой амулет с картой внутри',p('M33 28Q59 46 85 28M36 28Q59 13 82 28','none',I,2)+seal(59,81,1.28,G)+card(59,81,'A','d',1.05)+p('M54 27L59 48L64 27','none',G,5)+ground(124));
@@ -63,5 +63,7 @@ add('c_black_hole','Spectral','Чёрная воронка поглощает д
 
 export function consumableArtworkSvg(id){
  const plate=CONSUMABLE_ILLUSTRATIONS[id];if(!plate)return '';
- return `<svg viewBox="0 0 118 138" aria-hidden="true" data-consumable-id="${id}"><rect x="7" y="8" width="104" height="122" rx="2" fill="${P}" stroke="${I}" stroke-width="1.2"/><path d="M12 15H32M86 123H106" stroke="${G}" stroke-width="1.2"/><g data-engraving="${id}">${plate.scene}</g></svg>`;
+ const paper=plate.set==='Tarot'?'#ed9b50':plate.set==='Planet'?'#6ec8e7':`url(#${id}-paper)`;
+ const gradient=plate.set==='Spectral'?`<defs><linearGradient id="${id}-paper" x1="0" y1="0" x2="1" y2="1"><stop class="spectral-paper-stop" offset="0" stop-color="#ed88bc"/><stop class="spectral-paper-stop" offset=".33" stop-color="#f6cb77"/><stop class="spectral-paper-stop" offset=".67" stop-color="#78d9cc"/><stop class="spectral-paper-stop" offset="1" stop-color="#ac91e9"/></linearGradient></defs>`:'';
+ return `<svg viewBox="0 0 118 138" aria-hidden="true" data-consumable-id="${id}" data-consumable-set="${plate.set}">${gradient}<rect width="118" height="138" fill="${paper}"/><g data-engraving="${id}">${plate.scene}</g></svg>`;
 }

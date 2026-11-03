@@ -21,16 +21,26 @@ export function setJokerBossDebuff(card,debuffed){
  card.debuffed=debuffed||isPerished(card);return card.debuffed;
 }
 
-// Pass {jokers:[joker]} immediately after its native end_of_round effect to
-// preserve interleaving. The explicit list may include a Joker whose queued
-// native removal the reducer has already applied; that round's rent is owed.
-export function applyJokerStickerEndRound(state,events=[],{jokers=state?.jokers}={}){
+// Rental is a user-selected rule: pay for owned cards at round entry, even
+// when debuffed or expired. Lifetime still advances only when a round ends.
+function validateStickerBatch(state,events,jokers){
  if(!state||!Array.isArray(state.jokers)||!state.round||typeof state.money!=='bigint'||!Array.isArray(events)||!Array.isArray(jokers)||
    jokers.some(j=>!validJokerStickers(j)||typeof j.id!=='string'||!j.id)||new Set(jokers.map(j=>j.id)).size!==jokers.length)throw new TypeError('Invalid Joker sticker state');
+}
+export function applyJokerRentalStartRound(state,events=[]){
+ validateStickerBatch(state,events,state?.jokers);
+ for(const joker of state.jokers)if(joker.rental){
+  const before=state.money;state.money-=3n;
+  events.push({type:'joker_rental_paid',sourceId:joker.id,amount:3n},{type:'money_changed',sourceId:joker.id,before,after:state.money,delta:-3n});
+ }
+}
+// Explicit lists preserve perishable lifetime interleaving with Joker removal.
+export function applyJokerStickerEndRound(state,events=[],{jokers=state?.jokers}={}){
+ validateStickerBatch(state,events,jokers);
  for(const joker of jokers){
-  if(joker.rental){
-   const before=state.money;state.money-=3n;
-   events.push({type:'joker_rental_paid',sourceId:joker.id,amount:3n},{type:'money_changed',sourceId:joker.id,before,after:state.money,delta:-3n});
+  // Missing timing exists only in authenticated pre-change replay checkpoints.
+  if(joker.rental&&state.rentalTiming!=='round_start'){
+   const before=state.money;state.money-=3n;events.push({type:'joker_rental_paid',sourceId:joker.id,amount:3n},{type:'money_changed',sourceId:joker.id,before,after:state.money,delta:-3n});
   }
   if(joker.perishable&&joker.perishRounds>0){
    const before=joker.perishRounds,beforeCapacity=item7CapacityDeltas(state.jokers);
